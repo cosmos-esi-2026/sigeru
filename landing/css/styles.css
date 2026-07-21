@@ -1,0 +1,156 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; 
+}
+:root {
+  --verde:        #2e7d32;
+  --verde-oscuro: #1b5e20;
+  --gris-claro:   #f4f4f4;
+  --gris-texto:   #444;
+  --blanco:       #ffffff;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--gris-texto);
+  line-height: 1.6;
+}
+
+/* Contenedor central para alinear el contenido */
+.contenedor {
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.contenedor-angosto {
+  max-width: 500px;
+}
+
+.cabecera {
+  background: var(--verde);
+  color: var(--blanco);
+  padding: 15px 0;
+}
+.cabecera-interna {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+.menu a {
+  color: var(--blanco);
+  text-decoration: none;
+  margin-left: 18px;
+}
+.menu a:hover {
+  text-decoration: underline;
+}
+
+.boton {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+}
+.boton-primario {
+  background: var(--verde);
+  color: var(--blanco);
+}
+.boton-primario:hover {
+  background: var(--verde-oscuro);
+}
+.boton-secundario {
+  background: var(--blanco);
+  color: var(--verde);
+}
+
+.hero {
+  background: var(--verde-oscuro);
+  color: var(--blanco);
+  text-align: center;
+  padding: 60px 0;
+}
+.hero h2 {
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+.hero p {
+  max-width: 600px;
+  margin: 0 auto 25px auto;
+}
+
+
+.seccion {
+  padding: 50px 0;
+}
+.seccion-gris {
+  background: var(--gris-claro);
+}
+.seccion h2 {
+  margin-bottom: 15px;
+  color: var(--verde-oscuro);
+}
+
+
+.tarjetas {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.tarjeta {
+  background: var(--blanco);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  flex: 1 1 250px; 
+}
+.tarjeta h3 {
+  color: var(--verde);
+  margin-bottom: 8px;
+}
+
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: 14px;
+}
+.formulario input {
+  margin-top: 5px;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.mensaje {
+  margin-top: 15px;
+  font-weight: bold;
+}
+.mensaje.ok    { color: var(--verde); }
+.mensaje.error { color: #c62828; }
+
+
+.pie {
+  background: var(--verde);
+  color: var(--blanco);
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 20px;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiGeRU - Sistema de Gestion de Residuos Urbanos</title>
+  <!-- Hoja de estilos propia (sin frameworks externos) -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO / NAVEGACION ===================== -->
+  <header class="cabecera">
+    <div class="contenedor cabecera-interna">
+      <h1 class="logo">SiGeRU</h1>
+      <nav class="menu">
+        <a href="#que-es">Que es</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#registro">Registro</a>
+        <!-- Enlace al frontend de usuarios (login) -->
+        <a class="boton boton-secundario" href="../frontend-usuarios/login.html">Ingresar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== SECCION PRINCIPAL (HERO) ===================== -->
+  <section class="hero">
+    <div class="contenedor">
+      <h2>Gestion inteligente de residuos urbanos</h2>
+      <p>
+        SiGeRU ayuda a la ciudad a organizar contenedores, camiones y centros de
+        acopio, y a los vecinos a reportar incidencias de forma simple.
+      </p>
+      <a class="boton boton-primario" href="#registro">Quiero registrarme</a>
+    </div>
+  </section>
+
+  <!-- ===================== QUE ES ===================== -->
+  <section id="que-es" class="seccion">
+    <div class="contenedor">
+      <h2>Que es SiGeRU</h2>
+      <p>
+        Es un Sistema de Gestion de Residuos Urbanos desarrollado para UTU/ESI 2026.
+        Permite administrar la recoleccion, los contenedores y la flota de camiones,
+        y ofrece a los vecinos un canal para participar.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== SERVICIOS ===================== -->
+  <section id="servicios" class="seccion seccion-gris">
+    <div class="contenedor">
+      <h2>Servicios</h2>
+      <div class="tarjetas">
+        <article class="tarjeta">
+          <h3>Contenedores</h3>
+          <p>Ubicacion y estado de los contenedores de la ciudad.</p>
+        </article>
+        <article class="tarjeta">
+          <h3>Recoleccion</h3>
+          <p>Flota de camiones y rutas de recoleccion organizadas.</p>
+        </article>
+        <article class="tarjeta">
+          <h3>Incidencias</h3>
+          <p>Los vecinos pueden reportar problemas facilmente.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FORMULARIO DE REGISTRO ===================== -->
+  <section id="registro" class="seccion">
+    <div class="contenedor contenedor-angosto">
+      <h2>Solicitar registro</h2>
+      <p>Completa tus datos. Un administrador revisara tu solicitud.</p>
+
+      <!-- Formulario: el envio lo maneja js/main.js (no recarga la pagina) -->
+      <form id="form-registro" class="formulario">
+        <label>Nombre
+          <input type="text" name="nombre" required>
+        </label>
+        <label>Apellido
+          <input type="text" name="apellido" required>
+        </label>
+        <label>Email
+          <input type="email" name="email" required>
+        </label>
+        <label>Telefono
+          <input type="text" name="telefono">
+        </label>
+        <label>Direccion
+          <input type="text" name="direccion">
+        </label>
+        <button type="submit" class="boton boton-primario">Enviar solicitud</button>
+      </form>
+
+      <!-- Aca main.js muestra el resultado del envio -->
+      <p id="mensaje-registro" class="mensaje"></p>
+    </div>
+  </section>
+
+  <!-- ===================== PIE DE PAGINA ===================== -->
+  <footer class="pie">
+    <div class="contenedor">
+      <p>SiGeRU 2026 - Proyecto UTU/ESI - Sistema de Gestion de Residuos Urbanos</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript de la landing -->
+  <script src="js/main.js"></script>
+</body>
+</html>
