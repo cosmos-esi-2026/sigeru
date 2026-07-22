@@ -17,7 +17,6 @@ body {
   line-height: 1.6;
 }
 
-/* Contenedor central para alinear el contenido */
 .contenedor {
   width: 90%;
   max-width: 1000px;
