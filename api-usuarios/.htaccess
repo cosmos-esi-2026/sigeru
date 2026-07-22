@@ -1,0 +1,11 @@
+# ============================================================================
+#  SiGeRU 2026 - API de usuarios - Reglas de Apache
+#  Que hace: manda TODAS las peticiones a index.php.
+#  Asi index.php funciona como "router" (decide que hacer segun la URL).
+# ============================================================================
+RewriteEngine On
+
+# Si lo pedido NO es un archivo o carpeta real, va a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
