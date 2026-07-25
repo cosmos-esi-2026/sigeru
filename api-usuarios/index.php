@@ -1,56 +1,82 @@
 <?php
-class Usuario
-{
-    private static array $usuarios = [
-        [
-            "id_usuario" => 1, "nombre" => "Ana", "apellido" => "Perez",
-            "email" => "admin@sigeru.uy", "rol" => "Administrador", "estado" => "activo"
+// ============================================================================
+//  SiGeRU 2026 - API de usuarios - index.php (Router / punto de entrada)
+//
+//  Todas las peticiones entran por acá (ver .htaccess). Este archivo decide
+//  qué acción del controlador ejecutar segun el verbo HTTP (GET, POST) y la
+//  ruta pedida. NO define modelos ni logica de negocio: solo dirige el trafico.
+//
+//  Rutas disponibles:
+//    GET  /                 -> informacion de la API (para probar que responde)
+//    GET  /usuarios         -> lista todos los usuarios
+//    GET  /usuarios/{id}    -> devuelve un usuario por su id
+//    POST /usuarios         -> crea un usuario
+//    POST /login            -> valida email + contrasena
+//    POST /solicitudes      -> registra una solicitud de alta
+// ============================================================================
+
+require_once __DIR__ . "/core/Response.php";
+require_once __DIR__ . "/controllers/UsuarioController.php";
+
+// Cabeceras CORS (deja que el frontend consuma la API) y corta si es OPTIONS
+Response::cors();
+
+// --- 1. Obtener la ruta pedida, sin el prefijo de la carpeta ----------------
+// Ejemplo: si la API vive en http://localhost/api-usuarios/ y se pide
+// ".../api-usuarios/usuarios/5", aca queremos quedarnos solo con "/usuarios/5".
+$base = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"])); // /api-usuarios
+$ruta = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);         // /api-usuarios/usuarios/5
+if ($base !== "/" && str_starts_with($ruta, $base)) {
+    $ruta = substr($ruta, strlen($base));                        // /usuarios/5
+}
+$ruta = "/" . trim($ruta, "/");                                  // normaliza barras
+
+$metodo = $_SERVER["REQUEST_METHOD"];
+
+// Parte la ruta en segmentos: "/usuarios/5" -> ["usuarios", "5"]
+$segmentos = array_values(array_filter(explode("/", $ruta), fn($s) => $s !== ""));
+$recurso = $segmentos[0] ?? "";
+
+// --- 2. Dirigir cada ruta a su accion del controlador -----------------------
+$controlador = new UsuarioController();
+
+// GET /  -> mensaje de bienvenida, util para verificar que la API anda
+if ($ruta === "/" && $metodo === "GET") {
+    Response::json([
+        "ok"        => true,
+        "api"       => "SiGeRU - API de usuarios",
+        "endpoints" => [
+            "GET /usuarios",
+            "GET /usuarios/{id}",
+            "POST /usuarios",
+            "POST /login",
+            "POST /solicitudes",
         ],
-        [
-            "id_usuario" => 2, "nombre" => "Luis", "apellido" => "Gomez",
-            "email" => "cuadrilla@sigeru.uy", "rol" => "Cuadrilla", "estado" => "activo"
-        ],
-        [
-            "id_usuario" => 3, "nombre" => "Marta", "apellido" => "Rodriguez",
-            "email" => "vecino@sigeru.uy", "rol" => "Vecino", "estado" => "activo"
-        ],
-    ];
+    ]);
+}
 
-    public static function listar(): array
-    {
-        return self::$usuarios;
+// Rutas del recurso /usuarios
+if ($recurso === "usuarios") {
+    if ($metodo === "GET" && count($segmentos) === 1) {
+        $controlador->listar();
     }
-
-    public static function obtener(int $id): ?array
-    {
-        foreach (self::$usuarios as $u) {
-            if ($u["id_usuario"] === $id) {
-                return $u;
-            }
-        }
-        return null;
+    if ($metodo === "GET" && count($segmentos) === 2) {
+        $controlador->obtener((int) $segmentos[1]);
     }
-
-    public static function crear(array $datos): array
-    {
-        $nuevoId = count(self::$usuarios) + 1;
-        return [
-            "id_usuario" => $nuevoId,
-            "nombre"     => $datos["nombre"]   ?? "",
-            "apellido"   => $datos["apellido"] ?? "",
-            "email"      => $datos["email"]    ?? "",
-            "rol"        => $datos["rol"]      ?? "Vecino",
-            "estado"     => "activo",
-        ];
-    }
-
-    public static function login(string $email, string $clave): ?array
-    {
-        foreach (self::$usuarios as $u) {
-            if ($u["email"] === $email && $clave === "123456") {
-                return $u;
-            }
-        }
-        return null;
+    if ($metodo === "POST" && count($segmentos) === 1) {
+        $controlador->crear();
     }
 }
+
+// POST /login
+if ($recurso === "login" && $metodo === "POST") {
+    $controlador->login();
+}
+
+// POST /solicitudes
+if ($recurso === "solicitudes" && $metodo === "POST") {
+    $controlador->crearSolicitud();
+}
+
+// --- 3. Si ninguna ruta coincidio -------------------------------------------
+Response::json(["ok" => false, "mensaje" => "Ruta no encontrada: $metodo $ruta"], 404);
