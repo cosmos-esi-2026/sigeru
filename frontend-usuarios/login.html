@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiGeRU - Iniciar sesion</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="pantalla-centrada">
+    <div class="tarjeta-auth">
+      <h1>SiGeRU</h1>
+      <p class="subtitulo">Iniciar sesion</p>
+
+      <form id="form-login" class="formulario">
+        <label>Email
+          <input type="email" name="email" value="admin@sigeru.uy" required>
+        </label>
+        <label>Contrasena
+          <input type="password" name="password" value="123456" required>
+        </label>
+        <button type="submit" class="boton boton-primario">Ingresar</button>
+      </form>
+
+      <p id="mensaje" class="mensaje"></p>
+
+      <p class="texto-centro mt">
+        No tenes cuenta? <a href="registro.html">Registrate</a>
+      </p>
+      <p class="texto-centro mt">
+        <a href="../landing/index.html">Volver al inicio</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
