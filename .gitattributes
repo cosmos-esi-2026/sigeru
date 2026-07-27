@@ -1,0 +1,16 @@
+# Archivos binarios: Git no debe tocarles los saltos de linea.
+# Sin esto, al clonar el repositorio en Windows (core.autocrlf=true) los PDF y
+# los .dia se corrompen porque Git les inserta retornos de carro.
+
+*.pdf   binary
+*.dia   binary
+*.docx  binary
+*.xlsx  binary
+*.odt   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   binary
+*.zip   binary
