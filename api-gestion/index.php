@@ -7,7 +7,14 @@ require_once __DIR__ . "/controllers/CamionController.php";
 Response::cors();
 
 $metodo = $_SERVER["REQUEST_METHOD"];
-$ruta   = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+
+// Recorta el prefijo de la carpeta (igual que api-usuarios), asi funciona tanto
+// en el puerto propio (prefijo "/") como bajo Apache en "/sigeru/api-gestion/".
+$base = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));
+$ruta = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+if ($base !== "/" && str_starts_with($ruta, $base)) {
+    $ruta = substr($ruta, strlen($base));
+}
 $ruta   = rtrim($ruta, "/");
 $partes = explode("/", trim($ruta, "/"));
 
