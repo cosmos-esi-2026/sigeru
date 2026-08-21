@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SiGeRU - Sistema de Gestion de Residuos Urbanos</title>
+  <link rel="icon" href="../frontend-usuarios/img/logo.svg">
   <!-- Hoja de estilos propia (sin frameworks externos) -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -11,7 +12,10 @@
 
   <header class="cabecera">
     <div class="contenedor cabecera-interna">
-      <h1 class="logo">SiGeRU</h1>
+      <h1 class="logo">
+        <img src="../frontend-usuarios/img/logo.svg" alt="">
+        SiGeRU
+      </h1>
       <nav class="menu">
         <a href="#que-es">Que es</a>
         <a href="#servicios">Servicios</a>
@@ -22,7 +26,8 @@
     </div>
   </header>
 
-  <section class="hero">
+  <!-- Si img/hero.jpg todavia no existe, queda el verde de fondo del CSS -->
+  <section class="hero" style="background-image: url('img/hero.jpg');">
     <div class="contenedor">
       <h2>Gestion inteligente de residuos urbanos</h2>
       <p>
@@ -48,18 +53,41 @@
     <div class="contenedor">
       <h2>Servicios</h2>
       <div class="tarjetas">
+
         <article class="tarjeta">
+          <div class="icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
+              <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
+              <path d="M10 11v6M14 11v6"/>
+            </svg>
+          </div>
           <h3>Contenedores</h3>
           <p>Ubicacion y estado de los contenedores de la ciudad.</p>
         </article>
+
         <article class="tarjeta">
+          <div class="icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
+              <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
+            </svg>
+          </div>
           <h3>Recoleccion</h3>
           <p>Flota de camiones y rutas de recoleccion organizadas.</p>
         </article>
+
         <article class="tarjeta">
+          <div class="icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3a8 8 0 0 1 8 8c0 4.5-8 10-8 10S4 15.5 4 11a8 8 0 0 1 8-8z"/>
+              <path d="M12 8v4"/><path d="M12 15h.01"/>
+            </svg>
+          </div>
           <h3>Incidencias</h3>
           <p>Los vecinos pueden reportar problemas facilmente.</p>
         </article>
+
       </div>
     </div>
   </section>
@@ -69,30 +97,35 @@
       <h2>Solicitar registro</h2>
       <p>Completa tus datos. Un administrador revisara tu solicitud.</p>
 
-      <!-- Formulario: el envio lo maneja js/main.js (no recarga la pagina) -->
-      <form id="form-registro" class="formulario">
-        <label>Nombre
-          <input type="text" name="nombre" required>
-        </label>
-        <label>Apellido
-          <input type="text" name="apellido" required>
-        </label>
-        <label>Email
-          <input type="email" name="email" required>
-        </label>
-        <label>Telefono
-          <input type="text" name="telefono">
-        </label>
-        <label>Direccion
-          <input type="text" name="direccion">
-        </label>
-        <button type="submit" class="boton boton-primario">Enviar solicitud</button>
-      </form>
+      <div class="tarjeta-formulario">
+        <!-- Formulario: el envio lo maneja js/main.js (no recarga la pagina) -->
+        <form id="form-registro" class="formulario">
+          <div class="formulario-columnas">
+            <label>Nombre
+              <input type="text" name="nombre" required>
+            </label>
+            <label>Apellido
+              <input type="text" name="apellido" required>
+            </label>
+          </div>
+          <label>Email
+            <input type="email" name="email" required>
+          </label>
+          <div class="formulario-columnas">
+            <label>Telefono
+              <input type="text" name="telefono">
+            </label>
+            <label>Direccion
+              <input type="text" name="direccion">
+            </label>
+          </div>
+          <button type="submit" class="boton boton-primario">Enviar solicitud</button>
+        </form>
 
-      <p id="mensaje-registro" class="mensaje"></p>
+        <p id="mensaje-registro" class="mensaje"></p>
+      </div>
     </div>
   </section>
-
 
   <footer class="pie">
     <div class="contenedor">
@@ -100,6 +133,7 @@
     </div>
   </footer>
 
+  <script src="js/cabecera.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

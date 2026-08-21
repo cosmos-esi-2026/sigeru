@@ -4,37 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SiGeRU - Registro</title>
+  <link rel="icon" href="img/logo.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <div class="pantalla-centrada">
-    <div class="tarjeta-auth">
-      <h1>SiGeRU</h1>
-      <p class="subtitulo">Crear una cuenta</p>
+  <div class="auth">
 
-      <form id="form-registro" class="formulario">
-        <label>Nombre
-          <input type="text" name="nombre" required>
-        </label>
-        <label>Apellido
-          <input type="text" name="apellido" required>
-        </label>
-        <label>Email
-          <input type="email" name="email" required>
-        </label>
-        <label>Contrasena
-          <input type="password" name="password" required>
-        </label>
-        <button type="submit" class="boton boton-primario">Registrarme</button>
-      </form>
-
-      <p id="mensaje" class="mensaje"></p>
-
-      <p class="texto-centro mt">
-        Ya tenes cuenta? <a href="login.html">Inicia sesion</a>
-      </p>
+    <div class="auth-imagen" style="background-image: url('img/login.jpg');">
+      <div class="marca">
+        <img src="img/logo.svg" alt="">
+        <h1>SiGeRU</h1>
+        <p>Sistema de Gestion de Residuos Urbanos</p>
+      </div>
     </div>
+
+    <div class="auth-panel">
+      <div class="auth-caja">
+
+        <div class="auth-logo-chico">
+          <img src="img/logo.svg" alt="SiGeRU">
+        </div>
+
+        <h2>Crear una cuenta</h2>
+        <p class="bajada">Completa tus datos para acceder al sistema.</p>
+
+        <form id="form-registro" class="formulario">
+          <div class="formulario-columnas">
+            <label>Nombre
+              <input type="text" name="nombre" required>
+            </label>
+            <label>Apellido
+              <input type="text" name="apellido" required>
+            </label>
+          </div>
+          <label>Email
+            <input type="email" name="email" required>
+          </label>
+          <label>Contrasena
+            <input type="password" name="password" required>
+          </label>
+          <button type="submit" class="btn-accion">Registrarme</button>
+        </form>
+
+        <p id="mensaje" class="mensaje"></p>
+
+        <div class="pie-enlaces">
+          <p>Ya tenes cuenta? <a href="login.html">Inicia sesion</a></p>
+          <p><a href="../landing/index.html">Volver al inicio</a></p>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <script src="js/api.js"></script>

@@ -12,19 +12,19 @@ function colorEstado(estado) {
 }
 
 async function cargarCamiones() {
-  cuerpoTabla.innerHTML = "<tr><td colspan='6'>Cargando...</td></tr>";
+  cuerpoTabla.innerHTML = filaAviso(6, "Cargando...");
   try {
     const datos = await apiGet(API.gestion + "/camiones");
     dibujarTabla(datos.datos);
   } catch (e) {
     cuerpoTabla.innerHTML =
-      "<tr><td colspan='6'>No se pudo conectar con la API. Verifica que este corriendo.</td></tr>";
+      filaAviso(6, "No se pudo conectar con la API. Verifica que este corriendo.");
   }
 }
 
 function dibujarTabla(camiones) {
   if (!camiones || camiones.length === 0) {
-    cuerpoTabla.innerHTML = "<tr><td colspan='6'>No hay camiones.</td></tr>";
+    cuerpoTabla.innerHTML = filaVacia(6, "Todavia no hay camiones cargados.");
     return;
   }
 
@@ -57,8 +57,12 @@ formCamion.addEventListener("submit", async function (evento) {
   try {
     const { ok, resultado } = await apiPost(API.gestion + "/camiones", datos);
     if (ok) {
-      mostrar("Camion creado correctamente.", "ok");
+      // El alta salio bien: se limpia el formulario, se cierra el modal y el
+      // aviso se muestra arriba de la tabla (el de adentro ya no se ve).
+      mostrar("", "");
       formCamion.reset();
+      cerrarModal("modal-camion");
+      avisoPagina("Camion creado correctamente.");
       cargarCamiones();
     } else {
       mostrar(resultado.mensaje || "No se pudo crear el camion.", "error");
