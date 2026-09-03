@@ -26,8 +26,9 @@
           <img src="img/logo.svg" alt="SiGeRU">
         </div>
 
-        <h2>Crear una cuenta</h2>
-        <p class="bajada">Completa tus datos para acceder al sistema.</p>
+        <h2>Solicitar acceso</h2>
+        <p class="bajada">Completa tus datos. Un administrador revisa la solicitud
+          y te habilita el acceso.</p>
 
         <form id="form-registro" class="formulario">
           <div class="formulario-columnas">
@@ -41,10 +42,15 @@
           <label>Email
             <input type="email" name="email" required>
           </label>
-          <label>Contrasena
-            <input type="password" name="password" required>
-          </label>
-          <button type="submit" class="btn-accion">Registrarme</button>
+          <div class="formulario-columnas">
+            <label>Telefono
+              <input type="text" name="telefono">
+            </label>
+            <label>Direccion
+              <input type="text" name="direccion">
+            </label>
+          </div>
+          <button type="submit" class="btn-accion">Enviar solicitud</button>
         </form>
 
         <p id="mensaje" class="mensaje"></p>

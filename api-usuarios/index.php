@@ -3,16 +3,23 @@
 //  SiGeRU 2026 - API de usuarios - index.php (Router / punto de entrada)
 //
 //  Todas las peticiones entran por acá (ver .htaccess). Este archivo decide
-//  qué acción del controlador ejecutar segun el verbo HTTP (GET, POST) y la
-//  ruta pedida. NO define modelos ni logica de negocio: solo dirige el trafico.
+//  qué acción del controlador ejecutar segun el verbo HTTP (GET, POST, PUT) y
+//  la ruta pedida. NO define modelos ni logica de negocio: solo dirige el
+//  trafico.
 //
 //  Rutas disponibles:
-//    GET  /                 -> informacion de la API (para probar que responde)
-//    GET  /usuarios         -> lista todos los usuarios
-//    GET  /usuarios/{id}    -> devuelve un usuario por su id
-//    POST /usuarios         -> crea un usuario
-//    POST /login            -> valida email + contrasena
-//    POST /solicitudes      -> registra una solicitud de alta
+//    GET  /                     -> informacion de la API (para probar que responde)
+//    GET  /usuarios             -> lista todos los usuarios      (Administrador)
+//    GET  /usuarios/{id}        -> devuelve un usuario por su id (Administrador)
+//    POST /usuarios             -> crea un usuario               (Administrador)
+//    POST /login                -> valida email + contrasena     (publico)
+//    POST /solicitudes          -> registra una solicitud de alta (publico)
+//    GET  /solicitudes          -> lista las solicitudes         (Administrador)
+//    PUT  /solicitudes/{id}     -> aprueba o rechaza una solicitud (Administrador)
+//
+//  El registro publico crea una SOLICITUD, nunca un usuario: el alta efectiva
+//  la hace un administrador al aprobarla. Ese es el circuito que modela la
+//  tabla solicitud_registro del DER.
 // ============================================================================
 
 require_once __DIR__ . "/core/Response.php";
@@ -51,6 +58,8 @@ if ($ruta === "/" && $metodo === "GET") {
             "POST /usuarios",
             "POST /login",
             "POST /solicitudes",
+            "GET /solicitudes",
+            "PUT /solicitudes/{id}",
         ],
     ]);
 }
@@ -73,9 +82,17 @@ if ($recurso === "login" && $metodo === "POST") {
     $controlador->login();
 }
 
-// POST /solicitudes
-if ($recurso === "solicitudes" && $metodo === "POST") {
-    $controlador->crearSolicitud();
+// Rutas del recurso /solicitudes
+if ($recurso === "solicitudes") {
+    if ($metodo === "POST" && count($segmentos) === 1) {
+        $controlador->crearSolicitud();
+    }
+    if ($metodo === "GET" && count($segmentos) === 1) {
+        $controlador->listarSolicitudes();
+    }
+    if ($metodo === "PUT" && count($segmentos) === 2) {
+        $controlador->resolverSolicitud((int) $segmentos[1]);
+    }
 }
 
 // --- 3. Si ninguna ruta coincidio -------------------------------------------

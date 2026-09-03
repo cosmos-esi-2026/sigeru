@@ -30,18 +30,26 @@ if (formRegistro) {
   formRegistro.addEventListener("submit", async function (evento) {
     evento.preventDefault();
 
+    // El registro publico crea una SOLICITUD, no un usuario: el alta efectiva la
+    // hace un administrador al aprobarla. Es el circuito que modela la tabla
+    // solicitud_registro del DER y que pide el CU-011.
     const datos = {
-      nombre:   formRegistro.nombre.value,
-      apellido: formRegistro.apellido.value,
-      email:    formRegistro.email.value,
-      password: formRegistro.password.value,
+      nombre:    formRegistro.nombre.value,
+      apellido:  formRegistro.apellido.value,
+      email:     formRegistro.email.value,
+      telefono:  formRegistro.telefono ? formRegistro.telefono.value : "",
+      direccion: formRegistro.direccion ? formRegistro.direccion.value : "",
     };
 
     try {
-      const { ok, resultado } = await apiPost(API.usuarios + "/usuarios", datos);
+      const { ok, resultado } = await apiPost(API.usuarios + "/solicitudes", datos);
 
       if (ok) {
-        mostrar("Cuenta creada. Ya podes iniciar sesion.", "ok");
+        mostrar(
+          "Solicitud enviada. Un administrador la va a revisar y vas a recibir " +
+          "un aviso cuando este aprobada.",
+          "ok"
+        );
         formRegistro.reset();
       } else {
         mostrar(resultado.mensaje || "No se pudo registrar", "error");

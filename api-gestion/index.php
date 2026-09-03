@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/core/Response.php";
+require_once __DIR__ . "/core/Auth.php";
 require_once __DIR__ . "/controllers/ContenedorController.php";
 require_once __DIR__ . "/controllers/CamionController.php";
 
@@ -30,6 +31,8 @@ switch ($recurso) {
         } elseif ($metodo === "GET") {
             $controlador->listar();
         } elseif ($metodo === "POST") {
+            // Consultar es abierto; crear exige sesion de administrador.
+            Auth::exigirRol("Administrador");
             $controlador->crear();
         } else {
             Response::json(["ok" => false, "mensaje" => "Metodo no permitido"], 405);
@@ -43,6 +46,8 @@ switch ($recurso) {
         } elseif ($metodo === "GET") {
             $controlador->listar();
         } elseif ($metodo === "POST") {
+            // Consultar es abierto; crear exige sesion de administrador.
+            Auth::exigirRol("Administrador");
             $controlador->crear();
         } else {
             Response::json(["ok" => false, "mensaje" => "Metodo no permitido"], 405);
