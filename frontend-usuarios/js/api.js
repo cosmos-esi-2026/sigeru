@@ -1,6 +1,6 @@
 const API = {
-  usuarios: "http://localhost:8081",
-  gestion:  "http://localhost:8082",
+  usuarios: "/sigeru/api-usuarios",
+  gestion:  "/sigeru/api-gestion",
 };
 
 async function apiGet(url) {

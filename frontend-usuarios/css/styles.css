@@ -1,151 +1,448 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ==========================================================================
+   SiGeRU 2026 - Estilos del panel de usuarios
+
+   Se carga DESPUES de bootstrap.min.css, asi que lo que se define aca pisa
+   los estilos de Bootstrap. De Bootstrap solo usamos el modal, el menu
+   colapsable y la grilla; todo lo visual lo define este archivo.
+   ========================================================================== */
 
 :root {
-  --verde:        #2e7d32;
-  --verde-oscuro: #1b5e20;
-  --gris-claro:   #f4f4f4;
-  --gris-borde:   #ddd;
-  --gris-texto:   #444;
-  --blanco:       #ffffff;
-  --rojo:         #c62828;
+  /* Marca */
+  --sidebar:        #1b3a2b;
+  --sidebar-activo: #97c459;
+  --sidebar-texto:  #a8c4b3;
+
+  /* Superficies */
+  --fondo:   #fafcfb;
+  --tarjeta: #ffffff;
+  --borde:   #e6ece9;
+
+  /* Texto */
+  --texto:      #1b3a2b;
+  --texto-flojo: #6b7c76;
+
+  /* Acento (botones de accion) */
+  --acento:       #97c459;
+  --acento-fuerte: #86b348;
+  --acento-texto: #173404;
+
+  /* Estados */
+  --verde:        #3b6d11;
+  --verde-fondo:  #eaf3de;
+  --rojo:         #a32d2d;
+  --rojo-fondo:   #fcebeb;
+  --naranja:      #854f0b;
+  --naranja-fondo: #faeeda;
+  --gris:         #6b7c76;
+  --gris-fondo:   #eef2f0;
+
+  --radio: 10px;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--gris-texto);
-  background: var(--gris-claro);
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
   line-height: 1.5;
 }
 
-.navbar {
-  background: var(--verde);
-  color: var(--blanco);
-  padding: 12px 20px;
+h1, h2, h3 { margin: 0; font-weight: 600; }
+
+
+/* ==========================================================================
+   1. Estructura general de las paginas con sesion iniciada
+   ========================================================================== */
+
+.layout { display: flex; min-height: 100vh; }
+
+.principal {
+  flex: 1;
+  min-width: 0;              /* deja que las tablas anchas no rompan el layout */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
-.navbar .marca { font-size: 20px; font-weight: bold; }
-.navbar .links a {
-  color: var(--blanco);
+
+.contenido { padding: 24px; }
+
+
+/* ==========================================================================
+   2. Barra lateral
+   ========================================================================== */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+}
+
+.sidebar-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
   text-decoration: none;
-  margin-left: 15px;
+  padding: 0 8px 20px;
 }
-.navbar .links a:hover { text-decoration: underline; }
+.sidebar-marca img { width: 30px; height: 30px; }
 
-.contenido {
-  max-width: 950px;
-  margin: 25px auto;
-  padding: 0 15px;
-}
+.sidebar-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
 
-.caja {
-  background: var(--blanco);
-  border: 1px solid var(--gris-borde);
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-.caja h2 { color: var(--verde-oscuro); margin-bottom: 15px; }
-
-.pantalla-centrada {
-  min-height: 100vh;
+.sidebar-link {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 15px;
-}
-.tarjeta-auth {
-  background: var(--blanco);
-  border: 1px solid var(--gris-borde);
+  gap: 11px;
+  padding: 10px 12px;
   border-radius: 8px;
-  padding: 30px;
-  width: 100%;
-  max-width: 400px;
+  color: var(--sidebar-texto);
+  text-decoration: none;
+  font-size: 15px;
 }
-.tarjeta-auth h1 {
-  color: var(--verde);
-  text-align: center;
-  margin-bottom: 5px;
+.sidebar-link:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+.sidebar-link svg { width: 19px; height: 19px; flex-shrink: 0; }
+
+.sidebar-link.activo {
+  background: var(--sidebar-activo);
+  color: var(--acento-texto);
+  font-weight: 500;
 }
-.tarjeta-auth .subtitulo {
-  text-align: center;
+
+.sidebar-pie {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.sidebar-usuario { padding: 0 12px 10px; }
+.sidebar-usuario .nombre { color: #ffffff; font-size: 14px; font-weight: 500; }
+.sidebar-usuario .rol { color: var(--sidebar-texto); font-size: 12px; }
+
+
+/* ==========================================================================
+   3. Encabezado de seccion
+   ========================================================================== */
+
+.topbar {
+  background: var(--tarjeta);
+  border-bottom: 1px solid var(--borde);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topbar h1 { font-size: 21px; }
+
+/* Boton hamburguesa: solo aparece cuando el sidebar se esconde */
+.btn-menu {
+  display: none;
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 6px 9px;
+  cursor: pointer;
+  color: var(--texto);
+}
+
+
+/* ==========================================================================
+   4. Tarjetas y paneles
+   ========================================================================== */
+
+.panel {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 18px;
   margin-bottom: 20px;
+}
+
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.metrica {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px;
+}
+.metrica-etiqueta {
+  color: var(--texto-flojo);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.metrica-etiqueta svg { width: 15px; height: 15px; }
+.metrica-valor { font-size: 30px; font-weight: 600; margin-top: 4px; }
+.metrica-valor.rojo    { color: var(--rojo); }
+.metrica-valor.naranja { color: var(--naranja); }
+.metrica-valor.verde   { color: var(--verde); }
+
+
+/* ==========================================================================
+   5. Barra de herramientas de los listados
+   ========================================================================== */
+
+.barra-herramientas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.barra-herramientas .titulo { font-size: 17px; font-weight: 600; margin-right: auto; }
+
+.buscador {
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 8px 12px;
   font-size: 14px;
+  font-family: inherit;
+  min-width: 210px;
+  background: var(--tarjeta);
+  color: var(--texto);
 }
+.buscador:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
 
-.formulario { display: flex; flex-direction: column; gap: 12px; }
-.formulario label {
-  display: flex; flex-direction: column;
-  font-weight: bold; font-size: 14px;
-}
-.formulario input, .formulario select {
-  margin-top: 5px; padding: 9px;
-  border: 1px solid #ccc; border-radius: 5px;
-  font-size: 15px; font-weight: normal;
-}
 
-.boton {
-  display: inline-block;
-  padding: 10px 16px; border: none; border-radius: 5px;
-  cursor: pointer; text-decoration: none; font-size: 15px;
-}
-.boton-primario { background: var(--verde); color: var(--blanco); }
-.boton-primario:hover { background: var(--verde-oscuro); }
-.boton-pequeno { padding: 6px 10px; font-size: 13px; }
+/* ==========================================================================
+   6. Botones
+   ========================================================================== */
 
+.btn-accion {
+  background: var(--acento);
+  color: var(--acento-texto);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+}
+.btn-accion:hover { background: var(--acento-fuerte); color: var(--acento-texto); }
+.btn-accion svg { width: 16px; height: 16px; }
+
+.btn-icono {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--texto-flojo);
+  display: inline-flex;
+  align-items: center;
+}
+.btn-icono:hover { color: var(--texto); border-color: var(--texto-flojo); }
+.btn-icono svg { width: 16px; height: 16px; }
+
+
+/* ==========================================================================
+   7. Tablas
+   ========================================================================== */
+
+.tabla-scroll { overflow-x: auto; }
 
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-}
-.tabla th, .tabla td {
-  border: 1px solid var(--gris-borde);
-  padding: 9px 12px;
-  text-align: left;
   font-size: 14px;
 }
-.tabla th { background: var(--verde); color: var(--blanco); }
-.tabla tr:nth-child(even) { background: #fafafa; }
+.tabla th {
+  text-align: left;
+  color: var(--texto-flojo);
+  font-weight: 500;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0 12px 9px;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+.tabla td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--borde);
+}
+.tabla tbody tr:last-child td { border-bottom: none; }
+.tabla tbody tr:hover { background: var(--fondo); }
 
-
+/* Pastillas de estado. Los nombres de clase (verde/rojo/naranja/gris) son los
+   que ya devuelven usuarios.js, contenedores.js y camiones.js. */
 .estado {
   display: inline-block;
-  padding: 2px 8px; border-radius: 12px;
-  font-size: 12px; color: var(--blanco);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
 }
-.estado.verde   { background: var(--verde); }
-.estado.rojo    { background: var(--rojo); }
-.estado.naranja { background: #ef6c00; }
-.estado.gris    { background: #757575; }
+.estado.verde   { background: var(--verde-fondo);   color: var(--verde); }
+.estado.rojo    { background: var(--rojo-fondo);    color: var(--rojo); }
+.estado.naranja { background: var(--naranja-fondo); color: var(--naranja); }
+.estado.gris    { background: var(--gris-fondo);    color: var(--gris); }
 
-.mensaje { margin-top: 12px; font-weight: bold; font-size: 14px; }
+/* Fila que ocupa toda la tabla: "cargando", error, o lista vacia */
+.fila-aviso {
+  text-align: center;
+  color: var(--texto-flojo);
+  padding: 36px 12px;
+}
+.fila-aviso svg { width: 54px; height: 54px; opacity: 0.5; margin-bottom: 10px; }
+.fila-aviso p { margin: 0; }
+
+
+/* ==========================================================================
+   8. Formularios (dentro del modal)
+   ========================================================================== */
+
+.formulario { display: flex; flex-direction: column; gap: 13px; }
+
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--texto-flojo);
+}
+.formulario input,
+.formulario select {
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 400;
+  color: var(--texto);
+  background: var(--tarjeta);
+}
+.formulario input:focus,
+.formulario select:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
+
+.formulario-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+}
+
+.mensaje { margin: 12px 0 0; font-size: 14px; font-weight: 500; }
 .mensaje.ok    { color: var(--verde); }
 .mensaje.error { color: var(--rojo); }
 
-.fila-titulo {
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 10px;
-}
 
-.grilla-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+/* ==========================================================================
+   9. Modal (ajustes sobre el de Bootstrap)
+   ========================================================================== */
+
+.modal-content {
+  border: none;
+  border-radius: var(--radio);
 }
-.tarjeta-link {
-  display: block;
-  background: var(--blanco);
-  border: 1px solid var(--gris-borde);
-  border-radius: 8px;
-  padding: 20px;
-  text-decoration: none;
-  color: var(--gris-texto);
+.modal-header, .modal-footer { border-color: var(--borde); }
+.modal-title { font-size: 17px; font-weight: 600; color: var(--texto); }
+
+
+/* ==========================================================================
+   10. Login y registro
+   ========================================================================== */
+
+.auth { display: flex; min-height: 100vh; }
+
+.auth-imagen {
+  flex: 1;
+  background-color: var(--sidebar);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Capa verde encima de la foto, para que el logo se lea siempre */
+.auth-imagen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 58, 43, 0.72);
+}
+.auth-imagen .marca {
+  position: relative;   /* por encima de la capa */
+  z-index: 1;
   text-align: center;
+  color: #ffffff;
+  padding: 20px;
 }
-.tarjeta-link:hover { border-color: var(--verde); }
-.tarjeta-link h3 { color: var(--verde); margin-bottom: 6px; }
+.auth-imagen .marca img { width: 68px; height: 68px; margin-bottom: 14px; }
+.auth-imagen .marca h1 { font-size: 38px; }
+.auth-imagen .marca p { color: #cfe0d5; margin: 8px 0 0; max-width: 330px; }
 
-.texto-centro { text-align: center; }
-.mt { margin-top: 12px; }
+.auth-panel {
+  flex: 1;
+  background: var(--tarjeta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+.auth-caja { width: 100%; max-width: 400px; }
+.auth-caja h2 { font-size: 25px; margin-bottom: 4px; }
+.auth-caja .bajada { color: var(--texto-flojo); margin: 0 0 22px; font-size: 14.5px; }
+.auth-caja .btn-accion { width: 100%; justify-content: center; margin-top: 6px; padding: 11px; }
+.auth-caja .pie-enlaces { margin-top: 20px; font-size: 14px; color: var(--texto-flojo); }
+.auth-caja a { color: var(--verde); }
+
+/* Logo de respaldo: solo se ve en el panel cuando la foto esta oculta */
+.auth-logo-chico { display: none; margin-bottom: 20px; }
+.auth-logo-chico img { width: 44px; height: 44px; }
+
+
+/* ==========================================================================
+   11. Pantallas chicas
+   ========================================================================== */
+
+/* El sidebar sale de la pantalla y vuelve con el boton hamburguesa */
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 1045;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+  .sidebar.abierto { transform: translateX(0); }
+  .btn-menu { display: inline-flex; }
+
+  /* Fondo oscuro detras del sidebar abierto */
+  .fondo-sidebar {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+  }
+}
+
+@media (max-width: 767px) {
+  .auth-imagen { display: none; }
+  .auth-logo-chico { display: block; }
+  .auth-panel { align-items: flex-start; padding-top: 50px; }
+  .contenido { padding: 16px; }
+  .topbar { padding: 14px 16px; }
+  .formulario-columnas { grid-template-columns: 1fr; }
+  .buscador { flex: 1; min-width: 0; }
+  .barra-herramientas .titulo { width: 100%; margin-right: 0; }
+}

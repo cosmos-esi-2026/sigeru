@@ -1,4 +1,4 @@
-const API_USUARIOS = "http://localhost:8081";
+const API_USUARIOS = "/sigeru/api-usuarios";
 
 
 const formulario = document.getElementById("form-registro");

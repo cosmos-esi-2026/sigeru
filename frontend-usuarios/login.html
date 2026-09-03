@@ -4,34 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SiGeRU - Iniciar sesion</title>
+  <link rel="icon" href="img/logo.svg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <div class="pantalla-centrada">
-    <div class="tarjeta-auth">
-      <h1>SiGeRU</h1>
-      <p class="subtitulo">Iniciar sesion</p>
+  <div class="auth">
 
-      <form id="form-login" class="formulario">
-        <label>Email
-          <input type="email" name="email" value="admin@sigeru.uy" required>
-        </label>
-        <label>Contrasena
-          <input type="password" name="password" value="123456" required>
-        </label>
-        <button type="submit" class="boton boton-primario">Ingresar</button>
-      </form>
-
-      <p id="mensaje" class="mensaje"></p>
-
-      <p class="texto-centro mt">
-        No tenes cuenta? <a href="registro.html">Registrate</a>
-      </p>
-      <p class="texto-centro mt">
-        <a href="../landing/index.html">Volver al inicio</a>
-      </p>
+    <!-- Columna de la foto. Si img/login.jpg todavia no existe, queda el verde
+         de fondo que define el CSS y la pantalla se sigue viendo bien. -->
+    <div class="auth-imagen" style="background-image: url('img/login.jpg');">
+      <div class="marca">
+        <img src="img/logo.svg" alt="">
+        <h1>SiGeRU</h1>
+        <p>Sistema de Gestion de Residuos Urbanos</p>
+      </div>
     </div>
+
+    <!-- Columna del formulario -->
+    <div class="auth-panel">
+      <div class="auth-caja">
+
+        <!-- Logo de respaldo: el CSS lo muestra solo cuando la foto se oculta -->
+        <div class="auth-logo-chico">
+          <img src="img/logo.svg" alt="SiGeRU">
+        </div>
+
+        <h2>Iniciar sesion</h2>
+        <p class="bajada">Ingresa con tu cuenta para acceder al panel.</p>
+
+        <form id="form-login" class="formulario">
+          <label>Email
+            <input type="email" name="email" value="admin@sigeru.uy" required>
+          </label>
+          <label>Contrasena
+            <input type="password" name="password" value="123456" required>
+          </label>
+          <button type="submit" class="btn-accion">Ingresar</button>
+        </form>
+
+        <p id="mensaje" class="mensaje"></p>
+
+        <div class="pie-enlaces">
+          <p>No tenes cuenta? <a href="registro.html">Registrate</a></p>
+          <p><a href="../landing/index.html">Volver al inicio</a></p>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <script src="js/api.js"></script>

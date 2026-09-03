@@ -4,69 +4,170 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SiGeRU - Usuarios</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <nav class="navbar">
-    <span class="marca">SiGeRU</span>
-    <div class="links">
-      <a href="dashboard.html">Inicio</a>
-      <a href="usuarios.html">Usuarios</a>
-      <a href="contenedores.html">Contenedores</a>
-      <a href="camiones.html">Camiones</a>
-      <a href="#" id="btn-salir">Cerrar sesion</a>
-    </div>
-  </nav>
+<div class="layout">
 
-  <div class="contenido">
+  <!-- ===================== Barra lateral ===================== -->
+  <aside class="sidebar" id="sidebar">
 
-    <div class="caja">
-      <h2>Nuevo usuario</h2>
-      <form id="form-usuario" class="formulario">
-        <label>Nombre
-          <input type="text" name="nombre" required>
-        </label>
-        <label>Apellido
-          <input type="text" name="apellido" required>
-        </label>
-        <label>Email
-          <input type="email" name="email" required>
-        </label>
-        <label>Rol
-          <select name="rol">
-            <option>Vecino</option>
-            <option>Operario</option>
-            <option>Cuadrilla</option>
-            <option>Administrador</option>
-          </select>
-        </label>
-        <button type="submit" class="boton boton-primario">Guardar</button>
-      </form>
-      <p id="mensaje" class="mensaje"></p>
-    </div>
+    <a class="sidebar-marca" href="dashboard.html">
+      <img src="img/logo.svg" alt="">
+      SiGeRU
+    </a>
 
-    <div class="caja">
-      <div class="fila-titulo">
-        <h2>Usuarios registrados</h2>
-        <button class="boton boton-primario boton-pequeno" id="btn-recargar">Recargar</button>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-4v-6H9v6H4a1 1 0 0 1-1-1z"/>
+        </svg>
+        Inicio
+      </a>
+      <a class="sidebar-link activo" href="usuarios.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
+          <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/><path d="M17.8 14.4A6.2 6.2 0 0 1 21.2 20"/>
+        </svg>
+        Usuarios
+      </a>
+      <a class="sidebar-link" href="contenedores.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
+          <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
+          <path d="M10 11v6M14 11v6"/>
+        </svg>
+        Contenedores
+      </a>
+      <a class="sidebar-link" href="camiones.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
+          <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
+        </svg>
+        Camiones
+      </a>
+    </nav>
+
+    <div class="sidebar-pie">
+      <div class="sidebar-usuario">
+        <div class="nombre" id="sidebar-nombre"></div>
+        <div class="rol" id="sidebar-rol"></div>
       </div>
-      <table class="tabla">
-        <thead>
-          <tr>
-            <th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th>
-            <th>Rol</th><th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="cuerpo-tabla">
-          <tr><td colspan="6">Cargando...</td></tr>
-        </tbody>
-      </table>
+      <a class="sidebar-link" href="#" id="btn-salir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/>
+          <path d="M10 8l-4 4 4 4"/><path d="M6 12h11"/>
+        </svg>
+        Cerrar sesion
+      </a>
     </div>
 
-  </div>
+  </aside>
 
-  <script src="js/api.js"></script>
-  <script src="js/usuarios.js"></script>
+  <!-- ===================== Contenido ===================== -->
+  <div class="principal">
+
+    <header class="topbar">
+      <button class="btn-menu" id="btn-menu" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+      <h1>Usuarios</h1>
+    </header>
+
+    <main class="contenido">
+      <div class="panel">
+
+        <div class="barra-herramientas">
+          <span class="titulo">Listado</span>
+
+          <input type="search" class="buscador" id="buscador"
+                 placeholder="Buscar por nombre, email o rol">
+
+          <button class="btn-icono" id="btn-recargar" aria-label="Recargar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+
+          <button class="btn-accion" data-bs-toggle="modal" data-bs-target="#modal-usuario">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Nuevo usuario
+          </button>
+        </div>
+
+        <p id="mensaje-pagina" class="mensaje"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th>
+                <th>Rol</th><th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+              <tr><td colspan="6" class="fila-aviso"><p>Cargando...</p></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===================== Modal de alta ===================== -->
+<div class="modal fade" id="modal-usuario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 class="modal-title">Nuevo usuario</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="form-usuario" class="formulario">
+          <div class="formulario-columnas">
+            <label>Nombre
+              <input type="text" name="nombre" required>
+            </label>
+            <label>Apellido
+              <input type="text" name="apellido" required>
+            </label>
+          </div>
+          <label>Email
+            <input type="email" name="email" required>
+          </label>
+          <label>Rol
+            <select name="rol">
+              <option>Vecino</option>
+              <option>Operario</option>
+              <option>Cuadrilla</option>
+              <option>Administrador</option>
+            </select>
+          </label>
+          <button type="submit" class="btn-accion">Guardar</button>
+        </form>
+
+        <p id="mensaje" class="mensaje"></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/usuarios.js"></script>
 </body>
 </html>
