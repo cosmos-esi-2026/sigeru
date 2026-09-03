@@ -8,3 +8,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Credenciales: red de seguridad para que no terminen en el repositorio por error.
+# Hoy viven fuera de esta carpeta (en la raiz del pendrive), y asi debe seguir siendo.
+*credenciales*
+*.key
+.env
