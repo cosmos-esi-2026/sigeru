@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7. Camiones — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <div class="panel">
+        <h1>Camiones</h1>
+        <p class="sub">El estado de cada camion es lo que habilita o bloquea una asignacion
+           en la pantalla de incidencia.</p>
+
+        <div class="barra-filtros">
+          <input type="text" placeholder="Buscar por matricula" style="min-width:200px">
+          <select><option>Estado: todos</option><option>Operativo</option><option>En ruta</option>
+                  <option>Mantenimiento</option><option>Fuera de servicio</option></select>
+          <button type="button">Filtrar</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Matricula</th><th>Marca y modelo</th><th>Capacidad</th><th>Estado</th>
+                <th>Proximo mantenimiento</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>AAB-1234</td><td>Mercedes-Benz Atego</td><td>12 t</td>
+                <td><span class="estado">operativo</span></td><td>18/09/2026</td>
+                <td><a href="camiones.html">Ver</a> · <a href="camiones.html">Editar</a></td></tr>
+            <tr><td>BCD-5678</td><td>Iveco Tector</td><td>9 t</td>
+                <td><span class="estado">en ruta</span></td><td>02/10/2026</td>
+                <td><a href="camiones.html">Ver</a> · <a href="camiones.html">Editar</a></td></tr>
+            <tr><td>CDE-9012</td><td>Ford Cargo</td><td>15 t</td>
+                <td><span class="estado">mantenimiento</span></td><td>en taller</td>
+                <td><a href="camiones.html">Ver</a> · <a href="camiones.html">Editar</a></td></tr>
+            <tr><td>DEF-3456</td><td>Volkswagen Constellation</td><td>12 t</td>
+                <td><span class="estado">fuera de servicio</span></td><td>sin fecha</td>
+                <td><a href="camiones.html">Ver</a> · <a href="camiones.html">Editar</a></td></tr>
+          </tbody>
+        </table>
+
+        <div class="acciones">
+          <a class="boton" href="camiones.html">Nuevo camion</a>
+          <a class="boton secundario" href="panel.html">Volver al panel</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Ficha del camion AAB-1234</h2>
+        <table>
+          <tbody>
+            <tr><td style="width:190px"><strong>Matricula</strong></td><td>AAB-1234</td></tr>
+            <tr><td><strong>Marca y modelo</strong></td><td>Mercedes-Benz Atego</td></tr>
+            <tr><td><strong>Capacidad</strong></td><td>12 toneladas</td></tr>
+            <tr><td><strong>Estado</strong></td><td><span class="estado">operativo</span></td></tr>
+            <tr><td><strong>Cuadrilla asignada</strong></td><td>Cuadrilla 1</td></tr>
+            <tr><td><strong>Ultimo mantenimiento</strong></td><td>18/06/2026</td></tr>
+            <tr><td><strong>Proximo mantenimiento</strong></td><td>18/09/2026</td></tr>
+          </tbody>
+        </table>
+        <div class="acciones">
+          <a class="boton secundario" href="camiones.html">Registrar mantenimiento</a>
+          <a class="boton secundario" href="camiones.html">Volver al listado</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="panel.html">3. Panel principal</a> ·
+        <a href="incidencia-detalle.html">6. Detalle de incidencia</a>.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

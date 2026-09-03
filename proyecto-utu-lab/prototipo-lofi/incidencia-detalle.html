@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6. Detalle de incidencia — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <div class="panel">
+        <h1>Incidencia INC-014</h1>
+        <p class="sub">Estado, responsable y trazabilidad visibles sin entrar a otra pantalla.</p>
+
+        <table>
+          <tbody>
+            <tr><td style="width:190px"><strong>Estado</strong></td>
+                <td><span class="estado">abierta</span></td></tr>
+            <tr><td><strong>Prioridad</strong></td><td>Alta</td></tr>
+            <tr><td><strong>Tipo de problema</strong></td><td>Contenedor desbordado</td></tr>
+            <tr><td><strong>Contenedor</strong></td>
+                <td>CT-0231 — <a href="contenedores.html">ver ficha</a></td></tr>
+            <tr><td><strong>Zona</strong></td><td>Centro</td></tr>
+            <tr><td><strong>Direccion</strong></td><td>Ejido y Colonia</td></tr>
+            <tr><td><strong>Informada por</strong></td><td>Vecino (reclamo web)</td></tr>
+            <tr><td><strong>Fecha de registro</strong></td><td>02/09/2026 08:15</td></tr>
+            <tr><td><strong>Cuadrilla responsable</strong></td><td>Sin asignar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Asignar responsable</h2>
+        <p class="sub">La lista muestra la disponibilidad real: no se puede asignar una
+           cuadrilla ocupada ni un camion fuera de servicio.</p>
+        <div class="barra-filtros">
+          <select>
+            <option>Cuadrilla 1 — disponible</option>
+            <option>Cuadrilla 2 — en ruta</option>
+            <option>Cuadrilla 3 — disponible</option>
+          </select>
+          <select>
+            <option>Camion AAB-1234 — operativo</option>
+            <option>Camion BCD-5678 — en ruta</option>
+            <option>Camion CDE-9012 — mantenimiento</option>
+          </select>
+          <button type="button">Asignar</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Historial de cambios</h2>
+        <ul class="historial">
+          <li><span class="cuando">02/09 08:15</span> — <strong>Abierta</strong>.
+              Registrada desde el reclamo de un vecino.</li>
+          <li><span class="cuando">02/09 08:16</span> — El contenedor CT-0231 paso a
+              estado <strong>lleno</strong>.</li>
+        </ul>
+        <p class="sub" style="margin-top:10px">Cuando se asigne una cuadrilla y se resuelva,
+           cada paso queda registrado aca con su fecha y su autor.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Cerrar la incidencia</h2>
+        <div class="campo">
+          <label for="obs">Observaciones de la resolucion</label>
+          <textarea id="obs" rows="3" placeholder="Que se hizo"></textarea>
+        </div>
+        <div class="acciones">
+          <a class="boton" href="reportes.html">Marcar como resuelta</a>
+          <a class="boton secundario" href="panel.html">Volver al panel</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="contenedores.html">4. Contenedores</a> ·
+        <a href="reportes.html">8. Reportes</a> ·
+        <a href="panel.html">3. Panel principal</a>.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

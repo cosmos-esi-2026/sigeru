@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8. Reportes — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <div class="panel">
+        <h1>Reportes</h1>
+        <p class="sub">El informe se arma con los datos ya registrados. Es el reemplazo
+           directo de la planilla que hoy se completa a mano.</p>
+
+        <div class="barra-filtros">
+          <select><option>Zona: todas</option><option>Centro</option><option>Cordon</option>
+                  <option>Pocitos</option><option>La Blanqueada</option></select>
+          <input type="text" placeholder="Desde: 01/08/2026" style="width:170px">
+          <input type="text" placeholder="Hasta: 03/09/2026" style="width:170px">
+          <select><option>Estado: todos</option><option>Abiertas</option><option>En curso</option>
+                  <option>Resueltas</option></select>
+          <button type="button">Generar</button>
+        </div>
+
+        <div class="tarjetas">
+          <div class="tarjeta"><div class="numero">42</div>
+            <div class="etiqueta">Incidencias del periodo</div></div>
+          <div class="tarjeta"><div class="numero">35</div>
+            <div class="etiqueta">Resueltas</div></div>
+          <div class="tarjeta"><div class="numero">7</div>
+            <div class="etiqueta">Abiertas</div></div>
+          <div class="tarjeta"><div class="numero">31 h</div>
+            <div class="etiqueta">Tiempo medio de resolucion</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Incidencias por zona</h2>
+        <table>
+          <thead><tr><th>Zona</th><th>Abiertas</th><th>En curso</th><th>Resueltas</th>
+                     <th>Total</th><th>Tiempo medio</th></tr></thead>
+          <tbody>
+            <tr><td>Centro</td><td>3</td><td>2</td><td>14</td><td>19</td><td>28 h</td></tr>
+            <tr><td>Cordon</td><td>2</td><td>1</td><td>8</td><td>11</td><td>35 h</td></tr>
+            <tr><td>Pocitos</td><td>1</td><td>0</td><td>7</td><td>8</td><td>26 h</td></tr>
+            <tr><td>La Blanqueada</td><td>1</td><td>1</td><td>2</td><td>4</td><td>41 h</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Contenedores con mas incidencias en el periodo</h2>
+        <table>
+          <thead><tr><th>Contenedor</th><th>Zona</th><th>Incidencias</th>
+                     <th>Problema mas frecuente</th></tr></thead>
+          <tbody>
+            <tr><td>CT-0231</td><td>Centro</td><td>6</td><td>Desborde</td></tr>
+            <tr><td>CT-0402</td><td>La Blanqueada</td><td>4</td><td>Desborde</td></tr>
+            <tr><td>CT-0117</td><td>Cordon</td><td>3</td><td>Contenedor roto</td></tr>
+          </tbody>
+        </table>
+        <p class="sub" style="margin-top:10px">Este listado es el que permite pasar de
+           atender caso por caso a detectar un problema repetido.</p>
+
+        <div class="acciones">
+          <a class="boton" href="reportes.html">Exportar</a>
+          <a class="boton secundario" href="panel.html">Volver al panel</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="panel.html">3. Panel principal</a> ·
+        <a href="incidencia-detalle.html">6. Detalle de incidencia</a>.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

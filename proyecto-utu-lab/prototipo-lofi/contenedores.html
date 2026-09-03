@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. Contenedores — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <div class="panel">
+        <h1>Contenedores</h1>
+        <p class="sub">El listado se muestra primero; el formulario de alta se abre aparte.
+           Asi lo primero que ve quien entra son los datos, no un formulario vacio.</p>
+
+        <div class="barra-filtros">
+          <input type="text" placeholder="Buscar por codigo o direccion" style="min-width:230px">
+          <select><option>Zona: todas</option><option>Centro</option><option>Cordon</option>
+                  <option>Pocitos</option><option>La Blanqueada</option></select>
+          <select><option>Estado: todos</option><option>Disponible</option><option>Lleno</option>
+                  <option>Mantenimiento</option><option>Retirado</option></select>
+          <select><option>Tipo: todos</option><option>Mezclado</option><option>Envases</option>
+                  <option>Organico</option></select>
+          <button type="button">Filtrar</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Codigo</th><th>Direccion</th><th>Zona</th><th>Tipo</th>
+                <th>Capacidad</th><th>Estado</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CT-0231</td><td>Ejido y Colonia</td><td>Centro</td><td>Mezclado</td>
+                <td>1100 L</td><td><span class="estado">lleno</span></td>
+                <td><a href="contenedores.html">Ver</a> · <a href="contenedores.html">Editar</a> ·
+                    <a href="incidencia-nueva.html">Reportar</a></td></tr>
+            <tr><td>CT-0117</td><td>Rivera y Bulevar</td><td>Cordon</td><td>Envases</td>
+                <td>800 L</td><td><span class="estado">mantenimiento</span></td>
+                <td><a href="contenedores.html">Ver</a> · <a href="contenedores.html">Editar</a> ·
+                    <a href="incidencia-nueva.html">Reportar</a></td></tr>
+            <tr><td>CT-0356</td><td>21 de Setiembre y Berro</td><td>Pocitos</td><td>Mezclado</td>
+                <td>1100 L</td><td><span class="estado">disponible</span></td>
+                <td><a href="contenedores.html">Ver</a> · <a href="contenedores.html">Editar</a> ·
+                    <a href="incidencia-nueva.html">Reportar</a></td></tr>
+            <tr><td>CT-0402</td><td>Comercio y Amezaga</td><td>La Blanqueada</td><td>Mezclado</td>
+                <td>1100 L</td><td><span class="estado">lleno</span></td>
+                <td><a href="contenedores.html">Ver</a> · <a href="contenedores.html">Editar</a> ·
+                    <a href="incidencia-nueva.html">Reportar</a></td></tr>
+            <tr><td>CT-0088</td><td>Paraguay y Paysandu</td><td>Centro</td><td>Organico</td>
+                <td>660 L</td><td><span class="estado">disponible</span></td>
+                <td><a href="contenedores.html">Ver</a> · <a href="contenedores.html">Editar</a> ·
+                    <a href="incidencia-nueva.html">Reportar</a></td></tr>
+          </tbody>
+        </table>
+
+        <p class="sub" style="margin-top:10px">Mostrando 5 de 128 · pagina 1 de 26</p>
+
+        <div class="acciones">
+          <a class="boton" href="contenedores.html">Nuevo contenedor</a>
+          <a class="boton secundario" href="panel.html">Volver al panel</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Ficha del contenedor CT-0231</h2>
+        <p class="sub">Se abre al elegir "Ver". Incluye el historial de estados, que es lo que
+           hoy no existe en ningun lado.</p>
+        <table>
+          <tbody>
+            <tr><td style="width:170px"><strong>Codigo</strong></td><td>CT-0231</td></tr>
+            <tr><td><strong>Direccion</strong></td><td>Ejido y Colonia</td></tr>
+            <tr><td><strong>Zona</strong></td><td>Centro</td></tr>
+            <tr><td><strong>Tipo de residuo</strong></td><td>Mezclado</td></tr>
+            <tr><td><strong>Capacidad</strong></td><td>1100 L</td></tr>
+            <tr><td><strong>Estado actual</strong></td><td><span class="estado">lleno</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="margin-top:16px">Historial de estados</h2>
+        <ul class="historial">
+          <li><span class="cuando">02/09 08:15</span> — paso a <strong>lleno</strong>
+              (reportado por vecino)</li>
+          <li><span class="cuando">29/08 06:40</span> — paso a <strong>disponible</strong>
+              (vaciado, Cuadrilla 1)</li>
+          <li><span class="cuando">28/08 19:22</span> — paso a <strong>lleno</strong></li>
+          <li><span class="cuando">15/08 10:05</span> — alta en el sistema</li>
+        </ul>
+
+        <div class="acciones">
+          <a class="boton" href="incidencia-nueva.html">Registrar incidencia</a>
+          <a class="boton secundario" href="contenedores.html">Volver al listado</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="incidencia-nueva.html">5. Registrar incidencia</a> ·
+        <a href="panel.html">3. Panel principal</a>.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

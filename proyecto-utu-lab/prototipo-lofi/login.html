@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2. Inicio de sesion — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+  <div class="centrada">
+
+    <div class="panel">
+      <h1>Ingresar a SiGeRU</h1>
+      <p class="sub">Maqueta: los campos no validan nada. El boton lleva al panel del rol
+         elegido en la barra superior.</p>
+
+      <div class="campo">
+        <label for="correo">Correo</label>
+        <input id="correo" type="text" placeholder="nombre@dominio">
+      </div>
+      <div class="campo">
+        <label for="clave">Contrasena</label>
+        <input id="clave" type="password" placeholder="••••••••">
+      </div>
+
+      <div class="acciones">
+        <a class="boton" href="panel.html">Ingresar</a>
+        <a class="boton secundario" href="index.html">Volver</a>
+      </div>
+
+      <p style="margin-top:14px"><a href="login.html">Recuperar acceso</a></p>
+    </div>
+
+    <div class="panel">
+      <h2>Todavia no tengo cuenta</h2>
+      <p class="sub">La solicitud queda pendiente hasta que un administrador la apruebe o
+         la rechace.</p>
+      <div class="campo">
+        <label for="nombre">Nombre y apellido</label>
+        <input id="nombre" type="text">
+      </div>
+      <div class="campo">
+        <label for="correo2">Correo</label>
+        <input id="correo2" type="text">
+      </div>
+      <div class="campo">
+        <label for="motivo">Rol que solicita</label>
+        <select id="motivo">
+          <option>Vecino</option>
+          <option>Cuadrilla de recoleccion</option>
+          <option>Operario de centro de acopio</option>
+          <option>Administrador municipal</option>
+        </select>
+      </div>
+      <a class="boton secundario" href="index.html">Enviar solicitud</a>
+    </div>
+
+    <p class="rutas">Desde esta pantalla se llega a:
+      <a href="panel.html">3. Panel principal</a> ·
+      <a href="index.html">1. Landing</a>.</p>
+
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

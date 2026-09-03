@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5. Registrar incidencia — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <div class="panel">
+        <h1>Registrar una incidencia</h1>
+        <p class="sub">Formulario corto y en un solo paso: si registrar un problema cuesta
+           mas que llamar por telefono, se sigue llamando por telefono.</p>
+
+        <div class="campo">
+          <label for="cont">Contenedor</label>
+          <input id="cont" type="text" placeholder="Codigo, por ejemplo CT-0231">
+        </div>
+
+        <div class="placeholder">Mapa para elegir el contenedor tocandolo
+          <br>(alternativa a escribir el codigo)</div>
+
+        <div class="campo" style="margin-top:14px">
+          <label for="tipo">Tipo de problema</label>
+          <select id="tipo">
+            <option>Contenedor desbordado</option>
+            <option>Contenedor roto o danado</option>
+            <option>Residuo no permitido</option>
+            <option>Contenedor ausente o mal ubicado</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="desc">Descripcion</label>
+          <textarea id="desc" rows="4" placeholder="Que se observa"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="prio">Prioridad</label>
+          <select id="prio"><option>Alta</option><option>Media</option><option>Baja</option></select>
+        </div>
+
+        <div class="campo">
+          <label>Fotografia (opcional)</label>
+          <div class="placeholder" style="padding:22px">Adjuntar imagen</div>
+        </div>
+
+        <div class="acciones">
+          <a class="boton" href="incidencia-detalle.html">Guardar</a>
+          <a class="boton secundario" href="panel.html">Cancelar</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Confirmacion (pantalla siguiente al guardar)</h2>
+        <p class="sub">Toda accion importante termina con una confirmacion explicita: es uno
+           de los criterios de navegabilidad definidos en la 1ra entrega.</p>
+        <table>
+          <tbody>
+            <tr><td style="width:170px"><strong>Codigo asignado</strong></td><td>INC-015</td></tr>
+            <tr><td><strong>Estado</strong></td><td><span class="estado">abierta</span></td></tr>
+            <tr><td><strong>Registrada</strong></td><td>03/09/2026 10:42</td></tr>
+            <tr><td><strong>Responsable</strong></td><td>Sin asignar</td></tr>
+          </tbody>
+        </table>
+        <div class="acciones">
+          <a class="boton secundario" href="incidencia-detalle.html">Ver la incidencia</a>
+          <a class="boton secundario" href="panel.html">Volver al panel</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="incidencia-detalle.html">6. Detalle de incidencia</a> ·
+        <a href="panel.html">3. Panel principal</a>.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* Maqueta Low-Fi de SiGeRU — Proyecto UTU LAB, 2da entrega.
+   Deliberadamente en escala de grises y sin identidad visual: un prototipo de baja
+   fidelidad se evalua por su recorrido, no por su aspecto. Si tuviera colores,
+   tipografias y logos definitivos, la persona validada opinaria sobre el color en
+   lugar de opinar sobre la navegacion, que es lo que se quiere poner a prueba. */
+
+:root {
+  --linea: #8a8a8a;
+  --linea-suave: #c9c9c9;
+  --fondo: #ffffff;
+  --fondo-alt: #f4f4f4;
+  --texto: #2b2b2b;
+  --texto-suave: #6b6b6b;
+  --accion: #3d3d3d;
+  --aviso: #e8e8e8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: var(--texto);
+  background: var(--fondo-alt);
+  line-height: 1.5;
+}
+
+/* --- barra de contexto: recuerda que esto es una maqueta, no el sistema --- */
+.aviso-maqueta {
+  background: var(--aviso);
+  border-bottom: 2px solid var(--linea);
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.aviso-maqueta strong { color: var(--texto); }
+.aviso-maqueta select {
+  font-family: inherit;
+  font-size: 12px;
+  border: 1px solid var(--linea);
+  background: var(--fondo);
+  padding: 2px 4px;
+}
+
+/* --- estructura --- */
+.marco { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+.cabecera {
+  background: var(--fondo);
+  border: 2px solid var(--linea);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cabecera .marca { font-weight: bold; letter-spacing: 1px; }
+.cabecera .sesion { font-size: 12px; color: var(--texto-suave); }
+
+.columnas { display: flex; gap: 16px; align-items: flex-start; margin-top: 16px; }
+
+.menu {
+  background: var(--fondo);
+  border: 2px solid var(--linea);
+  width: 210px;
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+.menu a {
+  display: block;
+  padding: 8px 14px;
+  color: var(--texto);
+  text-decoration: none;
+  border-left: 4px solid transparent;
+}
+.menu a:hover { background: var(--fondo-alt); }
+.menu a.activo { border-left-color: var(--accion); font-weight: bold; background: var(--fondo-alt); }
+
+.contenido { flex: 1; min-width: 0; }
+
+.panel {
+  background: var(--fondo);
+  border: 2px solid var(--linea);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.panel h1 { font-size: 18px; margin: 0 0 4px; }
+.panel h2 { font-size: 15px; margin: 0 0 12px; }
+.panel .sub { color: var(--texto-suave); font-size: 12px; margin: 0 0 14px; }
+
+/* --- controles --- */
+.barra-filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--linea-suave);
+}
+input, select, textarea {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--linea);
+  background: var(--fondo);
+  color: var(--texto);
+}
+textarea { width: 100%; resize: vertical; }
+label { display: block; font-size: 12px; color: var(--texto-suave); margin-bottom: 3px; }
+.campo { margin-bottom: 12px; }
+.campo input, .campo select { width: 100%; }
+
+.boton, button {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border: 2px solid var(--accion);
+  background: var(--fondo);
+  color: var(--accion);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.boton:hover, button:hover { background: var(--accion); color: var(--fondo); }
+.boton.secundario { border-color: var(--linea); color: var(--texto-suave); font-weight: normal; }
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* --- tablas --- */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { border: 1px solid var(--linea-suave); padding: 7px 9px; text-align: left; }
+th { background: var(--fondo-alt); font-size: 12px; }
+tbody tr:hover { background: var(--fondo-alt); }
+td a { color: var(--accion); }
+
+/* --- indicadores del panel --- */
+.tarjetas { display: flex; gap: 12px; flex-wrap: wrap; }
+.tarjeta {
+  border: 2px solid var(--linea);
+  padding: 12px 14px;
+  min-width: 150px;
+  flex: 1;
+  background: var(--fondo);
+}
+.tarjeta .numero { font-size: 26px; font-weight: bold; }
+.tarjeta .etiqueta { font-size: 12px; color: var(--texto-suave); }
+
+/* --- estados: sin color, solo texto entre corchetes, como corresponde a un lo-fi --- */
+.estado { font-size: 11px; border: 1px solid var(--linea); padding: 1px 6px; white-space: nowrap; }
+
+/* --- placeholder de mapa o imagen: caja tachada, convencion de wireframe --- */
+.placeholder {
+  border: 2px dashed var(--linea);
+  background: repeating-linear-gradient(45deg, transparent, transparent 9px, var(--fondo-alt) 9px, var(--fondo-alt) 18px);
+  color: var(--texto-suave);
+  text-align: center;
+  padding: 34px 12px;
+  font-size: 12px;
+}
+
+/* --- historial --- */
+.historial { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+.historial li { border-left: 3px solid var(--linea-suave); padding: 5px 0 5px 12px; margin-bottom: 4px; }
+.historial .cuando { color: var(--texto-suave); font-size: 12px; }
+
+/* --- pie de cada pantalla: a donde se puede ir desde aca --- */
+.rutas {
+  font-size: 12px;
+  color: var(--texto-suave);
+  border-top: 1px dashed var(--linea-suave);
+  padding-top: 10px;
+  margin-top: 6px;
+}
+.rutas a { color: var(--accion); }
+
+/* --- landing y login: pantallas publicas, sin menu --- */
+.centrada { max-width: 460px; margin: 40px auto; }
+.hero { background: var(--fondo); border: 2px solid var(--linea); padding: 28px; text-align: center; }
+.hero h1 { font-size: 24px; margin: 0 0 8px; letter-spacing: 2px; }
+
+@media (max-width: 720px) {
+  .columnas { flex-direction: column; }
+  .menu { width: 100%; }
+}
+
+/* el atributo hidden lo pone lofi.js al filtrar los bloques por rol */
+[hidden] { display: none !important; }

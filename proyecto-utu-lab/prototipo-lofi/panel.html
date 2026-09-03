@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3. Panel principal — Maqueta Low-Fi SiGeRU</title>
+<link rel="stylesheet" href="lofi.css">
+</head>
+<body>
+
+<div class="marco">
+
+  <div class="cabecera">
+    <span class="marca">SiGeRU</span>
+    <span class="sesion">Sesion iniciada como: <strong data-sesion></strong></span>
+  </div>
+
+  <div class="columnas">
+    <nav class="menu" data-menu></nav>
+
+    <div class="contenido">
+
+      <!-- administrador municipal y operario de centro de acopio -->
+      <div class="panel" data-roles="admin acopio">
+        <h1>Panel principal</h1>
+        <p class="sub">Lo primero que se ve no es un listado completo sino lo que requiere
+           atencion: esa fue la decision de diseno tomada a partir del recorrido de la persona.</p>
+
+        <div class="tarjetas">
+          <div class="tarjeta"><div class="numero">7</div>
+            <div class="etiqueta">Incidencias abiertas</div></div>
+          <div class="tarjeta"><div class="numero">3</div>
+            <div class="etiqueta">Prioridad alta</div></div>
+          <div class="tarjeta"><div class="numero">5</div>
+            <div class="etiqueta">Contenedores criticos</div></div>
+          <div class="tarjeta"><div class="numero">2</div>
+            <div class="etiqueta">Camiones fuera de servicio</div></div>
+        </div>
+      </div>
+
+      <div class="panel" data-roles="admin">
+        <h2>Incidencias abiertas por prioridad</h2>
+        <table>
+          <thead>
+            <tr><th>Codigo</th><th>Contenedor</th><th>Zona</th><th>Problema</th>
+                <th>Prioridad</th><th>Estado</th><th>Responsable</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>INC-014</td><td>CT-0231</td><td>Centro</td><td>Desborde</td>
+                <td>Alta</td><td><span class="estado">abierta</span></td><td>Sin asignar</td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+            <tr><td>INC-013</td><td>CT-0117</td><td>Cordon</td><td>Contenedor roto</td>
+                <td>Alta</td><td><span class="estado">en curso</span></td><td>Cuadrilla 2</td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+            <tr><td>INC-012</td><td>CT-0402</td><td>La Blanqueada</td><td>Desborde</td>
+                <td>Alta</td><td><span class="estado">en curso</span></td><td>Cuadrilla 1</td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+            <tr><td>INC-011</td><td>CT-0088</td><td>Centro</td><td>Residuo no permitido</td>
+                <td>Media</td><td><span class="estado">abierta</span></td><td>Sin asignar</td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+            <tr><td>INC-009</td><td>CT-0356</td><td>Pocitos</td><td>Tapa danada</td>
+                <td>Baja</td><td><span class="estado">abierta</span></td><td>Sin asignar</td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+          </tbody>
+        </table>
+        <div class="acciones">
+          <a class="boton" href="incidencia-nueva.html">Registrar incidencia</a>
+          <a class="boton secundario" href="reportes.html">Ver todas</a>
+        </div>
+      </div>
+
+      <div class="panel" data-roles="admin acopio">
+        <h2>Contenedores en estado critico</h2>
+        <table>
+          <thead><tr><th>Codigo</th><th>Zona</th><th>Tipo</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>CT-0231</td><td>Centro</td><td>Mezclado</td>
+                <td><span class="estado">lleno</span></td>
+                <td><a href="contenedores.html">Ver ficha</a></td></tr>
+            <tr><td>CT-0117</td><td>Cordon</td><td>Envases</td>
+                <td><span class="estado">mantenimiento</span></td>
+                <td><a href="contenedores.html">Ver ficha</a></td></tr>
+            <tr><td>CT-0402</td><td>La Blanqueada</td><td>Mezclado</td>
+                <td><span class="estado">lleno</span></td>
+                <td><a href="contenedores.html">Ver ficha</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel" data-roles="admin">
+        <h2>Accesos rapidos</h2>
+        <div class="acciones">
+          <a class="boton secundario" href="contenedores.html">Contenedores</a>
+          <a class="boton secundario" href="camiones.html">Camiones</a>
+          <a class="boton secundario" href="incidencia-nueva.html">Nueva incidencia</a>
+          <a class="boton secundario" href="reportes.html">Reportes</a>
+        </div>
+      </div>
+
+      <!-- cuadrilla de recoleccion -->
+      <div class="panel" data-roles="cuadrilla">
+        <h1>Mis tareas de hoy</h1>
+        <p class="sub">La cuadrilla no necesita ver toda la ciudad: necesita saber que le
+           toca, en que orden y con que camion.</p>
+
+        <div class="tarjetas">
+          <div class="tarjeta"><div class="numero">2</div>
+            <div class="etiqueta">Asignadas a mi cuadrilla</div></div>
+          <div class="tarjeta"><div class="numero">1</div>
+            <div class="etiqueta">En curso</div></div>
+          <div class="tarjeta"><div class="numero">AAB-1234</div>
+            <div class="etiqueta">Camion asignado</div></div>
+        </div>
+
+        <table style="margin-top:14px">
+          <thead><tr><th>Codigo</th><th>Contenedor</th><th>Direccion</th><th>Problema</th>
+                     <th>Prioridad</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>INC-012</td><td>CT-0402</td><td>Comercio y Amezaga</td><td>Desborde</td>
+                <td>Alta</td><td><span class="estado">en curso</span></td>
+                <td><a href="incidencia-detalle.html">Abrir</a></td></tr>
+            <tr><td>INC-016</td><td>CT-0088</td><td>Paraguay y Paysandu</td>
+                <td>Residuo no permitido</td>
+                <td>Media</td><td><span class="estado">abierta</span></td>
+                <td><a href="incidencia-detalle.html">Abrir</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- vecino -->
+      <div class="panel" data-roles="vecino">
+        <h1>Mis reclamos</h1>
+        <p class="sub">El vecino ve unicamente lo que informo el mismo, con el estado en que
+           quedo. Es la contraparte del reclamo que se pierde, que aparecio en el relevamiento.</p>
+
+        <table>
+          <thead><tr><th>Codigo</th><th>Contenedor</th><th>Problema</th><th>Informado</th>
+                     <th>Estado</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>INC-014</td><td>CT-0231</td><td>Contenedor desbordado</td><td>02/09/2026</td>
+                <td><span class="estado">abierta</span></td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+            <tr><td>INC-006</td><td>CT-0231</td><td>Contenedor desbordado</td><td>18/08/2026</td>
+                <td><span class="estado">resuelta</span></td>
+                <td><a href="incidencia-detalle.html">Ver</a></td></tr>
+          </tbody>
+        </table>
+
+        <div class="acciones">
+          <a class="boton" href="incidencia-nueva.html">Informar un problema</a>
+        </div>
+      </div>
+
+      <p class="rutas">Desde esta pantalla se llega a:
+        <a href="contenedores.html">4. Contenedores</a> &middot;
+        <a href="incidencia-nueva.html">5. Registrar incidencia</a> &middot;
+        <a href="incidencia-detalle.html">6. Detalle de incidencia</a> &middot;
+        <a href="camiones.html">7. Camiones</a> &middot;
+        <a href="reportes.html">8. Reportes</a>
+        <br><span style="font-size:11px">(el menu de la izquierda ofrece solo las que
+        corresponden al rol elegido)</span></p>
+
+    </div>
+  </div>
+</div>
+
+<script src="lofi.js"></script>
+</body>
+</html>
