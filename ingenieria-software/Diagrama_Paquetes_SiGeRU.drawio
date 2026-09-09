@@ -1,39 +1,39 @@
 <mxfile host="app.diagrams.net" agent="SiGeRU" version="24.0.0" type="device">
   <diagram name="Diagrama de paquetes" id="sigeru-paquetes-1">
-    <mxGraphModel dx="1150" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="720" math="0" shadow="0">
+    <mxGraphModel dx="1150" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="760" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title1" value="Diagrama de paquetes &#8212; SiGeRU (30 casos de uso en 5 paquetes)" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1f3a93;" vertex="1" parent="1">
+        <mxCell id="title1" value="Diagrama de paquetes — SiGeRU (32 casos de uso en 5 paquetes)" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1f3a93;" vertex="1" parent="1">
           <mxGeometry x="40" y="0" width="700" height="30" as="geometry" />
         </mxCell>
 
-        <mxCell id="pkgE" value="&lt;b style='font-size:13px;'&gt;E. Consultas y reportes (2 CU)&lt;/b&gt;&lt;br&gt;&lt;span style='font-style:italic;font-size:9px;color:#666666;'&gt;Actor: Administrador municipal&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:9px;color:#333333;'&gt;CU-029 Consultar inventario de recursos&lt;br&gt;CU-030 Generar reporte de incidencias por zona&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="560" y="40" width="300" height="110" as="geometry" />
+        <mxCell id="pkgE" value="<b style='font-size:13px;'>E. Consultas y reportes (2 CU)</b><br><span style='font-style:italic;font-size:9px;color:#666666;'>Actor: Administrador municipal</span><br><span style='font-size:9px;color:#333333;'>CU-029 Consultar inventario de recursos<br>CU-030 Generar reporte de incidencias por zona</span>" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="560" y="40" width="300" height="100" as="geometry" />
         </mxCell>
 
-        <mxCell id="pkgB" value="&lt;b style='font-size:13px;'&gt;B. Gesti&#243;n de usuarios (7 CU)&lt;/b&gt;&lt;br&gt;&lt;span style='font-style:italic;font-size:9px;color:#666666;'&gt;Actor: Administrador municipal&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:9px;color:#333333;'&gt;CU-005 Aprobar o rechazar solicitud de registro&lt;br&gt;CU-006 Registrar usuario&lt;br&gt;CU-007 Modificar usuario&lt;br&gt;CU-008 Deshabilitar usuario&lt;br&gt;CU-009 Consultar usuarios&lt;br&gt;CU-010 Filtrar listado de usuarios &#171;extend&#187;&lt;br&gt;CU-011 Asignar rol a usuario&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="40" y="170" width="300" height="200" as="geometry" />
+        <mxCell id="pkgB" value="<b style='font-size:13px;'>B. Gestión de usuarios (7 CU)</b><br><span style='font-style:italic;font-size:9px;color:#666666;'>Actor: Administrador municipal</span><br><span style='font-size:9px;color:#333333;'>CU-005 Aprobar o rechazar solicitud de registro<br>CU-006 Registrar usuario<br>CU-007 Modificar usuario<br>CU-008 Deshabilitar usuario<br>CU-009 Consultar usuarios<br>CU-010 Filtrar listado de usuarios «extend»<br>CU-011 Asignar rol a usuario</span>" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="300" height="160" as="geometry" />
         </mxCell>
 
-        <mxCell id="pkgC" value="&lt;b style='font-size:13px;'&gt;C. Gesti&#243;n de recursos (11 CU)&lt;/b&gt;&lt;br&gt;&lt;span style='font-style:italic;font-size:9px;color:#666666;'&gt;Actores: Administrador municipal, Operario de centro de acopio&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:9px;color:#333333;'&gt;CU-012 Registrar contenedor&lt;br&gt;CU-013 Modificar contenedor&lt;br&gt;CU-014 Dar de baja contenedor&lt;br&gt;CU-015 Consultar contenedores&lt;br&gt;CU-016 Registrar cami&#243;n&lt;br&gt;CU-017 Modificar cami&#243;n&lt;br&gt;CU-018 Dar de baja cami&#243;n&lt;br&gt;CU-019 Consultar camiones&lt;br&gt;CU-020 Administrar centros de acopio&lt;br&gt;CU-021 Actualizar capacidad del centro de acopio&lt;br&gt;CU-022 Administrar tipos de residuo&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="380" y="170" width="300" height="280" as="geometry" />
+        <mxCell id="pkgC" value="<b style='font-size:13px;'>C. Gestión de recursos (13 CU)</b><br><span style='font-style:italic;font-size:9px;color:#666666;'>Actores: Administrador municipal, Operario de centro de acopio</span><br><span style='font-size:9px;color:#333333;'>CU-012 Registrar contenedor<br>CU-013 Modificar contenedor<br>CU-014 Dar de baja contenedor<br>CU-015 Consultar contenedores<br>CU-016 Registrar camión<br>CU-017 Modificar camión<br>CU-018 Dar de baja camión<br>CU-019 Consultar camiones<br>CU-020 Administrar centros de acopio<br>CU-021 Actualizar capacidad del centro de acopio<br>CU-022 Administrar tipos de residuo<br>CU-031 Administrar maquinaria del centro de acopio<br>CU-032 Consultar maquinaria</span>" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="380" y="170" width="300" height="232" as="geometry" />
         </mxCell>
 
-        <mxCell id="pkgD" value="&lt;b style='font-size:13px;'&gt;D. Operaci&#243;n e incidencias (6 CU)&lt;/b&gt;&lt;br&gt;&lt;span style='font-style:italic;font-size:9px;color:#666666;'&gt;Actores: Vecino, Administrador municipal, Cuadrilla de recolecci&#243;n&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:9px;color:#333333;'&gt;CU-023 Registrar incidencia&lt;br&gt;CU-024 Adjuntar evidencia fotogr&#225;fica &#171;extend&#187;&lt;br&gt;CU-025 Asignar incidencia a cuadrilla&lt;br&gt;CU-026 Actualizar estado de incidencia&lt;br&gt;CU-027 Registrar estado de contenedor &#171;include&#187;&lt;br&gt;CU-028 Consultar incidencias&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="720" y="170" width="300" height="190" as="geometry" />
+        <mxCell id="pkgD" value="<b style='font-size:13px;'>D. Operación e incidencias (6 CU)</b><br><span style='font-style:italic;font-size:9px;color:#666666;'>Actores: Vecino, Administrador municipal, Cuadrilla de recolección</span><br><span style='font-size:9px;color:#333333;'>CU-023 Registrar incidencia<br>CU-024 Adjuntar evidencia fotográfica «extend»<br>CU-025 Asignar incidencia a cuadrilla<br>CU-026 Actualizar estado de incidencia<br>CU-027 Registrar estado de contenedor «include»<br>CU-028 Consultar incidencias</span>" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="720" y="170" width="300" height="148" as="geometry" />
         </mxCell>
 
-        <mxCell id="pkgA" value="&lt;b style='font-size:13px;'&gt;A. Acceso y seguridad (4 CU) &#8212; paquete base&lt;/b&gt;&lt;br&gt;&lt;span style='font-style:italic;font-size:9px;color:#666666;'&gt;Actores: los cuatro roles (autenticaci&#243;n de todos los usuarios)&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:9px;color:#333333;'&gt;CU-001 Iniciar sesi&#243;n &amp;#160;&amp;#160;&amp;#160; CU-002 Cerrar sesi&#243;n &amp;#160;&amp;#160;&amp;#160; CU-003 Solicitar registro &amp;#160;&amp;#160;&amp;#160; CU-004 Verificar permisos de rol &#171;include&#187;&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="40" y="490" width="980" height="140" as="geometry" />
+        <mxCell id="pkgA" value="<b style='font-size:13px;'>A. Acceso y seguridad (4 CU) — paquete base</b><br><span style='font-style:italic;font-size:9px;color:#666666;'>Actores: los cuatro roles (autenticación de todos los usuarios)</span><br><span style='font-size:9px;color:#333333;'>CU-001 Iniciar sesión     CU-002 Cerrar sesión     CU-003 Solicitar registro     CU-004 Verificar permisos de rol «include»</span>" style="shape=folder;fontStyle=1;spacingTop=6;tabWidth=90;tabHeight=16;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingRight=6;fillColor=#f7f8fd;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="980" height="82" as="geometry" />
         </mxCell>
 
-        <mxCell id="e_b_a" value="CU-005..CU-011 &#171;include&#187; CU-004" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.1531;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgB" target="pkgA">
+        <mxCell id="e_b_a" value="CU-005..CU-011 «include» CU-004" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.1531;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgB" target="pkgA">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="e_c_a" value="CU-012..CU-022 &#171;include&#187; CU-004" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgC" target="pkgA">
+        <mxCell id="e_c_a" value="CU-012..CU-022 y CU-031/032 «include» CU-004" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgC" target="pkgA">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
@@ -44,13 +44,13 @@
         <mxCell id="e_d_c" value="CU-023, CU-027 operan sobre Contenedor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.1667;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgD" target="pkgC">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="770" y="470" />
-              <mxPoint x="620" y="470" />
+              <mxPoint x="770" y="500" />
+              <mxPoint x="620" y="500" />
             </Array>
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="e_e_c" value="CU-029 lee Contenedor y Cami&#243;n" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgE" target="pkgC">
+        <mxCell id="e_e_c" value="CU-029 lee Contenedor y Camión" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;fontSize=9;fontColor=#1a5fb4;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pkgE" target="pkgC">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
@@ -62,20 +62,20 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1080" y="95" />
-              <mxPoint x="1080" y="560" />
+              <mxPoint x="1080" y="590" />
             </Array>
           </mxGeometry>
         </mxCell>
 
         <mxCell id="legend_line" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#1a5fb4;strokeWidth=1.2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="40" y="655" as="sourcePoint" />
-            <mxPoint x="100" y="655" as="targetPoint" />
+            <mxPoint x="40" y="685" as="sourcePoint" />
+            <mxPoint x="100" y="685" as="targetPoint" />
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="legend_text" value="= dependencia UML: flecha punteada del paquete que usa hacia el paquete usado; el texto indica qu&#233; casos de uso generan esa dependencia" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
-          <mxGeometry x="110" y="642" width="900" height="26" as="geometry" />
+        <mxCell id="legend_text" value="= dependencia UML: flecha punteada del paquete que usa hacia el paquete usado; el texto indica qué casos de uso generan esa dependencia" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="110" y="672" width="900" height="26" as="geometry" />
         </mxCell>
 
       </root>

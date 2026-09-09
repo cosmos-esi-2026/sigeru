@@ -1,24 +1,24 @@
 <mxfile host="app.diagrams.net" agent="SiGeRU" version="24.0.0" type="device">
   <diagram name="Diagrama de clases" id="sigeru-clases-1">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1650" pageHeight="1650" math="0" shadow="0">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2080" pageHeight="1650" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="titulo" value="Diagrama de clases — SiGeRU (14 clases, 17 asociaciones)" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#4a3fb0;" vertex="1" parent="1">
+        <mxCell id="titulo" value="Diagrama de clases — SiGeRU (15 clases, 18 asociaciones)" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#4a3fb0;" vertex="1" parent="1">
           <mxGeometry x="40" y="10" width="900" height="30" as="geometry" />
         </mxCell>
         <mxCell id="banda_A" value="A. Personas y control de acceso" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#fafbff;strokeColor=#c9cfe6;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;fontStyle=2;fontColor=#6b74a3;" vertex="1" parent="1">
-          <mxGeometry x="20" y="55" width="910" height="475" as="geometry" />
+          <mxGeometry x="20" y="55" width="970" height="475" as="geometry" />
         </mxCell>
         <mxCell id="banda_B" value="B. Territorio y planificacion" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#fafbff;strokeColor=#c9cfe6;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;fontStyle=2;fontColor=#6b74a3;" vertex="1" parent="1">
-          <mxGeometry x="20" y="560" width="620" height="245" as="geometry" />
+          <mxGeometry x="20" y="560" width="660" height="245" as="geometry" />
         </mxCell>
         <mxCell id="banda_C" value="C. Activos gestionados" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#fafbff;strokeColor=#c9cfe6;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;fontStyle=2;fontColor=#6b74a3;" vertex="1" parent="1">
-          <mxGeometry x="20" y="835" width="1530" height="325" as="geometry" />
+          <mxGeometry x="20" y="835" width="1960" height="325" as="geometry" />
         </mxCell>
         <mxCell id="banda_D" value="D. Sucesos de la operacion" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#fafbff;strokeColor=#c9cfe6;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;fontStyle=2;fontColor=#6b74a3;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1190" width="1220" height="315" as="geometry" />
+          <mxGeometry x="20" y="1190" width="1300" height="315" as="geometry" />
         </mxCell>
 
         <mxCell id="C_SolicitudRegistro" value="SolicitudRegistro" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
@@ -64,7 +64,7 @@
           <mxGeometry y="232" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Usuario" value="Usuario" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="350" y="90" width="270" height="340" as="geometry" />
+          <mxGeometry x="370" y="90" width="270" height="340" as="geometry" />
         </mxCell>
         <mxCell id="C_Usuario_a0" value="- idUsuario: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Usuario">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -142,7 +142,7 @@
           <mxGeometry y="106" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Cuadrilla" value="Cuadrilla" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="660" y="90" width="270" height="178" as="geometry" />
+          <mxGeometry x="700" y="90" width="270" height="178" as="geometry" />
         </mxCell>
         <mxCell id="C_Cuadrilla_a0" value="- idCuadrilla: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Cuadrilla">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -193,7 +193,7 @@
           <mxGeometry y="106" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Ruta" value="Ruta" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="350" y="595" width="270" height="178" as="geometry" />
+          <mxGeometry x="370" y="595" width="270" height="178" as="geometry" />
         </mxCell>
         <mxCell id="C_Ruta_a0" value="- idRuta: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Ruta">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -250,7 +250,7 @@
           <mxGeometry y="142" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Contenedor" value="Contenedor" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="350" y="870" width="270" height="268" as="geometry" />
+          <mxGeometry x="370" y="870" width="270" height="268" as="geometry" />
         </mxCell>
         <mxCell id="C_Contenedor_a0" value="- idContenedor: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Contenedor">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -295,7 +295,7 @@
           <mxGeometry y="250" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_EstadoContenedor" value="EstadoContenedor" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="660" y="870" width="270" height="142" as="geometry" />
+          <mxGeometry x="700" y="870" width="270" height="142" as="geometry" />
         </mxCell>
         <mxCell id="C_EstadoContenedor_a0" value="- idRegistro: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_EstadoContenedor">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -319,7 +319,7 @@
           <mxGeometry y="124" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Camion" value="Camion" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="970" y="870" width="270" height="232" as="geometry" />
+          <mxGeometry x="1030" y="870" width="270" height="232" as="geometry" />
         </mxCell>
         <mxCell id="C_Camion_a0" value="- idCamion: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Camion">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -358,7 +358,7 @@
           <mxGeometry y="214" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_CentroAcopio" value="CentroAcopio" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="1280" y="870" width="270" height="232" as="geometry" />
+          <mxGeometry x="1360" y="870" width="270" height="232" as="geometry" />
         </mxCell>
         <mxCell id="C_CentroAcopio_a0" value="- idCentro: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_CentroAcopio">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -394,6 +394,45 @@
           <mxGeometry y="196" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_CentroAcopio_m3" value="+ actualizarCapacidad(kg: int)  [CU-021]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_CentroAcopio">
+          <mxGeometry y="214" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria" value="Maquinaria" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="870" width="270" height="232" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a0" value="- idMaquinaria: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="26" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a1" value="- codigo: String" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="44" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a2" value="- tipo: String" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="62" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a3" value="- marca: String" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="80" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a4" value="- modelo: String" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="98" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_a5" value="- estado: String" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="116" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_sep" value="" style="line;html=1;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#8f9dc9;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="134" width="270" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_m0" value="+ registrar()  [CU-031]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="142" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_m1" value="+ modificar()  [CU-031]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="160" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_m2" value="+ darDeBaja()  [CU-031]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="178" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_m3" value="+ consultar(filtro): List  [CU-032]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
+          <mxGeometry y="196" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Maquinaria_m4" value="+ estaOperativa(): boolean" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Maquinaria">
           <mxGeometry y="214" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Incidencia" value="Incidencia" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
@@ -439,7 +478,7 @@
           <mxGeometry y="232" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Vaciado" value="Vaciado" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="350" y="1225" width="270" height="142" as="geometry" />
+          <mxGeometry x="370" y="1225" width="270" height="142" as="geometry" />
         </mxCell>
         <mxCell id="C_Vaciado_a0" value="- idVaciado: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Vaciado">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -463,7 +502,7 @@
           <mxGeometry y="124" width="270" height="18" as="geometry" />
         </mxCell>
         <mxCell id="C_Recoleccion" value="Recoleccion" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;fillColor=#e8eaf6;swimlaneFillColor=#ffffff;strokeColor=#8f9dc9;fontColor=#33406b;" vertex="1" parent="1">
-          <mxGeometry x="970" y="1225" width="270" height="232" as="geometry" />
+          <mxGeometry x="1030" y="1225" width="270" height="232" as="geometry" />
         </mxCell>
         <mxCell id="C_Recoleccion_a0" value="- idRecoleccion: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=10;fontColor=#333333;" vertex="1" parent="C_Recoleccion">
           <mxGeometry y="26" width="270" height="18" as="geometry" />
@@ -544,8 +583,8 @@
         <mxCell id="r_Incidencia_Usuario" value="reporta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#33406b;strokeWidth=1.2;fontSize=10;fontColor=#33406b;labelBackgroundColor=#ffffff;endArrow=none;exitX=1;exitY=0.1;exitDx=0;exitDy=0;entryX=0.15;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="C_Incidencia" target="C_Usuario">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="330" y="1250" />
-            <mxPoint x="330" y="430" />
+            <mxPoint x="340" y="1250" />
+            <mxPoint x="340" y="430" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -577,7 +616,7 @@
             <Array as="points">
             <mxPoint x="35" y="1350" />
             <mxPoint x="35" y="42" />
-            <mxPoint x="795" y="42" />
+            <mxPoint x="835" y="42" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -659,8 +698,8 @@
         <mxCell id="r_Recoleccion_Ruta" value="ejecuta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#33406b;strokeWidth=1.2;fontSize=10;fontColor=#33406b;labelBackgroundColor=#ffffff;endArrow=none;exitX=0;exitY=0.1;exitDx=0;exitDy=0;entryX=1;entryY=0.6;entryDx=0;entryDy=0;" edge="1" parent="1" source="C_Recoleccion" target="C_Ruta">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="960" y="1248" />
-            <mxPoint x="960" y="702" />
+            <mxPoint x="1010" y="1248" />
+            <mxPoint x="1010" y="702" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -690,8 +729,8 @@
         <mxCell id="r_Recoleccion_Cuadrilla" value="realiza" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#33406b;strokeWidth=1.2;fontSize=10;fontColor=#33406b;labelBackgroundColor=#ffffff;endArrow=none;exitX=0;exitY=0.2;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="C_Recoleccion" target="C_Cuadrilla">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="940" y="1271" />
-            <mxPoint x="940" y="214" />
+            <mxPoint x="1000" y="1271" />
+            <mxPoint x="1000" y="214" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -744,10 +783,23 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="r_Maquinaria_CentroAcopio" value="esta_en" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#33406b;strokeWidth=1.2;fontSize=10;fontColor=#33406b;labelBackgroundColor=#ffffff;endArrow=none;" edge="1" parent="1" source="C_Maquinaria" target="C_CentroAcopio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_Maquinaria_CentroAcopio_o" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#555555;labelBackgroundColor=#ffffff;" vertex="1" connectable="0" parent="r_Maquinaria_CentroAcopio">
+          <mxGeometry x="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_Maquinaria_CentroAcopio_d" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#555555;labelBackgroundColor=#ffffff;" vertex="1" connectable="0" parent="r_Maquinaria_CentroAcopio">
+          <mxGeometry x="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
 
         <mxCell id="leyenda" value="Notacion: linea simple = asociacion; rombo lleno = composicion (el hijo no existe sin el padre: el historial de estados y los vaciados se borran con el contenedor y con la recoleccion); rombo vacio = agregacion (la cuadrilla agrupa usuarios que existen por su cuenta). El texto sobre cada linea es el nombre de la relacion en el MER, y los numeros de los extremos son la multiplicidad.
 Las claves foraneas del pasaje a tablas no figuran como atributos: esa informacion la lleva la asociacion. Vaciado es la clase que resuelve el N:M entre Recoleccion y Contenedor. Entre corchetes, el caso de uso que origina cada metodo." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontColor=#555555;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1525" width="1510" height="70" as="geometry" />
+          <mxGeometry x="40" y="1525" width="1940" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
