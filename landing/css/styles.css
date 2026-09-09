@@ -1,264 +1,660 @@
 /* ==========================================================================
-   SiGeRU 2026 - Estilos de la landing publica
+   SiGeRU 2026 - Estilos de la Landing page
+   CSS puro, sin frameworks (no Tailwind, no Bootstrap).
 
-   Esta pagina no usa Bootstrap: no tiene modal ni menu colapsable, asi que no
-   justifica cargar la libreria. Todo lo de aca es CSS propio.
+   IDEA DE DISENO
+   --------------
+   El sistema visual se llama "banda de clasificacion": la franja de colores
+   que aparece debajo del encabezado, arriba de las tarjetas y en el pie
+   representa los tipos de residuo (organico, plastico, vidrio, papel, metal).
+   No es decoracion: los mismos colores se reutilizan como etiquetas.
    ========================================================================== */
-
-:root {
-  --verde-oscuro: #1b3a2b;
-  --verde:        #2e7d32;
-  --acento:       #97c459;
-  --acento-fuerte: #86b348;
-  --acento-texto: #173404;
-  --fondo:        #fafcfb;
-  --tarjeta:      #ffffff;
-  --borde:        #e6ece9;
-  --texto:        #1b3a2b;
-  --texto-flojo:  #6b7c76;
-  --rojo:         #a32d2d;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  color: var(--texto);
-  background: var(--tarjeta);
-  line-height: 1.6;
-}
-
-h1, h2, h3 { font-weight: 600; line-height: 1.25; }
-
-.contenedor {
-  width: 90%;
-  max-width: 1080px;
-  margin: 0 auto;
-}
-.contenedor-angosto { max-width: 560px; }
-
 
 /* ==========================================================================
-   1. Cabecera
+   1. VARIABLES (tokens de diseno)
+   Cambiando estos valores cambia toda la pagina.
    ========================================================================== */
+:root {
+  /* --- Colores base --- */
+  --hueso:        #f6f7f2;  /* fondo general, blanco con un toque verde */
+  --blanco:       #ffffff;
+  --tinta:        #0e241c;  /* texto principal (verde muy oscuro, no negro) */
+  --tinta-suave:  #55685f;  /* texto secundario */
+  --borde:        #e3e7df;
 
-/* Arranca transparente encima del hero y se vuelve solida al hacer scroll.
-   La clase .solida la agrega js/cabecera.js */
+  /* --- Color institucional --- */
+  --verde:        #15654a;
+  --verde-oscuro: #0e4a36;
+  --verde-agua:   #e6f1ea;  /* fondo suave para resaltar */
+  --lima:         #cdeb4b;  /* acento "alta visibilidad", como los chalecos */
+
+  /* --- Colores por tipo de residuo (se usan como etiquetas) --- */
+  --organico:  #7a5c3e;
+  --plastico:  #d9a300;
+  --vidrio:    #2e9e8f;
+  --papel:     #2f6fd0;
+  --metal:     #8b94a3;
+
+  /* --- Estados --- */
+  --ok-texto:  #15654a;
+  --ok-fondo:  #dff0e5;
+  --error:     #b3261e;
+  --error-fondo: #fce4e2;
+
+  /* --- Tipografias --- */
+  --fuente-titulo: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --fuente-texto:  "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --fuente-dato:   "IBM Plex Mono", "Consolas", monospace;
+
+  /* --- Escala de espaciado (todo padding/margin sale de aca) --- */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 24px;
+  --esp-6: 32px;
+  --esp-7: 48px;
+  --esp-8: 64px;
+
+  /* --- Bordes redondeados y sombras --- */
+  --radio-1: 10px;
+  --radio-2: 16px;
+  --radio-3: 24px;
+  --radio-full: 999px;
+  --sombra-1: 0 1px 2px rgba(14, 36, 28, .06), 0 2px 8px rgba(14, 36, 28, .04);
+  --sombra-2: 0 18px 40px -18px rgba(14, 36, 28, .35);
+
+  /* --- Movimiento y medidas --- */
+  --transicion: .15s ease;
+  --alto-toque: 44px;   /* area minima que se puede tocar con el dedo */
+}
+
+/* ==========================================================================
+   2. RESET Y BASE
+   ========================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fuente-texto);
+  color: var(--tinta);
+  background: var(--hueso);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Contenedor central */
+.contenedor {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.contenedor-angosto { max-width: 700px; }
+
+/* Foco visible con teclado (accesibilidad) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--lima);
+  outline-offset: 2px;
+  border-radius: var(--esp-1);
+}
+
+/* Solo para lectores de pantalla: se lee, no se ve. */
+.solo-lectores {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Primer enlace de la pagina: saltea el menu y va directo al contenido.
+   Aparece solo al llegar con Tab. */
+.saltar-contenido {
+  position: absolute;
+  top: var(--esp-2);
+  left: var(--esp-2);
+  z-index: 2000;
+  transform: translateY(-200%);
+  background: var(--verde);
+  color: var(--blanco);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--radio-1);
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform var(--transicion);
+}
+.saltar-contenido:focus { transform: translateY(0); }
+
+/* ==========================================================================
+   3. BANDA DE CLASIFICACION (elemento distintivo del sitio)
+   Cinco franjas con los colores de los tipos de residuo.
+   ========================================================================== */
+.banda {
+  display: flex;
+  height: 5px;
+}
+.banda span { flex: 1; }
+.banda span:nth-child(1) { background: var(--organico); }
+.banda span:nth-child(2) { background: var(--plastico); }
+.banda span:nth-child(3) { background: var(--vidrio); }
+.banda span:nth-child(4) { background: var(--papel); }
+.banda span:nth-child(5) { background: var(--metal); }
+
+/* ==========================================================================
+   4. CABECERA Y MENU
+   ========================================================================== */
 .cabecera {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 10;
-  padding: 16px 0;
-  transition: background 0.2s ease, padding 0.2s ease;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(246, 247, 242, .85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--borde);
 }
-.cabecera.solida {
-  background: var(--verde-oscuro);
-  padding: 11px 0;
-}
-
 .cabecera-interna {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 
 .logo {
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 21px;
-  color: #ffffff;
 }
-.logo img { width: 30px; height: 30px; }
+/* Punto verde al lado del nombre */
+.logo::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 0 4px var(--verde-agua);
+}
 
-.menu { display: flex; align-items: center; gap: 22px; }
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 .menu a {
-  color: #dbe7e0;
-  text-decoration: none;
-  font-size: 15px;
-}
-.menu a:hover { color: #ffffff; }
-
-
-/* ==========================================================================
-   2. Botones
-   ========================================================================== */
-
-.boton {
-  display: inline-block;
-  padding: 11px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  color: var(--tinta-suave);
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
-  font-family: inherit;
+  padding: 8px 12px;
+  border-radius: var(--radio-1);
+  transition: color .15s ease, background .15s ease;
 }
-.boton-primario {
-  background: var(--acento);
-  color: var(--acento-texto);
-}
-.boton-primario:hover { background: var(--acento-fuerte); }
-
-.boton-secundario {
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 8px 16px;
-}
-.boton-secundario:hover { background: rgba(255, 255, 255, 0.25); }
-
+.menu a:hover { color: var(--tinta); background: var(--verde-agua); }
+.menu .boton { margin-left: 6px; }
 
 /* ==========================================================================
-   3. Hero
+   5. BOTONES
    ========================================================================== */
-
-.hero {
-  position: relative;
-  min-height: 78vh;
-  display: flex;
+.boton {
+  display: inline-flex;
   align-items: center;
-  text-align: center;
-  color: #ffffff;
-  background-color: var(--verde-oscuro);   /* respaldo si falta la foto */
-  background-size: cover;
-  background-position: center;
-  padding: 110px 0 70px;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--alto-toque);
+  padding: var(--esp-3) var(--esp-5);
+  border: 1px solid transparent;
+  border-radius: var(--radio-full);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform var(--transicion), background var(--transicion),
+              box-shadow var(--transicion);
 }
-/* Capa verde encima de la foto, para que el texto se lea siempre */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(27, 58, 43, 0.74);
-}
-.hero .contenedor { position: relative; z-index: 1; }
+.boton:hover { transform: translateY(-1px); }
+.boton:active { transform: translateY(0); }
 
-.hero h2 { font-size: 42px; margin-bottom: 16px; }
+/* Deshabilitado y "trabajando": el mismo aspecto, porque en los dos casos el
+   boton no responde. El puntito girando evita el doble envio a ciegas. */
+.boton:disabled,
+.boton[aria-busy="true"] {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.boton[aria-busy="true"]::before {
+  content: "";
+  width: 14px; height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: girar .7s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+.boton-primario {
+  background: var(--verde);
+  color: var(--blanco);
+  box-shadow: var(--sombra-1);
+}
+.boton-primario:hover { background: var(--verde-oscuro); }
+
+.boton-secundario {
+  background: var(--blanco);
+  color: var(--verde-oscuro);
+  border-color: var(--borde);
+}
+.boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); }
+
+/* ==========================================================================
+   6. HERO (seccion principal, dos columnas)
+   ========================================================================== */
+.hero {
+  padding: 72px 0 84px;
+  overflow: hidden;
+}
+.hero-interno {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 56px;
+  align-items: center;
+}
+
+/* Etiqueta chica arriba del titulo */
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fuente-dato);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--verde-oscuro);
+  background: var(--verde-agua);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 22px;
+}
+
+/* El titulo del hero es el h1 de la pagina: el nombre de la marca en la
+   cabecera es un parrafo, porque no es el tema de la pagina sino el logo. */
+.hero h1 {
+  font-family: var(--fuente-titulo);
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--esp-5);
+}
+/* Palabra resaltada con un subrayado grueso color lima */
+.resaltado {
+  background: linear-gradient(transparent 62%, var(--lima) 62%);
+  padding: 0 2px;
+}
+
 .hero p {
-  max-width: 620px;
-  margin: 0 auto 28px;
-  color: #d5e3da;
+  font-size: 18px;
+  color: var(--tinta-suave);
+  max-width: 46ch;
+  margin-bottom: 30px;
+}
+.hero-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* --- Ficha de contenedor (vista previa del sistema) --- */
+.ficha {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-3);
+  box-shadow: var(--sombra-2);
+  padding: 26px;
+}
+.ficha-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.ficha-codigo {
+  font-family: var(--fuente-dato);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+.ficha-direccion {
+  color: var(--tinta-suave);
+  font-size: 15px;
+  margin-bottom: 22px;
+}
+.ficha-fila {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--tinta-suave);
+  margin-bottom: 8px;
+}
+.ficha-fila strong { color: var(--tinta); font-family: var(--fuente-dato); }
+
+/* Barra de nivel de llenado */
+.nivel {
+  height: 10px;
+  background: var(--verde-agua);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+.nivel-barra {
+  height: 100%;
+  background: var(--verde);
+  border-radius: 999px;
+}
+
+.ficha-tipos { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Etiqueta de tipo de residuo: usa el color guardado en --color */
+.tipo {
+  --color: var(--metal);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tinta);
+  background: var(--hueso);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 5px 12px;
+  list-style: none;
+}
+.tipo::before {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 3px;
+  background: var(--color);
+}
+.tipo[data-tipo="organico"] { --color: var(--organico); }
+.tipo[data-tipo="plastico"] { --color: var(--plastico); }
+.tipo[data-tipo="vidrio"]   { --color: var(--vidrio); }
+.tipo[data-tipo="papel"]    { --color: var(--papel); }
+.tipo[data-tipo="metal"]    { --color: var(--metal); }
+
+/* Etiqueta de estado */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ok-fondo);
+  color: var(--ok-texto);
+}
+.estado::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ==========================================================================
+   7. SECCIONES DE CONTENIDO
+   ========================================================================== */
+.seccion { padding: 76px 0; }
+.seccion-gris {
+  background: var(--blanco);
+  border-top: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+}
+
+.seccion h2 {
+  font-size: clamp(26px, 3.4vw, 34px);
+  margin-bottom: 14px;
+}
+.seccion > .contenedor > p {
+  color: var(--tinta-suave);
+  max-width: 62ch;
   font-size: 17px;
 }
 
+/* Dos columnas para "Que es" */
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.dos-columnas p { color: var(--tinta-suave); font-size: 17px; }
 
-/* ==========================================================================
-   4. Secciones
-   ========================================================================== */
+.lista-marcada { list-style: none; display: grid; gap: 14px; }
+.lista-marcada li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: var(--tinta-suave);
+}
+.lista-marcada li::before {
+  content: "";
+  flex: none;
+  width: 20px; height: 20px;
+  margin-top: 3px;
+  border-radius: 50%;
+  background: var(--verde-agua);
+  border: 2px solid var(--verde);
+}
 
-.seccion { padding: 70px 0; }
-.seccion-gris { background: var(--fondo); }
-
-.seccion h2 { font-size: 29px; margin-bottom: 12px; }
-.seccion > .contenedor > p { color: var(--texto-flojo); max-width: 680px; }
-
-
-/* ==========================================================================
-   5. Tarjetas de servicios
-   ========================================================================== */
-
+/* --- Tarjetas de servicios --- */
 .tarjetas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  margin-top: 36px;
 }
-
 .tarjeta {
-  background: var(--tarjeta);
+  --color: var(--verde);
+  position: relative;
+  background: var(--hueso);
   border: 1px solid var(--borde);
-  border-radius: 12px;
-  padding: 26px 22px;
+  border-radius: var(--radio-2);
+  padding: 28px 24px 24px;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-.tarjeta .icono {
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  background: #eaf3de;
-  color: var(--verde-oscuro);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
+/* Franja de color arriba de cada tarjeta */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--color);
 }
-.tarjeta .icono svg { width: 24px; height: 24px; }
-.tarjeta h3 { font-size: 18px; margin-bottom: 7px; }
-.tarjeta p { color: var(--texto-flojo); font-size: 15px; }
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-2);
+  border-color: var(--color);
+}
+.tarjeta[data-color="plastico"] { --color: var(--plastico); }
+.tarjeta[data-color="vidrio"]   { --color: var(--vidrio); }
+.tarjeta[data-color="papel"]    { --color: var(--papel); }
 
+.tarjeta-icono {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  margin-bottom: 16px;
+  color: var(--color);
+}
+.tarjeta-icono svg { width: 22px; height: 22px; }
+.tarjeta h3 { font-size: 19px; margin-bottom: 8px; }
+.tarjeta p { color: var(--tinta-suave); font-size: 15px; }
+
+/* --- Fila de tipos de residuo --- */
+.tipos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
 
 /* ==========================================================================
-   6. Formulario de solicitud
+   8. FORMULARIO DE REGISTRO
    ========================================================================== */
-
-.tarjeta-formulario {
-  background: var(--tarjeta);
+.caja-formulario {
+  background: var(--blanco);
   border: 1px solid var(--borde);
-  border-radius: 12px;
-  padding: 30px;
+  border-radius: var(--radio-3);
+  padding: 36px;
+  box-shadow: var(--sombra-1);
   margin-top: 28px;
 }
 
-.formulario { display: flex; flex-direction: column; gap: 14px; }
-
-.formulario-columnas {
+.formulario {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
-
 .formulario label {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--texto-flojo);
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--tinta);
 }
 .formulario input {
-  padding: 10px 12px;
-  border: 1px solid var(--borde);
-  border-radius: 8px;
+  font-family: var(--fuente-texto);
   font-size: 15px;
-  font-family: inherit;
   font-weight: 400;
-  color: var(--texto);
+  min-height: var(--alto-toque);
+  padding: var(--esp-3) var(--esp-4);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-1);
+  background: var(--hueso);
+  color: var(--tinta);
+  transition: border-color var(--transicion), background var(--transicion),
+              box-shadow var(--transicion);
 }
-.formulario input:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
+.formulario input:hover { border-color: #cfd6cb; }
+.formulario input:focus {
+  outline: none;
+  background: var(--blanco);
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px var(--verde-agua);
+}
+/* #64756c es el gris mas claro que sigue cumpliendo AA sobre el fondo hueso */
+.formulario input::placeholder { color: #64756c; }
 
-.formulario .boton { margin-top: 6px; }
+/* Campo con error: borde rojo + el texto de error debajo, atado al input con
+   aria-describedby para que un lector de pantalla lo lea junto al campo. */
+.formulario input[aria-invalid="true"] {
+  border-color: var(--error);
+  background: var(--error-fondo);
+}
+.formulario input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, .16);
+}
+.error-campo {
+  display: block;
+  margin-top: var(--esp-1);
+  color: var(--error);
+  font-size: 13px;
+  font-weight: 500;
+}
+.error-campo:empty { display: none; }
+/* El boton ocupa todo el ancho de la grilla */
+.formulario button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 6px;
+}
 
-.mensaje { margin-top: 14px; font-weight: 500; font-size: 14.5px; }
-.mensaje.ok    { color: var(--verde); }
-.mensaje.error { color: var(--rojo); }
+/* Mensaje de resultado (exito o error). Vacio no ocupa lugar. */
+.mensaje {
+  margin-top: var(--esp-4);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radio-1);
+}
+.mensaje:empty { display: none; }
+.mensaje.ok,
+.mensaje.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+}
+.mensaje.ok    { color: var(--ok-texto); background: var(--ok-fondo); }
+.mensaje.error { color: var(--error);    background: var(--error-fondo); }
+.mensaje .icono { margin-top: 1px; }
 
+/* Tamano unico para los iconos en linea del sistema */
+.icono { width: 18px; height: 18px; flex-shrink: 0; }
 
 /* ==========================================================================
-   7. Pie
+   9. PIE DE PAGINA
    ========================================================================== */
-
 .pie {
-  background: var(--verde-oscuro);
-  color: #a8c4b3;
-  text-align: center;
-  padding: 28px 0;
-  font-size: 14.5px;
+  background: var(--tinta);
+  color: rgba(255, 255, 255, .72);
+  margin-top: 0;
 }
-
+.pie-interno {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding-top: 34px;
+  padding-bottom: 34px;
+  font-size: 14px;
+}
+.pie strong { color: var(--blanco); font-family: var(--fuente-titulo); }
+.pie a { color: var(--lima); text-decoration: none; }
+.pie a:hover { text-decoration: underline; }
 
 /* ==========================================================================
-   8. Pantallas chicas
+   10. RESPONSIVE (pantallas chicas)
    ========================================================================== */
+@media (max-width: 900px) {
+  .hero-interno,
+  .dos-columnas { grid-template-columns: 1fr; gap: 36px; }
+  .hero { padding: 48px 0 56px; }
+  .seccion { padding: 56px 0; }
+}
 
-@media (max-width: 767px) {
-  .hero h2 { font-size: 31px; }
-  .hero p { font-size: 16px; }
-  .seccion { padding: 50px 0; }
-  .seccion h2 { font-size: 24px; }
-  .menu { gap: 14px; }
-  .menu a:not(.boton) { display: none; }   /* en celular queda solo "Ingresar" */
-  .formulario-columnas { grid-template-columns: 1fr; }
-  .tarjeta-formulario { padding: 22px; }
+@media (max-width: 640px) {
+  .cabecera-interna { flex-direction: column; align-items: flex-start; }
+  .menu { width: 100%; }
+  .menu a { padding: 8px 10px; font-size: 14px; }
+  .contenedor { padding: 0 18px; }
+  .caja-formulario { padding: 24px 20px; }
+  .pie-interno { flex-direction: column; align-items: flex-start; }
+}
+
+/* Respeta a quien pide menos animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
 }

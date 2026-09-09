@@ -3,137 +3,212 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiGeRU - Sistema de Gestion de Residuos Urbanos</title>
+  <title>SiGeRU - Sistema de Gestión de Residuos Urbanos</title>
+  <meta name="description" content="SiGeRU organiza los contenedores, los camiones y los centros de acopio de la ciudad, y le da a cada vecino un canal para reportar incidencias.">
   <link rel="icon" href="../frontend-usuarios/img/logo.svg">
+  <!-- Tipografías del sistema visual. Si no hay internet, el navegador usa
+       el fallback (system-ui) que ya está definido en css/styles.css. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <!-- Hoja de estilos propia (sin frameworks externos) -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+  <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+  <!-- ===================== ENCABEZADO / NAVEGACION ===================== -->
   <header class="cabecera">
     <div class="contenedor cabecera-interna">
-      <h1 class="logo">
-        <img src="../frontend-usuarios/img/logo.svg" alt="">
-        SiGeRU
-      </h1>
-      <nav class="menu">
-        <a href="#que-es">Que es</a>
+      <p class="logo">SiGeRU</p>
+      <nav class="menu" aria-label="Secciones de la página">
+        <a href="#que-es">Qué es</a>
         <a href="#servicios">Servicios</a>
         <a href="#registro">Registro</a>
         <!-- Enlace al frontend de usuarios (login) -->
         <a class="boton boton-secundario" href="../frontend-usuarios/login.html">Ingresar</a>
       </nav>
     </div>
+    <!-- Banda de clasificación: los 5 tipos de residuo del sistema -->
+    <div class="banda" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
   </header>
 
-  <!-- Si img/hero.jpg todavia no existe, queda el verde de fondo del CSS -->
-  <section class="hero" style="background-image: url('img/hero.jpg');">
-    <div class="contenedor">
-      <h2>Gestion inteligente de residuos urbanos</h2>
-      <p>
-        SiGeRU ayuda a la ciudad a organizar contenedores, camiones y centros de
-        acopio, y a los vecinos a reportar incidencias de forma simple.
-      </p>
-      <a class="boton boton-primario" href="#registro">Quiero registrarme</a>
-    </div>
-  </section>
+  <main id="contenido-principal">
 
-  <section id="que-es" class="seccion">
-    <div class="contenedor">
-      <h2>Que es SiGeRU</h2>
-      <p>
-        Es un Sistema de Gestion de Residuos Urbanos desarrollado para UTU/ESI 2026.
-        Permite administrar la recoleccion, los contenedores y la flota de camiones,
-        y ofrece a los vecinos un canal para participar.
-      </p>
-    </div>
-  </section>
+    <!-- ===================== SECCION PRINCIPAL (HERO) ===================== -->
+    <section class="hero" aria-labelledby="titulo-principal">
+      <div class="contenedor hero-interno">
 
-  <section id="servicios" class="seccion seccion-gris">
-    <div class="contenedor">
-      <h2>Servicios</h2>
-      <div class="tarjetas">
-
-        <article class="tarjeta">
-          <div class="icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
-              <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
-              <path d="M10 11v6M14 11v6"/>
-            </svg>
+        <div>
+          <p class="etiqueta">UTU / ESI 2026 - Residuos urbanos</p>
+          <h1 id="titulo-principal">La ciudad, <span class="resaltado">contenedor por contenedor</span>.</h1>
+          <p>
+            SiGeRU organiza los contenedores, los camiones y los centros de acopio
+            en un solo lugar, y le da a cada vecino un canal directo para reportar
+            lo que ve en la calle.
+          </p>
+          <div class="hero-acciones">
+            <a class="boton boton-primario" href="#registro">Quiero registrarme</a>
+            <a class="boton boton-secundario" href="#que-es">Ver cómo funciona</a>
           </div>
-          <h3>Contenedores</h3>
-          <p>Ubicacion y estado de los contenedores de la ciudad.</p>
-        </article>
+        </div>
 
-        <article class="tarjeta">
-          <div class="icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
-              <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
-            </svg>
+        <!-- Vista previa: así se ve una ficha de contenedor dentro del sistema -->
+        <aside class="ficha" aria-label="Ejemplo de ficha de contenedor">
+          <div class="ficha-cabecera">
+            <span class="ficha-codigo">CNT-018</span>
+            <span class="estado">Disponible</span>
           </div>
-          <h3>Recoleccion</h3>
-          <p>Flota de camiones y rutas de recoleccion organizadas.</p>
-        </article>
+          <p class="ficha-direccion">Av. Italia 2734 esq. Comercio</p>
 
-        <article class="tarjeta">
-          <div class="icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 3a8 8 0 0 1 8 8c0 4.5-8 10-8 10S4 15.5 4 11a8 8 0 0 1 8-8z"/>
-              <path d="M12 8v4"/><path d="M12 15h.01"/>
-            </svg>
+          <div class="ficha-fila"><span>Capacidad</span><strong>1.100 L</strong></div>
+          <div class="ficha-fila"><span>Última recolección</span><strong>hoy 06:40</strong></div>
+
+          <div class="nivel" aria-hidden="true">
+            <div class="nivel-barra" style="width: 62%"></div>
           </div>
-          <h3>Incidencias</h3>
-          <p>Los vecinos pueden reportar problemas facilmente.</p>
-        </article>
+          <div class="ficha-fila"><span>Nivel de llenado</span><strong>62 %</strong></div>
+
+          <div class="ficha-tipos">
+            <span class="tipo" data-tipo="organico">Orgánico</span>
+            <span class="tipo" data-tipo="plastico">Plástico</span>
+            <span class="tipo" data-tipo="vidrio">Vidrio</span>
+          </div>
+        </aside>
 
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="registro" class="seccion">
-    <div class="contenedor contenedor-angosto">
-      <h2>Solicitar registro</h2>
-      <p>Completa tus datos. Un administrador revisara tu solicitud.</p>
+    <!-- ===================== QUE ES ===================== -->
+    <section id="que-es" class="seccion seccion-gris" aria-labelledby="titulo-que-es">
+      <div class="contenedor dos-columnas">
+        <div>
+          <h2 id="titulo-que-es">Qué es SiGeRU</h2>
+          <p>
+            Un Sistema de Gestión de Residuos Urbanos desarrollado para UTU/ESI 2026.
+            Administra la recolección, los contenedores y la flota de camiones, y le
+            abre a los vecinos un canal para participar.
+          </p>
+        </div>
+        <ul class="lista-marcada">
+          <li>Cada contenedor tiene código, dirección, capacidad y estado.</li>
+          <li>La flota se sigue por matrícula, capacidad y disponibilidad.</li>
+          <li>Los vecinos reportan incidencias sin llamar por teléfono.</li>
+          <li>La administración concentra el resumen del sistema.</li>
+        </ul>
+      </div>
+    </section>
 
-      <div class="tarjeta-formulario">
-        <!-- Formulario: el envio lo maneja js/main.js (no recarga la pagina) -->
-        <form id="form-registro" class="formulario">
-          <div class="formulario-columnas">
+    <!-- ===================== SERVICIOS ===================== -->
+    <section id="servicios" class="seccion" aria-labelledby="titulo-servicios">
+      <div class="contenedor">
+        <h2 id="titulo-servicios">Servicios</h2>
+        <p>Tres módulos que funcionan juntos y comparten los mismos datos.</p>
+
+        <div class="tarjetas">
+          <article class="tarjeta" data-color="vidrio">
+            <div class="tarjeta-icono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 6h18"></path>
+                <path d="M8 6V4h8v2"></path>
+                <path d="M5 6l1 14h12l1-14"></path>
+                <path d="M10 10v6M14 10v6"></path>
+              </svg>
+            </div>
+            <h3>Contenedores</h3>
+            <p>Ubicación, capacidad y estado de cada contenedor de la ciudad.</p>
+          </article>
+
+          <article class="tarjeta" data-color="plastico">
+            <div class="tarjeta-icono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 7h11v10H2z"></path>
+                <path d="M13 10h4l4 4v3h-8z"></path>
+                <circle cx="7" cy="18" r="2"></circle>
+                <circle cx="17" cy="18" r="2"></circle>
+              </svg>
+            </div>
+            <h3>Recolección</h3>
+            <p>Flota de camiones y rutas de recolección organizadas por turno.</p>
+          </article>
+
+          <article class="tarjeta" data-color="papel">
+            <div class="tarjeta-icono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3l9 16H3z"></path>
+                <path d="M12 9v5M12 17h.01"></path>
+              </svg>
+            </div>
+            <h3>Incidencias</h3>
+            <p>El vecino reporta un problema y queda registrado con fecha y lugar.</p>
+          </article>
+        </div>
+
+        <!-- Los mismos colores de la banda superior, ahora como etiquetas -->
+        <ul class="tipos-lista">
+          <li class="tipo" data-tipo="organico">Orgánico</li>
+          <li class="tipo" data-tipo="plastico">Plástico</li>
+          <li class="tipo" data-tipo="vidrio">Vidrio</li>
+          <li class="tipo" data-tipo="papel">Papel</li>
+          <li class="tipo" data-tipo="metal">Metal</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== FORMULARIO DE REGISTRO ===================== -->
+    <section id="registro" class="seccion seccion-gris" aria-labelledby="titulo-registro">
+      <div class="contenedor contenedor-angosto">
+        <h2 id="titulo-registro">Solicitar registro</h2>
+        <p>Completá tus datos. Un administrador revisa la solicitud y te habilita el acceso.</p>
+
+        <div class="caja-formulario">
+          <!-- Formulario: el envío lo maneja js/main.js (no recarga la página) -->
+          <form id="form-registro" class="formulario">
             <label>Nombre
-              <input type="text" name="nombre" required>
+              <input type="text" name="nombre" autocomplete="given-name" placeholder="Ana" required>
             </label>
             <label>Apellido
-              <input type="text" name="apellido" required>
+              <input type="text" name="apellido" autocomplete="family-name" placeholder="Pérez" required>
             </label>
-          </div>
-          <label>Email
-            <input type="email" name="email" required>
-          </label>
-          <div class="formulario-columnas">
-            <label>Telefono
-              <input type="text" name="telefono">
+            <label>Email
+              <input type="email" name="email" autocomplete="email" placeholder="ana@ejemplo.uy" required>
             </label>
-            <label>Direccion
-              <input type="text" name="direccion">
+            <label>Teléfono
+              <input type="tel" name="telefono" autocomplete="tel" placeholder="099 123 456">
             </label>
-          </div>
-          <button type="submit" class="boton boton-primario">Enviar solicitud</button>
-        </form>
+            <label>Dirección
+              <input type="text" name="direccion" autocomplete="street-address" placeholder="Av. Italia 2734">
+            </label>
+            <button type="submit" class="boton boton-primario">Enviar solicitud</button>
+          </form>
 
-        <p id="mensaje-registro" class="mensaje"></p>
+          <!-- Acá main.js muestra el resultado del envío -->
+          <p id="mensaje-registro" class="mensaje" role="status" aria-live="polite"></p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
+  </main>
+
+  <!-- ===================== PIE DE PAGINA ===================== -->
   <footer class="pie">
-    <div class="contenedor">
-      <p>SiGeRU 2026 - Proyecto UTU/ESI - Sistema de Gestion de Residuos Urbanos</p>
+    <div class="banda" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="contenedor pie-interno">
+      <p><strong>SiGeRU 2026</strong> - Sistema de Gestión de Residuos Urbanos</p>
+      <p>Proyecto UTU/ESI - Equipo COSMOS</p>
     </div>
   </footer>
 
-  <script src="js/cabecera.js"></script>
+  <!-- La validación y el bloqueo del botón se comparten con el panel -->
+  <script src="../frontend-usuarios/js/formularios.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -3,38 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiGeRU - Panel</title>
+  <title>Panel de control - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
 <div class="layout">
 
   <!-- ===================== Barra lateral ===================== -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal">
 
     <a class="sidebar-marca" href="dashboard.html">
       <img src="img/logo.svg" alt="">
       SiGeRU
     </a>
+    <div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Secciones del sistema">
       <a class="sidebar-link activo" href="dashboard.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-4v-6H9v6H4a1 1 0 0 1-1-1z"/>
         </svg>
         Inicio
       </a>
       <a class="sidebar-link" href="usuarios.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
           <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/><path d="M17.8 14.4A6.2 6.2 0 0 1 21.2 20"/>
         </svg>
         Usuarios
       </a>
       <a class="sidebar-link" href="contenedores.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
           <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
           <path d="M10 11v6M14 11v6"/>
@@ -42,11 +48,23 @@
         Contenedores
       </a>
       <a class="sidebar-link" href="camiones.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
           <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
         </svg>
         Camiones
+      </a>
+      <a class="sidebar-link" href="centros.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5 12 5l9 5.5V20H3z"/><path d="M8 20v-6h8v6"/>
+        </svg>
+        Centros de acopio
+      </a>
+      <a class="sidebar-link" href="solicitudes.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12h5l2 3h4l2-3h5"/><path d="M4 6h16v12H4z"/>
+        </svg>
+        Solicitudes
       </a>
     </nav>
 
@@ -56,11 +74,11 @@
         <div class="rol" id="sidebar-rol"></div>
       </div>
       <a class="sidebar-link" href="#" id="btn-salir">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/>
           <path d="M10 8l-4 4 4 4"/><path d="M6 12h11"/>
         </svg>
-        Cerrar sesion
+        Cerrar sesión
       </a>
     </div>
 
@@ -70,61 +88,100 @@
   <div class="principal">
 
     <header class="topbar">
-      <button class="btn-menu" id="btn-menu" aria-label="Abrir menu">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+      <button class="btn-menu" id="btn-menu" aria-label="Abrir menú">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <path d="M3 6h18M3 12h18M3 18h18"/>
         </svg>
       </button>
-      <h1>Panel</h1>
+      <div class="topbar-titulo">
+        <h1>Panel de control</h1>
+        <p class="bajada">Resumen del estado de los contenedores, la flota y los usuarios.</p>
+      </div>
     </header>
 
-    <main class="contenido">
+    <main class="contenido" id="contenido-principal">
 
-      <!-- Metricas -->
+      <!-- Métricas -->
+      <h2 class="solo-lectores">Indicadores del sistema</h2>
       <div class="metricas">
         <div class="metrica">
-          <div class="metrica-etiqueta">Contenedores</div>
-          <div class="metrica-valor" id="metrica-contenedores">-</div>
+          <p class="metrica-etiqueta">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
+              <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
+            </svg>
+            Contenedores
+          </p>
+          <strong class="metrica-valor" id="metrica-contenedores"></strong>
         </div>
-        <div class="metrica">
-          <div class="metrica-etiqueta">Contenedores llenos</div>
-          <div class="metrica-valor rojo" id="metrica-llenos">-</div>
+        <div class="metrica" data-color="alerta">
+          <p class="metrica-etiqueta">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l9 16H3z"/><path d="M12 9v5M12 17h.01"/>
+            </svg>
+            Contenedores llenos
+          </p>
+          <strong class="metrica-valor" id="metrica-llenos"></strong>
         </div>
-        <div class="metrica">
-          <div class="metrica-etiqueta">Camiones operativos</div>
-          <div class="metrica-valor verde" id="metrica-camiones">-</div>
+        <div class="metrica" data-color="flota">
+          <p class="metrica-etiqueta">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
+              <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
+            </svg>
+            Camiones operativos
+          </p>
+          <strong class="metrica-valor" id="metrica-camiones"></strong>
         </div>
-        <div class="metrica">
-          <div class="metrica-etiqueta">Usuarios registrados</div>
-          <div class="metrica-valor" id="metrica-usuarios">-</div>
+        <div class="metrica" data-color="gente">
+          <p class="metrica-etiqueta">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
+              <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/>
+            </svg>
+            Usuarios registrados
+          </p>
+          <strong class="metrica-valor" id="metrica-usuarios"></strong>
         </div>
       </div>
 
-      <!-- Contenedores que requieren atencion -->
-      <div class="panel">
+      <!-- Contenedores que requieren atención -->
+      <section class="panel" aria-labelledby="titulo-llenos">
         <div class="barra-herramientas">
-          <span class="titulo">Contenedores llenos</span>
-          <a class="btn-accion" href="contenedores.html">Ver todos</a>
+          <h2 class="titulo" id="titulo-llenos">Contenedores llenos</h2>
+          <a class="boton boton-secundario boton-chico" href="contenedores.html">
+            Ver todos los contenedores
+          </a>
         </div>
+
         <div class="tabla-scroll">
-          <table class="tabla">
-            <thead>
-              <tr>
-                <th>Codigo</th><th>Direccion</th><th>Capacidad</th><th>Estado</th>
+          <table class="tabla" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Código</th>
+                <th role="columnheader">Dirección</th>
+                <th role="columnheader">Capacidad</th>
+                <th role="columnheader">Estado</th>
               </tr>
             </thead>
-            <tbody id="cuerpo-llenos">
-              <tr><td colspan="4" class="fila-aviso"><p>Cargando...</p></td></tr>
+            <tbody id="cuerpo-llenos" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
     </main>
   </div>
 </div>
 
 <script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/dashboard.js"></script>

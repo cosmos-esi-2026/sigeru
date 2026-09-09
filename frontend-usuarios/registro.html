@@ -3,69 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiGeRU - Registro</title>
+  <title>Solicitar acceso - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <div class="auth">
+  <main class="pantalla-centrada">
+    <div class="tarjeta-auth">
+      <h1>SiGeRU</h1>
+      <p class="subtitulo">Completá tus datos. Un administrador revisa la solicitud
+        y te habilita el acceso.</p>
 
-    <div class="auth-imagen" style="background-image: url('img/login.jpg');">
-      <div class="marca">
-        <img src="img/logo.svg" alt="">
-        <h1>SiGeRU</h1>
-        <p>Sistema de Gestion de Residuos Urbanos</p>
-      </div>
-    </div>
-
-    <div class="auth-panel">
-      <div class="auth-caja">
-
-        <div class="auth-logo-chico">
-          <img src="img/logo.svg" alt="SiGeRU">
-        </div>
-
-        <h2>Solicitar acceso</h2>
-        <p class="bajada">Completa tus datos. Un administrador revisa la solicitud
-          y te habilita el acceso.</p>
-
-        <form id="form-registro" class="formulario">
-          <div class="formulario-columnas">
-            <label>Nombre
-              <input type="text" name="nombre" required>
-            </label>
-            <label>Apellido
-              <input type="text" name="apellido" required>
-            </label>
-          </div>
-          <label>Email
-            <input type="email" name="email" required>
+      <form id="form-registro" class="formulario">
+        <div class="formulario-columnas">
+          <label>Nombre
+            <input type="text" name="nombre" autocomplete="given-name" required>
           </label>
-          <div class="formulario-columnas">
-            <label>Telefono
-              <input type="text" name="telefono">
-            </label>
-            <label>Direccion
-              <input type="text" name="direccion">
-            </label>
-          </div>
-          <button type="submit" class="btn-accion">Enviar solicitud</button>
-        </form>
-
-        <p id="mensaje" class="mensaje"></p>
-
-        <div class="pie-enlaces">
-          <p>Ya tenes cuenta? <a href="login.html">Inicia sesion</a></p>
-          <p><a href="../landing/index.html">Volver al inicio</a></p>
+          <label>Apellido
+            <input type="text" name="apellido" autocomplete="family-name" required>
+          </label>
         </div>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <div class="formulario-columnas">
+          <label>Teléfono
+            <input type="tel" name="telefono" autocomplete="tel" placeholder="099 123 456">
+          </label>
+          <label>Dirección
+            <input type="text" name="direccion" autocomplete="street-address"
+                   placeholder="Av. Italia 2734">
+          </label>
+        </div>
+        <button type="submit" class="boton boton-primario">Enviar solicitud</button>
+      </form>
 
-      </div>
+      <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+
+      <p class="texto-centro mt">¿Ya tenés cuenta? <a href="login.html">Iniciá sesión</a></p>
+      <p class="texto-centro mt"><a href="../landing/index.html">Volver al inicio</a></p>
+
+      <div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-
-  </div>
+  </main>
 
   <script src="js/api.js"></script>
+  <script src="js/formularios.js"></script>
   <script src="js/auth.js"></script>
 </body>
 </html>

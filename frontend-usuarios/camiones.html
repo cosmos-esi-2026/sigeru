@@ -3,39 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiGeRU - Camiones</title>
+  <title>Camiones - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
 <div class="layout">
 
   <!-- ===================== Barra lateral ===================== -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal">
 
     <a class="sidebar-marca" href="dashboard.html">
       <img src="img/logo.svg" alt="">
       SiGeRU
     </a>
+    <div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Secciones del sistema">
       <a class="sidebar-link" href="dashboard.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-4v-6H9v6H4a1 1 0 0 1-1-1z"/>
         </svg>
         Inicio
       </a>
       <a class="sidebar-link" href="usuarios.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
           <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/><path d="M17.8 14.4A6.2 6.2 0 0 1 21.2 20"/>
         </svg>
         Usuarios
       </a>
       <a class="sidebar-link" href="contenedores.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
           <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
           <path d="M10 11v6M14 11v6"/>
@@ -43,11 +49,23 @@
         Contenedores
       </a>
       <a class="sidebar-link activo" href="camiones.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
           <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
         </svg>
         Camiones
+      </a>
+      <a class="sidebar-link" href="centros.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5 12 5l9 5.5V20H3z"/><path d="M8 20v-6h8v6"/>
+        </svg>
+        Centros de acopio
+      </a>
+      <a class="sidebar-link" href="solicitudes.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12h5l2 3h4l2-3h5"/><path d="M4 6h16v12H4z"/>
+        </svg>
+        Solicitudes
       </a>
     </nav>
 
@@ -57,11 +75,11 @@
         <div class="rol" id="sidebar-rol"></div>
       </div>
       <a class="sidebar-link" href="#" id="btn-salir">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/>
           <path d="M10 8l-4 4 4 4"/><path d="M6 12h11"/>
         </svg>
-        Cerrar sesion
+        Cerrar sesión
       </a>
     </div>
 
@@ -71,98 +89,120 @@
   <div class="principal">
 
     <header class="topbar">
-      <button class="btn-menu" id="btn-menu" aria-label="Abrir menu">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+      <button class="btn-menu" id="btn-menu" aria-label="Abrir menú">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <path d="M3 6h18M3 12h18M3 18h18"/>
         </svg>
       </button>
-      <h1>Camiones</h1>
+      <div class="topbar-titulo">
+        <h1>Camiones</h1>
+        <p class="bajada">Flota de recolección: matrícula, capacidad y disponibilidad.</p>
+      </div>
+      <button class="boton boton-primario" id="btn-nuevo" data-bs-toggle="modal" data-bs-target="#modal-camion">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nuevo camión
+      </button>
     </header>
 
-    <main class="contenido">
-      <div class="panel">
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-listado">
 
         <div class="barra-herramientas">
-          <span class="titulo">Listado</span>
+          <h2 class="titulo" id="titulo-listado">Listado</h2>
 
-          <input type="search" class="buscador" id="buscador"
-                 placeholder="Buscar por matricula, marca o estado">
+          <div class="buscador-caja">
+            <label class="solo-lectores" for="buscador">Buscar camiones</label>
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="search" class="buscador" id="buscador"
+                   placeholder="Buscar por matrícula, marca o estado">
+          </div>
 
-          <button class="btn-icono" id="btn-recargar" aria-label="Recargar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
             </svg>
           </button>
-
-          <button class="btn-accion" data-bs-toggle="modal" data-bs-target="#modal-camion">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            Nuevo camion
-          </button>
         </div>
 
-        <p id="mensaje-pagina" class="mensaje"></p>
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="camiones"></p>
 
         <div class="tabla-scroll">
-          <table class="tabla">
-            <thead>
-              <tr>
-                <th>ID</th><th>Matricula</th><th>Marca</th>
-                <th>Modelo</th><th>Capacidad</th><th>Estado</th>
+          <table class="tabla" id="tabla-camiones" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" data-orden>Matrícula</th>
+                <th role="columnheader" data-orden>Marca</th>
+                <th role="columnheader" data-orden>Modelo</th>
+                <th role="columnheader" data-orden>Capacidad</th>
+                <th role="columnheader" data-orden>Estado</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
               </tr>
             </thead>
-            <tbody id="cuerpo-tabla">
-              <tr><td colspan="6" class="fila-aviso"><p>Cargando...</p></td></tr>
+            <tbody id="cuerpo-tabla" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+              </tr>
             </tbody>
           </table>
         </div>
 
-      </div>
+      </section>
     </main>
   </div>
 </div>
 
 <!-- ===================== Modal de alta ===================== -->
-<div class="modal fade" id="modal-camion" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modal-camion" tabindex="-1" aria-labelledby="titulo-modal-camion" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h2 class="modal-title">Nuevo camion</h2>
+        <h2 class="modal-title" id="titulo-modal-camion">Nuevo camión</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
       <div class="modal-body">
         <form id="form-camion" class="formulario">
-          <label>Matricula
+          <label>Matrícula
             <input type="text" name="matricula" placeholder="SXX-0000" required>
           </label>
           <div class="formulario-columnas">
             <label>Marca
-              <input type="text" name="marca">
+              <input type="text" name="marca" placeholder="Mercedes-Benz">
             </label>
             <label>Modelo
-              <input type="text" name="modelo">
+              <input type="text" name="modelo" placeholder="Atego 1719">
             </label>
           </div>
           <div class="formulario-columnas">
             <label>Capacidad (kg)
-              <input type="number" name="capacidad" min="0">
+              <input type="number" name="capacidad" min="0" placeholder="8000">
             </label>
+            <!-- Los value son los del ENUM de la base; la tilde es solo lo que
+                 se lee en pantalla. -->
             <label>Estado
               <select name="estado">
-                <option value="operativo">operativo</option>
-                <option value="en_ruta">en_ruta</option>
-                <option value="mantenimiento">mantenimiento</option>
-                <option value="fuera_servicio">fuera_servicio</option>
+                <option value="operativo">Operativo</option>
+                <option value="en_ruta">En ruta</option>
+                <option value="mantenimiento">En mantenimiento</option>
+                <option value="fuera_servicio">Fuera de servicio</option>
               </select>
             </label>
           </div>
-          <button type="submit" class="btn-accion">Guardar</button>
+          <button type="submit" class="boton boton-primario">Guardar camión</button>
         </form>
 
-        <p id="mensaje" class="mensaje"></p>
+        <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
       </div>
 
     </div>
@@ -171,6 +211,7 @@
 
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/camiones.js"></script>

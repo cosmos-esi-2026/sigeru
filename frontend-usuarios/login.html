@@ -3,59 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SiGeRU - Iniciar sesion</title>
+  <title>Iniciar sesión - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <div class="auth">
+  <main class="pantalla-centrada">
+    <div class="tarjeta-auth">
+      <h1>SiGeRU</h1>
+      <p class="subtitulo">Ingresá con tu cuenta para acceder al panel</p>
 
-    <!-- Columna de la foto. Si img/login.jpg todavia no existe, queda el verde
-         de fondo que define el CSS y la pantalla se sigue viendo bien. -->
-    <div class="auth-imagen" style="background-image: url('img/login.jpg');">
-      <div class="marca">
-        <img src="img/logo.svg" alt="">
-        <h1>SiGeRU</h1>
-        <p>Sistema de Gestion de Residuos Urbanos</p>
-      </div>
+      <form id="form-login" class="formulario">
+        <label>Email
+          <input type="email" name="email" value="admin@sigeru.uy"
+                 autocomplete="email" required>
+        </label>
+        <label>Contraseña
+          <input type="password" name="password" value="123456"
+                 autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="boton boton-primario">Ingresar</button>
+      </form>
+
+      <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+
+      <p class="texto-centro mt">¿No tenés cuenta? <a href="registro.html">Solicitá acceso</a></p>
+      <p class="texto-centro mt"><a href="../landing/index.html">Volver al inicio</a></p>
+
+      <!-- Banda de clasificación al pie de la tarjeta -->
+      <div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-
-    <!-- Columna del formulario -->
-    <div class="auth-panel">
-      <div class="auth-caja">
-
-        <!-- Logo de respaldo: el CSS lo muestra solo cuando la foto se oculta -->
-        <div class="auth-logo-chico">
-          <img src="img/logo.svg" alt="SiGeRU">
-        </div>
-
-        <h2>Iniciar sesion</h2>
-        <p class="bajada">Ingresa con tu cuenta para acceder al panel.</p>
-
-        <form id="form-login" class="formulario">
-          <label>Email
-            <input type="email" name="email" value="admin@sigeru.uy" required>
-          </label>
-          <label>Contrasena
-            <input type="password" name="password" value="123456" required>
-          </label>
-          <button type="submit" class="btn-accion">Ingresar</button>
-        </form>
-
-        <p id="mensaje" class="mensaje"></p>
-
-        <div class="pie-enlaces">
-          <p>No tenes cuenta? <a href="registro.html">Registrate</a></p>
-          <p><a href="../landing/index.html">Volver al inicio</a></p>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
+  </main>
 
   <script src="js/api.js"></script>
+  <script src="js/formularios.js"></script>
   <script src="js/auth.js"></script>
 </body>
 </html>
