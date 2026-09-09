@@ -25,7 +25,8 @@
 require_once __DIR__ . "/core/Response.php";
 require_once __DIR__ . "/controllers/UsuarioController.php";
 
-// Cabeceras CORS (deja que el frontend consuma la API) y corta si es OPTIONS
+// Red de seguridad: cualquier excepcion sale como JSON, nunca como HTML de PHP
+Response::manejarErrores();
 Response::cors();
 
 // --- 1. Obtener la ruta pedida, sin el prefijo de la carpeta ----------------
@@ -75,11 +76,27 @@ if ($recurso === "usuarios") {
     if ($metodo === "POST" && count($segmentos) === 1) {
         $controlador->crear();
     }
+    if ($metodo === "PUT" && count($segmentos) === 2) {
+        $controlador->actualizar((int) $segmentos[1]);
+    }
+    // La baja es logica: el usuario pasa a inactivo, la fila no se borra.
+    if ($metodo === "DELETE" && count($segmentos) === 2) {
+        $controlador->darDeBaja((int) $segmentos[1]);
+    }
 }
 
-// POST /login
+// POST /login  y  POST /logout
 if ($recurso === "login" && $metodo === "POST") {
     $controlador->login();
+}
+if ($recurso === "logout" && $metodo === "POST") {
+    $controlador->logout();
+}
+
+// GET /sesion -> quien esta logueado. El frontend lo usa para saber si la
+// sesion del servidor sigue viva sin tener que pedir un recurso protegido.
+if ($recurso === "sesion" && $metodo === "GET") {
+    $controlador->sesion();
 }
 
 // Rutas del recurso /solicitudes

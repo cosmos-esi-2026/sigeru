@@ -1,40 +1,96 @@
 <?php
 // ============================================================================
-//  SiGeRU 2026 - Control de acceso por rol (API de gestion)
+//  SiGeRU 2026 - Sesion y control de acceso por rol
 //
-//  IMPORTANTE - alcance de este archivo:
-//  Esto NO es un sistema de sesiones. Es el control minimo que impide que
-//  cualquiera cree o modifique contenedores y camiones sin haber iniciado
-//  sesion, mientras la persistencia en base de datos todavia no esta hecha.
+//  SESION REAL (2da entrega). Reemplaza al control anterior, que confiaba en
+//  las cabeceras X-Usuario-Email / X-Usuario-Rol que mandaba el navegador.
+//  Aquello se podia falsificar escribiendo dos cabeceras a mano: cualquiera
+//  podia declararse Administrador.
 //
-//  Como funciona: el frontend manda en cada peticion las cabeceras
-//  "X-Usuario-Email" y "X-Usuario-Rol" con los datos de la sesion iniciada.
+//  Como funciona ahora:
+//  - El login guarda el id del usuario en la sesion del SERVIDOR. El navegador
+//    solo recibe una cookie con el identificador de sesion, que no dice nada
+//    de quien es ni que rol tiene.
+//  - En cada peticion, el rol se vuelve a leer DE LA BASE. Si un administrador
+//    da de baja a alguien que esta con la sesion abierta, la siguiente peticion
+//    de esa persona ya no pasa.
+//  - La cookie va con path "/" para que las dos APIs (usuarios y gestion)
+//    compartan la misma sesion: se sirven desde el mismo origen bajo Apache.
 //
-//  Limitacion conocida y asumida: a diferencia de la API de usuarios, esta API
-//  no tiene la lista de usuarios, asi que no puede comprobar que ese usuario
-//  exista de verdad -- solo que la peticion venga identificada y con el rol
-//  adecuado. Las cabeceras se pueden falsificar.
-//
-//  Cuando la persistencia este conectada, las dos APIs van a compartir la tabla
-//  usuario y esta clase pasa a verificar el rol contra la base, o contra el
-//  token firmado que emita el login. El punto de cambio es identificar():
-//  todo el resto del codigo ya llama a exigirRol() y no hay que tocarlo.
+//  Este archivo es identico en api-usuarios y api-gestion.
 // ============================================================================
 
 require_once __DIR__ . "/Response.php";
+require_once __DIR__ . "/../config/database.php";
 
 class Auth
 {
-    /** Devuelve los datos de sesion que trae la peticion, o null si no vienen. */
+    private const NOMBRE_SESION = "SIGERUSESSID";
+
+    private static function arrancarSesion(): void
+    {
+        if (session_status() !== PHP_SESSION_NONE) {
+            return;
+        }
+
+        session_name(self::NOMBRE_SESION);
+        session_set_cookie_params([
+            "path"     => "/",        // compartida por las dos APIs y el frontend
+            "httponly" => true,       // el JavaScript no puede leer la cookie
+            "samesite" => "Lax",      // no viaja en peticiones de otros sitios
+        ]);
+        session_start();
+    }
+
+    /** Guarda la sesion despues de un login correcto. */
+    public static function iniciarSesion(array $usuario): void
+    {
+        self::arrancarSesion();
+
+        // Evita el robo de sesion por fijacion: se cambia el identificador al
+        // momento de autenticarse.
+        session_regenerate_id(true);
+
+        $_SESSION["id_usuario"] = (int) $usuario["id_usuario"];
+    }
+
+    public static function cerrarSesion(): void
+    {
+        self::arrancarSesion();
+
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $p = session_get_cookie_params();
+            setcookie(session_name(), "", time() - 42000, $p["path"], $p["domain"] ?? "",
+                      $p["secure"] ?? false, $p["httponly"] ?? true);
+        }
+        session_destroy();
+    }
+
+    /**
+     * Devuelve el usuario que hace la peticion, o null si no hay sesion.
+     * Relee siempre de la base: el rol y el estado que valen son los de ahora,
+     * no los que tenia cuando inicio sesion.
+     */
     public static function identificar(): ?array
     {
-        $email = $_SERVER["HTTP_X_USUARIO_EMAIL"] ?? "";
-        $rol   = $_SERVER["HTTP_X_USUARIO_ROL"] ?? "";
+        self::arrancarSesion();
 
-        if ($email === "" || $rol === "") {
+        if (empty($_SESSION["id_usuario"])) {
             return null;
         }
-        return ["email" => $email, "rol" => $rol];
+
+        $sql = "SELECT u.id_usuario, u.nombre, u.apellido, u.email,
+                       r.nombre AS rol, u.estado
+                FROM usuario u
+                JOIN rol r ON r.id_rol = u.id_rol
+                WHERE u.id_usuario = :id";
+
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":id" => $_SESSION["id_usuario"]]);
+
+        $usuario = $consulta->fetch();
+        return $usuario === false ? null : $usuario;
     }
 
     /** Corta la peticion con 401/403 si quien la hace no tiene el rol pedido. */
@@ -43,17 +99,28 @@ class Auth
         $usuario = self::identificar();
 
         if ($usuario === null) {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "Hay que iniciar sesion para hacer esta operacion",
-            ], 401);
+            Response::error("Hay que iniciar sesión para hacer esta operación", 401);
+        }
+        if ($usuario["estado"] !== "activo") {
+            Response::error("La cuenta no está activa", 403);
+        }
+        if ($usuario["rol"] !== $rol) {
+            Response::error("Se necesita el rol de $rol para hacer esta operación", 403);
         }
 
-        if ($usuario["rol"] !== $rol) {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "Se necesita el rol de $rol para hacer esta operacion",
-            ], 403);
+        return $usuario;
+    }
+
+    /** Quien esta logueado, sin exigir un rol concreto. */
+    public static function exigirSesion(): array
+    {
+        $usuario = self::identificar();
+
+        if ($usuario === null) {
+            Response::error("Hay que iniciar sesión para hacer esta operación", 401);
+        }
+        if ($usuario["estado"] !== "activo") {
+            Response::error("La cuenta no está activa", 403);
         }
 
         return $usuario;

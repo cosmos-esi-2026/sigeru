@@ -1,50 +1,228 @@
 <?php
+// ============================================================================
+//  SiGeRU 2026 - Modelo de contenedores
+//
+//  PERSISTENCIA REAL (2da entrega): los datos viven en MySQL.
+//  El contrato con el frontend no cambia: sigue devolviendo "tipo_residuo" y
+//  "zona" como NOMBRE, aunque en la base sean claves foraneas.
+//
+//  Todas las consultas son preparadas. Nunca se concatena un valor en el SQL.
+// ============================================================================
+
+require_once __DIR__ . "/../config/database.php";
 
 class Contenedor
 {
-    private static array $contenedores = [
-        [
-            "id_contenedor" => 1, "codigo" => "CNT-001",
-            "direccion" => "Av. Italia esq. Propios", "capacidad" => 1100,
-            "estado" => "disponible", "tipo_residuo" => "Organico"
-        ],
-        [
-            "id_contenedor" => 2, "codigo" => "CNT-002",
-            "direccion" => "Plaza Independencia", "capacidad" => 1100,
-            "estado" => "lleno", "tipo_residuo" => "Plastico"
-        ],
-        [
-            "id_contenedor" => 3, "codigo" => "CNT-003",
-            "direccion" => "Bvar. Artigas 2200", "capacidad" => 800,
-            "estado" => "disponible", "tipo_residuo" => "Vidrio"
-        ],
-    ];
+    public const ESTADOS = ["disponible", "lleno", "mantenimiento", "retirado"];
+
+    private const CAMPOS = "c.id_contenedor, c.codigo, c.direccion, c.latitud,
+                            c.longitud, c.capacidad, c.estado,
+                            c.id_zona, z.nombre AS zona,
+                            c.id_tipo_residuo, t.nombre AS tipo_residuo";
+
+    private const DESDE = "FROM contenedor c
+                           JOIN zona z ON z.id_zona = c.id_zona
+                           JOIN tipo_residuo t ON t.id_tipo_residuo = c.id_tipo_residuo";
 
     public static function listar(): array
     {
-        return self::$contenedores;
+        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . " ORDER BY c.id_contenedor";
+        return Database::conexion()->query($sql)->fetchAll();
     }
 
     public static function obtener(int $id): ?array
     {
-        foreach (self::$contenedores as $c) {
-            if ($c["id_contenedor"] === $id) {
-                return $c;
-            }
-        }
-        return null;
+        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . " WHERE c.id_contenedor = :id";
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":id" => $id]);
+
+        $contenedor = $consulta->fetch();
+        return $contenedor === false ? null : $contenedor;
     }
 
+    public static function existeCodigo(string $codigo): bool
+    {
+        $sql = "SELECT 1 FROM contenedor WHERE codigo = :codigo";
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":codigo" => $codigo]);
+
+        return $consulta->fetchColumn() !== false;
+    }
+
+    /** Traduce el nombre de un tipo de residuo a su id. */
+    private static function idDeTipo(?string $nombre): ?int
+    {
+        if ($nombre === null || $nombre === "") {
+            return null;
+        }
+        $sql = "SELECT id_tipo_residuo FROM tipo_residuo WHERE nombre = :nombre";
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":nombre" => $nombre]);
+
+        $id = $consulta->fetchColumn();
+        return $id === false ? null : (int) $id;
+    }
+
+    /**
+     * Resuelve la zona a partir de lo que haya mandado el cliente: el id, el
+     * nombre, o nada. Si no manda nada cae en la primera zona cargada, para que
+     * el alta siga funcionando desde formularios que todavia no tienen el campo.
+     */
+    private static function resolverZona(array $datos): ?int
+    {
+        if (!empty($datos["id_zona"])) {
+            return (int) $datos["id_zona"];
+        }
+        if (!empty($datos["zona"])) {
+            $sql = "SELECT id_zona FROM zona WHERE nombre = :nombre";
+            $consulta = Database::conexion()->prepare($sql);
+            $consulta->execute([":nombre" => $datos["zona"]]);
+            $id = $consulta->fetchColumn();
+            if ($id !== false) {
+                return (int) $id;
+            }
+        }
+        $primera = Database::conexion()->query("SELECT MIN(id_zona) FROM zona")->fetchColumn();
+        return $primera === false ? null : (int) $primera;
+    }
+
+    /**
+     * Alta de contenedor. Ademas de la fila, deja el primer registro en el
+     * historial de estados: asi la trazabilidad del contenedor empieza en el
+     * momento en que se lo da de alta y no cuando alguien lo edita por primera
+     * vez. Las dos escrituras van en una transaccion.
+     */
     public static function crear(array $datos): array
     {
-        $nuevoId = count(self::$contenedores) + 1;
-        return [
-            "id_contenedor" => $nuevoId,
-            "codigo"        => $datos["codigo"]       ?? "",
-            "direccion"     => $datos["direccion"]    ?? "",
-            "capacidad"     => $datos["capacidad"]    ?? null,
-            "estado"        => $datos["estado"]       ?? "disponible",
-            "tipo_residuo"  => $datos["tipo_residuo"] ?? null,
-        ];
+        $estado = in_array($datos["estado"] ?? "", self::ESTADOS, true)
+            ? $datos["estado"]
+            : "disponible";
+
+        $conexion = Database::conexion();
+        $conexion->beginTransaction();
+
+        try {
+            $sql = "INSERT INTO contenedor
+                       (codigo, direccion, latitud, longitud, capacidad, estado,
+                        id_zona, id_tipo_residuo)
+                    VALUES
+                       (:codigo, :direccion, :latitud, :longitud, :capacidad, :estado,
+                        :id_zona, :id_tipo)";
+
+            $consulta = $conexion->prepare($sql);
+            $consulta->execute([
+                ":codigo"    => $datos["codigo"]    ?? "",
+                ":direccion" => $datos["direccion"] ?? "",
+                ":latitud"   => $datos["latitud"]   ?? null,
+                ":longitud"  => $datos["longitud"]  ?? null,
+                ":capacidad" => ($datos["capacidad"] ?? "") === "" ? null : (int) $datos["capacidad"],
+                ":estado"    => $estado,
+                ":id_zona"   => self::resolverZona($datos),
+                ":id_tipo"   => self::idDeTipo($datos["tipo_residuo"] ?? null)
+                                ?? self::idDeTipo("Mixto"),
+            ]);
+
+            $id = (int) $conexion->lastInsertId();
+            self::registrarEstado($id, $estado, "Alta del contenedor");
+
+            $conexion->commit();
+            return self::obtener($id);
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            throw $e;
+        }
+    }
+
+    /** Modifica solo los campos que vengan; lo que no se manda queda igual. */
+    public static function actualizar(int $id, array $datos): ?array
+    {
+        $anterior = self::obtener($id);
+        if ($anterior === null) {
+            return null;
+        }
+
+        $partes = [];
+        $valores = [":id" => $id];
+
+        foreach (["codigo", "direccion", "latitud", "longitud", "capacidad"] as $campo) {
+            if (array_key_exists($campo, $datos)) {
+                $partes[] = "$campo = :$campo";
+                $valores[":$campo"] = $datos[$campo] === "" ? null : $datos[$campo];
+            }
+        }
+        if (isset($datos["estado"]) && in_array($datos["estado"], self::ESTADOS, true)) {
+            $partes[] = "estado = :estado";
+            $valores[":estado"] = $datos["estado"];
+        }
+        if (isset($datos["tipo_residuo"])) {
+            $idTipo = self::idDeTipo($datos["tipo_residuo"]);
+            if ($idTipo !== null) {
+                $partes[] = "id_tipo_residuo = :id_tipo";
+                $valores[":id_tipo"] = $idTipo;
+            }
+        }
+        if (!empty($datos["id_zona"])) {
+            $partes[] = "id_zona = :id_zona";
+            $valores[":id_zona"] = (int) $datos["id_zona"];
+        }
+
+        if ($partes !== []) {
+            $sql = "UPDATE contenedor SET " . implode(", ", $partes) . " WHERE id_contenedor = :id";
+            $consulta = Database::conexion()->prepare($sql);
+            $consulta->execute($valores);
+        }
+
+        // Si cambio el estado, queda asentado en el historial.
+        if (isset($valores[":estado"]) && $valores[":estado"] !== $anterior["estado"]) {
+            self::registrarEstado($id, $valores[":estado"], "Cambio de estado desde el panel");
+        }
+
+        return self::obtener($id);
+    }
+
+    /**
+     * Baja LOGICA: el contenedor pasa a "retirado". No se borra porque su
+     * historial de estados y sus vaciados son parte del registro del servicio.
+     */
+    public static function darDeBaja(int $id, string $motivo = "Retirado desde el panel"): ?array
+    {
+        if (self::obtener($id) === null) {
+            return null;
+        }
+
+        $sql = "UPDATE contenedor SET estado = 'retirado' WHERE id_contenedor = :id";
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":id" => $id]);
+
+        self::registrarEstado($id, "retirado", $motivo);
+        return self::obtener($id);
+    }
+
+    /** Agrega una linea al historial de estados del contenedor. */
+    public static function registrarEstado(int $id, string $estado, ?string $observacion = null): void
+    {
+        $sql = "INSERT INTO estado_contenedor (id_contenedor, estado, observacion)
+                VALUES (:id, :estado, :observacion)";
+
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([
+            ":id"          => $id,
+            ":estado"      => $estado,
+            ":observacion" => $observacion,
+        ]);
+    }
+
+    /** Historial completo de un contenedor, del mas nuevo al mas viejo. */
+    public static function historial(int $id): array
+    {
+        $sql = "SELECT id_registro, fecha_hora, estado, observacion
+                FROM estado_contenedor
+                WHERE id_contenedor = :id
+                ORDER BY fecha_hora DESC, id_registro DESC";
+
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":id" => $id]);
+
+        return $consulta->fetchAll();
     }
 }

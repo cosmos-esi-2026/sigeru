@@ -54,15 +54,90 @@ class UsuarioController
         Response::json(["ok" => true, "mensaje" => "Usuario creado", "datos" => $nuevo], 201);
     }
 
+    /** Modifica un usuario. El rol solo cambia si viene y es valido. */
+    public function actualizar(int $id): void
+    {
+        Auth::exigirRol("Administrador");
+        $datos = Response::leerJson();
+
+        $actual = Usuario::obtener($id);
+        if ($actual === null) {
+            Response::error("Usuario no encontrado", 404);
+        }
+
+        // El email es la credencial de acceso: no puede pisar el de otra cuenta.
+        if (isset($datos["email"]) && $datos["email"] !== $actual["email"]
+            && Usuario::existeEmail($datos["email"])) {
+            Response::error("Ya existe un usuario con ese email", 409);
+        }
+
+        $rol = $datos["rol"] ?? null;
+        if ($rol !== null && !in_array($rol, Usuario::ROLES, true)) {
+            Response::error(
+                "Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES),
+                400
+            );
+        }
+
+        $actualizado = Usuario::actualizar($id, $datos, $rol);
+        Response::json(["ok" => true, "mensaje" => "Usuario actualizado", "datos" => $actualizado]);
+    }
+
+    /**
+     * Baja LOGICA: la cuenta pasa a inactivo y deja de poder entrar, pero las
+     * incidencias que reporto siguen teniendo autor.
+     */
+    public function darDeBaja(int $id): void
+    {
+        $administrador = Auth::exigirRol("Administrador");
+
+        $usuario = Usuario::obtener($id);
+        if ($usuario === null) {
+            Response::error("Usuario no encontrado", 404);
+        }
+        if ($usuario["estado"] === "inactivo") {
+            Response::error("El usuario ya estaba inactivo", 409);
+        }
+        // Sin esto, un administrador se desactiva a si mismo y pierde el acceso.
+        if ((int) $administrador["id_usuario"] === $id) {
+            Response::error("No podés darte de baja tu propia cuenta", 409);
+        }
+
+        $baja = Usuario::darDeBaja($id);
+        Response::json(["ok" => true, "mensaje" => "Usuario dado de baja", "datos" => $baja]);
+    }
+
     public function login(): void
     {
         $datos = Response::leerJson();
         $usuario = Usuario::login($datos["email"] ?? "", $datos["password"] ?? "");
 
         if ($usuario === null) {
-            Response::json(["ok" => false, "mensaje" => "Email o contrasena incorrectos"], 401);
+            Response::error("El email o la contraseña no coinciden", 401);
         }
+
+        Auth::iniciarSesion($usuario);
         Response::json(["ok" => true, "mensaje" => "Login correcto", "datos" => $usuario]);
+    }
+
+    /** Cierra la sesion del servidor. */
+    public function logout(): void
+    {
+        Auth::cerrarSesion();
+        Response::json(["ok" => true, "mensaje" => "Sesión cerrada"]);
+    }
+
+    /**
+     * Quien esta logueado. Devuelve 401 si no hay sesion, asi el frontend puede
+     * comprobar al cargar una pagina si la sesion del servidor sigue viva.
+     */
+    public function sesion(): void
+    {
+        $usuario = Auth::identificar();
+        if ($usuario === null) {
+            Response::error("No hay una sesión iniciada", 401);
+        }
+        Response::json(["ok" => true, "datos" => $usuario]);
     }
 
     // --------------------------------------------------------- solicitudes --
