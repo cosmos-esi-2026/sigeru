@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiGeRU - Sistema de Gestión de Residuos Urbanos</title>
+
+  <!-- Tipografías (si no hay internet, el navegador usa las del sistema) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+
+  <!-- Hoja de estilos propia (sin frameworks externos) -->
+  <style>
+/* ==========================================================================
+   SiGeRU 2026 - Estilos de la Landing page
+   Archivo: landing/css/styles.css
+   CSS puro, sin frameworks (no Tailwind, no Bootstrap).
+
+   IDEA DE DISENO
+   --------------
+   El sistema visual se llama "banda de clasificacion": la franja de colores
+   que aparece debajo del encabezado, arriba de las tarjetas y en el pie
+   representa los tipos de residuo (organico, plastico, vidrio, papel, metal).
+   No es decoracion: los mismos colores se reutilizan como etiquetas.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. VARIABLES (tokens de diseno)
+   Cambiando estos valores cambia toda la pagina.
+   ========================================================================== */
+:root {
+  /* --- Colores base --- */
+  --hueso:        #f6f7f2;  /* fondo general, blanco con un toque verde */
+  --blanco:       #ffffff;
+  --tinta:        #0e241c;  /* texto principal (verde muy oscuro, no negro) */
+  --tinta-suave:  #55685f;  /* texto secundario */
+  --borde:        #e3e7df;
+
+  /* --- Color institucional --- */
+  --verde:        #15654a;
+  --verde-oscuro: #0e4a36;
+  --verde-agua:   #e6f1ea;  /* fondo suave para resaltar */
+  --lima:         #cdeb4b;  /* acento "alta visibilidad", como los chalecos */
+
+  /* --- Colores por tipo de residuo (se usan como etiquetas) --- */
+  --organico:  #7a5c3e;
+  --plastico:  #d9a300;
+  --vidrio:    #2e9e8f;
+  --papel:     #2f6fd0;
+  --metal:     #8b94a3;
+
+  /* --- Estados --- */
+  --ok-texto:  #15654a;
+  --ok-fondo:  #dff0e5;
+  --error:     #b3261e;
+  --error-fondo: #fce4e2;
+
+  /* --- Tipografias --- */
+  --fuente-titulo: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --fuente-texto:  "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --fuente-dato:   "IBM Plex Mono", "Consolas", monospace;
+
+  /* --- Bordes redondeados y sombras --- */
+  --radio-1: 10px;
+  --radio-2: 16px;
+  --radio-3: 24px;
+  --sombra-1: 0 1px 2px rgba(14, 36, 28, .06), 0 2px 8px rgba(14, 36, 28, .04);
+  --sombra-2: 0 18px 40px -18px rgba(14, 36, 28, .35);
+}
+
+/* ==========================================================================
+   2. RESET Y BASE
+   ========================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fuente-texto);
+  color: var(--tinta);
+  background: var(--hueso);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Contenedor central */
+.contenedor {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.contenedor-angosto { max-width: 700px; }
+
+/* Foco visible con teclado (accesibilidad) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--lima);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   3. BANDA DE CLASIFICACION (elemento distintivo del sitio)
+   Cinco franjas con los colores de los tipos de residuo.
+   ========================================================================== */
+.banda {
+  display: flex;
+  height: 5px;
+}
+.banda span { flex: 1; }
+.banda span:nth-child(1) { background: var(--organico); }
+.banda span:nth-child(2) { background: var(--plastico); }
+.banda span:nth-child(3) { background: var(--vidrio); }
+.banda span:nth-child(4) { background: var(--papel); }
+.banda span:nth-child(5) { background: var(--metal); }
+
+/* ==========================================================================
+   4. CABECERA Y MENU
+   ========================================================================== */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(246, 247, 242, .85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--borde);
+}
+.cabecera-interna {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.logo {
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+/* Punto verde al lado del nombre */
+.logo::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 0 4px var(--verde-agua);
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.menu a {
+  color: var(--tinta-suave);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: var(--radio-1);
+  transition: color .15s ease, background .15s ease;
+}
+.menu a:hover { color: var(--tinta); background: var(--verde-agua); }
+.menu .boton { margin-left: 6px; }
+
+/* ==========================================================================
+   5. BOTONES
+   ========================================================================== */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.boton:hover { transform: translateY(-1px); }
+.boton:active { transform: translateY(0); }
+
+.boton-primario {
+  background: var(--verde);
+  color: var(--blanco);
+  box-shadow: var(--sombra-1);
+}
+.boton-primario:hover { background: var(--verde-oscuro); }
+
+.boton-secundario {
+  background: var(--blanco);
+  color: var(--verde-oscuro);
+  border-color: var(--borde);
+}
+.boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); }
+
+/* ==========================================================================
+   6. HERO (seccion principal)
+   ========================================================================== */
+.hero {
+  padding: 96px 0 104px;
+  overflow: hidden;
+  text-align: center;
+}
+/* Hero de una sola columna, centrado */
+.hero-interno { display: block; }
+.hero-texto {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* Etiqueta chica arriba del titulo */
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fuente-dato);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--verde-oscuro);
+  background: var(--verde-agua);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 22px;
+}
+
+.hero h2 {
+  font-size: clamp(36px, 6.2vw, 66px);
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+/* Palabra resaltada con un subrayado grueso color lima */
+.resaltado {
+  background: linear-gradient(transparent 62%, var(--lima) 62%);
+  padding: 0 2px;
+}
+
+.hero p {
+  font-size: 19px;
+  color: var(--tinta-suave);
+  max-width: 56ch;
+  margin: 0 auto 34px;
+}
+.hero-acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Etiqueta de tipo de residuo: usa el color guardado en --color */
+.tipo {
+  --color: var(--metal);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tinta);
+  background: var(--hueso);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 5px 12px;
+  list-style: none;
+}
+.tipo::before {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 3px;
+  background: var(--color);
+}
+.tipo[data-tipo="organico"] { --color: var(--organico); }
+.tipo[data-tipo="plastico"] { --color: var(--plastico); }
+.tipo[data-tipo="vidrio"]   { --color: var(--vidrio); }
+.tipo[data-tipo="papel"]    { --color: var(--papel); }
+.tipo[data-tipo="metal"]    { --color: var(--metal); }
+
+/* ==========================================================================
+   7. SECCIONES DE CONTENIDO
+   ========================================================================== */
+.seccion { padding: 76px 0; }
+.seccion-gris {
+  background: var(--blanco);
+  border-top: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+}
+
+.seccion h2 {
+  font-size: clamp(26px, 3.4vw, 34px);
+  margin-bottom: 14px;
+}
+.seccion > .contenedor > p {
+  color: var(--tinta-suave);
+  max-width: 62ch;
+  font-size: 17px;
+}
+
+/* Dos columnas para "Que es" */
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.dos-columnas p { color: var(--tinta-suave); font-size: 17px; }
+
+.lista-marcada { list-style: none; display: grid; gap: 14px; }
+.lista-marcada li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: var(--tinta-suave);
+}
+.lista-marcada li::before {
+  content: "";
+  flex: none;
+  width: 20px; height: 20px;
+  margin-top: 3px;
+  border-radius: 50%;
+  background: var(--verde-agua);
+  border: 2px solid var(--verde);
+}
+
+/* --- Tarjetas de servicios --- */
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  margin-top: 36px;
+}
+.tarjeta {
+  --color: var(--verde);
+  position: relative;
+  background: var(--hueso);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-2);
+  padding: 28px 24px 24px;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+/* Franja de color arriba de cada tarjeta */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--color);
+}
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-2);
+  border-color: var(--color);
+}
+.tarjeta[data-color="plastico"] { --color: var(--plastico); }
+.tarjeta[data-color="vidrio"]   { --color: var(--vidrio); }
+.tarjeta[data-color="papel"]    { --color: var(--papel); }
+
+.tarjeta-icono {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  margin-bottom: 16px;
+  color: var(--color);
+}
+.tarjeta-icono svg { width: 22px; height: 22px; }
+.tarjeta h3 { font-size: 19px; margin-bottom: 8px; }
+.tarjeta p { color: var(--tinta-suave); font-size: 15px; }
+
+/* --- Fila de tipos de residuo --- */
+.tipos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+/* ==========================================================================
+   8. FORMULARIO DE REGISTRO
+   ========================================================================== */
+.caja-formulario {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-3);
+  padding: 36px;
+  box-shadow: var(--sombra-1);
+  margin-top: 28px;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--tinta);
+}
+.formulario input {
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 400;
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-1);
+  background: var(--hueso);
+  color: var(--tinta);
+  transition: border-color .15s ease, background .15s ease;
+}
+.formulario input:hover { border-color: #cfd6cb; }
+.formulario input:focus {
+  outline: none;
+  background: var(--blanco);
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px var(--verde-agua);
+}
+.formulario input::placeholder { color: #9aa9a1; }
+/* El boton ocupa todo el ancho de la grilla */
+.formulario button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 6px;
+}
+
+/* Mensaje de resultado (exito o error) */
+.mensaje {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radio-1);
+}
+.mensaje.ok,
+.mensaje.error { padding: 12px 14px; }
+.mensaje.ok    { color: var(--ok-texto); background: var(--ok-fondo); }
+.mensaje.error { color: var(--error);    background: var(--error-fondo); }
+
+/* ==========================================================================
+   9. PIE DE PAGINA
+   ========================================================================== */
+.pie {
+  background: var(--tinta);
+  color: rgba(255, 255, 255, .72);
+  margin-top: 0;
+}
+.pie-interno {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding-top: 34px;
+  padding-bottom: 34px;
+  font-size: 14px;
+}
+.pie strong { color: var(--blanco); font-family: var(--fuente-titulo); }
+.pie a { color: var(--lima); text-decoration: none; }
+.pie a:hover { text-decoration: underline; }
+
+/* ==========================================================================
+   10. RESPONSIVE (pantallas chicas)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .dos-columnas { grid-template-columns: 1fr; gap: 36px; }
+  .hero { padding: 60px 0 68px; }
+  .seccion { padding: 56px 0; }
+}
+
+@media (max-width: 640px) {
+  .cabecera-interna { flex-direction: column; align-items: flex-start; }
+  .menu { width: 100%; }
+  .menu a { padding: 8px 10px; font-size: 14px; }
+  .contenedor { padding: 0 18px; }
+  .caja-formulario { padding: 24px 20px; }
+  .pie-interno { flex-direction: column; align-items: flex-start; }
+}
+
+/* Respeta a quien pide menos animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ===================== ENCABEZADO / NAVEGACION ===================== -->
+  <header class="cabecera">
+    <div class="contenedor cabecera-interna">
+      <h1 class="logo">SiGeRU</h1>
+      <nav class="menu">
+        <a href="#que-es">Qué es</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#registro">Registro</a>
+        <!-- Enlace al frontend de usuarios (login) -->
+        <a class="boton boton-secundario" href="#registro">Ingresar</a>
+      </nav>
+    </div>
+    <!-- Banda de clasificación: los 5 tipos de residuo del sistema -->
+    <div class="banda" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <!-- ===================== SECCION PRINCIPAL (HERO) ===================== -->
+  <section class="hero">
+    <div class="contenedor hero-interno">
+
+      <div class="hero-texto">
+        <p class="etiqueta">UTU / ESI 2026 · Residuos urbanos</p>
+        <h2>La ciudad, <span class="resaltado">contenedor por contenedor</span>.</h2>
+        <p>
+          SiGeRU organiza los contenedores, los camiones y los centros de acopio
+          en un solo lugar, y le da a cada vecino un canal directo para reportar
+          lo que ve en la calle.
+        </p>
+        <div class="hero-acciones">
+          <a class="boton boton-primario" href="#registro">Quiero registrarme</a>
+          <a class="boton boton-secundario" href="#que-es">Ver cómo funciona</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== QUE ES ===================== -->
+  <section id="que-es" class="seccion seccion-gris">
+    <div class="contenedor dos-columnas">
+      <div>
+        <h2>Qué es SiGeRU</h2>
+        <p>
+          Un Sistema de Gestión de Residuos Urbanos desarrollado para UTU/ESI 2026.
+          Administra la recolección, los contenedores y la flota de camiones, y le
+          abre a los vecinos un canal para participar.
+        </p>
+      </div>
+      <ul class="lista-marcada">
+        <li>Cada contenedor tiene código, dirección, capacidad y estado.</li>
+        <li>La flota se sigue por matrícula, capacidad y disponibilidad.</li>
+        <li>Los vecinos reportan incidencias sin llamar por teléfono.</li>
+        <li>El backoffice concentra el resumen para la administración.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== SERVICIOS ===================== -->
+  <section id="servicios" class="seccion">
+    <div class="contenedor">
+      <h2>Servicios</h2>
+      <p>Tres módulos que funcionan juntos y comparten los mismos datos.</p>
+
+      <div class="tarjetas">
+        <article class="tarjeta" data-color="vidrio">
+          <div class="tarjeta-icono">
+            <!-- Icono: contenedor -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 6h18"></path>
+              <path d="M8 6V4h8v2"></path>
+              <path d="M5 6l1 14h12l1-14"></path>
+              <path d="M10 10v6M14 10v6"></path>
+            </svg>
+          </div>
+          <h3>Contenedores</h3>
+          <p>Ubicación, capacidad y estado de cada contenedor de la ciudad.</p>
+        </article>
+
+        <article class="tarjeta" data-color="plastico">
+          <div class="tarjeta-icono">
+            <!-- Icono: camión -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 7h11v10H2z"></path>
+              <path d="M13 10h4l4 4v3h-8z"></path>
+              <circle cx="7" cy="18" r="2"></circle>
+              <circle cx="17" cy="18" r="2"></circle>
+            </svg>
+          </div>
+          <h3>Recolección</h3>
+          <p>Flota de camiones y rutas de recolección organizadas por turno.</p>
+        </article>
+
+        <article class="tarjeta" data-color="papel">
+          <div class="tarjeta-icono">
+            <!-- Icono: aviso -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l9 16H3z"></path>
+              <path d="M12 9v5M12 17h.01"></path>
+            </svg>
+          </div>
+          <h3>Incidencias</h3>
+          <p>El vecino reporta un problema y queda registrado con fecha y lugar.</p>
+        </article>
+      </div>
+
+      <!-- Los mismos colores de la banda superior, ahora como etiquetas -->
+      <ul class="tipos-lista">
+        <li class="tipo" data-tipo="organico">Orgánico</li>
+        <li class="tipo" data-tipo="plastico">Plástico</li>
+        <li class="tipo" data-tipo="vidrio">Vidrio</li>
+        <li class="tipo" data-tipo="papel">Papel</li>
+        <li class="tipo" data-tipo="metal">Metal</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== FORMULARIO DE REGISTRO ===================== -->
+  <section id="registro" class="seccion seccion-gris">
+    <div class="contenedor contenedor-angosto">
+      <h2>Solicitar registro</h2>
+      <p>Completá tus datos. Un administrador revisa la solicitud y te habilita el acceso.</p>
+
+      <div class="caja-formulario">
+        <!-- Formulario: el envío lo maneja js/main.js (no recarga la página) -->
+        <form id="form-registro" class="formulario">
+          <label>Nombre
+            <input type="text" name="nombre" placeholder="Ana" required>
+          </label>
+          <label>Apellido
+            <input type="text" name="apellido" placeholder="Pérez" required>
+          </label>
+          <label>Email
+            <input type="email" name="email" placeholder="ana@ejemplo.uy" required>
+          </label>
+          <label>Teléfono
+            <input type="text" name="telefono" placeholder="099 123 456">
+          </label>
+          <label>Dirección
+            <input type="text" name="direccion" placeholder="Av. Italia 2734">
+          </label>
+          <button type="submit" class="boton boton-primario">Enviar solicitud</button>
+        </form>
+
+        <!-- Acá main.js muestra el resultado del envío -->
+        <p id="mensaje-registro" class="mensaje"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PIE DE PAGINA ===================== -->
+  <footer class="pie">
+    <div class="banda" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="contenedor pie-interno">
+      <p><strong>SiGeRU 2026</strong> · Sistema de Gestión de Residuos Urbanos</p>
+      <p>Proyecto UTU/ESI · <a href="#registro">Backoffice</a></p>
+    </div>
+  </footer>
+
+  <!-- JavaScript de la landing -->
+  <script>
+  // Vista previa: el formulario solo muestra un aviso, no llama a la API.
+  document.getElementById("form-registro").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const m = document.getElementById("mensaje-registro");
+    m.textContent = "Vista previa: el envio real se hace con la API levantada en Docker.";
+    m.className = "mensaje ok";
+  });
+</script>
+</body>
+</html>
