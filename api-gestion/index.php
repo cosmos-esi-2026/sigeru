@@ -11,6 +11,8 @@
 //    /camiones/{id}           GET, PUT, DELETE (baja logica: fuera de servicio)
 //    /centros                 GET, POST
 //    /centros/{id}            GET, PUT, DELETE (baja logica: inactivo)
+//    /maquinaria              GET, POST
+//    /maquinaria/{id}         GET, PUT, DELETE (baja logica: fuera de servicio)
 //    /tipos-residuo           GET, POST
 //    /tipos-residuo/{id}      GET, PUT, DELETE (borrado fisico, si nadie lo usa)
 //    /zonas                   GET, POST
@@ -26,6 +28,7 @@ require_once __DIR__ . "/core/Auth.php";
 require_once __DIR__ . "/controllers/ContenedorController.php";
 require_once __DIR__ . "/controllers/CamionController.php";
 require_once __DIR__ . "/controllers/CentroAcopioController.php";
+require_once __DIR__ . "/controllers/MaquinariaController.php";
 require_once __DIR__ . "/controllers/TipoResiduoController.php";
 require_once __DIR__ . "/controllers/ZonaController.php";
 
@@ -116,6 +119,25 @@ switch ($recurso) {
         }
         break;
 
+    case "maquinaria":
+        $controlador = new MaquinariaController();
+        exigirAdministrador($metodo);
+
+        if ($metodo === "GET" && $id !== null) {
+            $controlador->obtener($id);
+        } elseif ($metodo === "GET") {
+            $controlador->listar();
+        } elseif ($metodo === "POST") {
+            $controlador->crear();
+        } elseif ($metodo === "PUT" && $id !== null) {
+            $controlador->actualizar($id);
+        } elseif ($metodo === "DELETE" && $id !== null) {
+            $controlador->darDeBaja($id);
+        } else {
+            Response::error("Método no permitido", 405);
+        }
+        break;
+
     case "tipos-residuo":
         $controlador = new TipoResiduoController();
         exigirAdministrador($metodo);
@@ -158,6 +180,7 @@ switch ($recurso) {
                 "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial",
                 "/camiones", "/camiones/{id}",
                 "/centros", "/centros/{id}",
+                "/maquinaria", "/maquinaria/{id}",
                 "/tipos-residuo", "/tipos-residuo/{id}",
                 "/zonas", "/zonas/{id}",
             ],

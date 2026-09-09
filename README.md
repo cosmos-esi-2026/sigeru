@@ -12,13 +12,15 @@ responsables y reportes.
 | Carpeta | Qué es | Estado |
 | --- | --- | --- |
 | `landing/` | Página pública y formulario de solicitud de registro | Funcionando |
-| `frontend-usuarios/` | Interfaz de gestión: login, panel, usuarios, contenedores, camiones | Funcionando |
-| `api-usuarios/` | API de usuarios, login y solicitudes de registro | Funcionando, sin persistencia |
-| `api-gestion/` | API de contenedores y camiones | Funcionando, sin persistencia |
-| `database/` | Modelo físico: DDL de creación y volcado de la estructura | 7 tablas |
+| `frontend-usuarios/` | Interfaz de gestión: login, panel, usuarios, contenedores, camiones, centros de acopio, maquinaria y solicitudes | Funcionando |
+| `api-usuarios/` | API de usuarios, login, sesión y solicitudes de registro | Funcionando, sobre MySQL |
+| `api-gestion/` | API de contenedores, camiones, centros de acopio, maquinaria, tipos de residuo y zonas | Funcionando, sobre MySQL |
+| `database/` | Modelo físico: DDL de creación, datos de prueba y volcado de la estructura | 15 tablas |
+| `tests/` | Pruebas de las dos APIs por HTTP, con lanzador propio | 47 pruebas |
 
-Las dos APIs guardan los datos **en memoria**: se pierden al reiniciar. La persistencia
-en base de datos es el entregable central de la 2da entrega.
+Los datos **se persisten en MySQL** desde el 09/09/2026: las dos APIs abren su conexión
+por PDO y todas las consultas van preparadas. La sesión es de servidor (cookie `httponly`)
+y el rol se relee de la base en cada petición.
 
 ## Documentación por materia
 
@@ -38,7 +40,14 @@ repositorio publicado en esa ruta. Para probar una API sola alcanza con PHP:
     php -S localhost:8081 index.php     # desde api-usuarios/
     php -S localhost:8082 index.php     # desde api-gestion/
 
-Usuarios de prueba: `admin@sigeru.uy`, `cuadrilla@sigeru.uy` y `vecino@sigeru.uy`.
+Antes de la primera vez hay que importar la base: `database/schema.sql` crea las 15
+tablas y `database/datos_prueba.sql` las llena con datos de Montevideo.
+
+Usuarios de prueba: `admin@sigeru.uy`, `cuadrilla@sigeru.uy` y `vecino@sigeru.uy`, todos
+con contraseña `123456`.
+
+Las pruebas se corren con `tests/correr-tests.cmd` (necesitan Apache y MySQL levantados);
+se limpian solas al terminar.
 
 El prototipo Low-Fi de UTU LAB se abre aparte, con doble clic en
 `proyecto-utu-lab/prototipo-lofi/index.html`.

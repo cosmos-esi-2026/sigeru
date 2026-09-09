@@ -1,16 +1,20 @@
 -- ============================================================================
 --  SiGeRU 2026 - Sistema de Gestion de Residuos Urbanos
 --  Archivo: schema.sql
---  Que es : DDL de la base de datos. Crea la base y las 14 tablas del modelo.
+--  Que es : DDL de la base de datos. Crea la base y las 15 tablas del modelo.
 --  Motor  : MySQL / MariaDB (InnoDB, utf8mb4)
 --  Entrega: 2da entrega. Reemplaza al schema de 7 tablas de la 1ra.
 -- ============================================================================
 --
 --  DE DONDE SALEN ESTAS TABLAS
---  Del modelo de clases del proyecto (14 clases, 75 atributos, 17 relaciones),
+--  Del modelo de clases del proyecto (15 clases, 81 atributos, 18 relaciones),
 --  que es la misma fuente del Diagrama de Clases y del Pasaje a Tablas 3FN.
 --  Cada clase es una tabla y cada relacion "0..* a 1" es una clave foranea del
 --  lado "muchos".
+--  La tabla 11 (maquinaria) entro despues, con la Adenda de Alcance del
+--  09/09/2026: el modelo original tenia 14 tablas y no cubria la "maquinaria
+--  basica" que la letra pide para esta entrega. El motivo y el calculo que
+--  respaldan la decision estan en Adenda_Alcance_Maquinaria_SiGeRU.pdf.
 --
 --  DECISIONES QUE CONVIENE PODER DEFENDER
 --  1. Las relaciones de composicion del diagrama de clases llevan
@@ -37,6 +41,7 @@ DROP TABLE IF EXISTS incidencia;
 DROP TABLE IF EXISTS vaciado;
 DROP TABLE IF EXISTS recoleccion;
 DROP TABLE IF EXISTS ruta;
+DROP TABLE IF EXISTS maquinaria;
 DROP TABLE IF EXISTS camion;
 DROP TABLE IF EXISTS estado_contenedor;
 DROP TABLE IF EXISTS contenedor;
@@ -219,7 +224,42 @@ CREATE TABLE camion (
 
 
 -- ----------------------------------------------------------------------------
--- 11) ruta
+-- 11) maquinaria
+-- El equipamiento fijo de los centros de acopio y vertederos: compactadoras,
+-- palas cargadoras, cintas de clasificacion. Es lo que la letra llama
+-- "maquinaria basica" (nivel intermedio, punto 2.4 de los alcances sugeridos).
+--
+-- El alcance es de REGISTRO de inventario: que hay, de que tipo, donde esta y
+-- en que estado. La planificacion de mantenimiento preventivo y la maquinaria
+-- especializada son nivel avanzado de la letra y quedan documentadas como
+-- alcance futuro en la Adenda de Alcance, no implementadas.
+--
+-- Depende de centro_acopio y la relacion es ASOCIACION SIMPLE, no composicion:
+-- si un centro se da de baja, sus maquinas siguen existiendo y se reasignan a
+-- otro. Por eso no lleva ON DELETE CASCADE, a diferencia de estado_contenedor
+-- y vaciado.
+--
+-- La baja es logica, como en el resto del sistema: estado = 'fuera_servicio',
+-- el mismo criterio y hasta el mismo valor que usa camion.
+-- ----------------------------------------------------------------------------
+CREATE TABLE maquinaria (
+    id_maquinaria INT AUTO_INCREMENT PRIMARY KEY,
+    codigo        VARCHAR(30) NOT NULL UNIQUE COMMENT 'Codigo patrimonial del equipo',
+    tipo          ENUM('compactadora','pala_cargadora','cinta_clasificadora',
+                       'retroexcavadora','montacargas','otra')
+                      NOT NULL DEFAULT 'otra',
+    marca         VARCHAR(60) NULL,
+    modelo        VARCHAR(60) NULL,
+    estado        ENUM('operativa','mantenimiento','fuera_servicio')
+                      NOT NULL DEFAULT 'operativa',
+    id_centro     INT NOT NULL,
+    CONSTRAINT fk_maquinaria_centro
+        FOREIGN KEY (id_centro) REFERENCES centro_acopio(id_centro)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 12) ruta
 -- El recorrido planificado sobre una zona, con su dia y hora.
 -- ----------------------------------------------------------------------------
 CREATE TABLE ruta (
@@ -236,7 +276,7 @@ CREATE TABLE ruta (
 
 
 -- ----------------------------------------------------------------------------
--- 12) recoleccion
+-- 13) recoleccion
 -- La ejecucion real de una ruta: que camion, que cuadrilla, cuando empezo y
 -- termino, y en que centro descargo.
 -- ----------------------------------------------------------------------------
@@ -263,7 +303,7 @@ CREATE TABLE recoleccion (
 
 
 -- ----------------------------------------------------------------------------
--- 13) vaciado
+-- 14) vaciado
 -- Cada contenedor vaciado dentro de una recoleccion. Es COMPOSICION respecto de
 -- la recoleccion: sin la recoleccion, el vaciado no existe.
 -- Es la tabla que permite medir cuanto se levanta por tipo de residuo.
@@ -284,7 +324,7 @@ CREATE TABLE vaciado (
 
 
 -- ----------------------------------------------------------------------------
--- 14) incidencia
+-- 15) incidencia
 -- El reporte que hace un vecino sobre un contenedor. Puede quedar asignado a
 -- una cuadrilla para que lo atienda.
 -- ----------------------------------------------------------------------------
@@ -315,11 +355,12 @@ CREATE TABLE incidencia (
 -- ----------------------------------------------------------------------------
 CREATE INDEX idx_contenedor_estado   ON contenedor(estado);
 CREATE INDEX idx_camion_estado       ON camion(estado);
+CREATE INDEX idx_maquinaria_estado   ON maquinaria(estado);
 CREATE INDEX idx_usuario_estado      ON usuario(estado);
 CREATE INDEX idx_solicitud_estado    ON solicitud_registro(estado);
 CREATE INDEX idx_incidencia_estado   ON incidencia(estado);
 CREATE INDEX idx_estadocont_fecha    ON estado_contenedor(id_contenedor, fecha_hora);
 
 -- ============================================================================
---  Fin del schema. 14 tablas, derivadas del modelo de clases del proyecto.
+--  Fin del schema. 15 tablas, derivadas del modelo de clases del proyecto.
 -- ============================================================================

@@ -20,6 +20,7 @@ TRUNCATE TABLE incidencia;
 TRUNCATE TABLE vaciado;
 TRUNCATE TABLE recoleccion;
 TRUNCATE TABLE ruta;
+TRUNCATE TABLE maquinaria;
 TRUNCATE TABLE camion;
 TRUNCATE TABLE estado_contenedor;
 TRUNCATE TABLE contenedor;
@@ -132,7 +133,20 @@ INSERT INTO camion (id_camion, matricula, marca, modelo, capacidad, estado) VALU
 (5, 'SBE-7890', 'Iveco',         'Daily 70C17',     3000, 'fuera_servicio');
 
 
--- --- 11) Rutas --------------------------------------------------------------
+-- --- 11) Maquinaria de los centros de acopio --------------------------------
+-- Lo que la letra llama "maquinaria basica en vertederos y centros de acopio".
+-- Hay al menos una maquina por centro y los tres estados representados, para
+-- que el filtro de la pantalla tenga algo que filtrar.
+INSERT INTO maquinaria (id_maquinaria, codigo, tipo, marca, modelo, estado, id_centro) VALUES
+(1, 'MAQ-001', 'compactadora',        'Bomag',       'BC 473 RB-5',   'operativa',      1),
+(2, 'MAQ-002', 'pala_cargadora',      'Caterpillar', '950 GC',        'operativa',      1),
+(3, 'MAQ-003', 'retroexcavadora',     'John Deere',  '310 SL',        'mantenimiento',  1),
+(4, 'MAQ-004', 'cinta_clasificadora', 'Metso',       'Lokotrack CT',  'operativa',      2),
+(5, 'MAQ-005', 'montacargas',         'Toyota',      '8FGU25',        'operativa',      2),
+(6, 'MAQ-006', 'pala_cargadora',      'JCB',         '426 ZX',        'fuera_servicio', 3);
+
+
+-- --- 12) Rutas --------------------------------------------------------------
 INSERT INTO ruta (id_ruta, nombre, dia_semana, hora_inicio, estado, id_zona) VALUES
 (1, 'Ruta Ciudad Vieja Manana', 'lunes',     '06:00:00', 'activa',   1),
 (2, 'Ruta Centro Manana',       'lunes',     '06:30:00', 'activa',   2),
@@ -141,7 +155,7 @@ INSERT INTO ruta (id_ruta, nombre, dia_semana, hora_inicio, estado, id_zona) VAL
 (5, 'Ruta Aires Puros Noche',   'jueves',    '22:00:00', 'inactiva', 5);
 
 
--- --- 12) Recolecciones ------------------------------------------------------
+-- --- 13) Recolecciones ------------------------------------------------------
 INSERT INTO recoleccion (id_recoleccion, fecha_hora_inicio, fecha_hora_fin, estado, observaciones, id_ruta, id_camion, id_cuadrilla, id_centro) VALUES
 (1, '2026-09-07 06:00:00', '2026-09-07 09:40:00', 'finalizada', 'Sin novedades',                         1, 1, 1, 3),
 (2, '2026-09-07 06:30:00', '2026-09-07 10:15:00', 'finalizada', 'Demora por corte en 18 de Julio',       2, 4, 1, 3),
@@ -150,7 +164,7 @@ INSERT INTO recoleccion (id_recoleccion, fecha_hora_inicio, fecha_hora_fin, esta
 (5, '2026-09-04 22:00:00', NULL,                  'cancelada',  'Camion fuera de servicio',              5, 5, 3, 2);
 
 
--- --- 13) Vaciados -----------------------------------------------------------
+-- --- 14) Vaciados -----------------------------------------------------------
 INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen_l) VALUES
 (1, 4,  '2026-09-07 06:25:00', 210.50, 640.00),
 (1, 5,  '2026-09-07 07:05:00', 180.00, 520.00),
@@ -160,7 +174,7 @@ INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen
 (3, 8,  '2026-09-09 15:10:00', 132.40, 410.00);
 
 
--- --- 14) Incidencias --------------------------------------------------------
+-- --- 15) Incidencias --------------------------------------------------------
 INSERT INTO incidencia (descripcion, fecha_reporte, fecha_resolucion, estado, prioridad, id_usuario, id_contenedor, id_cuadrilla) VALUES
 ('El contenedor esta desbordado y hay bolsas en la vereda', '2026-09-08 19:30:00', NULL,                  'reportada',  'alta',  3, 2,  NULL),
 ('La tapa no cierra y entran perros',                       '2026-08-30 10:05:00', '2026-09-01 11:00:00', 'resuelta',   'media', 3, 5,  1),

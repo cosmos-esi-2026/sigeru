@@ -229,8 +229,62 @@ afirmar("La fila sigue existiendo despues de la baja", 200, $codigo);
 afirmar("Dar de baja dos veces: 409", 409, $codigo);
 
 
-// --- 6. Solicitudes de registro (CU-011) ------------------------------------
-titulo("6. Solicitudes de registro");
+// --- 6. Maquinaria de los centros de acopio ---------------------------------
+// El modulo que cierra el "CRUD de centros de acopio y maquinaria basica" de la
+// letra. Se prueba el circuito entero y las dos reglas propias del modulo: el
+// centro es obligatorio (la FK es NOT NULL y no hay valor por omision) y el
+// tipo tiene que ser uno del ENUM.
+titulo("6. Maquinaria de los centros de acopio");
+
+[$codigo] = peticion("GET", "/api-gestion/maquinaria", null, $vecino);
+afirmar("Un vecino si puede consultar maquinaria", 200, $codigo);
+
+[$codigo] = peticion("POST", "/api-gestion/maquinaria",
+    ["codigo" => "MAQ-X", "id_centro" => 1], $vecino);
+afirmar("Un vecino no puede crear maquinaria", 403, $codigo);
+
+[$codigo, $cuerpo] = peticion("POST", "/api-gestion/maquinaria", [
+    "codigo"    => "MAQ-TEST-$sufijo",
+    "tipo"      => "compactadora",
+    "marca"     => "Bomag",
+    "modelo"    => "BC 473",
+    "id_centro" => 1,
+    "estado"    => "operativa",
+], $admin);
+afirmar("Crear una maquinaria devuelve 201", 201, $codigo);
+afirmar("Y vuelve con el NOMBRE de su centro, no solo el id",
+        "Centro de Acopio Felipe Cardoso", $cuerpo["datos"]["centro"] ?? null);
+$idMaquinaria = $cuerpo["datos"]["id_maquinaria"] ?? null;
+
+[$codigo] = peticion("POST", "/api-gestion/maquinaria",
+    ["codigo" => "MAQ-TEST-$sufijo", "id_centro" => 1], $admin);
+afirmar("Un codigo de maquinaria repetido devuelve 409", 409, $codigo);
+
+[$codigo] = peticion("POST", "/api-gestion/maquinaria",
+    ["codigo" => "MAQ-SIN-CENTRO-$sufijo"], $admin);
+afirmar("Una maquina sin centro de acopio: 400", 400, $codigo);
+
+[$codigo] = peticion("POST", "/api-gestion/maquinaria",
+    ["codigo" => "MAQ-TIPO-$sufijo", "tipo" => "nave espacial", "id_centro" => 1], $admin);
+afirmar("Un tipo de maquinaria inexistente: 400", 400, $codigo);
+
+[$codigo, $cuerpo] = peticion("PUT", "/api-gestion/maquinaria/$idMaquinaria",
+    ["estado" => "mantenimiento"], $admin);
+afirmar("Modificar la maquinaria devuelve 200", 200, $codigo);
+afirmar("Y el cambio de estado quedo guardado",
+        "mantenimiento", $cuerpo["datos"]["estado"] ?? null);
+
+[$codigo, $cuerpo] = peticion("DELETE", "/api-gestion/maquinaria/$idMaquinaria", null, $admin);
+afirmar("La baja de maquinaria devuelve 200", 200, $codigo);
+afirmar("La maquina queda 'fuera_servicio', no borrada",
+        "fuera_servicio", $cuerpo["datos"]["estado"] ?? null);
+
+[$codigo] = peticion("DELETE", "/api-gestion/maquinaria/$idMaquinaria", null, $admin);
+afirmar("Dar de baja la maquinaria dos veces: 409", 409, $codigo);
+
+
+// --- 7. Solicitudes de registro (CU-011) ------------------------------------
+titulo("7. Solicitudes de registro");
 
 [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", [
     "nombre"    => "Test",
@@ -256,14 +310,15 @@ $idUsuarioCreado = $cuerpo["datos"]["usuario"]["id_usuario"] ?? null;
 afirmar("Aprobarla de nuevo: 409", 409, $codigo);
 
 
-// --- 7. Limpieza ------------------------------------------------------------
+// --- 8. Limpieza ------------------------------------------------------------
 // Los tests se llevan puesto lo que crearon: si no, cada corrida deja basura en
 // la base y la demo termina llena de registros "TEST-".
-titulo("7. Limpieza");
+titulo("8. Limpieza");
 
 require_once __DIR__ . "/../api-gestion/config/database.php";
 $pdo = Database::conexion();
 
+$pdo->prepare("DELETE FROM maquinaria WHERE id_maquinaria = ?")->execute([$idMaquinaria]);
 $pdo->prepare("DELETE FROM estado_contenedor WHERE id_contenedor = ?")->execute([$idContenedor]);
 $pdo->prepare("DELETE FROM contenedor WHERE id_contenedor = ?")->execute([$idContenedor]);
 $pdo->prepare("DELETE FROM usuario WHERE id_usuario = ?")->execute([$idUsuarioCreado]);
@@ -271,6 +326,9 @@ $pdo->prepare("DELETE FROM solicitud_registro WHERE id_solicitud = ?")->execute(
 
 [$codigo] = peticion("GET", "/api-gestion/contenedores/$idContenedor", null, $admin);
 afirmar("Los datos de prueba quedaron borrados", 404, $codigo);
+
+[$codigo] = peticion("GET", "/api-gestion/maquinaria/$idMaquinaria", null, $admin);
+afirmar("La maquinaria de prueba tambien", 404, $codigo);
 
 foreach ([$admin, $vecino] as $archivo) {
     if (file_exists($archivo)) {
