@@ -1,0 +1,85 @@
+# ============================================================================
+#  SiGeRU 2026 - Orquestacion con Docker Compose
+#
+#  ATENCION: estos archivos NO estan probados. Docker no esta instalado en la
+#  maquina donde se desarrolla (el proyecto corre desde un pendrive con XAMPP
+#  portable, justamente porque no se puede instalar nada). Estan escritos para
+#  reproducir el mismo stack que ya funciona en XAMPP, pero antes de usarlos en
+#  serio hay que levantarlos una vez en una maquina con Docker y corregir lo
+#  que aparezca.
+#
+#  Levanta 2 contenedores:
+#    - web : Apache + PHP 8.2 sirviendo TODO el proyecto (frontends y las dos
+#            APIs), igual que Apache de XAMPP.
+#    - db  : MySQL 8 con el schema y los datos de prueba cargados al iniciar.
+#
+#  Por que un solo contenedor web y no uno por API: bajo XAMPP las dos APIs y el
+#  frontend comparten origen, y de eso depende la SESION (la cookie va con
+#  path "/"). Separarlas en contenedores con puertos distintos rompería el
+#  login. El modelo de despliegue tiene que ser el mismo que el de desarrollo.
+#
+#  Como usarlo (desde la carpeta docker/):
+#      docker compose up --build
+#  Y despues abrir:
+#      http://localhost:8080/sigeru/landing/
+# ============================================================================
+
+# Sin esto, Compose toma el nombre de la carpeta ("docker") y bautiza todo como
+# docker-*, incluido el volumen de la base. Con el nombre explicito queda claro
+# de que proyecto es cuando hay varios levantados en la misma maquina.
+name: sigeru
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sigeru-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Todo el proyecto se monta bajo /sigeru para que las rutas del frontend
+      # (/sigeru/api-usuarios, /sigeru/api-gestion) sean las mismas que en XAMPP.
+      - ../:/var/www/html/sigeru
+    environment:
+      # config/database.php lee estas variables; si no estan, usa los valores
+      # de XAMPP (127.0.0.1, root sin contrasena). Por eso el mismo archivo
+      # sirve en los dos entornos sin editarlo.
+      SIGERU_DB_HOST: db
+      SIGERU_DB_PORT: "3306"
+      SIGERU_DB_NAME: sigeru
+      SIGERU_DB_USER: root
+      SIGERU_DB_PASS: root
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    container_name: sigeru-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sigeru
+      # Misma zona horaria que el contenedor web: si no, las fechas que pone la
+      # base (CURRENT_TIMESTAMP) y las que muestra PHP no coinciden.
+      TZ: America/Montevideo
+    ports:
+      # 3307 en el host para no chocar con el MySQL de XAMPP si esta levantado.
+      - "3307:3306"
+    volumes:
+      # Se ejecutan solos, en orden alfabetico, la primera vez que arranca.
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../database/datos_prueba.sql:/docker-entrypoint-initdb.d/02-datos.sql:ro
+      - datos_mysql:/var/lib/mysql
+    healthcheck:
+      # Sin esto, PHP intenta conectarse antes de que MySQL termine de arrancar.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  datos_mysql:
