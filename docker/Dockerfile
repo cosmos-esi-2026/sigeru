@@ -1,9 +1,9 @@
 # ============================================================================
 #  SiGeRU 2026 - Imagen del servidor web
 #
-#  ATENCION: no probada. Docker no esta instalado en la maquina de desarrollo
-#  (el proyecto corre desde un pendrive con XAMPP portable). Esta escrita para
-#  reproducir el stack que ya funciona en XAMPP: Apache + PHP 8.2 + pdo_mysql.
+#  PROBADA el 11/09/2026 (ver docker-compose.yml): construye sin cambios y los
+#  47 tests pasan contra ella. Reproduce el stack que ya funciona en XAMPP:
+#  Apache + PHP 8.2 + pdo_mysql.
 #
 #  Se parte de la imagen oficial php:8.2-apache porque es exactamente la
 #  combinacion que usa XAMPP (PHP 8.2 detras de Apache con mod_php), no

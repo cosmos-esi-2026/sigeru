@@ -5,6 +5,12 @@ instalar nada). Estos archivos son la alternativa que pide la letra de Programac
 Stack: levantar el sistema completo en cualquier máquina que tenga Docker, sin depender del
 pendrive ni de configurar Apache y MySQL a mano.
 
+**Probado el 11/09/2026** con Docker Desktop 29.7 / Compose 5.5 sobre WSL2, en una PC
+modesta (Celeron N4500, 8 GB): `docker compose up --build` levanta todo, las rutas
+principales responden y **los 47 tests pasan** corriendo dentro del contenedor web. El
+workflow `.github/workflows/docker.yml` repite exactamente esa verificación en GitHub
+Actions cada vez que cambia algo del despliegue.
+
 ## Qué levanta
 
 | Contenedor | Qué es | Puerto en el host |
@@ -35,6 +41,42 @@ Usuarios de prueba (todos con contraseña `123456`): `admin@sigeru.uy` (Administ
 Para apagar: `Ctrl + C` y después `docker compose down`.
 Para borrar también la base y volver a cargar los datos desde cero:
 `docker compose down -v`.
+
+La primera vez tarda: MySQL inicializa sus archivos y carga el schema y los datos de
+prueba, y en una PC lenta eso lleva más de 2 minutos. `web` espera a que la base esté
+sana antes de arrancar, así que si la landing todavía no responde, es eso.
+
+## Correr los tests contra los contenedores
+
+El runner `tests/correr-tests.php` apunta a `http://localhost/sigeru`, que **dentro del
+contenedor web** es Apache en el puerto 80. Así que se corre ahí adentro, sin tocarlo:
+
+```
+docker compose exec web php /var/www/html/sigeru/tests/correr-tests.php
+```
+
+Para limpiar lo que crea usa `config/database.php`, que lee las variables `SIGERU_DB_*`
+del compose. (Si el comando se corre desde Git Bash, anteponer `MSYS_NO_PATHCONV=1`:
+si no, Git Bash reescribe `/var/www/...` como una ruta de Windows.)
+
+## Si el proyecto está en un pendrive (Windows)
+
+Docker Desktop sobre WSL2 **solo monta las unidades fijas** (`C:`) dentro de su VM. Una
+unidad extraíble no se ve, y Docker, en vez de fallar, crea carpetas vacías en el lugar de
+cada montaje: los `.sql` entran como directorios (`Can't initialize batch_readline`) y el
+contenedor web arranca sin el proyecto. Es la limitación de WSL2 con unidades
+extraíbles, no un error de estos archivos.
+
+Se resuelve montando la unidad a mano en la VM, **antes** del `up`, con la letra que
+tenga el pendrive en esa PC (acá es `D:`, en otra puede ser `E:` o `F:`):
+
+```
+wsl -d docker-desktop mount -t drvfs D: /mnt/host/d
+```
+
+Hay que repetirlo cada vez que se reinicia Docker Desktop. Si se corrió el `up` sin
+esto, borrar el volumen antes de volver a intentar (`docker compose down -v`): MySQL
+solo carga el schema la primera vez que arranca.
 
 ## Tres decisiones que conviene poder defender
 

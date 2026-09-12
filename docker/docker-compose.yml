@@ -1,12 +1,12 @@
 # ============================================================================
 #  SiGeRU 2026 - Orquestacion con Docker Compose
 #
-#  ATENCION: estos archivos NO estan probados. Docker no esta instalado en la
-#  maquina donde se desarrolla (el proyecto corre desde un pendrive con XAMPP
-#  portable, justamente porque no se puede instalar nada). Estan escritos para
-#  reproducir el mismo stack que ya funciona en XAMPP, pero antes de usarlos en
-#  serio hay que levantarlos una vez en una maquina con Docker y corregir lo
-#  que aparezca.
+#  PROBADO el 11/09/2026 con Docker Desktop 29.7 / Compose 5.5 sobre WSL2:
+#  `docker compose up --build` levanta los dos contenedores, las 6 rutas
+#  principales responden y los 47 tests de tests/correr-tests.php pasan
+#  corriendo dentro del contenedor web. Reproduce el mismo stack que funciona
+#  en XAMPP. Si el proyecto vive en un pendrive, leer LEEME.md antes: Docker
+#  Desktop no monta unidades extraibles solo.
 #
 #  Levanta 2 contenedores:
 #    - web : Apache + PHP 8.2 sirviendo TODO el proyecto (frontends y las dos
@@ -80,6 +80,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+      # La primera vez MySQL inicializa sus archivos y carga el schema y los
+      # datos de prueba. En una PC lenta (Celeron N4500, 11/09) eso tardo
+      # 2 min 17 s: mas que los 100 s de interval x retries, asi que Compose
+      # dio la base por muerta y web nunca arranco. Durante este margen los
+      # pings fallidos no cuentan; el primero que responde la marca sana.
+      start_period: 180s
 
 volumes:
   datos_mysql:

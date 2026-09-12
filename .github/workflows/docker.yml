@@ -1,0 +1,115 @@
+# ============================================================================
+#  SiGeRU 2026 - Verificacion del despliegue con Docker
+#
+#  Por que existe: los archivos de docker/ se escribieron el 09/09 pero no se
+#  pudieron levantar en ninguna PC del equipo (en una el motor de Docker
+#  Desktop crashea, la otra es de dominio y no deja instalar nada). Los
+#  runners de GitHub Actions traen Docker y Compose instalados, asi que este
+#  workflow hace en una maquina limpia lo que nadie pudo hacer en la suya:
+#  `docker compose up --build`, y despues corre los 47 tests de la API contra
+#  los contenedores.
+#
+#  Se dispara solo cuando cambia algo que afecta al despliegue (el repo es
+#  privado y los minutos de Actions son limitados), o a mano desde la pestana
+#  Actions con "Run workflow".
+# ============================================================================
+
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/**"
+      - "database/**"
+      - "api-usuarios/**"
+      - "api-gestion/**"
+      - "frontend-usuarios/**"
+      - "landing/**"
+      - "tests/**"
+      - ".github/workflows/docker.yml"
+  pull_request:
+    paths:
+      - "docker/**"
+      - "database/**"
+      - "api-usuarios/**"
+      - "api-gestion/**"
+      - "frontend-usuarios/**"
+      - "landing/**"
+      - "tests/**"
+      - ".github/workflows/docker.yml"
+  workflow_dispatch:
+
+jobs:
+  levantar:
+    name: Levantar y probar
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        # Todos los comandos corren desde docker/, igual que dice el LEEME.
+        working-directory: docker
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar el compose
+        run: docker compose config --quiet
+
+      - name: Construir y levantar los contenedores
+        # --wait espera a que db pase el healthcheck y web este corriendo.
+        # La primera vez MySQL carga el schema y los datos de prueba, asi que
+        # se le da margen.
+        run: docker compose up --build --detach --wait --wait-timeout 180
+
+      - name: Esperar a que Apache responda
+        run: |
+          for intento in $(seq 1 30); do
+            if curl --silent --fail --output /dev/null http://localhost:8080/sigeru/landing/; then
+              echo "Apache respondio en el intento $intento."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Apache no respondio en 60 segundos."
+          exit 1
+
+      - name: Comprobar las rutas principales
+        # Cada linea es: codigo HTTP esperado + URL. Cubre las tres decisiones
+        # del LEEME: un solo origen, montado bajo /sigeru, y las APIs ruteando
+        # por .htaccess (la ultima URL no existe como archivo: si mod_rewrite
+        # o AllowOverride fallan, Apache devuelve 404 en vez de 401).
+        run: |
+          fallas=0
+          comprobar() {
+            obtenido=$(curl --silent --output /dev/null --write-out "%{http_code}" "$2")
+            if [ "$obtenido" = "$1" ]; then
+              echo "  OK   $1  $2"
+            else
+              echo "  MAL  esperado $1, obtenido $obtenido  $2"
+              fallas=$((fallas + 1))
+            fi
+          }
+          comprobar 302 http://localhost:8080/
+          comprobar 200 http://localhost:8080/sigeru/landing/
+          comprobar 200 http://localhost:8080/sigeru/frontend-usuarios/login.html
+          comprobar 200 http://localhost:8080/sigeru/api-usuarios/
+          comprobar 200 http://localhost:8080/sigeru/api-gestion/
+          comprobar 401 http://localhost:8080/sigeru/api-usuarios/usuarios
+          exit $fallas
+
+      - name: Correr los tests de la API dentro del contenedor web
+        # El runner apunta a http://localhost/sigeru, que dentro del contenedor
+        # es exactamente Apache en el puerto 80. Y para limpiar lo que crea usa
+        # config/database.php, que lee las variables SIGERU_DB_* del compose.
+        # No hace falta tocar nada del runner.
+        run: docker compose exec --no-TTY web php /var/www/html/sigeru/tests/correr-tests.php
+
+      - name: Mostrar los logs de los contenedores
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Apagar y borrar los contenedores y el volumen
+        if: always()
+        run: docker compose down --volumes --remove-orphans
