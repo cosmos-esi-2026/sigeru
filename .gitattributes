@@ -14,3 +14,11 @@
 *.ico   binary
 *.svg   binary
 *.zip   binary
+
+# Scripts de shell y su configuracion: siempre LF, en cualquier maquina.
+# Con core.autocrlf=true (que es lo que tiene este repo en Windows) Git
+# convertiria a CRLF al hacer checkout, y un script con CRLF muere en Ubuntu
+# con "\r: command not found" en la primera linea.
+*.sh        text eol=lf
+*.conf      text eol=lf
+**/cron/*   text eol=lf
