@@ -1,0 +1,126 @@
+Prueba de despliegue de SiGeRU en el servidor real - sigeru-srv (VirtualBox, Ubuntu Server 26.04.1 LTS)
+Fecha: 2026-09-13
+Ejecutado por SSH desde la PC anfitriona (cosmos2026@127.0.0.1 -p 2222)
+
+Resumen de lo hecho:
+- apt update && apt upgrade -y
+- apt install apache2 php libapache2-mod-php php-mysql php-curl mysql-server mysql-client git
+- a2enmod rewrite
+- Repo copiado a /var/www/sigeru (via tar por SSH, no git clone: el repo de GitHub es
+  privado y la VM no tiene credenciales cargadas; se decide no darselas por SSH no
+  interactivo). chown www-data:www-data.
+- MySQL: base "sigeru", usuario "sigeru"@"127.0.0.1" con contrasena generada
+  (openssl rand), GRANT ALL PRIVILEGES. La contrasena real vive fuera del repo,
+  en vm-ubuntu/ssh/sigeru-db-password.txt (mismo criterio que backup.conf real y
+  el user-data real del autoinstall).
+- Importados database/schema.sql y database/datos_prueba.sql (15 tablas).
+- Apache: administracion-sistemas-operativos/config/... no, en este caso el conf vivo
+  es /etc/apache2/conf-available/sigeru.conf con Alias /sigeru + <Directory> AllowOverride
+  All + Require all granted + SetEnv SIGERU_DB_* (host/port/name/user/pass) para que
+  config/database.php de las APIs encuentre las credenciales reales sin tocar el codigo.
+
+=== Version del stack ===
+Server version: Apache/2.4.66 (Ubuntu)
+Server built:   2026-07-06T15:33:20
+PHP 8.5.4 (cli) (built: Sep  2 2026 14:42:18) (NTS)
+Zend Engine v4.5.4, con Zend OPcache v8.5.4
+mysql  Ver 8.4.11-0ubuntu0.26.04.1 for Linux on x86_64 ((Ubuntu))
+
+Nota: PHP quedo en 8.5.4 (el que trae Ubuntu Server 26.04 por defecto), distinto del 8.2
+que usan Docker y XAMPP. Se anota como diferencia de entorno; los 47 tests pasan igual,
+asi que no genero incompatibilidad real.
+
+=== Rutas principales (curl) ===
+/sigeru/landing/ -> 200
+/sigeru/frontend-usuarios/login.html -> 200
+/sigeru/api-usuarios/ -> 200
+/sigeru/api-gestion/ -> 200
+
+=== Tests (tests/correr-tests.php) ===
+SiGeRU - Tests de la API
+========================
+
+0. El entorno esta levantado
+----------------------------
+  [OK] La API de gestion responde
+  [OK] La API de usuarios responde
+
+1. Control de acceso
+--------------------
+  [OK] Sin sesion no se puede listar usuarios
+  [OK] Sin sesion no se puede crear un administrador
+  [OK] Falsificar la cabecera de rol ya no sirve
+  [OK] Con sesion de administrador si se puede listar
+  [OK] Un vecino no puede listar usuarios
+  [OK] Un vecino no puede crear contenedores
+  [OK] Un vecino si puede consultar contenedores
+  [OK] La sesion sirve tambien en la otra API
+
+2. Alta valida
+--------------
+  [OK] Crear un contenedor devuelve 201
+  [OK] El contenedor creado vuelve con su codigo
+  [OK] El contenedor persiste entre peticiones
+  [OK] Y conserva la capacidad guardada
+  [OK] El alta genera historial de estado
+
+3. Alta duplicada
+-----------------
+  [OK] Un codigo repetido devuelve 409
+  [OK] Una matricula repetida devuelve 409
+  [OK] Un email repetido devuelve 409
+
+4. Validaciones
+---------------
+  [OK] Falta la direccion: 400
+  [OK] Un estado inexistente: 400
+  [OK] Un rol inexistente: 400
+  [OK] Un id que no existe: 404
+  [OK] Contrasena incorrecta: 401
+  [OK] Un admin no puede darse de baja a si mismo: 409
+
+5. Baja logica
+--------------
+  [OK] La baja devuelve 200
+  [OK] El contenedor queda 'retirado', no borrado
+  [OK] La fila sigue existiendo despues de la baja
+  [OK] Dar de baja dos veces: 409
+
+6. Maquinaria de los centros de acopio
+--------------------------------------
+  [OK] Un vecino si puede consultar maquinaria
+  [OK] Un vecino no puede crear maquinaria
+  [OK] Crear una maquinaria devuelve 201
+  [OK] Y vuelve con el NOMBRE de su centro, no solo el id
+  [OK] Un codigo de maquinaria repetido devuelve 409
+  [OK] Una maquina sin centro de acopio: 400
+  [OK] Un tipo de maquinaria inexistente: 400
+  [OK] Modificar la maquinaria devuelve 200
+  [OK] Y el cambio de estado quedo guardado
+  [OK] La baja de maquinaria devuelve 200
+  [OK] La maquina queda 'fuera_servicio', no borrada
+  [OK] Dar de baja la maquinaria dos veces: 409
+
+7. Solicitudes de registro
+--------------------------
+  [OK] El registro publico crea una solicitud (201)
+  [OK] Y queda PENDIENTE, no crea un usuario activo
+  [OK] Aprobar la solicitud devuelve 200
+  [OK] Y crea el usuario
+  [OK] Aprobarla de nuevo: 409
+
+8. Limpieza
+-----------
+  [OK] Los datos de prueba quedaron borrados
+  [OK] La maquinaria de prueba tambien
+
+==================================================
+Pasaron: 47   Fallaron: 0
+Todo verde.
+
+Nota tecnica sobre la etapa de Limpieza: tests/correr-tests.php se corre por PHP CLI, y esa
+etapa conecta directo a la base (sin pasar por Apache), por lo que necesita las mismas
+variables SIGERU_DB_* exportadas en el shell antes de invocar php; si se corre sin
+exportarlas, cae a los valores por defecto (root sin contrasena) que en Ubuntu no
+funcionan por TCP (root usa auth_socket). No es un bug del proyecto, es la diferencia
+entre correr los tests via Apache (que ya tiene las variables por SetEnv) y por CLI.

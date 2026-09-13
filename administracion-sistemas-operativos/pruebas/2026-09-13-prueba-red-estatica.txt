@@ -1,0 +1,57 @@
+Prueba de red estatica - servidor sigeru-srv (VirtualBox, modo NAT)
+Fecha: 2026-09-13
+Ejecutado por SSH desde la PC anfitriona (cosmos2026@127.0.0.1 -p 2222) tras aplicar
+administracion-sistemas-operativos/config/netplan/01-sigeru.yaml
+
+$ sudo cp /tmp/01-sigeru.yaml /etc/netplan/01-sigeru.yaml
+$ sudo chown root:root /etc/netplan/01-sigeru.yaml
+$ sudo chmod 600 /etc/netplan/01-sigeru.yaml
+$ sudo netplan apply
+
+--- hostname ---
+sigeru-srv
+
+--- ip -brief address ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+enp0s3           UP             10.0.2.15/24 fd17:625c:f037:2:a00:27ff:fef1:ce65/64 fe80::a00:27ff:fef1:ce65/64
+
+--- ip route ---
+default via 10.0.2.2 dev enp0s3 proto static
+10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
+
+--- resolvectl status ---
+Global
+         Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+  resolv.conf mode: stub
+
+Link 2 (enp0s3)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+       DNS Servers: 10.0.2.3 1.1.1.1 fd17:625c:f037:2::3
+     Default Route: yes
+
+--- ping 1.1.1.1 ---
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=64 time=13.1 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=64 time=12.7 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=64 time=12.8 ms
+
+--- 1.1.1.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2067ms
+rtt min/avg/max/mdev = 12.722/12.899/13.128/0.169 ms
+
+--- ping ubuntu.com ---
+PING ubuntu.com (185.125.190.20) 56(84) bytes of data.
+64 bytes from website-content-cache-1.ps5.canonical.com (185.125.190.20): icmp_seq=1 ttl=64 time=208 ms
+64 bytes from website-content-cache-1.ps5.canonical.com (185.125.190.20): icmp_seq=2 ttl=64 time=207 ms
+64 bytes from website-content-cache-1.ps5.canonical.com (185.125.190.20): icmp_seq=3 ttl=64 time=207 ms
+
+--- ubuntu.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2010ms
+rtt min/avg/max/mdev = 206.575/207.285/208.134/0.643 ms
+
+Nota sobre el "ping desde la PC anfitriona" del plan original: esa prueba asumia red puente.
+En NAT (la que se uso por la politica de red del dominio Ceibal) el host no llega por ICMP
+a la IP interna de la VM, solo a lo que tenga reenvio de puerto explicito. La prueba
+equivalente bajo NAT es que esta misma sesion SSH funciona contra 127.0.0.1:2222 desde la
+PC anfitriona, que es el reenvio de puerto configurado en VirtualBox (host 2222 -> guest 22).

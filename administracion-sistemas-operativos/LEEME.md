@@ -12,27 +12,52 @@ Todo lo de la materia vive en esta carpeta. Sistema operativo elegido: **Ubuntu 
 | `respaldo-y-alta-disponibilidad.md` | La política: qué se protege, RPO/RTO, regla 3-2-1, calendario, retención 14/8/12, medios, prueba de restauración mensual, plan de alta disponibilidad | **2da** |
 | `scripts/respaldo/` | `backup.sh` (respaldo diario), `restaurar.sh`, `backup.conf`, `cron/sigeru-backup` (03:00) e `instalar.sh` | **2da** |
 | `scripts/admin/` | `sigeru-admin.sh` (menú) + `lib/usuarios.sh`, `lib/red.sh`, `lib/respaldo.sh`, `lib/servicios.sh`, `lib/comun.sh` | **2da** |
-| `pruebas/` | Transcripciones, sin editar, de la prueba de los scripts del 12/09 en un contenedor Ubuntu contra la base MySQL del Docker del proyecto | **2da** |
-| `plan-de-instalacion.md` | Plan exacto para instalar el servidor y pagar los 4 ítems que se deben | **2da** (el plan) → 3ra (la ejecución) |
+| `pruebas/` | Transcripciones, sin editar, de las pruebas del 12/09 (scripts en un contenedor Ubuntu) y del 13/09 (todo contra el servidor real `sigeru-srv`) | **2da** |
+| `plan-de-instalacion.md` | El plan original para instalar el servidor, escrito el 12/09 para el primer sprint de la 3ra. Se adelantó al 13/09 (ver los `.md` de abajo); queda como referencia de las decisiones que ya se tomaron | **2da** (el plan) |
+| `manual-de-instalacion.md` | La VM `sigeru-srv` tal como quedó instalada el 13/09: parámetros reales, las 16 pantallas con lo que se planeaba vs. lo que se hizo, y los desvíos (usuario `cosmos2026`, idioma en español) | **2da** |
+| `red-estatica.md` | IP fija con netplan, aplicada y verificada contra el servidor real | **2da** |
+| `gestion-de-paquetes.md` | Apache/PHP/MySQL instalados y SiGeRU desplegado en el servidor real, con los 47 tests pasando | **2da** |
+| `ssh.md` | SSH endurecido y probado contra el servidor real (root rechazado, cuenta permitida aceptada) | **2da** |
 
-## Qué se entrega en la 2da y qué se debe
+## Qué se entrega
 
-De los 8 ítems que la letra pide a la materia hasta acá (4 de la 1ra + 4 de la 2da):
+Los 8 ítems que la letra pide a la materia (4 de la 1ra + 4 de la 2da) están hechos:
 
 | Ítem | Estado | Evidencia |
 |---|---|---|
 | Relevamiento del S.O. | ✔ | `Relevamiento_Sistema_Operativo_SiGeRU.pdf` |
-| Medios de respaldo a largo plazo y alta disponibilidad | ✔ | `respaldo-y-alta-disponibilidad.md` y sección 3 del PDF |
-| Rutinas de backup y sus scripts | ✔ | `scripts/respaldo/` + `pruebas/2026-09-12-prueba-respaldo.txt` (se hizo el respaldo, se borró la base, se restauró y los 47 tests pasaron) |
-| Script de administración del servidor, v1 modular | ✔ | `scripts/admin/` + `pruebas/2026-09-12-prueba-admin.txt` |
-| Configuración del servicio SSH | ✗ deuda de la 2da | `plan-de-instalacion.md`, sección 7 |
-| Manual de instalación del S.O. servidor | ✗ deuda de la 1ra | `plan-de-instalacion.md`, sección 4 |
-| Instalación y configuración de la red (estática) | ✗ deuda de la 1ra | `plan-de-instalacion.md`, sección 5 |
-| Gestión y administración de paquetes | ✗ deuda de la 1ra | `plan-de-instalacion.md`, sección 6 |
+| Medios de respaldo a largo plazo y alta disponibilidad | ✔ | `respaldo-y-alta-disponibilidad.md` y sección 3 del PDF (2da entrega) |
+| Rutinas de backup y sus scripts | ✔ | `scripts/respaldo/` + `pruebas/2026-09-12-prueba-respaldo.txt` (contenedor) + `pruebas/2026-09-13-prueba-scripts-servidor-real.txt` (servidor real) |
+| Script de administración del servidor, v1 modular | ✔ | `scripts/admin/` + `pruebas/2026-09-12-prueba-admin.txt` (contenedor) + `pruebas/2026-09-13-prueba-scripts-servidor-real.txt` (servidor real) |
+| Configuración del servicio SSH | ✔ (13/09) | `ssh.md` + `pruebas/2026-09-13-prueba-ssh.txt` |
+| Manual de instalación del S.O. servidor | ✔ (13/09) | `manual-de-instalacion.md` — sin capturas por decisión (ver nota abajo) |
+| Instalación y configuración de la red (estática) | ✔ (13/09) | `red-estatica.md` + `pruebas/2026-09-13-prueba-red-estatica.txt` |
+| Gestión y administración de paquetes | ✔ (13/09) | `gestion-de-paquetes.md` + `pruebas/2026-09-13-prueba-despliegue-servidor-real.txt` |
 
-Los cuatro que se deben necesitan el servidor instalado, que al 12/09 no existe. Se
-entregan con la 3ra, siguiendo el plan. No se maquilla: el PDF lo dice en la primera
-página.
+Los cuatro últimos se adelantaron del primer sprint de la 3ra al 13/09: la ficha de Falcon
+de esa fecha aclaró que la 2da entrega también completa la calificación de la 1ra.
+`Administracion_SO_2da_Entrega_SiGeRU.pdf` se **regeneró el mismo 13/09** para mostrar los
+8 de 8 en la entrega de mañana 14/09 (`doc15_admin_so.py` ampliado con la sección 6 y un
+Anexo C con las transcripciones del servidor real). Sobre las capturas del manual: la
+instalación ya había terminado cuando se armó el documento, así que las 16 pantallas no se
+podían volver a fotografiar sin reinstalar; se documentó cada una con una tabla en vez de
+crear una VM descartable solo para las imágenes.
+
+Pendiente menor, no bloqueante: cargar la clave SSH de cada integrante del equipo en
+`~cosmos2026/.ssh/authorized_keys` y recién entonces pasar `PasswordAuthentication` a `no`
+en `ssh.md` / `sshd_config.d/sigeru.conf`.
+
+## El servidor real
+
+`sigeru-srv` es una VM VirtualBox en la PC de Fornos (modo NAT, no puente: el dominio
+Ceibal puede bloquear el puente). Se entra por SSH con clave, desde esa misma PC:
+
+```bash
+ssh -p 2222 cosmos2026@127.0.0.1
+```
+
+La clave privada vive en `vm-ubuntu/ssh/` (fuera del repositorio). El usuario del sistema
+operativo es `cosmos2026`, no `sigeru` — ver `manual-de-instalacion.md` para el porqué.
 
 ## Cómo se corre cada script
 

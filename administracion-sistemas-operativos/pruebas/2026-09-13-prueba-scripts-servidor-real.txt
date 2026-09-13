@@ -1,0 +1,72 @@
+Prueba de los scripts de respaldo y administracion en el servidor real - sigeru-srv
+Fecha: 2026-09-13
+(La primera prueba de estos scripts fue en un contenedor Ubuntu, 12/09/2026,
+ver 2026-09-12-prueba-respaldo.txt y 2026-09-12-prueba-admin.txt. Esta es la segunda,
+contra el servidor real.)
+
+$ cd /var/www/sigeru/administracion-sistemas-operativos/scripts/respaldo
+$ sudo ./instalar.sh
+== Instalando las rutinas de respaldo de SiGeRU en /opt/sigeru ==
+   backup.sh, restaurar.sh y backup.conf en /opt/sigeru/respaldo/
+   sigeru-admin.sh y sus modulos en /opt/sigeru/admin/ (comando: sigeru-admin)
+   carpeta de respaldos: /backups (solo root)
+   log: /var/log/sigeru-backup.log
+   tarea diaria (03:00) en /etc/cron.d/sigeru-backup
+   cron esta corriendo.
+
+Se edito /opt/sigeru/respaldo/backup.conf con las credenciales reales (DB_USUARIO=sigeru,
+DB_CLAVE=<la generada para el usuario de MySQL>, ver 2026-09-13-prueba-despliegue-servidor-real.txt).
+Este archivo no se commitea (vive solo en el servidor, permisos 640 root).
+
+=== Primer respaldo ===
+$ sudo /opt/sigeru/respaldo/backup.sh
+2026-09-13 20:41:50  ===== Respaldo sigeru-20260913-2041: inicio =====
+2026-09-13 20:41:50  Base sigeru en 127.0.0.1:3306 (usuario sigeru); codigo en /var/www/sigeru; destino /backups
+2026-09-13 20:41:50  Conexion a MySQL verificada.
+2026-09-13 20:41:51  Base volcada: 15 tablas, 28K.
+2026-09-13 20:41:51  Archivo creado: /backups/sigeru-20260913-2041.tar.gz (5.9M).
+2026-09-13 20:41:51  Huella: ae12bec9f04c6cb56b1a19e8525b5e238ec57f7f4a79e52d5f019592b68cf9b5
+2026-09-13 20:41:51  Verificado: el .tar.gz se lee entero (185 entradas) y la huella coincide.
+2026-09-13 20:41:51  Nada para borrar (ninguno supera los 14 dias).
+2026-09-13 20:41:51  ===== Respaldo sigeru-20260913-2041: OK. Quedan 1 respaldos en /backups =====
+
+$ sudo ls -la /backups
+sigeru-20260913-2041.tar.gz (6145453 bytes)
+sigeru-20260913-2041.tar.gz.sha256
+
+=== sigeru-admin ===
+$ sudo sigeru-admin --help
+sigeru-admin 1.0 (2da entrega, 12/09/2026)
+Modulos: usuarios (alta baja clave listar), red (dns gateway ip ping puertos resumen),
+respaldo (ahora listar log restaurar), servicios (detener estado iniciar reiniciar)
+
+$ sudo sigeru-admin red resumen
+== Direcciones IP ==
+enp0s3   UP   10.0.2.15/24
+== Puerta de enlace ==
+default via 10.0.2.2 dev enp0s3 proto static
+== Servidores DNS ==
+DNS Servers: 10.0.2.3 1.1.1.1
+
+$ sudo sigeru-admin servicios estado
+SERVICIO   ESTADO       ARRANCA SOLO
+apache2    active       enabled
+mysql      active       enabled
+ssh        active       disabled   <- detectado y corregido (ver abajo)
+cron       active       enabled
+
+=== Correccion: ssh no arrancaba solo ===
+El primer chequeo de servicios mostro "ssh ... disabled": el servicio corre ahora
+mismo pero no estaba habilitado para el proximo arranque. Sin esto, despues de un
+reinicio la unica forma de entrar hubiera sido la consola grafica de VirtualBox.
+
+$ sudo systemctl enable ssh
+Created symlink /etc/systemd/system/sshd.service -> /usr/lib/systemd/system/ssh.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/ssh.service -> /usr/lib/systemd/system/ssh.service.
+
+$ sudo sigeru-admin servicios estado
+SERVICIO   ESTADO       ARRANCA SOLO
+apache2    active       enabled
+mysql      active       enabled
+ssh        active       enabled
+cron       active       enabled
