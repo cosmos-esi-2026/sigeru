@@ -1,12 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - contenedores.js
-//  Listado, alta, edicion y baja logica de contenedores.
-//
-//  Los desplegables de zona y tipo de residuo se cargan DE LA BASE, no estan
-//  escritos en el HTML: si alguien agrega una zona nueva, el formulario la
-//  ofrece sin tocar codigo.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 7;
@@ -52,8 +43,6 @@ function dibujarTabla(contenedores) {
       celda("Código", c.codigo) +
       celda("Dirección", c.direccion) +
       celda("Zona", c.zona) +
-      // El valor de orden va sin la unidad: "1100 L" y "900 L" como texto se
-      // ordenarian mal (el "1" antes que el "9").
       celda("Capacidad", c.capacidad ? c.capacidad + " L" : null, c.capacidad) +
       celda("Tipo", c.tipo_residuo) +
       celdaEstado("Estado", c.estado, colorEstado(c.estado)) +
@@ -63,9 +52,6 @@ function dibujarTabla(contenedores) {
 
   actualizarContador();
 }
-
-
-// --- Desplegables que salen de la base --------------------------------------
 
 async function cargarCatalogos() {
   try {
@@ -82,14 +68,10 @@ async function cargarCatalogos() {
       return '<option value="' + escaparHtml(t.nombre) + '">' + escaparHtml(t.nombre) + "</option>";
     }).join("");
   } catch (error) {
-    // Si fallan los catalogos el alta no puede funcionar bien: mejor decirlo.
     avisoPaginaError("No se pudieron cargar las zonas y los tipos de residuo. " +
                      mensajeDeFallo(error));
   }
 }
-
-
-// --- Alta y edicion ---------------------------------------------------------
 
 function prepararAlta() {
   idEditando = null;
@@ -151,9 +133,6 @@ formContenedor.addEventListener("submit", async function (evento) {
     liberarEnvio(boton);
   }
 });
-
-
-// --- Acciones de cada fila --------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

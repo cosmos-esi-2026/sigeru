@@ -1,8 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  controllers/CentroAcopioController.php
-// ============================================================================
 
 require_once __DIR__ . "/../models/CentroAcopio.php";
 require_once __DIR__ . "/../models/Maquinaria.php";
@@ -70,9 +66,6 @@ class CentroAcopioController
             Response::error("El centro de acopio ya estaba inactivo", 409);
         }
 
-        // La secuencia alternativa A2.0 del CU-020 pide ADVERTIR, no impedir:
-        // el centro se da de baja igual, pero quien lo hace se entera de que
-        // deja maquinaria colgada de un centro inactivo y puede reasignarla.
         $maquinas = Maquinaria::cuantasEnCentro($id);
         if ($maquinas === 1) {
             $aviso = " Atención: tiene 1 máquina registrada; conviene reasignarla a otro centro.";

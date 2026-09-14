@@ -1,14 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - dashboard.js
-//
-//  Calcula las cuatro metricas del panel y arma la tabla de contenedores
-//  llenos. No hay endpoints de resumen en las APIs: se piden los listados que
-//  ya existen y se cuenta aca, del lado del navegador.
-//
-//  Los tres pedidos salen en paralelo: son independientes entre si, y en serie
-//  el panel tardaba lo que tardan los tres sumados.
-// ============================================================================
-
 Sesion.exigir();
 
 const cuerpoLlenos = document.getElementById("cuerpo-llenos");
@@ -66,7 +55,6 @@ async function cargarUsuarios() {
     const respuesta = await apiGet(API.usuarios + "/usuarios");
     pintarMetrica("metrica-usuarios", (respuesta.datos || []).length);
   } catch (error) {
-    // Con rol Vecino este dato da 403: no es una falla, es que no corresponde.
     pintarMetrica("metrica-usuarios", "—", mensajeDeFallo(error));
   }
 }

@@ -1,9 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - centros.js
-//  Centros de acopio: listado, alta, edicion y baja logica.
-//  Modulo que pedia la letra de la 2da entrega y no existia.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 5;
@@ -52,9 +46,6 @@ function dibujarTabla(centros) {
 
   actualizarContador();
 }
-
-
-// --- Alta y edicion ---------------------------------------------------------
 
 function prepararAlta() {
   idEditando = null;
@@ -112,9 +103,6 @@ formCentro.addEventListener("submit", async function (evento) {
     liberarEnvio(boton);
   }
 });
-
-
-// --- Acciones de cada fila --------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

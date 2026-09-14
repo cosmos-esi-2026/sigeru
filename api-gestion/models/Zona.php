@@ -1,9 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de zonas
-//  La zona agrupa contenedores y rutas, y se abastece de un centro de acopio.
-//  El formulario de contenedores la necesita para el desplegable.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 

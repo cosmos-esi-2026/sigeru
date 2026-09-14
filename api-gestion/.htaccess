@@ -1,7 +1,3 @@
-# ============================================================================
-#  SiGeRU 2026 - API de gestion - Reglas de Apache
-#  Manda todas las peticiones a index.php (router).
-# ============================================================================
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

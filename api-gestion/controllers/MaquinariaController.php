@@ -1,12 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  controllers/MaquinariaController.php
-//
-//  Modulo que la letra pide en el CRUD de la 2da entrega ("CRUD de centros de
-//  acopio y maquinaria basica") y que el modelo de 14 tablas no cubria. Entro
-//  con la Adenda de Alcance del 09/09/2026.
-// ============================================================================
 
 require_once __DIR__ . "/../models/Maquinaria.php";
 require_once __DIR__ . "/../core/Response.php";
@@ -46,9 +38,6 @@ class MaquinariaController
             Response::error("Estado de maquinaria inválido", 400);
         }
 
-        // Una maquina siempre esta EN un centro: la columna es NOT NULL y no
-        // hay centro por omision. Sin esto la base devolveria un error de
-        // integridad, que no le dice nada a quien usa la pantalla.
         if (Maquinaria::idDeCentro($datos) === null) {
             Response::error("Hay que indicar en qué centro de acopio está la maquinaria", 400);
         }

@@ -1,8 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - usuarios.js
-//  Listado, alta, edicion y baja logica de usuarios.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 7;
@@ -11,7 +6,6 @@ const formUsuario = document.getElementById("form-usuario");
 const mensaje = document.getElementById("mensaje");
 const modalUsuario = document.getElementById("modal-usuario");
 
-// null = el modal esta creando. Un numero = esta editando ese usuario.
 let idEditando = null;
 
 async function cargarUsuarios() {
@@ -52,12 +46,6 @@ function dibujarTabla(usuarios) {
 
   actualizarContador();
 }
-
-
-// --- Alta y edicion ---------------------------------------------------------
-// El mismo modal sirve para las dos cosas: cambia el titulo, el texto del boton
-// y el verbo HTTP. Tener dos formularios casi iguales seria mas codigo y una
-// fuente mas de inconsistencias.
 
 function prepararAlta() {
   idEditando = null;
@@ -115,9 +103,6 @@ formUsuario.addEventListener("submit", async function (evento) {
     liberarEnvio(boton);
   }
 });
-
-
-// --- Acciones de cada fila --------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

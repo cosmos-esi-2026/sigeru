@@ -1,52 +1,30 @@
-/* ==========================================================================
-   SiGeRU 2026 - Estilos de la Landing page
-   CSS puro, sin frameworks (no Tailwind, no Bootstrap).
-
-   IDEA DE DISENO
-   --------------
-   El sistema visual se llama "banda de clasificacion": la franja de colores
-   que aparece debajo del encabezado, arriba de las tarjetas y en el pie
-   representa los tipos de residuo (organico, plastico, vidrio, papel, metal).
-   No es decoracion: los mismos colores se reutilizan como etiquetas.
-   ========================================================================== */
-
-/* ==========================================================================
-   1. VARIABLES (tokens de diseno)
-   Cambiando estos valores cambia toda la pagina.
-   ========================================================================== */
 :root {
-  /* --- Colores base --- */
-  --hueso:        #f6f7f2;  /* fondo general, blanco con un toque verde */
+  --hueso:        #f6f7f2;
   --blanco:       #ffffff;
-  --tinta:        #0e241c;  /* texto principal (verde muy oscuro, no negro) */
-  --tinta-suave:  #55685f;  /* texto secundario */
+  --tinta:        #0e241c;
+  --tinta-suave:  #55685f;
   --borde:        #e3e7df;
 
-  /* --- Color institucional --- */
   --verde:        #15654a;
   --verde-oscuro: #0e4a36;
-  --verde-agua:   #e6f1ea;  /* fondo suave para resaltar */
-  --lima:         #cdeb4b;  /* acento "alta visibilidad", como los chalecos */
+  --verde-agua:   #e6f1ea;
+  --lima:         #cdeb4b;
 
-  /* --- Colores por tipo de residuo (se usan como etiquetas) --- */
   --organico:  #7a5c3e;
   --plastico:  #d9a300;
   --vidrio:    #2e9e8f;
   --papel:     #2f6fd0;
   --metal:     #8b94a3;
 
-  /* --- Estados --- */
   --ok-texto:  #15654a;
   --ok-fondo:  #dff0e5;
   --error:     #b3261e;
   --error-fondo: #fce4e2;
 
-  /* --- Tipografias --- */
   --fuente-titulo: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --fuente-texto:  "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --fuente-dato:   "IBM Plex Mono", "Consolas", monospace;
 
-  /* --- Escala de espaciado (todo padding/margin sale de aca) --- */
   --esp-1: 4px;
   --esp-2: 8px;
   --esp-3: 12px;
@@ -56,7 +34,6 @@
   --esp-7: 48px;
   --esp-8: 64px;
 
-  /* --- Bordes redondeados y sombras --- */
   --radio-1: 10px;
   --radio-2: 16px;
   --radio-3: 24px;
@@ -64,14 +41,10 @@
   --sombra-1: 0 1px 2px rgba(14, 36, 28, .06), 0 2px 8px rgba(14, 36, 28, .04);
   --sombra-2: 0 18px 40px -18px rgba(14, 36, 28, .35);
 
-  /* --- Movimiento y medidas --- */
   --transicion: .15s ease;
-  --alto-toque: 44px;   /* area minima que se puede tocar con el dedo */
+  --alto-toque: 44px;
 }
 
-/* ==========================================================================
-   2. RESET Y BASE
-   ========================================================================== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -90,7 +63,6 @@ h1, h2, h3 {
   letter-spacing: -0.02em;
 }
 
-/* Contenedor central */
 .contenedor {
   width: 100%;
   max-width: 1120px;
@@ -99,7 +71,6 @@ h1, h2, h3 {
 }
 .contenedor-angosto { max-width: 700px; }
 
-/* Foco visible con teclado (accesibilidad) */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible {
@@ -108,7 +79,6 @@ input:focus-visible {
   border-radius: var(--esp-1);
 }
 
-/* Solo para lectores de pantalla: se lee, no se ve. */
 .solo-lectores {
   position: absolute;
   width: 1px; height: 1px;
@@ -119,8 +89,6 @@ input:focus-visible {
   border: 0;
 }
 
-/* Primer enlace de la pagina: saltea el menu y va directo al contenido.
-   Aparece solo al llegar con Tab. */
 .saltar-contenido {
   position: absolute;
   top: var(--esp-2);
@@ -137,10 +105,6 @@ input:focus-visible {
 }
 .saltar-contenido:focus { transform: translateY(0); }
 
-/* ==========================================================================
-   3. BANDA DE CLASIFICACION (elemento distintivo del sitio)
-   Cinco franjas con los colores de los tipos de residuo.
-   ========================================================================== */
 .banda {
   display: flex;
   height: 5px;
@@ -152,9 +116,6 @@ input:focus-visible {
 .banda span:nth-child(4) { background: var(--papel); }
 .banda span:nth-child(5) { background: var(--metal); }
 
-/* ==========================================================================
-   4. CABECERA Y MENU
-   ========================================================================== */
 .cabecera {
   position: sticky;
   top: 0;
@@ -181,7 +142,7 @@ input:focus-visible {
   align-items: center;
   gap: 9px;
 }
-/* Punto verde al lado del nombre */
+
 .logo::before {
   content: "";
   width: 11px;
@@ -209,9 +170,6 @@ input:focus-visible {
 .menu a:hover { color: var(--tinta); background: var(--verde-agua); }
 .menu .boton { margin-left: 6px; }
 
-/* ==========================================================================
-   5. BOTONES
-   ========================================================================== */
 .boton {
   display: inline-flex;
   align-items: center;
@@ -232,8 +190,6 @@ input:focus-visible {
 .boton:hover { transform: translateY(-1px); }
 .boton:active { transform: translateY(0); }
 
-/* Deshabilitado y "trabajando": el mismo aspecto, porque en los dos casos el
-   boton no responde. El puntito girando evita el doble envio a ciegas. */
 .boton:disabled,
 .boton[aria-busy="true"] {
   opacity: .6;
@@ -265,9 +221,6 @@ input:focus-visible {
 }
 .boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); }
 
-/* ==========================================================================
-   6. HERO (seccion principal, dos columnas)
-   ========================================================================== */
 .hero {
   padding: 72px 0 84px;
   overflow: hidden;
@@ -279,7 +232,6 @@ input:focus-visible {
   align-items: center;
 }
 
-/* Etiqueta chica arriba del titulo */
 .etiqueta {
   display: inline-flex;
   align-items: center;
@@ -295,8 +247,6 @@ input:focus-visible {
   margin-bottom: 22px;
 }
 
-/* El titulo del hero es el h1 de la pagina: el nombre de la marca en la
-   cabecera es un parrafo, porque no es el tema de la pagina sino el logo. */
 .hero h1 {
   font-family: var(--fuente-titulo);
   font-size: clamp(34px, 5vw, 54px);
@@ -305,7 +255,7 @@ input:focus-visible {
   letter-spacing: -0.02em;
   margin-bottom: var(--esp-5);
 }
-/* Palabra resaltada con un subrayado grueso color lima */
+
 .resaltado {
   background: linear-gradient(transparent 62%, var(--lima) 62%);
   padding: 0 2px;
@@ -319,7 +269,6 @@ input:focus-visible {
 }
 .hero-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* --- Ficha de contenedor (vista previa del sistema) --- */
 .ficha {
   background: var(--blanco);
   border: 1px solid var(--borde);
@@ -354,7 +303,6 @@ input:focus-visible {
 }
 .ficha-fila strong { color: var(--tinta); font-family: var(--fuente-dato); }
 
-/* Barra de nivel de llenado */
 .nivel {
   height: 10px;
   background: var(--verde-agua);
@@ -370,7 +318,6 @@ input:focus-visible {
 
 .ficha-tipos { display: flex; flex-wrap: wrap; gap: 8px; }
 
-/* Etiqueta de tipo de residuo: usa el color guardado en --color */
 .tipo {
   --color: var(--metal);
   display: inline-flex;
@@ -397,7 +344,6 @@ input:focus-visible {
 .tipo[data-tipo="papel"]    { --color: var(--papel); }
 .tipo[data-tipo="metal"]    { --color: var(--metal); }
 
-/* Etiqueta de estado */
 .estado {
   display: inline-flex;
   align-items: center;
@@ -416,9 +362,6 @@ input:focus-visible {
   background: currentColor;
 }
 
-/* ==========================================================================
-   7. SECCIONES DE CONTENIDO
-   ========================================================================== */
 .seccion { padding: 76px 0; }
 .seccion-gris {
   background: var(--blanco);
@@ -436,7 +379,6 @@ input:focus-visible {
   font-size: 17px;
 }
 
-/* Dos columnas para "Que es" */
 .dos-columnas {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -462,7 +404,6 @@ input:focus-visible {
   border: 2px solid var(--verde);
 }
 
-/* --- Tarjetas de servicios --- */
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -479,7 +420,7 @@ input:focus-visible {
   overflow: hidden;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-/* Franja de color arriba de cada tarjeta */
+
 .tarjeta::before {
   content: "";
   position: absolute;
@@ -509,7 +450,6 @@ input:focus-visible {
 .tarjeta h3 { font-size: 19px; margin-bottom: 8px; }
 .tarjeta p { color: var(--tinta-suave); font-size: 15px; }
 
-/* --- Fila de tipos de residuo --- */
 .tipos-lista {
   display: flex;
   flex-wrap: wrap;
@@ -517,9 +457,6 @@ input:focus-visible {
   margin-top: 26px;
 }
 
-/* ==========================================================================
-   8. FORMULARIO DE REGISTRO
-   ========================================================================== */
 .caja-formulario {
   background: var(--blanco);
   border: 1px solid var(--borde);
@@ -563,11 +500,9 @@ input:focus-visible {
   border-color: var(--verde);
   box-shadow: 0 0 0 3px var(--verde-agua);
 }
-/* #64756c es el gris mas claro que sigue cumpliendo AA sobre el fondo hueso */
+
 .formulario input::placeholder { color: #64756c; }
 
-/* Campo con error: borde rojo + el texto de error debajo, atado al input con
-   aria-describedby para que un lector de pantalla lo lea junto al campo. */
 .formulario input[aria-invalid="true"] {
   border-color: var(--error);
   background: var(--error-fondo);
@@ -583,14 +518,13 @@ input:focus-visible {
   font-weight: 500;
 }
 .error-campo:empty { display: none; }
-/* El boton ocupa todo el ancho de la grilla */
+
 .formulario button {
   grid-column: 1 / -1;
   justify-self: start;
   margin-top: 6px;
 }
 
-/* Mensaje de resultado (exito o error). Vacio no ocupa lugar. */
 .mensaje {
   margin-top: var(--esp-4);
   font-size: 14px;
@@ -609,12 +543,8 @@ input:focus-visible {
 .mensaje.error { color: var(--error);    background: var(--error-fondo); }
 .mensaje .icono { margin-top: 1px; }
 
-/* Tamano unico para los iconos en linea del sistema */
 .icono { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ==========================================================================
-   9. PIE DE PAGINA
-   ========================================================================== */
 .pie {
   background: var(--tinta);
   color: rgba(255, 255, 255, .72);
@@ -634,9 +564,6 @@ input:focus-visible {
 .pie a { color: var(--lima); text-decoration: none; }
 .pie a:hover { text-decoration: underline; }
 
-/* ==========================================================================
-   10. RESPONSIVE (pantallas chicas)
-   ========================================================================== */
 @media (max-width: 900px) {
   .hero-interno,
   .dos-columnas { grid-template-columns: 1fr; gap: 36px; }
@@ -653,7 +580,6 @@ input:focus-visible {
   .pie-interno { flex-direction: column; align-items: flex-start; }
 }
 
-/* Respeta a quien pide menos animaciones en su sistema */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
   html { scroll-behavior: auto; }

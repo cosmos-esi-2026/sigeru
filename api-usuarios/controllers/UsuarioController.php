@@ -7,8 +7,6 @@ require_once __DIR__ . "/../core/Validacion.php";
 
 class UsuarioController
 {
-    // ------------------------------------------------------------ usuarios --
-
     public function listar(): void
     {
         Auth::exigirRol("Administrador");
@@ -21,23 +19,18 @@ class UsuarioController
 
         $usuario = Usuario::obtener($id);
         if ($usuario === null) {
-            Response::json(["ok" => false, "mensaje" => "Usuario no encontrado"], 404);
+            Response::error("Usuario no encontrado", 404);
         }
         Response::json(["ok" => true, "datos" => $usuario]);
     }
 
-    /**
-     * Alta de usuario desde el panel de administracion. Solo un administrador
-     * puede crear usuarios, y solo aca se puede elegir el rol: el registro
-     * publico va por crearSolicitud() y nunca crea un usuario directamente.
-     */
     public function crear(): void
     {
         Auth::exigirRol("Administrador");
         $datos = Response::leerJson();
 
         if (empty($datos["nombre"]) || empty($datos["email"])) {
-            Response::json(["ok" => false, "mensaje" => "Faltan datos: nombre y email"], 400);
+            Response::error("Faltan datos: nombre y email", 400);
         }
         if (!Validacion::email($datos["email"])) {
             Response::error("El email no tiene un formato válido", 400);
@@ -49,22 +42,18 @@ class UsuarioController
             );
         }
         if (Usuario::existeEmail($datos["email"])) {
-            Response::json(["ok" => false, "mensaje" => "Ya existe un usuario con ese email"], 409);
+            Response::error("Ya existe un usuario con ese email", 409);
         }
 
         $rol = $datos["rol"] ?? "Vecino";
         if (!in_array($rol, Usuario::ROLES, true)) {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "Rol invalido. Valores admitidos: " . implode(", ", Usuario::ROLES),
-            ], 400);
+            Response::error("Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES), 400);
         }
 
         $nuevo = Usuario::crear($datos, $rol);
         Response::json(["ok" => true, "mensaje" => "Usuario creado", "datos" => $nuevo], 201);
     }
 
-    /** Modifica un usuario. El rol solo cambia si viene y es valido. */
     public function actualizar(int $id): void
     {
         Auth::exigirRol("Administrador");
@@ -75,7 +64,6 @@ class UsuarioController
             Response::error("Usuario no encontrado", 404);
         }
 
-        // El email es la credencial de acceso: no puede pisar el de otra cuenta.
         if (isset($datos["email"])) {
             if (!Validacion::email($datos["email"])) {
                 Response::error("El email no tiene un formato válido", 400);
@@ -97,10 +85,6 @@ class UsuarioController
         Response::json(["ok" => true, "mensaje" => "Usuario actualizado", "datos" => $actualizado]);
     }
 
-    /**
-     * Baja LOGICA: la cuenta pasa a inactivo y deja de poder entrar, pero las
-     * incidencias que reporto siguen teniendo autor.
-     */
     public function darDeBaja(int $id): void
     {
         $administrador = Auth::exigirRol("Administrador");
@@ -112,7 +96,7 @@ class UsuarioController
         if ($usuario["estado"] === "inactivo") {
             Response::error("El usuario ya estaba inactivo", 409);
         }
-        // Sin esto, un administrador se desactiva a si mismo y pierde el acceso.
+
         if ((int) $administrador["id_usuario"] === $id) {
             Response::error("No podés darte de baja tu propia cuenta", 409);
         }
@@ -134,17 +118,12 @@ class UsuarioController
         Response::json(["ok" => true, "mensaje" => "Login correcto", "datos" => $usuario]);
     }
 
-    /** Cierra la sesion del servidor. */
     public function logout(): void
     {
         Auth::cerrarSesion();
         Response::json(["ok" => true, "mensaje" => "Sesión cerrada"]);
     }
 
-    /**
-     * Quien esta logueado. Devuelve 401 si no hay sesion, asi el frontend puede
-     * comprobar al cargar una pagina si la sesion del servidor sigue viva.
-     */
     public function sesion(): void
     {
         $usuario = Auth::identificar();
@@ -154,21 +133,18 @@ class UsuarioController
         Response::json(["ok" => true, "datos" => $usuario]);
     }
 
-    // --------------------------------------------------------- solicitudes --
-
-    /** Registro publico: crea una solicitud pendiente, nunca un usuario. */
     public function crearSolicitud(): void
     {
         $datos = Response::leerJson();
 
         if (empty($datos["nombre"]) || empty($datos["email"])) {
-            Response::json(["ok" => false, "mensaje" => "Faltan datos: nombre y email"], 400);
+            Response::error("Faltan datos: nombre y email", 400);
         }
         if (!Validacion::email($datos["email"])) {
             Response::error("El email no tiene un formato válido", 400);
         }
         if (Usuario::existeEmail($datos["email"])) {
-            Response::json(["ok" => false, "mensaje" => "Ya existe un usuario con ese email"], 409);
+            Response::error("Ya existe un usuario con ese email", 409);
         }
 
         $nueva = Usuario::crearSolicitud($datos);
@@ -186,10 +162,6 @@ class UsuarioController
         Response::json(["ok" => true, "datos" => Usuario::listarSolicitudes($estado)]);
     }
 
-    /**
-     * Aprueba o rechaza una solicitud (CU-011 del analisis de casos de uso).
-     * Cuerpo esperado: {"decision": "aprobada"|"rechazada", "rol": "..."}
-     */
     public function resolverSolicitud(int $id): void
     {
         Auth::exigirRol("Administrador");
@@ -197,29 +169,20 @@ class UsuarioController
         $decision = $datos["decision"] ?? "";
 
         if (!in_array($decision, ["aprobada", "rechazada"], true)) {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "La decision tiene que ser 'aprobada' o 'rechazada'",
-            ], 400);
+            Response::error("La decisión tiene que ser 'aprobada' o 'rechazada'", 400);
         }
 
         $solicitud = Usuario::obtenerSolicitud($id);
         if ($solicitud === null) {
-            Response::json(["ok" => false, "mensaje" => "Solicitud no encontrada"], 404);
+            Response::error("Solicitud no encontrada", 404);
         }
         if ($solicitud["estado"] !== "pendiente") {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "La solicitud ya estaba " . $solicitud["estado"],
-            ], 409);
+            Response::error("La solicitud ya estaba " . $solicitud["estado"], 409);
         }
 
         $rol = $datos["rol"] ?? "Vecino";
         if (!in_array($rol, Usuario::ROLES, true)) {
-            Response::json([
-                "ok"      => false,
-                "mensaje" => "Rol invalido. Valores admitidos: " . implode(", ", Usuario::ROLES),
-            ], 400);
+            Response::error("Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES), 400);
         }
 
         [$actualizada, $usuario] = Usuario::resolverSolicitud($id, $decision, $rol);

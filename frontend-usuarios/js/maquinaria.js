@@ -1,16 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - maquinaria.js
-//  Maquinaria de los centros de acopio: listado, alta, edicion y baja logica.
-//
-//  Es el modulo que cierra el "CRUD de centros de acopio y maquinaria basica"
-//  que pide la letra de Programacion Full Stack para la 2da entrega. El alcance
-//  es de inventario, no de mantenimiento: ver Adenda_Alcance_Maquinaria.
-//
-//  El desplegable de centros se carga DE LA BASE, igual que las zonas en
-//  contenedores.js: si se agrega un centro nuevo, el formulario lo ofrece sin
-//  tocar codigo.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 6;
@@ -21,8 +8,6 @@ const modalMaquinaria = document.getElementById("modal-maquinaria");
 
 let idEditando = null;
 
-// La base guarda el tipo como ENUM. "cinta_clasificadora" es correcto para la
-// base y feo en pantalla; aca se traduce solo para mostrar.
 const TIPOS = {
   compactadora: "Compactadora",
   pala_cargadora: "Pala cargadora",
@@ -76,9 +61,6 @@ function dibujarTabla(maquinas) {
   actualizarContador();
 }
 
-
-// --- Desplegable que sale de la base ----------------------------------------
-
 async function cargarCentros() {
   try {
     const centros = await apiGet(API.gestion + "/centros");
@@ -87,8 +69,6 @@ async function cargarCentros() {
     });
 
     if (activos.length === 0) {
-      // Sin centros no se puede dar de alta nada: la clave foranea es NOT NULL.
-      // Mejor decirlo antes de que la persona complete el formulario entero.
       avisoPaginaError("No hay centros de acopio activos. Cargá uno antes de " +
                        "registrar maquinaria.");
     }
@@ -101,9 +81,6 @@ async function cargarCentros() {
                      mensajeDeFallo(error));
   }
 }
-
-
-// --- Alta y edicion ---------------------------------------------------------
 
 function prepararAlta() {
   idEditando = null;
@@ -165,9 +142,6 @@ formMaquinaria.addEventListener("submit", async function (evento) {
     liberarEnvio(boton);
   }
 });
-
-
-// --- Acciones de cada fila --------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

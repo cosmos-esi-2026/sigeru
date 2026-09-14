@@ -1,27 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  index.php  (router)
-//
-//  Recursos:
-//    /contenedores            GET, POST
-//    /contenedores/{id}       GET, PUT, DELETE (baja logica: pasa a retirado)
-//    /contenedores/{id}/historial   GET
-//    /camiones                GET, POST
-//    /camiones/{id}           GET, PUT, DELETE (baja logica: fuera de servicio)
-//    /centros                 GET, POST
-//    /centros/{id}            GET, PUT, DELETE (baja logica: inactivo)
-//    /maquinaria              GET, POST
-//    /maquinaria/{id}         GET, PUT, DELETE (baja logica: fuera de servicio)
-//    /tipos-residuo           GET, POST
-//    /tipos-residuo/{id}      GET, PUT, DELETE (borrado fisico, si nadie lo usa)
-//    /zonas                   GET, POST
-//    /zonas/{id}              GET
-//
-//  Control de acceso: CONSULTAR es abierto; todo lo que MODIFICA exige rol
-//  Administrador. Es el unico lugar donde se decide, para no repetir la regla
-//  en cada controlador.
-// ============================================================================
 
 require_once __DIR__ . "/core/Response.php";
 require_once __DIR__ . "/core/Auth.php";
@@ -37,8 +14,6 @@ Response::cors();
 
 $metodo = $_SERVER["REQUEST_METHOD"];
 
-// Recorta el prefijo de la carpeta, asi funciona tanto en el puerto propio
-// (prefijo "/") como bajo Apache en "/sigeru/api-gestion/".
 $base = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));
 $ruta = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 if ($base !== "/" && str_starts_with($ruta, $base)) {
@@ -50,7 +25,6 @@ $recurso    = $partes[0] ?? "";
 $id         = isset($partes[1]) && $partes[1] !== "" ? (int) $partes[1] : null;
 $subrecurso = $partes[2] ?? null;
 
-/** Toda operacion que modifica datos exige sesion de administrador. */
 function exigirAdministrador(string $metodo): void
 {
     if (in_array($metodo, ["POST", "PUT", "DELETE"], true)) {

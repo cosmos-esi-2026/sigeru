@@ -1,10 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - solicitudes.js
-//  Aprobacion y rechazo de solicitudes de acceso. Es el CU-011, que tenia
-//  endpoint en la API desde el 03/09 pero no tenia ninguna pantalla: la unica
-//  forma de aprobar a alguien era con una peticion HTTP a mano.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 6;
@@ -14,16 +7,14 @@ const formAprobar = document.getElementById("form-aprobar");
 const mensaje = document.getElementById("mensaje");
 const modalAprobar = document.getElementById("modal-aprobar");
 
-// La solicitud que se esta por aprobar en el modal.
 let solicitudElegida = null;
 
 function colorEstado(estado) {
   if (estado === "aprobada") return "verde";
   if (estado === "rechazada") return "rojo";
-  return "naranja";   // pendiente
+  return "naranja";
 }
 
-/** "2026-09-07 11:03:00" -> "07/09/2026". La hora no aporta en el listado. */
 function soloFecha(valor) {
   if (!valor) {
     return "-";
@@ -63,8 +54,6 @@ function dibujarTabla(solicitudes) {
 
   cuerpoTabla.innerHTML = solicitudes.map(function (s) {
     return '<tr role="row">' +
-      // Se muestra dd/mm/aaaa pero se ordena por el valor original de la base,
-      // que es el unico que ordena cronologicamente.
       celda("Fecha", soloFecha(s.fecha_solicitud), s.fecha_solicitud) +
       celda("Nombre", s.nombre + " " + s.apellido) +
       celda("Email", s.email) +
@@ -77,11 +66,6 @@ function dibujarTabla(solicitudes) {
   actualizarContador();
 }
 
-/**
- * Solo las pendientes se pueden resolver. Una solicitud ya aprobada o
- * rechazada no muestra botones: la decision ya se tomo y rehacerla no tiene
- * sentido (la API tambien lo rechaza con 409).
- */
 function acciones(s) {
   if (s.estado !== "pendiente") {
     return '<td role="cell" data-etiqueta="Acciones"><span class="texto-tenue">Resuelta</span></td>';
@@ -95,9 +79,6 @@ function acciones(s) {
     'data-id="' + parseInt(s.id_solicitud, 10) + '">Rechazar</button>' +
     "</div></td>";
 }
-
-
-// --- Resolver una solicitud -------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

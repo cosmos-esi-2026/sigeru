@@ -1,8 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de centros de acopio
-//  Modulo que pedia la letra de la 2da entrega y no existia.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 
@@ -88,7 +84,6 @@ class CentroAcopio
         return self::obtener($id);
     }
 
-    /** Baja logica: pasa a inactivo. Las zonas y recolecciones lo referencian. */
     public static function darDeBaja(int $id): ?array
     {
         if (self::obtener($id) === null) {

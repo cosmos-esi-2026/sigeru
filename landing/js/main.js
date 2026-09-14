@@ -1,13 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - landing/js/main.js
-//  Envia la solicitud de registro del vecino sin recargar la pagina.
-//
-//  La validacion y el bloqueo del boton salen de
-//  ../frontend-usuarios/js/formularios.js, que ya usa el panel: asi el mismo
-//  formulario se comporta igual en las dos partes del sistema y los mensajes
-//  se escriben una sola vez.
-// ============================================================================
-
 const API_USUARIOS = "/sigeru/api-usuarios";
 
 const formulario = document.getElementById("form-registro");
@@ -65,7 +55,6 @@ formulario.addEventListener("submit", async function (evento) {
   liberarEnvio(boton);
 });
 
-// El icono distingue exito de error sin depender solo del color.
 function mostrarMensaje(texto, tipo) {
   if (!texto) {
     mensaje.textContent = "";

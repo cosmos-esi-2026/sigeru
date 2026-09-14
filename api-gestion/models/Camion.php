@@ -1,10 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de camiones
-//
-//  PERSISTENCIA REAL (2da entrega): los datos viven en MySQL.
-//  Mismo contrato que la version en memoria; consultas siempre preparadas.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 
@@ -61,7 +55,6 @@ class Camion
         return self::obtener((int) $conexion->lastInsertId());
     }
 
-    /** Modifica solo los campos que vengan; lo que no se manda queda igual. */
     public static function actualizar(int $id, array $datos): ?array
     {
         if (self::obtener($id) === null) {
@@ -93,11 +86,6 @@ class Camion
         return self::obtener($id);
     }
 
-    /**
-     * Baja LOGICA: el camion pasa a "fuera_servicio". No se borra porque las
-     * recolecciones ya hechas lo referencian: borrarlo dejaria huerfano el
-     * historial del servicio.
-     */
     public static function darDeBaja(int $id): ?array
     {
         if (self::obtener($id) === null) {

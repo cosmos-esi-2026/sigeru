@@ -1,8 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  controllers/ZonaController.php
-// ============================================================================
 
 require_once __DIR__ . "/../models/Zona.php";
 require_once __DIR__ . "/../core/Response.php";

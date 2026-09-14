@@ -6,19 +6,17 @@
   <title>SiGeRU - Sistema de Gestión de Residuos Urbanos</title>
   <meta name="description" content="SiGeRU organiza los contenedores, los camiones y los centros de acopio de la ciudad, y le da a cada vecino un canal para reportar incidencias.">
   <link rel="icon" href="../frontend-usuarios/img/logo.svg">
-  <!-- Tipografías del sistema visual. Si no hay internet, el navegador usa
-       el fallback (system-ui) que ya está definido en css/styles.css. -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <!-- Hoja de estilos propia (sin frameworks externos) -->
+
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
   <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
 
-  <!-- ===================== ENCABEZADO / NAVEGACION ===================== -->
   <header class="cabecera">
     <div class="contenedor cabecera-interna">
       <p class="logo">SiGeRU</p>
@@ -26,11 +24,11 @@
         <a href="#que-es">Qué es</a>
         <a href="#servicios">Servicios</a>
         <a href="#registro">Registro</a>
-        <!-- Enlace al frontend de usuarios (login) -->
+
         <a class="boton boton-secundario" href="../frontend-usuarios/login.html">Ingresar</a>
       </nav>
     </div>
-    <!-- Banda de clasificación: los 5 tipos de residuo del sistema -->
+
     <div class="banda" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -38,7 +36,6 @@
 
   <main id="contenido-principal">
 
-    <!-- ===================== SECCION PRINCIPAL (HERO) ===================== -->
     <section class="hero" aria-labelledby="titulo-principal">
       <div class="contenedor hero-interno">
 
@@ -56,7 +53,6 @@
           </div>
         </div>
 
-        <!-- Vista previa: así se ve una ficha de contenedor dentro del sistema -->
         <aside class="ficha" aria-label="Ejemplo de ficha de contenedor">
           <div class="ficha-cabecera">
             <span class="ficha-codigo">CNT-018</span>
@@ -82,7 +78,6 @@
       </div>
     </section>
 
-    <!-- ===================== QUE ES ===================== -->
     <section id="que-es" class="seccion seccion-gris" aria-labelledby="titulo-que-es">
       <div class="contenedor dos-columnas">
         <div>
@@ -102,7 +97,6 @@
       </div>
     </section>
 
-    <!-- ===================== SERVICIOS ===================== -->
     <section id="servicios" class="seccion" aria-labelledby="titulo-servicios">
       <div class="contenedor">
         <h2 id="titulo-servicios">Servicios</h2>
@@ -150,7 +144,6 @@
           </article>
         </div>
 
-        <!-- Los mismos colores de la banda superior, ahora como etiquetas -->
         <ul class="tipos-lista">
           <li class="tipo" data-tipo="organico">Orgánico</li>
           <li class="tipo" data-tipo="plastico">Plástico</li>
@@ -161,14 +154,13 @@
       </div>
     </section>
 
-    <!-- ===================== FORMULARIO DE REGISTRO ===================== -->
     <section id="registro" class="seccion seccion-gris" aria-labelledby="titulo-registro">
       <div class="contenedor contenedor-angosto">
         <h2 id="titulo-registro">Solicitar registro</h2>
         <p>Completá tus datos. Un administrador revisa la solicitud y te habilita el acceso.</p>
 
         <div class="caja-formulario">
-          <!-- Formulario: el envío lo maneja js/main.js (no recarga la página) -->
+
           <form id="form-registro" class="formulario">
             <label>Nombre
               <input type="text" name="nombre" autocomplete="given-name" placeholder="Ana" required>
@@ -188,7 +180,6 @@
             <button type="submit" class="boton boton-primario">Enviar solicitud</button>
           </form>
 
-          <!-- Acá main.js muestra el resultado del envío -->
           <p id="mensaje-registro" class="mensaje" role="status" aria-live="polite"></p>
         </div>
       </div>
@@ -196,7 +187,6 @@
 
   </main>
 
-  <!-- ===================== PIE DE PAGINA ===================== -->
   <footer class="pie">
     <div class="banda" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span>
@@ -207,7 +197,6 @@
     </div>
   </footer>
 
-  <!-- La validación y el bloqueo del botón se comparten con el panel -->
   <script src="../frontend-usuarios/js/formularios.js"></script>
   <script src="js/main.js"></script>
 </body>

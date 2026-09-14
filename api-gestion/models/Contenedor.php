@@ -1,13 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de contenedores
-//
-//  PERSISTENCIA REAL (2da entrega): los datos viven en MySQL.
-//  El contrato con el frontend no cambia: sigue devolviendo "tipo_residuo" y
-//  "zona" como NOMBRE, aunque en la base sean claves foraneas.
-//
-//  Todas las consultas son preparadas. Nunca se concatena un valor en el SQL.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 
@@ -49,7 +40,6 @@ class Contenedor
         return $consulta->fetchColumn() !== false;
     }
 
-    /** Traduce el nombre de un tipo de residuo a su id. */
     private static function idDeTipo(?string $nombre): ?int
     {
         if ($nombre === null || $nombre === "") {
@@ -63,11 +53,6 @@ class Contenedor
         return $id === false ? null : (int) $id;
     }
 
-    /**
-     * Resuelve la zona a partir de lo que haya mandado el cliente: el id, el
-     * nombre, o nada. Si no manda nada cae en la primera zona cargada, para que
-     * el alta siga funcionando desde formularios que todavia no tienen el campo.
-     */
     private static function resolverZona(array $datos): ?int
     {
         if (!empty($datos["id_zona"])) {
@@ -86,12 +71,6 @@ class Contenedor
         return $primera === false ? null : (int) $primera;
     }
 
-    /**
-     * Alta de contenedor. Ademas de la fila, deja el primer registro en el
-     * historial de estados: asi la trazabilidad del contenedor empieza en el
-     * momento en que se lo da de alta y no cuando alguien lo edita por primera
-     * vez. Las dos escrituras van en una transaccion.
-     */
     public static function crear(array $datos): array
     {
         $estado = in_array($datos["estado"] ?? "", self::ESTADOS, true)
@@ -133,7 +112,6 @@ class Contenedor
         }
     }
 
-    /** Modifica solo los campos que vengan; lo que no se manda queda igual. */
     public static function actualizar(int $id, array $datos): ?array
     {
         $anterior = self::obtener($id);
@@ -172,7 +150,6 @@ class Contenedor
             $consulta->execute($valores);
         }
 
-        // Si cambio el estado, queda asentado en el historial.
         if (isset($valores[":estado"]) && $valores[":estado"] !== $anterior["estado"]) {
             self::registrarEstado($id, $valores[":estado"], "Cambio de estado desde el panel");
         }
@@ -180,10 +157,6 @@ class Contenedor
         return self::obtener($id);
     }
 
-    /**
-     * Baja LOGICA: el contenedor pasa a "retirado". No se borra porque su
-     * historial de estados y sus vaciados son parte del registro del servicio.
-     */
     public static function darDeBaja(int $id, string $motivo = "Retirado desde el panel"): ?array
     {
         if (self::obtener($id) === null) {
@@ -198,7 +171,6 @@ class Contenedor
         return self::obtener($id);
     }
 
-    /** Agrega una linea al historial de estados del contenedor. */
     public static function registrarEstado(int $id, string $estado, ?string $observacion = null): void
     {
         $sql = "INSERT INTO estado_contenedor (id_contenedor, estado, observacion)
@@ -212,7 +184,6 @@ class Contenedor
         ]);
     }
 
-    /** Historial completo de un contenedor, del mas nuevo al mas viejo. */
     public static function historial(int $id): array
     {
         $sql = "SELECT id_registro, fecha_hora, estado, observacion

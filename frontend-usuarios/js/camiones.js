@@ -1,8 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - camiones.js
-//  Listado, alta, edicion y baja logica de la flota.
-// ============================================================================
-
 Sesion.exigir();
 
 const COLUMNAS = 7;
@@ -48,8 +43,6 @@ function dibujarTabla(camiones) {
       celda("Matrícula", c.matricula) +
       celda("Marca", c.marca) +
       celda("Modelo", c.modelo) +
-      // El valor de orden va sin la unidad: como texto, "1000 kg" iria antes
-      // que "900 kg".
       celda("Capacidad", c.capacidad ? c.capacidad + " kg" : null, c.capacidad) +
       celdaEstado("Estado", c.estado, colorEstado(c.estado)) +
       celdaAcciones(c.id_camion, "Editar " + c.matricula, "Dar de baja " + c.matricula) +
@@ -58,9 +51,6 @@ function dibujarTabla(camiones) {
 
   actualizarContador();
 }
-
-
-// --- Alta y edicion ---------------------------------------------------------
 
 function prepararAlta() {
   idEditando = null;
@@ -120,9 +110,6 @@ formCamion.addEventListener("submit", async function (evento) {
     liberarEnvio(boton);
   }
 });
-
-
-// --- Acciones de cada fila --------------------------------------------------
 
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {

@@ -1,22 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de maquinaria de los centros de acopio
-//
-//  QUE ES: el inventario del equipamiento fijo de los vertederos y centros de
-//  acopio -compactadoras, palas cargadoras, cintas de clasificacion-, que es lo
-//  que la letra llama "maquinaria basica" en el CRUD de la 2da entrega.
-//
-//  ALCANCE: registro de inventario (que hay, de que tipo, donde y en que
-//  estado). La planificacion de mantenimiento preventivo es nivel avanzado de
-//  la letra y quedo fuera de alcance a proposito; el motivo esta en
-//  Adenda_Alcance_Maquinaria_SiGeRU.pdf.
-//
-//  CONTRATO CON EL FRONTEND: igual que Contenedor, la clave foranea viaja como
-//  id y ademas como NOMBRE del centro, para que la pantalla no tenga que hacer
-//  un segundo pedido solo para mostrar donde esta cada maquina.
-//
-//  Todas las consultas son preparadas. Nunca se concatena un valor en el SQL.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 
@@ -58,12 +40,6 @@ class Maquinaria
         return $consulta->fetchColumn() !== false;
     }
 
-    /**
-     * Resuelve el centro de acopio a partir del id o del nombre. Devuelve null
-     * si no existe: a diferencia de la zona de un contenedor, aca NO hay valor
-     * por omision. Una maquina sin centro no tiene sentido -es lo que la
-     * distingue de un camion, que se mueve- y la columna es NOT NULL.
-     */
     public static function idDeCentro(array $datos): ?int
     {
         if (!empty($datos["id_centro"])) {
@@ -104,7 +80,6 @@ class Maquinaria
         return self::obtener((int) $conexion->lastInsertId());
     }
 
-    /** Modifica solo los campos que vengan; lo que no se manda queda igual. */
     public static function actualizar(int $id, array $datos): ?array
     {
         if (self::obtener($id) === null) {
@@ -147,12 +122,6 @@ class Maquinaria
         return self::obtener($id);
     }
 
-    /**
-     * Baja LOGICA: la maquina pasa a "fuera_servicio", igual criterio y hasta
-     * el mismo valor que usa Camion. No se borra porque el inventario de un
-     * organismo publico es patrimonio: una maquina de baja sigue teniendo que
-     * poder listarse.
-     */
     public static function darDeBaja(int $id): ?array
     {
         if (self::obtener($id) === null) {
@@ -166,7 +135,6 @@ class Maquinaria
         return self::obtener($id);
     }
 
-    /** Cuantas maquinas tiene un centro. Lo usa la baja de centros de acopio. */
     public static function cuantasEnCentro(int $idCentro): int
     {
         $sql = "SELECT COUNT(*) FROM maquinaria WHERE id_centro = :id";

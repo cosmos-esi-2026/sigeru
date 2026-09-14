@@ -1,20 +1,3 @@
-// ============================================================================
-//  SiGeRU 2026 - formularios.js
-//
-//  Validacion de formularios y bloqueo del boton mientras se envia.
-//  Lo usan login, registro y los tres formularios de alta (usuario, contenedor
-//  y camion). Se carga antes que el resto de los scripts de cada pagina.
-//
-//  No valida por su cuenta: usa la validacion que ya trae el navegador
-//  (required, type="email", min...) y solo se encarga de MOSTRARLA bien, en
-//  español y pegada al campo que falla, en vez del globo gris del navegador.
-// ============================================================================
-
-
-// --- Mensajes ---------------------------------------------------------------
-// El texto del navegador cambia segun el idioma del sistema operativo y suele
-// ser generico. Estos son fijos y hablan del campo concreto.
-
 function mensajeDeError(campo) {
   const estado = campo.validity;
 
@@ -36,9 +19,6 @@ function mensajeDeError(campo) {
   return campo.validationMessage;
 }
 
-
-// --- Marcar y limpiar el error de un campo ----------------------------------
-
 function contenedorError(campo) {
   const id = "error-" + (campo.form ? campo.form.id : "campo") + "-" + campo.name;
   let elemento = document.getElementById(id);
@@ -47,7 +27,6 @@ function contenedorError(campo) {
     elemento = document.createElement("span");
     elemento.className = "error-campo";
     elemento.id = id;
-    // El error va adentro del <label>, justo despues del campo.
     campo.insertAdjacentElement("afterend", elemento);
   }
   return elemento;
@@ -80,9 +59,6 @@ function limpiarErrores(formulario) {
   });
 }
 
-
-// --- Validar ----------------------------------------------------------------
-
 function validarCampo(campo) {
   if (!campo.name || campo.disabled || campo.type === "submit") {
     return true;
@@ -95,8 +71,6 @@ function validarCampo(campo) {
   return false;
 }
 
-// Valida todo el formulario y deja el foco en el primer campo con problema,
-// que es lo que evita que alguien mande el formulario y no encuentre el error.
 function validarFormulario(formulario) {
   let primerError = null;
 
@@ -113,8 +87,6 @@ function validarFormulario(formulario) {
   return true;
 }
 
-// Se llama una vez por formulario. Desactiva los globos del navegador y valida
-// cuando el campo pierde el foco (no mientras se escribe, que interrumpe).
 function activarValidacion(formulario) {
   if (!formulario) {
     return;
@@ -128,7 +100,6 @@ function activarValidacion(formulario) {
     }
   });
 
-  // Si el campo ya estaba marcado en rojo, el error se borra apenas se corrige.
   formulario.addEventListener("input", function (evento) {
     const campo = evento.target;
     if (campo.getAttribute("aria-invalid") === "true" && campo.checkValidity()) {
@@ -136,14 +107,6 @@ function activarValidacion(formulario) {
     }
   });
 }
-
-
-// --- Errores que devuelve la API --------------------------------------------
-// La API contesta con un texto plano ("Ya existe un usuario con ese email").
-// Si ese texto nombra a un campo del formulario, el error se muestra pegado a
-// ese campo, que es donde la persona tiene que corregir. Si no lo nombra, la
-// pantalla lo muestra como aviso general.
-// Devuelve true si encontro a que campo pegarlo.
 
 function marcarErrorDeApi(formulario, texto) {
   if (!texto) {
@@ -162,10 +125,6 @@ function marcarErrorDeApi(formulario, texto) {
   campo.focus();
   return true;
 }
-
-
-// --- Bloqueo del boton mientras se envia ------------------------------------
-// Sin esto, dos clicks seguidos mandan el alta dos veces.
 
 function bloquearEnvio(formulario, textoOcupado) {
   const boton = formulario.querySelector('button[type="submit"]');

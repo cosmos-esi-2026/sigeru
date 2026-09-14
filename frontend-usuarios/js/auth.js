@@ -1,15 +1,6 @@
-// ============================================================================
-//  SiGeRU 2026 - auth.js
-//  Maneja el login y la solicitud de acceso. Funciona en login.html y en
-//  registro.html: detecta cual de los dos formularios existe en la pagina.
-// ============================================================================
-
 const formLogin = document.getElementById("form-login");
 const formRegistro = document.getElementById("form-registro");
 const mensaje = document.getElementById("mensaje");
-
-
-// --- Login ------------------------------------------------------------------
 
 if (formLogin) {
   activarValidacion(formLogin);
@@ -34,7 +25,7 @@ if (formLogin) {
       if (ok) {
         Sesion.guardar(resultado.datos);
         window.location.href = "dashboard.html";
-        return;   // no se libera el boton: la pagina ya se esta yendo
+        return;
       }
       mostrar(resultado.mensaje || "El email o la contraseña no coinciden.", "error");
     } catch (e) {
@@ -43,9 +34,6 @@ if (formLogin) {
     liberarEnvio(boton);
   });
 }
-
-
-// --- Solicitud de acceso ----------------------------------------------------
 
 if (formRegistro) {
   activarValidacion(formRegistro);
@@ -60,9 +48,6 @@ if (formRegistro) {
 
     const boton = bloquearEnvio(formRegistro, "Enviando...");
 
-    // El registro publico crea una SOLICITUD, no un usuario: el alta efectiva
-    // la hace un administrador al aprobarla. Es el circuito que modela la tabla
-    // solicitud_registro del DER y que pide el CU-011.
     const datos = {
       nombre:    formRegistro.nombre.value,
       apellido:  formRegistro.apellido.value,
@@ -94,11 +79,6 @@ if (formRegistro) {
     liberarEnvio(boton);
   });
 }
-
-
-// --- Aviso ------------------------------------------------------------------
-// El icono ayuda a distinguir exito de error sin depender solo del color, que
-// es lo que pide la pauta de accesibilidad para daltonismo.
 
 function mostrar(texto, tipo) {
   if (!texto) {

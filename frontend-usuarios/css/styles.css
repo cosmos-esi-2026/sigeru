@@ -1,50 +1,31 @@
-/* ==========================================================================
-   SiGeRU 2026 - Estilos del panel de usuarios
-
-   Se carga DESPUES de bootstrap.min.css, asi que lo que se define aca pisa
-   los estilos de Bootstrap. De Bootstrap solo usamos el modal; todo lo visual
-   lo define este archivo.
-
-   Los tokens del bloque :root son LOS MISMOS que en landing/css/styles.css:
-   las dos partes del sistema (sitio publico y panel de trabajo) comparten
-   paleta, tipografias, escala de espaciado, radios y sombras. Si se cambia un
-   valor, hay que cambiarlo en los dos archivos.
-   ========================================================================== */
-
 :root {
-  /* --- Superficies y texto --- */
-  --hueso:        #f6f7f2;  /* fondo general, blanco con un toque verde */
+  --hueso:        #f6f7f2;
   --blanco:       #ffffff;
-  --tinta:        #0e241c;  /* texto principal (verde muy oscuro, no negro) */
-  --tinta-suave:  #55685f;  /* texto secundario */
-  --tinta-tenue:  #64756c;  /* minimo que sigue cumpliendo AA sobre --hueso */
+  --tinta:        #0e241c;
+  --tinta-suave:  #55685f;
+  --tinta-tenue:  #64756c;
   --borde:        #e3e7df;
 
-  /* --- Marca --- */
   --verde:        #15654a;
   --verde-oscuro: #0e4a36;
   --verde-agua:   #e6f1ea;
-  --lima:         #cdeb4b;  /* acento de alta visibilidad, como los chalecos */
+  --lima:         #cdeb4b;
 
-  /* --- Tipos de residuo (banda de clasificacion) --- */
   --organico:  #7a5c3e;
   --plastico:  #d9a300;
   --vidrio:    #2e9e8f;
   --papel:     #2f6fd0;
   --metal:     #8b94a3;
 
-  /* --- Estados (fondo suave + texto oscuro: mas legible que el color pleno) --- */
   --ok-texto:     #15654a;   --ok-fondo:     #dff0e5;
   --alerta-texto: #8a5000;   --alerta-fondo: #fdeccf;
   --error-texto:  #b3261e;   --error-fondo:  #fce4e2;
   --neutro-texto: #4b5a54;   --neutro-fondo: #e8ece8;
 
-  /* --- Tipografias --- */
   --fuente-titulo: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --fuente-texto:  "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --fuente-dato:   "IBM Plex Mono", "Consolas", monospace;
 
-  /* --- Escala de espaciado (todo padding/margin sale de aca) --- */
   --esp-1: 4px;
   --esp-2: 8px;
   --esp-3: 12px;
@@ -54,7 +35,6 @@
   --esp-7: 48px;
   --esp-8: 64px;
 
-  /* --- Bordes redondeados y sombras --- */
   --radio-1: 10px;
   --radio-2: 16px;
   --radio-3: 24px;
@@ -62,10 +42,9 @@
   --sombra-1: 0 1px 2px rgba(14, 36, 28, .06), 0 2px 8px rgba(14, 36, 28, .04);
   --sombra-2: 0 18px 40px -18px rgba(14, 36, 28, .35);
 
-  /* --- Movimiento y medidas de layout --- */
   --transicion: .15s ease;
   --ancho-sidebar: 248px;
-  --alto-toque: 44px;   /* area minima que se puede tocar con el dedo */
+  --alto-toque: 44px;
 }
 
 * { box-sizing: border-box; }
@@ -89,8 +68,6 @@ h1, h2, h3 {
 
 a { color: var(--verde); }
 
-/* Foco de teclado: siempre visible, en el color de mayor contraste que tiene
-   el sistema. Nunca se saca el outline sin reemplazarlo. */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -101,12 +78,6 @@ select:focus-visible,
   border-radius: var(--esp-1);
 }
 
-
-/* ==========================================================================
-   0. Utilidades de accesibilidad
-   ========================================================================== */
-
-/* Solo para lectores de pantalla: se lee, no se ve. */
 .solo-lectores {
   position: absolute;
   width: 1px; height: 1px;
@@ -117,8 +88,6 @@ select:focus-visible,
   border: 0;
 }
 
-/* Primer enlace de la pagina: saltea el menu y va directo al contenido.
-   Aparece solo al llegar con Tab. */
 .saltar-contenido {
   position: absolute;
   top: var(--esp-2);
@@ -135,26 +104,16 @@ select:focus-visible,
 }
 .saltar-contenido:focus { transform: translateY(0); }
 
-
-/* ==========================================================================
-   1. Estructura general de las paginas con sesion iniciada
-   ========================================================================== */
-
 .layout { display: flex; min-height: 100vh; }
 
 .principal {
   flex: 1;
-  min-width: 0;              /* deja que las tablas anchas no rompan el layout */
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
 .contenido { padding: var(--esp-5); }
-
-
-/* ==========================================================================
-   2. Barra lateral
-   ========================================================================== */
 
 .sidebar {
   width: var(--ancho-sidebar);
@@ -180,7 +139,6 @@ select:focus-visible,
 }
 .sidebar-marca img { width: 30px; height: 30px; }
 
-/* Se sale del padding del sidebar para quedar de punta a punta */
 .sidebar .banda { margin: 0 calc(var(--esp-3) * -1) var(--esp-4); }
 
 .sidebar-nav { display: flex; flex-direction: column; gap: var(--esp-1); flex: 1; }
@@ -192,7 +150,7 @@ select:focus-visible,
   min-height: var(--alto-toque);
   padding: var(--esp-2) var(--esp-3);
   border-radius: var(--radio-1);
-  color: #bcd6c8;                /* AA sobre el verde oscuro del sidebar */
+  color: #bcd6c8;
   text-decoration: none;
   font-size: 15px;
   transition: background var(--transicion), color var(--transicion);
@@ -200,7 +158,6 @@ select:focus-visible,
 .sidebar-link:hover { background: rgba(255, 255, 255, 0.10); color: var(--blanco); }
 .sidebar-link .icono { color: currentColor; }
 
-/* Pagina actual: el lima es el unico color que marca "estas aca" */
 .sidebar-link.activo {
   background: var(--lima);
   color: var(--tinta);
@@ -222,11 +179,6 @@ select:focus-visible,
   text-transform: uppercase;
 }
 
-
-/* ==========================================================================
-   3. Encabezado de seccion
-   ========================================================================== */
-
 .topbar {
   background: var(--blanco);
   border-bottom: 1px solid var(--borde);
@@ -244,7 +196,6 @@ select:focus-visible,
   font-size: 14px;
 }
 
-/* Boton hamburguesa: solo aparece cuando el sidebar se esconde */
 .btn-menu {
   display: none;
   align-items: center;
@@ -258,11 +209,6 @@ select:focus-visible,
   color: var(--tinta);
 }
 .btn-menu:hover { background: var(--verde-agua); border-color: var(--verde); }
-
-
-/* ==========================================================================
-   4. Paneles y metricas
-   ========================================================================== */
 
 .panel {
   background: var(--blanco);
@@ -291,7 +237,7 @@ select:focus-visible,
   overflow: hidden;
   box-shadow: var(--sombra-1);
 }
-/* Franja de color arriba: mismo recurso que las tarjetas de la landing */
+
 .metrica::before {
   content: "";
   position: absolute;
@@ -312,8 +258,6 @@ select:focus-visible,
 }
 .metrica-etiqueta .icono { color: var(--color); }
 
-/* La altura queda fija desde el principio: cuando llega el numero real no
-   se mueve nada de la pagina (sin layout shift). */
 .metrica-valor {
   display: block;
   min-height: 40px;
@@ -326,11 +270,6 @@ select:focus-visible,
   color: var(--color);
 }
 
-
-/* ==========================================================================
-   5. Barra de herramientas de los listados
-   ========================================================================== */
-
 .barra-herramientas {
   display: flex;
   align-items: center;
@@ -338,7 +277,7 @@ select:focus-visible,
   flex-wrap: wrap;
   margin-bottom: var(--esp-4);
 }
-/* El titulo empuja al resto a la derecha, haya buscador o no */
+
 .barra-herramientas .titulo {
   font-family: var(--fuente-titulo);
   font-size: 17px;
@@ -378,8 +317,6 @@ select:focus-visible,
   box-shadow: 0 0 0 3px var(--verde-agua);
 }
 
-/* Filtro por estado: usa el mismo aspecto que el buscador, pero sin el hueco
-   que este deja a la izquierda para el icono de la lupa. */
 .filtro-estado select {
   min-width: 0;
   padding-left: var(--esp-3);
@@ -388,7 +325,6 @@ select:focus-visible,
 
 .texto-tenue { color: var(--tinta-tenue); font-size: 13px; }
 
-/* "3 de 3 usuarios": deja claro si el buscador esta filtrando o no */
 .contador-resultados {
   width: 100%;
   margin: 0 0 var(--esp-3);
@@ -396,11 +332,6 @@ select:focus-visible,
   font-size: 13px;
 }
 .contador-resultados strong { color: var(--tinta); font-weight: 600; }
-
-
-/* ==========================================================================
-   6. Botones (mismo componente que en la landing)
-   ========================================================================== */
 
 .boton {
   display: inline-flex;
@@ -428,14 +359,11 @@ select:focus-visible,
 .boton-secundario { background: var(--blanco); color: var(--verde-oscuro); border-color: var(--borde); }
 .boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); color: var(--verde-oscuro); }
 
-/* Acciones que borran o dan de baja. Todavia no hay ninguna implementada:
-   queda definido para cuando el backend tenga la baja. */
 .boton-peligro { background: var(--error-texto); color: var(--blanco); }
 .boton-peligro:hover { background: #8f1e17; color: var(--blanco); }
 
 .boton-chico { min-height: 36px; padding: var(--esp-2) var(--esp-4); font-size: 14px; }
 
-/* Boton que es solo un icono: cuadrado y con el area tactil completa */
 .boton-icono {
   width: var(--alto-toque);
   height: var(--alto-toque);
@@ -448,8 +376,6 @@ select:focus-visible,
 }
 .boton-icono:hover { color: var(--tinta); border-color: var(--verde); background: var(--verde-agua); }
 
-/* Deshabilitado y "trabajando": el mismo aspecto para los dos, porque en los
-   dos casos el boton no responde. */
 .boton:disabled,
 .boton[aria-busy="true"] {
   opacity: .6;
@@ -457,7 +383,7 @@ select:focus-visible,
   transform: none;
   box-shadow: none;
 }
-/* Puntito girando mientras se envia un formulario */
+
 .boton[aria-busy="true"]::before {
   content: "";
   width: 14px; height: 14px;
@@ -468,17 +394,9 @@ select:focus-visible,
 }
 @keyframes girar { to { transform: rotate(360deg); } }
 
-/* Tamano unico para todos los iconos en linea del sistema */
 .icono { width: 18px; height: 18px; flex-shrink: 0; }
 .icono-grande { width: 46px; height: 46px; }
 
-
-/* ==========================================================================
-   7. Tablas
-   ========================================================================== */
-
-/* El degradado de los bordes avisa que la tabla sigue hacia los costados
-   cuando no entra en la pantalla. Es CSS puro: se mueve con el scroll. */
 .tabla-scroll {
   overflow-x: auto;
   background:
@@ -516,11 +434,7 @@ select:focus-visible,
 .tabla tbody tr:last-child td { border-bottom: none; }
 .tabla tbody tr { transition: background var(--transicion); }
 .tabla tbody tr:hover { background: var(--verde-agua); }
-/* El tratamiento de cada columna se decide por lo que la columna ES, no por su
-   posicion: un codigo se lee mejor en monoespaciada, pero un nombre propio no.
-   El data-etiqueta lo pone celda() en tabla.js. */
 
-/* Datos que se leen mejor alineados, caracter por caracter */
 .tabla td[data-etiqueta="ID"],
 .tabla td[data-etiqueta="Código"],
 .tabla td[data-etiqueta="Matrícula"],
@@ -530,7 +444,6 @@ select:focus-visible,
   font-size: 13px;
 }
 
-/* La columna que identifica la fila va destacada */
 .tabla td[data-etiqueta="Código"],
 .tabla td[data-etiqueta="Matrícula"],
 .tabla td[data-etiqueta="Nombre"] {
@@ -538,10 +451,8 @@ select:focus-visible,
   color: var(--tinta);
 }
 
-/* El id es dato de apoyo, no el protagonista de la fila */
 .tabla td[data-etiqueta="ID"] { color: var(--tinta-suave); }
 
-/* Botones de accion de cada fila */
 .acciones-fila { display: flex; gap: var(--esp-2); justify-content: flex-end; }
 .acciones-fila .boton-icono { width: 36px; height: 36px; min-height: 36px; }
 .acciones-fila .js-baja:hover { color: var(--error-texto); border-color: var(--error-texto); background: var(--error-fondo); }
@@ -549,7 +460,6 @@ select:focus-visible,
   .acciones-fila .boton-icono { width: var(--alto-toque); height: var(--alto-toque); }
 }
 
-/* --- Ordenar por columna --- */
 .th-orden {
   padding: 0;
   border: 0;
@@ -575,12 +485,6 @@ select:focus-visible,
 th[aria-sort="ascending"] .th-orden::after  { opacity: 1; transform: rotate(180deg); }
 th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 
-
-/* ==========================================================================
-   8. Estados de la tabla: cargando, vacio y error
-   ========================================================================== */
-
-/* Fila que ocupa el ancho completo (no se convierte en tarjeta en mobile) */
 .fila-estado td { padding: 0; border-bottom: none; }
 
 .estado-bloque {
@@ -597,8 +501,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 .estado-bloque p { margin: 0; max-width: 46ch; font-size: 14px; }
 .estado-bloque.es-error .icono-grande { color: var(--error-texto); opacity: .55; }
 
-/* Esqueleto de carga: ocupa exactamente el lugar del dato que va a llegar,
-   asi la tabla no salta cuando responde la API. */
 .esqueleto {
   display: block;
   height: 14px;
@@ -617,16 +519,9 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 }
 @keyframes brillo { 100% { transform: translateX(100%); } }
 .esqueleto-corto { width: 45%; }
-/* Ocupa el lugar exacto del numero de la metrica mientras carga */
+
 .esqueleto-metrica { width: 56px; height: 28px; margin-top: 6px; }
 
-
-/* ==========================================================================
-   9. Pastillas de estado
-   ========================================================================== */
-
-/* Los nombres de clase (verde/rojo/naranja/gris) son los que devuelven
-   usuarios.js, contenedores.js y camiones.js. */
 .estado {
   display: inline-flex;
   align-items: center;
@@ -650,12 +545,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 .estado.naranja { background: var(--alerta-fondo); color: var(--alerta-texto); }
 .estado.gris    { background: var(--neutro-fondo); color: var(--neutro-texto); }
 
-
-/* ==========================================================================
-   10. Avisos (resultado de una accion)
-   ========================================================================== */
-
-/* Vacio no ocupa lugar; con contenido aparece como bloque con icono. */
 .mensaje { margin: 0; font-size: 14px; font-weight: 500; }
 .mensaje:empty { display: none; }
 .mensaje.ok,
@@ -671,14 +560,8 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 .mensaje.error { color: var(--error-texto); background: var(--error-fondo); }
 .mensaje .icono { margin-top: 1px; }
 
-/* Dentro del modal el aviso va pegado al formulario, sin margen abajo */
 .modal-body .mensaje.ok,
 .modal-body .mensaje.error { margin: var(--esp-4) 0 0; }
-
-
-/* ==========================================================================
-   11. Formularios
-   ========================================================================== */
 
 .formulario { display: flex; flex-direction: column; gap: var(--esp-4); }
 
@@ -717,8 +600,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
   box-shadow: 0 0 0 3px var(--verde-agua);
 }
 
-/* Campo con error: borde rojo + el texto de error debajo, atado al input
-   con aria-describedby para que un lector de pantalla lo lea junto. */
 .formulario input[aria-invalid="true"],
 .formulario select[aria-invalid="true"] {
   border-color: var(--error-texto);
@@ -747,13 +628,7 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 
 .formulario .boton { align-self: stretch; margin-top: var(--esp-1); }
 
-/* Texto de ayuda debajo de un titulo */
 .ayuda { color: var(--tinta-suave); font-size: 14px; margin: 0 0 var(--esp-4); }
-
-
-/* ==========================================================================
-   12. Modal (ajustes sobre el de Bootstrap)
-   ========================================================================== */
 
 .modal-content {
   border: none;
@@ -777,25 +652,20 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 }
 .modal-header .btn-close:focus-visible { outline: 3px solid var(--lima); outline-offset: 2px; box-shadow: none; }
 
-
-/* ==========================================================================
-   13. Login y registro
-   ========================================================================== */
-
 .pantalla-centrada {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: var(--esp-5);
-  /* Degradado muy suave para no dejar la pantalla plana */
+
   background:
     radial-gradient(900px 420px at 50% -10%, var(--verde-agua), transparent 70%),
     var(--hueso);
 }
 
 .tarjeta-auth {
-  position: relative;   /* para apoyar la banda de colores abajo */
+  position: relative;
   background: var(--blanco);
   border: 1px solid var(--borde);
   border-radius: var(--radio-3);
@@ -805,7 +675,7 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
   max-width: 440px;
   overflow: hidden;
 }
-/* La banda queda pegada al borde inferior de la tarjeta */
+
 .tarjeta-auth .banda { position: absolute; left: 0; right: 0; bottom: 0; }
 .tarjeta-auth h1 {
   font-size: 28px;
@@ -833,11 +703,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 .texto-centro { text-align: center; }
 .mt { margin-top: var(--esp-4); }
 
-
-/* ==========================================================================
-   14. Banda de clasificacion
-   ========================================================================== */
-
 .banda { display: flex; height: 4px; flex: none; }
 .banda span { flex: 1; }
 .banda span:nth-child(1) { background: var(--organico); }
@@ -846,18 +711,11 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
 .banda span:nth-child(4) { background: var(--papel); }
 .banda span:nth-child(5) { background: var(--metal); }
 
-
-/* ==========================================================================
-   15. Pantallas chicas
-   ========================================================================== */
-
-/* Notebook chica: el contenido respira menos, pero el sidebar sigue fijo */
 @media (max-width: 1200px) {
   .contenido { padding: var(--esp-4); }
   .metricas { gap: var(--esp-3); }
 }
 
-/* Tablet y menos: el sidebar sale de la pantalla y vuelve con el boton */
 @media (max-width: 991px) {
   .sidebar {
     position: fixed;
@@ -869,7 +727,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
   .sidebar.abierto { transform: translateX(0); }
   .btn-menu { display: inline-flex; }
 
-  /* Fondo oscuro detras del sidebar abierto */
   .fondo-sidebar {
     position: fixed;
     inset: 0;
@@ -886,21 +743,14 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
   .panel { padding: var(--esp-4); border-radius: var(--radio-1); }
   .formulario-columnas { grid-template-columns: 1fr; }
 
-  /* El titulo se queda con el ancho completo al lado de la hamburguesa y la
-     accion principal baja entera: si no, el texto queda espichado en una
-     columna angosta compitiendo con el boton. */
   .topbar-titulo { flex: 1 1 auto; }
   .topbar > .boton { flex: 1 0 100%; }
 
-  /* Buscador y recargar comparten fila */
   .buscador-caja { flex: 1; min-width: 0; }
   .buscador { width: 100%; min-width: 0; }
   .barra-herramientas .titulo { width: 100%; margin-right: 0; }
 }
 
-/* Celular: la tabla deja de ser tabla y cada fila pasa a ser una tarjeta.
-   Se mantienen los roles ARIA en el HTML para que un lector de pantalla la
-   siga leyendo como tabla. */
 @media (max-width: 640px) {
   .tabla-scroll { background: none; overflow-x: visible; }
   .tabla thead {
@@ -929,7 +779,7 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
     border-bottom: 1px dashed var(--borde);
   }
   .tabla tr td:last-child { border-bottom: none; }
-  /* El nombre de la columna, que en escritorio esta en el thead */
+
   .tabla td::before {
     content: attr(data-etiqueta);
     font-family: var(--fuente-dato);
@@ -942,7 +792,6 @@ th[aria-sort="descending"] .th-orden::after { opacity: 1; }
   .tabla td:nth-child(2) { font-size: 14px; }
 }
 
-/* En pantallas tactiles todo lo clickeable llega al minimo de 44px */
 @media (pointer: coarse) {
   .boton-chico { min-height: var(--alto-toque); }
 }

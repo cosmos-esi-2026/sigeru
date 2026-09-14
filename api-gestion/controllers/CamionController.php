@@ -1,8 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  controllers/CamionController.php
-// ============================================================================
 
 require_once __DIR__ . "/../models/Camion.php";
 require_once __DIR__ . "/../core/Response.php";
@@ -67,10 +63,6 @@ class CamionController
         Response::json(["ok" => true, "mensaje" => "Camión actualizado", "datos" => $actualizado]);
     }
 
-    /**
-     * Baja LOGICA: pasa a "fuera_servicio". Las recolecciones ya hechas lo
-     * referencian, asi que borrarlo dejaria huerfano el historial.
-     */
     public function darDeBaja(int $id): void
     {
         $camion = Camion::obtener($id);

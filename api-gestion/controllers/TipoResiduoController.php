@@ -1,8 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - API de gestion
-//  controllers/TipoResiduoController.php
-// ============================================================================
 
 require_once __DIR__ . "/../models/TipoResiduo.php";
 require_once __DIR__ . "/../core/Response.php";
@@ -55,11 +51,6 @@ class TipoResiduoController
         Response::json(["ok" => true, "mensaje" => "Tipo de residuo actualizado", "datos" => $actualizado]);
     }
 
-    /**
-     * Este catalogo no tiene columna estado, asi que el borrado es fisico. Por
-     * eso se avisa antes si hay contenedores usandolo: es mas util que dejar
-     * que reviente la clave foranea.
-     */
     public function eliminar(int $id): void
     {
         if (TipoResiduo::obtener($id) === null) {

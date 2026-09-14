@@ -1,9 +1,4 @@
 <?php
-// ============================================================================
-//  SiGeRU 2026 - Modelo de tipos de residuo
-//  Es el catalogo que clasifica cada contenedor. "reciclable" es lo que permite
-//  separar, en los informes, lo que se recupera de lo que va a disposicion final.
-// ============================================================================
 
 require_once __DIR__ . "/../config/database.php";
 
@@ -16,8 +11,6 @@ class TipoResiduo
         $sql = "SELECT " . self::CAMPOS . " FROM tipo_residuo ORDER BY nombre";
         $tipos = Database::conexion()->query($sql)->fetchAll();
 
-        // MySQL devuelve el BOOLEAN como 0/1: se normaliza para que el JSON
-        // tenga true/false y el frontend no tenga que interpretarlo.
         foreach ($tipos as &$t) {
             $t["reciclable"] = (bool) $t["reciclable"];
         }
@@ -94,11 +87,6 @@ class TipoResiduo
         return self::obtener($id);
     }
 
-    /**
-     * Cuenta cuantos contenedores usan este tipo. Se consulta antes de borrar:
-     * un tipo en uso no se puede eliminar sin romper la clave foranea, y avisar
-     * eso es mas util que dejar que falle la base.
-     */
     public static function contenedoresQueLoUsan(int $id): int
     {
         $sql = "SELECT COUNT(*) FROM contenedor WHERE id_tipo_residuo = :id";
@@ -108,7 +96,6 @@ class TipoResiduo
         return (int) $consulta->fetchColumn();
     }
 
-    /** Este catalogo no tiene columna estado, asi que el borrado es fisico. */
     public static function eliminar(int $id): bool
     {
         $sql = "DELETE FROM tipo_residuo WHERE id_tipo_residuo = :id";
