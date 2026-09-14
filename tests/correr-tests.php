@@ -204,6 +204,24 @@ afirmar("Un estado inexistente: 400", 400, $codigo);
 [$codigo] = peticion("PUT", "/api-usuarios/usuarios/1", ["rol" => "Rey"], $admin);
 afirmar("Un rol inexistente: 400", 400, $codigo);
 
+// Ciberseguridad (2da entrega): el backend valida formato de email y politica
+// de contrasenas, no solo que el campo no venga vacio.
+[$codigo] = peticion("POST", "/api-usuarios/usuarios",
+    ["nombre" => "Prueba", "email" => "no-es-un-email", "rol" => "Vecino"], $admin);
+afirmar("Un email sin formato valido: 400", 400, $codigo);
+
+[$codigo] = peticion("POST", "/api-usuarios/usuarios",
+    ["nombre" => "Prueba", "email" => "prueba.$sufijo@sigeru.uy", "password" => "corta",
+     "rol" => "Vecino"], $admin);
+afirmar("Una contrasena de menos de 8 caracteres: 400", 400, $codigo);
+
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/1", ["email" => "otro-invalido"], $admin);
+afirmar("Modificar con un email invalido: 400", 400, $codigo);
+
+[$codigo] = peticion("POST", "/api-usuarios/solicitudes",
+    ["nombre" => "Prueba", "email" => "invalido-otra-vez"]);
+afirmar("Una solicitud de registro con email invalido: 400", 400, $codigo);
+
 [$codigo] = peticion("GET", "/api-gestion/contenedores/99999", null, $admin);
 afirmar("Un id que no existe: 404", 404, $codigo);
 

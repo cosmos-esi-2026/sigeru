@@ -1,0 +1,84 @@
+SiGeRU - Tests de la API
+========================
+
+0. El entorno esta levantado
+----------------------------
+  ✓ La API de gestion responde
+  ✓ La API de usuarios responde
+
+1. Control de acceso
+--------------------
+  ✓ Sin sesion no se puede listar usuarios
+  ✓ Sin sesion no se puede crear un administrador
+  ✓ Falsificar la cabecera de rol ya no sirve
+  ✓ Con sesion de administrador si se puede listar
+  ✓ Un vecino no puede listar usuarios
+  ✓ Un vecino no puede crear contenedores
+  ✓ Un vecino si puede consultar contenedores
+  ✓ La sesion sirve tambien en la otra API
+
+2. Alta valida
+--------------
+  ✓ Crear un contenedor devuelve 201
+  ✓ El contenedor creado vuelve con su codigo
+  ✓ El contenedor persiste entre peticiones
+  ✓ Y conserva la capacidad guardada
+  ✓ El alta genera historial de estado
+
+3. Alta duplicada
+-----------------
+  ✓ Un codigo repetido devuelve 409
+  ✓ Una matricula repetida devuelve 409
+  ✓ Un email repetido devuelve 409
+
+4. Validaciones
+---------------
+  ✓ Falta la direccion: 400
+  ✓ Un estado inexistente: 400
+  ✓ Un rol inexistente: 400
+  ✓ Un email sin formato valido: 400
+  ✓ Una contrasena de menos de 8 caracteres: 400
+  ✓ Modificar con un email invalido: 400
+  ✓ Una solicitud de registro con email invalido: 400
+  ✓ Un id que no existe: 404
+  ✓ Contrasena incorrecta: 401
+  ✓ Un admin no puede darse de baja a si mismo: 409
+
+5. Baja logica
+--------------
+  ✓ La baja devuelve 200
+  ✓ El contenedor queda 'retirado', no borrado
+  ✓ La fila sigue existiendo despues de la baja
+  ✓ Dar de baja dos veces: 409
+
+6. Maquinaria de los centros de acopio
+--------------------------------------
+  ✓ Un vecino si puede consultar maquinaria
+  ✓ Un vecino no puede crear maquinaria
+  ✓ Crear una maquinaria devuelve 201
+  ✓ Y vuelve con el NOMBRE de su centro, no solo el id
+  ✓ Un codigo de maquinaria repetido devuelve 409
+  ✓ Una maquina sin centro de acopio: 400
+  ✓ Un tipo de maquinaria inexistente: 400
+  ✓ Modificar la maquinaria devuelve 200
+  ✓ Y el cambio de estado quedo guardado
+  ✓ La baja de maquinaria devuelve 200
+  ✓ La maquina queda 'fuera_servicio', no borrada
+  ✓ Dar de baja la maquinaria dos veces: 409
+
+7. Solicitudes de registro
+--------------------------
+  ✓ El registro publico crea una solicitud (201)
+  ✓ Y queda PENDIENTE, no crea un usuario activo
+  ✓ Aprobar la solicitud devuelve 200
+  ✓ Y crea el usuario
+  ✓ Aprobarla de nuevo: 409
+
+8. Limpieza
+-----------
+  ✓ Los datos de prueba quedaron borrados
+  ✓ La maquinaria de prueba tambien
+
+==================================================
+Pasaron: 51   Fallaron: 0
+Todo verde.

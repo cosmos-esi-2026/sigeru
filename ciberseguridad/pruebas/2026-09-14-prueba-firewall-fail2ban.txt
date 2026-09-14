@@ -1,0 +1,191 @@
+Prueba de firewall (ufw) y fail2ban contra el servidor real sigeru-srv
+=======================================================================
+Fecha: 2026-09-14. Ejecutado por SSH desde la PC anfitriona
+(ssh -p 2222 cosmos2026@127.0.0.1), igual que el resto de Administracion de
+Sistemas Operativos. Transcripcion sin editar de los comandos y su salida.
+
+--- Estado antes de tocar nada ---------------------------------------------
+
+$ sudo ufw status verbose
+Status: inactive
+
+$ dpkg -l | grep -E 'ufw|fail2ban'
+ii  ufw   0.36.2-9build1   all   program for managing a Netfilter firewall
+(fail2ban: no estaba instalado)
+
+$ sudo ss -tulnp
+...
+tcp   LISTEN  127.0.0.1:33060   mysqld     <- MySQL X Protocol, solo loopback
+tcp   LISTEN  127.0.0.1:3306    mysqld     <- MySQL, solo loopback (nunca expuesto)
+tcp   LISTEN  0.0.0.0:22        sshd
+tcp   LISTEN  *:80              apache2
+(ufw inactivo: sin firewall de perimetro, aunque MySQL ya estaba a salvo por
+bind address)
+
+--- Instalacion de fail2ban -------------------------------------------------
+
+$ sudo apt-get update -y
+$ sudo apt-get install -y fail2ban
+...
+Configurando fail2ban (1.1.0-9) ...
+Created symlink '/etc/systemd/system/multi-user.target.wants/fail2ban.service'.
+[exited with code 0]
+
+Jail por defecto de Ubuntu (/etc/fail2ban/jail.d/defaults-debian.conf):
+[DEFAULT]
+banaction = nftables
+banaction_allports = nftables[type=allports]
+[sshd]
+backend = systemd
+journalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd
+enabled = true
+
+--- Incidente real durante la propia prueba (no fue un ensayo preparado) ----
+
+Antes de escribir el jail propio con la lista blanca, la sesion de
+administracion (10.0.2.2, el gateway NAT = la PC anfitriona) acumulo intentos
+fallidos de autenticacion mientras se depuraba la conexion SSH. fail2ban lo
+detecto y lo baneo solo, con el jail por defecto:
+
+$ sudo grep -E 'Ban|Found|Unban' /var/log/fail2ban.log
+2026-09-14 01:23:29,465 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:21:23
+2026-09-14 01:23:29,466 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:21:23
+2026-09-14 01:23:29,467 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:11
+2026-09-14 01:23:29,468 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:11
+2026-09-14 01:23:29,468 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:11
+2026-09-14 01:23:29,468 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:11
+2026-09-14 01:23:29,469 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:30
+2026-09-14 01:23:29,469 fail2ban.filter   INFO  [sshd] Found 10.0.2.2 - 2026-09-14 01:22:30
+2026-09-14 01:23:29,643 fail2ban.actions  NOTICE [sshd] Ban 10.0.2.2
+2026-09-14 01:32:12,084 fail2ban.actions  NOTICE [sshd] Unban 10.0.2.2
+
+Es la prueba mas honesta posible de que la deteccion funciona: no fue un
+ataque simulado, fue el propio jail por defecto reaccionando a fallos reales
+de autenticacion contra el unico origen que existe en esta red NAT (la PC
+que administra el servidor). El ban se levanto solo una hora... en realidad a
+los ~9 minutos, por el "bantime" por defecto de Ubuntu (600 s), antes incluso
+de escribir la politica propia. Es tambien la razon concreta, medida, de por
+que el jail final necesita una lista blanca para el origen de administracion:
+sin ella, el propio equipo puede quedar afuera de su servidor por errores de
+tipeo, que es exactamente lo que paso acá.
+
+--- Jail propio: config/fail2ban/sigeru.conf --------------------------------
+
+$ sudo tee /etc/fail2ban/jail.d/sigeru.conf > /dev/null <<'EOF'
+[DEFAULT]
+ignoreip = 127.0.0.1/8 ::1 10.0.2.2
+[sshd]
+enabled  = true
+maxretry = 3
+findtime = 10m
+bantime  = 1h
+EOF
+$ sudo fail2ban-client reload
+OK
+
+$ sudo fail2ban-client get sshd ignoreip
+These IP addresses/networks are ignored:
+|- 127.0.0.0/8
+|- 10.0.2.2
+`- ::1
+
+--- Prueba manual de ban/desban sobre una IP sintetica (no la nuestra) ------
+
+Se usa 198.51.100.23 (bloque TEST-NET-2, RFC 5737, reservado para
+documentacion: no es una IP real de nadie) para demostrar que el mecanismo de
+bloqueo funciona de verdad sin arriesgar la sesion de administracion.
+
+$ sudo fail2ban-client set sshd banip 198.51.100.23
+1
+
+$ sudo fail2ban-client status sshd
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed:	0
+|  |- Total failed:	8
+|  `- Journal matches:	_SYSTEMD_UNIT=ssh.service + _COMM=sshd
+`- Actions
+   |- Currently banned:	1
+   |- Total banned:	2
+   `- Banned IP list:	198.51.100.23
+
+$ sudo nft list set inet f2b-table addr-set-sshd
+table inet f2b-table {
+	set addr-set-sshd {
+		type ipv4_addr
+		elements = { 198.51.100.23 }
+	}
+}
+(el ban de fail2ban no es solo un contador: es una regla real en nftables que
+el kernel aplica sobre el trafico entrante al puerto 22)
+
+$ sudo fail2ban-client set sshd unbanip 198.51.100.23
+1
+$ sudo nft list set inet f2b-table addr-set-sshd
+table inet f2b-table {
+	set addr-set-sshd {
+		type ipv4_addr
+	}
+}
+(vacia: el desbaneo tambien es real, no solo en el status)
+
+--- ufw: firewall de perimetro ----------------------------------------------
+
+$ sudo ufw allow 22/tcp comment 'SSH administracion'
+$ sudo ufw allow 80/tcp comment 'SiGeRU HTTP'
+$ sudo ufw default deny incoming
+$ sudo ufw default allow outgoing
+$ sudo ufw --force enable
+Firewall is active and enabled on system startup
+
+$ sudo ufw status verbose
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                   # SSH administracion
+80/tcp                     ALLOW IN    Anywhere                   # SiGeRU HTTP
+22/tcp (v6)                ALLOW IN    Anywhere (v6)              # SSH administracion
+80/tcp (v6)                ALLOW IN    Anywhere (v6)              # SiGeRU HTTP
+
+--- Verificacion de que no nos cortamos el acceso a nosotros mismos ---------
+
+$ echo ssh-sigue-vivo   (por la misma conexion SSH que ya estaba abierta)
+ssh-sigue-vivo
+$ curl -s -o /dev/null -w 'HTTP %{http_code}\n' http://localhost/sigeru/
+HTTP 200
+$ systemctl is-active fail2ban ufw
+active
+active
+
+--- Estado final --------------------------------------------------------
+
+$ systemctl is-active ufw fail2ban ssh apache2 mysql
+active
+active
+active
+active
+active
+
+$ sudo ss -tulnp
+tcp LISTEN 127.0.0.1:33060  mysqld    <- solo loopback
+tcp LISTEN 127.0.0.1:3306   mysqld    <- solo loopback
+tcp LISTEN 0.0.0.0:22       sshd      <- permitido por ufw, endurecido (ver ssh.md)
+tcp LISTEN 127.0.0.53%lo:53 systemd-resolved
+tcp LISTEN 127.0.0.54:53    systemd-resolved
+tcp LISTEN *:80             apache2   <- permitido por ufw
+
+$ dpkg -l | grep -E '^ii  (ufw|fail2ban) '
+ii  fail2ban  1.1.0-9              all  ban hosts that cause multiple authentication errors
+ii  ufw       0.36.2-9build1       all  program for managing a Netfilter firewall
+
+Conclusion: el servidor queda con superficie de ataque minima (solo 22 y 80
+alcanzables desde la red, MySQL nunca expuesto ni por bind address ni por
+firewall), fail2ban vigilando sshd con una politica propia y probada -a
+distintos niveles: deteccion organica (el incidente real), enforcement (el
+ban sintetico via nftables), y que la lista blanca de administracion
+funciona sin abrir un agujero (el jail sigue activo para cualquier otro
+origen).

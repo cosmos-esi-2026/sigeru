@@ -3,6 +3,7 @@
 require_once __DIR__ . "/../models/Usuario.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Auth.php";
+require_once __DIR__ . "/../core/Validacion.php";
 
 class UsuarioController
 {
@@ -38,6 +39,15 @@ class UsuarioController
         if (empty($datos["nombre"]) || empty($datos["email"])) {
             Response::json(["ok" => false, "mensaje" => "Faltan datos: nombre y email"], 400);
         }
+        if (!Validacion::email($datos["email"])) {
+            Response::error("El email no tiene un formato válido", 400);
+        }
+        if (!empty($datos["password"]) && !Validacion::contrasena($datos["password"])) {
+            Response::error(
+                "La contraseña tiene que tener al menos " . Validacion::CLAVE_MINIMA . " caracteres",
+                400
+            );
+        }
         if (Usuario::existeEmail($datos["email"])) {
             Response::json(["ok" => false, "mensaje" => "Ya existe un usuario con ese email"], 409);
         }
@@ -66,9 +76,13 @@ class UsuarioController
         }
 
         // El email es la credencial de acceso: no puede pisar el de otra cuenta.
-        if (isset($datos["email"]) && $datos["email"] !== $actual["email"]
-            && Usuario::existeEmail($datos["email"])) {
-            Response::error("Ya existe un usuario con ese email", 409);
+        if (isset($datos["email"])) {
+            if (!Validacion::email($datos["email"])) {
+                Response::error("El email no tiene un formato válido", 400);
+            }
+            if ($datos["email"] !== $actual["email"] && Usuario::existeEmail($datos["email"])) {
+                Response::error("Ya existe un usuario con ese email", 409);
+            }
         }
 
         $rol = $datos["rol"] ?? null;
@@ -149,6 +163,9 @@ class UsuarioController
 
         if (empty($datos["nombre"]) || empty($datos["email"])) {
             Response::json(["ok" => false, "mensaje" => "Faltan datos: nombre y email"], 400);
+        }
+        if (!Validacion::email($datos["email"])) {
+            Response::error("El email no tiene un formato válido", 400);
         }
         if (Usuario::existeEmail($datos["email"])) {
             Response::json(["ok" => false, "mensaje" => "Ya existe un usuario con ese email"], 409);
