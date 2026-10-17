@@ -34,11 +34,11 @@ en abstracto.
 | **S**poofing | Suplantar a un Administrador falsificando quién hace la petición | **Existió y se corrigió.** Hasta el 03/09 el rol viajaba en las cabeceras `X-Usuario-Email` / `X-Usuario-Rol`, que cualquiera podía escribir a mano. Se reemplazó por sesión real de servidor (`core/Auth.php`): la cookie no dice quién es, el rol se relee de la base en cada petición. Test automático (`tests/correr-tests.php`, sección 1) verifica que falsificar la cabecera vieja ya da 401 |
 | **T**ampering | Modificar el rol propio mandándolo en el cuerpo de la petición (`POST /usuarios {"rol":"Administrador"}`) | **Existió y se corrigió** el 03/09, junto con lo anterior: `models/Usuario.php` ya no lee `rol` del cuerpo salvo cuando lo decide el controlador después de `Auth::exigirRol("Administrador")` |
 | **T**ampering | Inyección SQL a través de cualquier campo (email, dirección, etc.) | **Mitigado desde el diseño.** Las seis clases modelo usan exclusivamente consultas preparadas con parámetros con nombre; auditado a mano el 09/09 (`grep` sobre los modelos, ningún `->query()` con SQL armado desde datos del usuario) |
-| **R**epudiation | Nadie puede probar quién aprobó o rechazó una solicitud de registro | **Aceptado, riesgo bajo.** `solicitud_registro` guarda el estado final pero no quién la resolvió. No hay tabla de auditoría de acciones administrativas. Queda para la 3ra entrega si el tiempo lo permite; mitigado en parte porque solo un rol (Administrador) puede resolver solicitudes y el equipo es de 4 personas |
+| **R**epudiation | Nadie puede probar quién aprobó o rechazó una solicitud de registro | **Aceptado, riesgo bajo.** `solicitud_registro` guarda el estado final pero no quién la resolvió. No hay tabla de auditoría de acciones administrativas. Queda para la 3ra entrega si el tiempo lo permite; mitigado en parte porque solo un rol (Administrador) puede resolver solicitudes y el equipo es de 4 personas. **Actualización 17/10/2026: corregido** con la tabla `auditoria` (cada cambio y cada acceso negado deja quién, qué, cuándo y desde dónde; pantalla «Auditoría»), ver `analisis-owasp-3ra.md` |
 | **I**nformation disclosure | Contraseñas en texto plano, comparadas contra un valor fijo (`"123456"`) | **Existió y se corrigió** antes del 03/09: `password_hash`/`password_verify` (bcrypt), y el hash nunca sale de `Usuario` (`sinClave()`) |
 | **I**nformation disclosure | Un error de PHP no atajado devuelve el *stack trace* con rutas del servidor | **Mitigado desde el diseño.** `Response::manejarErrores()` intercepta toda excepción no atajada: log interno con `error_log()`, respuesta genérica de 500 hacia afuera |
 | **I**nformation disclosure | La base de datos escuchando en todas las interfaces de red | **Mitigado.** MySQL en `sigeru-srv` solo escucha en `127.0.0.1:3306`; ni el firewall necesita cubrirlo, ya no es alcanzable desde la red aunque `ufw` fallara |
-| **D**enial of service | Fuerza bruta contra `POST /login` o contra el servicio SSH | **Parcial.** SSH: mitigado (`fail2ban` + `MaxAuthTries 3`, ver `firewall-fail2ban.md` y `ssh.md`). **El login de la aplicación web NO tiene límite de intentos** — es la vulnerabilidad vigente más importante de este documento (detalle y por qué se acepta así en la sección 4) |
+| **D**enial of service | Fuerza bruta contra `POST /login` o contra el servicio SSH | **Parcial.** SSH: mitigado (`fail2ban` + `MaxAuthTries 3`, ver `firewall-fail2ban.md` y `ssh.md`). **El login de la aplicación web NO tenía límite de intentos** (versión del 14/09). **Actualización 14/10/2026: corregido en la parte 2 de la mejora de la 3ra entrega:** 5 fallos en 15 minutos bloquean ese correo (429 con `Retry-After`), sin importar mayúsculas; detalle en `ampliacion-matriz-de-permisos-3ra.md` |
 | **D**enial of service | Agotar la conexión del servidor abriendo miles de conexiones | **Aceptado, riesgo bajo por ahora.** Un solo servidor, sin balanceador (ver `respaldo-y-alta-disponibilidad.md`, sección de alta disponibilidad, que ya documenta el plan de un segundo nodo para la 3ra) |
 | **E**levation of privilege | Un Vecino consultando o modificando datos de otro rol | **Mitigado.** `Auth::exigirRol()` corta con 403 antes de llegar al modelo; probado en la sección 1 de los tests (vecino no puede listar usuarios, no puede crear contenedores) |
 | **E**levation of privilege | Iniciar sesión y que un cambio de rol/baja posterior no se refleje hasta volver a loguearse | **Mitigado desde el diseño.** `Auth::identificar()` relee el rol y el estado de la base en **cada** petición, no los guarda en la sesión |
@@ -48,8 +48,8 @@ en abstracto.
 Ninguna de estas bloquea la 2da entrega; se documentan porque omitirlas sería
 peor que aceptarlas con un plan:
 
-1. **Sin límite de intentos de login en la aplicación web.** `UsuarioController::login()`
-   no cuenta fallos ni bloquea una cuenta. Es distinto del caso de SSH (que sí
+1. **(Corregida el 14/10/2026: ver la actualización de la sección 3 y `ampliacion-matriz-de-permisos-3ra.md`.) Sin límite de intentos de login en la aplicación web.** `UsuarioController::login()`
+   no contaba fallos ni bloqueaba una cuenta. Es distinto del caso de SSH (que sí
    tiene `fail2ban`) porque el login web pasa por Apache/PHP, no por `sshd`, y
    fail2ban solo lee logs de servicios del sistema. Mitigación planeada para
    la 3ra entrega: un contador de intentos fallidos por cuenta en la tabla
@@ -58,7 +58,7 @@ peor que aceptarlas con un plan:
    contraseñas activas hoy son en su enorme mayoría las generadas al azar por
    `Usuario::crear()` (16 caracteres hexadecimales), no elegidas por la
    persona, lo que ya encarece mucho un ataque de diccionario.
-2. **Sin HTTPS.** El tráfico entre el navegador y Apache viaja sin cifrar
+2. **Sin HTTPS.** *(Actualización 17/10/2026: la PC de desarrollo ya sirve HTTPS con un certificado propio y hay un script para el servidor; ver `https-y-certificados-3ra.md`. Falta probarlo en `sigeru-srv`.)* El tráfico entre el navegador y Apache viaja sin cifrar
    dentro de la red interna. Es exactamente el ítem que la letra de
    Ciberseguridad reserva para la **3ra entrega** ("Implementación de
    certificado SSL dentro del servidor"): no se adelanta acá porque un

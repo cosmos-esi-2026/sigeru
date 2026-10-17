@@ -21,6 +21,10 @@ ampliación hecha ahora, no como si se hubiera entregado en su fecha original.
 | `esquema-de-red-y-seguridad.md` + `Esquema_Red_Seguridad_SiGeRU.png` | Diagrama del perímetro, los tres servicios y el único canal de administración | 2da |
 | `firewall-fail2ban.md` | `ufw` + `fail2ban` instalados y probados contra `sigeru-srv` real | 2da |
 | `config/fail2ban/sigeru.conf` | Jail de `fail2ban`, listo para copiar a `/etc/fail2ban/jail.d/` | 2da |
+| `analisis-owasp-3ra.md` | Análisis OWASP Top 10 con pruebas dirigidas: 10 hallazgos corregidos, lo que estaba bien y lo que queda abierto | **3ra** |
+| `especificacion-criptografica-3ra.md` | Hashing, cifrado y firma digital: qué está implementado y qué es propuesta | **3ra** |
+| `https-y-certificados-3ra.md` | Certificado TLS propio, prueba desde un cliente, acceso HTTPS y el script para el servidor | **3ra** |
+| `politicas-de-usuario-3ra.md` | Contraseñas, sesiones, bloqueo, mínimo privilegio, privacidad, responsabilidades e incidentes | **3ra** |
 | `pruebas/` | Transcripciones sin editar: la sesión completa de firewall/fail2ban y la corrida de tests con las validaciones nuevas | 2da |
 
 ## Cambios de código que salieron de esta materia

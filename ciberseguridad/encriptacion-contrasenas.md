@@ -72,3 +72,11 @@ con la contraseña correcta de los datos de prueba (`123456`, hasheada de
 verdad en `datos_prueba.sql`) funciona, y con una incorrecta da `401`
 ("Contrasena incorrecta: 401", sección 4). Auditado a mano el 09/09 y de nuevo
 el 14/09 junto con las validaciones nuevas: **51 de 51** pruebas en verde.
+
+## Actualización del 17/10/2026
+
+- La contraseña de prueba de los usuarios del seed pasó de `123456` (6 caracteres, por debajo de la política de 8) a una de 10
+  caracteres, y **cada usuario del seed tiene ahora su propio hash**: antes los seis compartían uno, lo que contradecía lo que dice
+  la sección 1 sobre las sales.
+- La especificación completa de hashing, cifrado y firma digital (qué está implementado y qué es propuesta) está en
+  `especificacion-criptografica-3ra.md`.
