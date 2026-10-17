@@ -14,3 +14,9 @@ Thumbs.db
 *credenciales*
 *.key
 .env
+
+# Correo de prueba (modo archivo) y otros temporales
+tmp/
+
+# Fotos subidas (datos de la instalacion, no del codigo)
+almacen/

@@ -3,7 +3,7 @@
 #
 #  PROBADO el 11/09/2026 con Docker Desktop 29.7 / Compose 5.5 sobre WSL2:
 #  `docker compose up --build` levanta los dos contenedores, las 6 rutas
-#  principales responden y los 47 tests de tests/correr-tests.php pasan
+#  principales responden y los tests de tests/correr-tests.php pasan
 #  corriendo dentro del contenedor web. Reproduce el mismo stack que funciona
 #  en XAMPP. Si el proyecto vive en un pendrive, leer LEEME.md antes: Docker
 #  Desktop no monta unidades extraibles solo.
@@ -13,7 +13,7 @@
 #            APIs), igual que Apache de XAMPP.
 #    - db  : MySQL 8 con el schema y los datos de prueba cargados al iniciar.
 #
-#  Por que un solo contenedor web y no uno por API: bajo XAMPP las dos APIs y el
+#  Por que un solo contenedor web y no uno por API: bajo XAMPP las tres APIs y el
 #  frontend comparten origen, y de eso depende la SESION (la cookie va con
 #  path "/"). Separarlas en contenedores con puertos distintos rompería el
 #  login. El modelo de despliegue tiene que ser el mismo que el de desarrollo.
@@ -41,7 +41,7 @@ services:
       - "8080:80"
     volumes:
       # Todo el proyecto se monta bajo /sigeru para que las rutas del frontend
-      # (/sigeru/api-usuarios, /sigeru/api-gestion) sean las mismas que en XAMPP.
+      # (/sigeru/api-usuarios, /sigeru/api-gestion, /sigeru/api-recoleccion) sean las mismas que en XAMPP.
       - ../:/var/www/html/sigeru
     environment:
       # config/database.php lee estas variables; si no estan, usa los valores
@@ -52,6 +52,16 @@ services:
       SIGERU_DB_NAME: sigeru
       SIGERU_DB_USER: root
       SIGERU_DB_PASS: root
+      SIGERU_SMTP_URL: ${SIGERU_SMTP_URL:-}
+      SIGERU_SMTP_USER: ${SIGERU_SMTP_USER:-}
+      SIGERU_SMTP_PASS: ${SIGERU_SMTP_PASS:-}
+      SIGERU_MAIL_FROM: ${SIGERU_MAIL_FROM:-}
+      SIGERU_PUBLIC_URL: ${SIGERU_PUBLIC_URL:-}
+      # "archivo" deja los correos en tmp/correo en lugar de enviarlos (solo vale
+      # con URL publica en localhost). Lo usa la verificacion automatica.
+      SIGERU_MAIL_MODE: ${SIGERU_MAIL_MODE:-}
+      # Donde se guardan las fotos de las incidencias (fuera de la carpeta publica; ver el Dockerfile).
+      SIGERU_ALMACEN: /var/almacen-sigeru
     depends_on:
       db:
         condition: service_healthy

@@ -7,7 +7,7 @@ pendrive ni de configurar Apache y MySQL a mano.
 
 **Probado el 11/09/2026** con Docker Desktop 29.7 / Compose 5.5 sobre WSL2, en una PC
 modesta (Celeron N4500, 8 GB): `docker compose up --build` levanta todo, las rutas
-principales responden y **los 47 tests pasan** corriendo dentro del contenedor web. El
+principales responden y **los tests pasan** corriendo dentro del contenedor web. El
 workflow `.github/workflows/docker.yml` repite exactamente esa verificación en GitHub
 Actions cada vez que cambia algo del despliegue.
 
@@ -15,7 +15,7 @@ Actions cada vez que cambia algo del despliegue.
 
 | Contenedor | Qué es | Puerto en el host |
 |---|---|---|
-| `sigeru-web` | Apache + PHP 8.2 sirviendo los frontends y las dos APIs | **8080** |
+| `sigeru-web` | Apache + PHP 8.2 sirviendo los frontends y las tres APIs | **8080** |
 | `sigeru-db` | MySQL 8 con el schema y los datos de prueba ya cargados | **3307** |
 
 Los puertos son 8080 y 3307 a propósito: así **no chocan con XAMPP** (que usa 80 y 3306) y se
@@ -34,8 +34,9 @@ Cuando termine de arrancar:
 - Panel: <http://localhost:8080/sigeru/frontend-usuarios/login.html>
 - API de usuarios: <http://localhost:8080/sigeru/api-usuarios/>
 - API de gestión: <http://localhost:8080/sigeru/api-gestion/>
+- API de recolección: <http://localhost:8080/sigeru/api-recoleccion/> (desde el 14/10/2026)
 
-Usuarios de prueba (todos con contraseña `123456`): `admin@sigeru.uy` (Administrador),
+Usuarios de prueba (todos con contraseña `sigeru2026`): `admin@sigeru.uy` (Administrador),
 `operario@sigeru.uy`, `cuadrilla@sigeru.uy`, `vecino@sigeru.uy`.
 
 Para apagar: `Ctrl + C` y después `docker compose down`.
@@ -54,6 +55,9 @@ contenedor web** es Apache en el puerto 80. Así que se corre ahí adentro, sin 
 ```
 docker compose exec web php /var/www/html/sigeru/tests/correr-tests.php
 ```
+
+Las pruebas de enlaces por correo necesitan leer el mensaje: levantar el compose con
+`SIGERU_MAIL_MODE=archivo` (el workflow de GitHub ya lo hace). Sin eso el resumen dice `Omitidas: 2` y avisa; no falla.
 
 Para limpiar lo que crea usa `config/database.php`, que lee las variables `SIGERU_DB_*`
 del compose. (Si el comando se corre desde Git Bash, anteponer `MSYS_NO_PATHCONV=1`:
@@ -88,7 +92,7 @@ tres puertos distintos serían tres orígenes distintos y la cookie no se compar
 despliegue tiene que parecerse a cómo está pensado el sistema.
 
 **2. El proyecto se monta bajo `/sigeru`, no en la raíz.**
-Así las rutas que usa el frontend (`/sigeru/api-usuarios`, `/sigeru/api-gestion`) son
+Así las rutas que usa el frontend (`/sigeru/api-usuarios`, `/sigeru/api-gestion`, `/sigeru/api-recoleccion`) son
 **exactamente las mismas** que bajo XAMPP. Si se montara en la raíz habría que mantener dos
 juegos de URLs, y tarde o temprano uno de los dos queda desactualizado.
 

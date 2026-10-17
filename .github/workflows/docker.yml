@@ -6,7 +6,7 @@
 #  Desktop crashea, la otra es de dominio y no deja instalar nada). Los
 #  runners de GitHub Actions traen Docker y Compose instalados, asi que este
 #  workflow hace en una maquina limpia lo que nadie pudo hacer en la suya:
-#  `docker compose up --build`, y despues corre los 47 tests de la API contra
+#  `docker compose up --build`, y despues corre los tests de la API contra
 #  los contenedores.
 #
 #  Se dispara solo cuando cambia algo que afecta al despliegue (el repo es
@@ -24,6 +24,7 @@ on:
       - "database/**"
       - "api-usuarios/**"
       - "api-gestion/**"
+      - "api-recoleccion/**"
       - "frontend-usuarios/**"
       - "landing/**"
       - "tests/**"
@@ -34,6 +35,7 @@ on:
       - "database/**"
       - "api-usuarios/**"
       - "api-gestion/**"
+      - "api-recoleccion/**"
       - "frontend-usuarios/**"
       - "landing/**"
       - "tests/**"
@@ -61,6 +63,10 @@ jobs:
         # --wait espera a que db pase el healthcheck y web este corriendo.
         # La primera vez MySQL carga el schema y los datos de prueba, asi que
         # se le da margen.
+        # SIGERU_MAIL_MODE=archivo: las pruebas de enlaces por correo leen el
+        # mensaje de tmp/correo en lugar de depender de un SMTP real.
+        env:
+          SIGERU_MAIL_MODE: archivo
         run: docker compose up --build --detach --wait --wait-timeout 180
 
       - name: Esperar a que Apache responda
@@ -96,7 +102,13 @@ jobs:
           comprobar 200 http://localhost:8080/sigeru/frontend-usuarios/login.html
           comprobar 200 http://localhost:8080/sigeru/api-usuarios/
           comprobar 200 http://localhost:8080/sigeru/api-gestion/
+          comprobar 200 http://localhost:8080/sigeru/api-recoleccion/
           comprobar 401 http://localhost:8080/sigeru/api-usuarios/usuarios
+          comprobar 403 http://localhost:8080/sigeru/database/schema.sql
+          comprobar 403 http://localhost:8080/sigeru/.git/HEAD
+          comprobar 403 http://localhost:8080/sigeru/tests/correr-tests.php
+          comprobar 401 http://localhost:8080/sigeru/api-gestion/contenedores
+          comprobar 401 http://localhost:8080/sigeru/api-recoleccion/recolecciones
           exit $fallas
 
       - name: Correr los tests de la API dentro del contenedor web
@@ -105,6 +117,14 @@ jobs:
         # config/database.php, que lee las variables SIGERU_DB_* del compose.
         # No hace falta tocar nada del runner.
         run: docker compose exec --no-TTY web php /var/www/html/sigeru/tests/correr-tests.php
+
+      - name: Correr las pruebas unitarias (sin base de datos)
+        run: docker compose exec --no-TTY web php /var/www/html/sigeru/tests/unitarias.php
+
+      - name: Comprobar que las migraciones estan al dia en MySQL 8
+        # Con la base recien creada desde schema.sql no tiene que faltar ninguna.
+        # Es la unica verificacion contra MySQL 8: en XAMPP el motor es MariaDB 10.4.
+        run: docker compose exec --no-TTY web php /var/www/html/sigeru/database/migrar.php --estado
 
       - name: Mostrar los logs de los contenedores
         if: failure()
