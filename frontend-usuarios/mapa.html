@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Mapa</h1>
+        <p class="bajada" id="bajada-mapa">Dónde está cada contenedor y en qué estado.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-mapa">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-mapa">Contenedores en el mapa</h2>
+        </div>
+
+        <form class="filtros" id="form-filtros" aria-label="Filtrar el mapa">
+          <label>Estado
+            <select name="estado">
+              <option value="en_servicio" selected>En servicio (sin retirados)</option>
+              <option value="todos">Todos</option>
+              <option value="disponible">Disponible</option>
+              <option value="lleno">Lleno</option>
+              <option value="mantenimiento">En mantenimiento</option>
+              <option value="retirado">Retirado</option>
+            </select>
+          </label>
+          <label>Tipo de residuo
+            <select name="tipo">
+              <option value="">Todos</option>
+            </select>
+          </label>
+          <label>Zona
+            <select name="zona">
+              <option value="">Todas</option>
+            </select>
+          </label>
+          <fieldset class="capas" id="capas">
+            <legend>Capas</legend>
+            <label class="casilla oculto" id="capa-centros"><input type="checkbox" name="centros" checked> Centros de acopio</label>
+            <label class="casilla oculto" id="capa-incidencias"><input type="checkbox" name="incidencias" checked> Incidencias abiertas</label>
+          </fieldset>
+        </form>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p id="aviso-sin-red" class="mensaje aviso oculto" role="status">Sin conexión a internet: no se pudo cargar el fondo con las calles. Los contenedores se muestran igual, sobre fondo liso.</p>
+
+        <div class="mapa" id="mapa" aria-label="Mapa de contenedores. La misma información está en la tabla de abajo." role="region"></div>
+
+        <ul class="leyenda" aria-label="Referencias del mapa">
+          <li><span class="punto verde" aria-hidden="true"></span>Disponible</li>
+          <li><span class="punto rojo" aria-hidden="true"></span>Lleno</li>
+          <li><span class="punto naranja" aria-hidden="true"></span>En mantenimiento</li>
+          <li><span class="punto gris" aria-hidden="true"></span>Retirado</li>
+          <li class="oculto" id="leyenda-centros"><span class="marca-centro" aria-hidden="true"></span>Centro de acopio</li>
+          <li class="oculto" id="leyenda-incidencias"><span class="marca-incidencia" aria-hidden="true">!</span>Incidencia abierta</li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-tabla-mapa">
+        <h2 class="titulo-panel" id="titulo-tabla-mapa">Lo que se ve en el mapa</h2>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="contenedores" aria-live="polite"></p>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-mapa" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Código</th>
+                <th role="columnheader">Dirección</th>
+                <th role="columnheader">Zona</th>
+                <th role="columnheader">Tipo</th>
+                <th role="columnheader">Estado</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/mapa.js"></script>
+</body>
+</html>

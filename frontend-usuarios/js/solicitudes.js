@@ -45,8 +45,8 @@ function dibujarTabla(solicitudes) {
       COLUMNAS,
       filtrando ? "No hay solicitudes pendientes" : "No hay solicitudes",
       filtrando
-        ? "Cuando alguien pida acceso desde la página pública, va a aparecer acá."
-        : "Todavía no entró ninguna solicitud por el registro público."
+        ? "No quedan solicitudes del sistema de registro anterior."
+        : "No hay solicitudes anteriores para mostrar."
     );
     actualizarContador();
     return;
@@ -97,7 +97,7 @@ cuerpoTabla.addEventListener("click", async function (evento) {
 
     document.getElementById("detalle-solicitud").textContent =
       "Se va a crear la cuenta de " + solicitudElegida.nombre +
-      " (" + solicitudElegida.email + ") con una contraseña provisoria.";
+      " (" + solicitudElegida.email + "). Le llegará un enlace por correo para crear su contraseña.";
 
     bootstrap.Modal.getOrCreateInstance(modalAprobar).show();
     return;
@@ -136,7 +136,7 @@ formAprobar.addEventListener("submit", async function (evento) {
   evento.preventDefault();
   mostrar("", "");
 
-  if (solicitudElegida === null) {
+  if (solicitudElegida === null || !validarFormulario(formAprobar)) {
     return;
   }
 
@@ -150,7 +150,7 @@ formAprobar.addEventListener("submit", async function (evento) {
 
     if (ok) {
       cerrarModal("modal-aprobar");
-      avisoPagina("Solicitud aprobada. La cuenta de " + solicitudElegida.nombre + " ya está creada.");
+      avisoPagina("Solicitud aprobada. Se envió un enlace a " + solicitudElegida.email + ".");
       solicitudElegida = null;
       cargarSolicitudes();
     } else {
@@ -171,6 +171,7 @@ function mostrar(texto, tipo) {
 filtroEstado.addEventListener("change", cargarSolicitudes);
 document.getElementById("btn-recargar").addEventListener("click", cargarSolicitudes);
 
+activarValidacion(formAprobar);
 prepararModal("modal-aprobar", formAprobar);
 activarOrden("tabla-solicitudes");
 cargarSolicitudes();

@@ -19,7 +19,7 @@ async function cargarCamiones() {
   cuerpoTabla.innerHTML = filaEsqueleto(COLUMNAS, 4);
 
   try {
-    const datos = await apiGet(API.gestion + "/camiones");
+    const datos = await apiGet(API.recoleccion + "/camiones");
     dibujarTabla(datos.datos);
   } catch (error) {
     cuerpoTabla.innerHTML = filaError(COLUMNAS, mensajeDeFallo(error));
@@ -89,8 +89,8 @@ formCamion.addEventListener("submit", async function (evento) {
 
   try {
     const { ok, resultado } = idEditando === null
-      ? await apiPost(API.gestion + "/camiones", datos)
-      : await apiPut(API.gestion + "/camiones/" + idEditando, datos);
+      ? await apiPost(API.recoleccion + "/camiones", datos)
+      : await apiPut(API.recoleccion + "/camiones/" + idEditando, datos);
 
     if (ok) {
       cerrarModal("modal-camion");
@@ -119,7 +119,7 @@ cuerpoTabla.addEventListener("click", async function (evento) {
 
   const botonEditar = evento.target.closest(".js-editar");
   if (botonEditar) {
-    const { datos } = await apiGet(API.gestion + "/camiones/" + botonEditar.dataset.id);
+    const { datos } = await apiGet(API.recoleccion + "/camiones/" + botonEditar.dataset.id);
     prepararEdicion(datos);
     bootstrap.Modal.getOrCreateInstance(modalCamion).show();
     return;
@@ -139,7 +139,7 @@ cuerpoTabla.addEventListener("click", async function (evento) {
       return;
     }
 
-    const { ok, resultado } = await apiDelete(API.gestion + "/camiones/" + botonBaja.dataset.id);
+    const { ok, resultado } = await apiDelete(API.recoleccion + "/camiones/" + botonBaja.dataset.id);
     if (ok) {
       avisoPagina("Camión dado de baja.");
       cargarCamiones();

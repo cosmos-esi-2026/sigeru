@@ -8,31 +8,65 @@ const modalUsuario = document.getElementById("modal-usuario");
 
 let idEditando = null;
 
+const formFiltros = document.getElementById("form-filtros");
+const campoBusqueda = document.getElementById("buscar");
+const paginador = crearPaginador("paginacion", "usuarios", function () { cargarUsuarios(); });
+let hayFiltros = false;
+
+function consultaDeLaLista(extra) {
+  const q = campoBusqueda.value.trim();
+  const base = consultaDeFormulario(formFiltros, ["rol", "estado"], extra);
+  if (q === "") return base;
+  return (base === "" ? "?" : base + "&") + "q=" + encodeURIComponent(q);
+}
+
 async function cargarUsuarios() {
   cuerpoTabla.innerHTML = filaEsqueleto(COLUMNAS, 4);
+  hayFiltros = consultaDeLaLista({}) !== "";
 
   try {
-    const datos = await apiGet(API.usuarios + "/usuarios");
+    const datos = await apiGet(API.usuarios + "/usuarios" + consultaDeLaLista({
+      pagina: paginador.estado.pagina, por_pagina: paginador.estado.porPagina,
+    }));
+    if (paginador.ajustar(datos.meta)) {
+      return cargarUsuarios();
+    }
     dibujarTabla(datos.datos);
+    paginador.dibujar(datos.meta);
   } catch (error) {
     cuerpoTabla.innerHTML = filaError(COLUMNAS, mensajeDeFallo(error));
-    actualizarContador();
+    paginador.dibujar(null);
+  }
+}
+
+async function exportarUsuarios() {
+  try {
+    const datos = await apiGet(API.usuarios + "/usuarios" + consultaDeLaLista({}));
+    const filas = [["ID", "Nombre", "Apellido", "Correo", "Teléfono", "Rol", "Estado", "Fecha de registro"]];
+    datos.datos.forEach(function (u) {
+      filas.push([u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.rol, textoEstado(u.estado), u.fecha_registro]);
+    });
+    descargarCsv("usuarios_" + fechaParaArchivo() + ".csv", filas);
+    avisoPagina("Se exportaron " + datos.datos.length + " usuarios (con los filtros activos). El archivo no incluye contraseñas.");
+  } catch (error) {
+    avisoPaginaError("No se pudo exportar. " + mensajeDeFallo(error));
   }
 }
 
 function dibujarTabla(usuarios) {
   if (!usuarios || usuarios.length === 0) {
-    cuerpoTabla.innerHTML = filaVacia(
-      COLUMNAS,
-      "Todavía no hay usuarios",
-      "Las altas entran por «Nuevo usuario» o aprobando una solicitud de registro."
-    );
-    actualizarContador();
+    cuerpoTabla.innerHTML = hayFiltros
+      ? filaVacia(COLUMNAS, "Ningún usuario coincide", "Probá con otra búsqueda o limpiá los filtros.")
+      : filaVacia(
+          COLUMNAS,
+          "Todavía no hay usuarios",
+          "Las altas entran por «Nuevo usuario» o por el registro público de vecinos."
+        );
     return;
   }
 
   cuerpoTabla.innerHTML = usuarios.map(function (u) {
-    const color = u.estado === "activo" ? "verde" : "gris";
+    const color = u.estado === "activo" ? "verde" : u.estado === "pendiente" ? "naranja" : "gris";
     return '<tr role="row">' +
       celda("ID", u.id_usuario) +
       celda("Nombre", u.nombre) +
@@ -40,17 +74,19 @@ function dibujarTabla(usuarios) {
       celda("Email", u.email) +
       celda("Rol", u.rol) +
       celdaEstado("Estado", u.estado, color) +
-      celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre) +
+      celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre)
+        .replace("</div></td>", (u.estado === "inactivo" ? "" :
+          '<button type="button" class="boton boton-secundario boton-chico js-enlace" ' +
+          'data-id="' + parseInt(u.id_usuario, 10) + '">Enviar acceso</button>') + "</div></td>") +
       "</tr>";
   }).join("");
-
-  actualizarContador();
 }
 
 function prepararAlta() {
   idEditando = null;
   document.getElementById("titulo-modal-usuario").textContent = "Nuevo usuario";
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar usuario";
+
 }
 
 function prepararEdicion(usuario) {
@@ -88,7 +124,7 @@ formUsuario.addEventListener("submit", async function (evento) {
     if (ok) {
       cerrarModal("modal-usuario");
       avisoPagina(idEditando === null
-        ? "Usuario creado correctamente."
+        ? "Usuario creado. Se envió un enlace para que defina su contraseña."
         : "Usuario actualizado correctamente.");
       cargarUsuarios();
     } else {
@@ -107,6 +143,23 @@ formUsuario.addEventListener("submit", async function (evento) {
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {
     cargarUsuarios();
+    return;
+  }
+
+  const botonEnlace = evento.target.closest(".js-enlace");
+  if (botonEnlace) {
+    botonEnlace.disabled = true;
+    try {
+      const { ok, resultado } = await apiPost(
+        API.usuarios + "/usuarios/" + botonEnlace.dataset.id + "/enlace", {}
+      );
+      if (ok) avisoPagina("Se envió un enlace para crear o renovar la contraseña.");
+      else avisoPaginaError(resultado.mensaje || "No se pudo enviar el correo.");
+    } catch (e) {
+      avisoPaginaError("No se pudo conectar con el servidor.");
+    } finally {
+      botonEnlace.disabled = false;
+    }
     return;
   }
 
@@ -149,6 +202,11 @@ function mostrar(texto, tipo) {
 }
 
 document.getElementById("btn-recargar").addEventListener("click", cargarUsuarios);
+document.getElementById("btn-exportar").addEventListener("click", exportarUsuarios);
+function volverALaPrimera() { paginador.volverAlPrincipio(); cargarUsuarios(); }
+formFiltros.addEventListener("change", volverALaPrimera);
+formFiltros.addEventListener("reset", function () { campoBusqueda.value = ""; setTimeout(volverALaPrimera, 0); });
+campoBusqueda.addEventListener("input", retrasar(volverALaPrimera, 350));
 document.getElementById("btn-nuevo").addEventListener("click", prepararAlta);
 
 activarValidacion(formUsuario);

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incidencia - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1 id="titulo-pagina">Incidencia</h1>
+        <p class="bajada" id="bajada-pagina">Estado, responsable y cada paso registrado.</p>
+      </div>
+      <a class="boton boton-secundario" id="enlace-volver" href="dashboard.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6"/>
+        </svg>
+        Volver a la lista
+      </a>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+
+      <p id="mensaje-pagina" class="mensaje mensaje-pagina" role="status" aria-live="polite"></p>
+
+      <div class="columnas-detalle" id="detalle">
+        <div class="columna-principal">
+          <section class="panel" aria-labelledby="titulo-datos">
+            <h2 class="titulo-panel" id="titulo-datos">Datos</h2>
+            <div id="zona-datos">
+              <span class="esqueleto"></span><span class="esqueleto"></span><span class="esqueleto esqueleto-corto"></span>
+            </div>
+          </section>
+
+          <section class="panel oculto" id="panel-acciones" aria-labelledby="titulo-acciones">
+            <h2 class="titulo-panel" id="titulo-acciones">Acciones</h2>
+            <div id="zona-acciones"></div>
+          </section>
+        </div>
+
+        <section class="panel columna-lateral" aria-labelledby="titulo-historial">
+          <h2 class="titulo-panel" id="titulo-historial">Historial</h2>
+          <div id="zona-historial">
+            <span class="esqueleto"></span><span class="esqueleto esqueleto-corto"></span>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/incidencia-detalle.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+/* Reportes y panel por urgencias (parte 7). Se carga despues de styles.css. */
+
+.titulo-seccion {
+  font-family: var(--fuente-titulo);
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: var(--esp-4);
+}
+.subtitulo {
+  font-family: var(--fuente-titulo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  margin-bottom: var(--esp-3);
+}
+
+.dos-columnas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--esp-5);
+  align-items: start;
+}
+.dos-columnas > .panel { margin-bottom: var(--esp-5); }
+
+.grafico { margin-bottom: var(--esp-4); max-width: 640px; }
+.grafico svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.grafico-etiqueta { fill: var(--tinta); font-family: var(--fuente-texto); font-size: 13px; }
+.grafico-valor { fill: var(--tinta-suave); font-family: var(--fuente-dato); font-size: 12px; }
+.grafico-barra { fill: var(--verde); }
+.grafico-barra.es-secundaria { fill: var(--papel); }
+
+.datos-tiempo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--esp-4);
+  margin: var(--esp-4) 0 0;
+}
+.datos-tiempo dt { font-size: 13px; color: var(--tinta-suave); }
+.datos-tiempo dd {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--verde);
+}
+.resumen-prioridad p { margin: var(--esp-1) 0; }
+
+.encabezado-impresion { display: none; }
+
+/* Panel por urgencias (dashboard del administrador) */
+.nivel { white-space: nowrap; }
+.metrica[data-color="critica"] { --color: var(--error-texto); }
+.metrica[data-color="atencion"] { --color: var(--alerta-texto); }
+.avisos-panel { margin: 0 0 var(--esp-4); padding: 0; list-style: none; display: grid; gap: var(--esp-2); }
+.avisos-panel li {
+  display: flex;
+  gap: var(--esp-2);
+  align-items: baseline;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--radio-1);
+  background: var(--alerta-fondo);
+  color: var(--alerta-texto);
+  font-size: 14px;
+}
+.avisos-panel li.es-critico { background: var(--error-fondo); color: var(--error-texto); }
+.avisos-panel li.es-bien { background: var(--ok-fondo); color: var(--ok-texto); }
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff; color: #000; }
+  .sidebar, .topbar, .sin-impresion, .btn-menu, .saltar-contenido, .filtros, .mensaje { display: none !important; }
+  .layout { display: block; }
+  .contenido { padding: 0; }
+  .panel, .metrica { box-shadow: none; border-color: #999; break-inside: avoid; }
+  .encabezado-impresion {
+    display: block;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #000;
+  }
+  .encabezado-impresion strong { display: block; font-size: 16px; }
+  .tabla-scroll { overflow: visible; }
+  .tabla th, .tabla td { padding: 4px 6px; font-size: 11px; }
+  .tabla tr { break-inside: avoid; }
+  .th-orden { color: #000; }
+  a { color: #000; text-decoration: none; }
+}

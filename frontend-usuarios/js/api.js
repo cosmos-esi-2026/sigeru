@@ -1,6 +1,7 @@
 const API = {
   usuarios: "/sigeru/api-usuarios",
   gestion:  "/sigeru/api-gestion",
+  recoleccion: "/sigeru/api-recoleccion",
 };
 
 function opciones(metodo, datos) {
@@ -50,6 +51,13 @@ const Sesion = {
   obtener() {
     const dato = localStorage.getItem("sigeru_usuario");
     return dato ? JSON.parse(dato) : null;
+  },
+  rol() {
+    const usuario = this.obtener();
+    return usuario ? usuario.rol : null;
+  },
+  esAdministrador() {
+    return this.rol() === "Administrador";
   },
   cerrar() {
     localStorage.removeItem("sigeru_usuario");

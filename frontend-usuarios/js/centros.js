@@ -40,7 +40,7 @@ function dibujarTabla(centros) {
             c.capacidad ? Number(c.capacidad).toLocaleString("es-UY") + " kg" : null,
             c.capacidad) +
       celdaEstado("Estado", c.estado, color) +
-      celdaAcciones(c.id_centro, "Editar " + c.nombre, "Dar de baja " + c.nombre) +
+      celdaAcciones(c.id_centro, "Editar " + c.nombre, "Dar de baja " + c.nombre, true) +
       "</tr>";
   }).join("");
 

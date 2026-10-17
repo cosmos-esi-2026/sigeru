@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informar un problema - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Informar un problema</h1>
+        <p class="bajada">Un contenedor desbordado, roto o mal ubicado: contalo en un paso y seguilo en «Mis reclamos».</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+
+      <section class="panel panel-angosto" id="panel-formulario" aria-labelledby="titulo-formulario">
+        <h2 class="titulo-panel" id="titulo-formulario">¿Qué pasa y dónde?</h2>
+        <p class="ayuda">Los campos marcados son obligatorios. El código está pegado en el contenedor (por ejemplo, CNT-004).</p>
+
+        <form id="form-incidencia" class="formulario">
+          <label>Contenedor *
+            <input type="text" name="codigo_contenedor" list="lista-contenedores" required
+                   autocomplete="off" spellcheck="false" maxlength="20" placeholder="CNT-004"
+                   aria-describedby="ayuda-contenedor">
+          </label>
+          <datalist id="lista-contenedores"></datalist>
+          <p class="ayuda-campo" id="ayuda-contenedor">Escribí el código, elegilo de la lista de sugerencias o
+            <a href="mapa.html">buscalo en el mapa</a>.</p>
+
+          <label>Tipo de problema *
+            <select name="tipo_problema" required>
+              <option value="">Elegí una opción</option>
+              <option value="desbordado">Contenedor desbordado</option>
+              <option value="roto">Contenedor roto o dañado</option>
+              <option value="residuo_no_permitido">Residuo no permitido</option>
+              <option value="ausente_o_mal_ubicado">Contenedor ausente o mal ubicado</option>
+              <option value="otro">Otro</option>
+            </select>
+          </label>
+
+          <label>Descripción *
+            <textarea name="descripcion" rows="4" required minlength="5" maxlength="500"
+                      placeholder="Qué se observa" aria-describedby="cuenta-descripcion"></textarea>
+          </label>
+          <p class="ayuda-campo" id="cuenta-descripcion" aria-live="polite">Entre 5 y 500 caracteres.</p>
+
+          <label>Prioridad que le darías
+            <select name="prioridad">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </label>
+
+          <label>Foto (opcional)
+            <input type="file" name="foto" accept="image/jpeg,image/png,image/webp" aria-describedby="ayuda-foto">
+          </label>
+          <p class="ayuda-campo" id="ayuda-foto">JPG, PNG o WebP de hasta 2 MB. Se guarda sin los datos de ubicación de
+            la cámara y solo la ve la administración y la cuadrilla que atienda el reclamo.</p>
+          <div class="vista-foto oculto" id="vista-foto">
+            <img id="vista-foto-imagen" alt="Vista previa de la foto elegida">
+            <button type="button" class="boton boton-secundario boton-chico" id="quitar-foto">Quitar la foto</button>
+          </div>
+
+          <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+
+          <div class="acciones-formulario">
+            <button type="submit" class="boton boton-primario">Enviar el reporte</button>
+            <a class="boton boton-secundario" href="mis-reclamos.html">Cancelar</a>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel panel-angosto oculto" id="panel-confirmacion" aria-labelledby="titulo-confirmacion" tabindex="-1">
+        <h2 class="titulo-panel" id="titulo-confirmacion">Reporte registrado</h2>
+        <p class="ayuda">Guardá el número para consultarlo. El administrador lo va a revisar y asignar a una cuadrilla.</p>
+        <dl class="ficha" id="ficha-confirmacion"></dl>
+        <div class="acciones-formulario">
+          <a class="boton boton-primario" id="enlace-reclamo" href="mis-reclamos.html">Ver el reclamo</a>
+          <button type="button" class="boton boton-secundario" id="btn-otro">Informar otro problema</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/informar-problema.js"></script>
+</body>
+</html>

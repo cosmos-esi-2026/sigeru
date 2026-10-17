@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SiGeRU - Sistema de Gestión de Residuos Urbanos</title>
-  <meta name="description" content="SiGeRU organiza los contenedores, los camiones y los centros de acopio de la ciudad, y le da a cada vecino un canal para reportar incidencias.">
-  <link rel="icon" href="../frontend-usuarios/img/logo.svg">
+  <meta name="description" content="SiGeRU organiza los contenedores, los camiones y los centros de acopio de la ciudad, y le da a cada vecino registrado un canal para informar problemas.">
+  <link rel="icon" href="img/logo.svg">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -22,6 +20,8 @@
       <p class="logo">SiGeRU</p>
       <nav class="menu" aria-label="Secciones de la página">
         <a href="#que-es">Qué es</a>
+        <a href="#mapa-publico">Mapa</a>
+        <a href="#como-informar">Cómo informar</a>
         <a href="#servicios">Servicios</a>
         <a href="#registro">Registro</a>
 
@@ -44,35 +44,26 @@
           <h1 id="titulo-principal">La ciudad, <span class="resaltado">contenedor por contenedor</span>.</h1>
           <p>
             SiGeRU organiza los contenedores, los camiones y los centros de acopio
-            en un solo lugar, y le da a cada vecino un canal directo para reportar
-            lo que ve en la calle.
+            en un solo lugar, y le da a cada vecino registrado un canal directo para
+            informar lo que ve en la calle.
           </p>
           <div class="hero-acciones">
             <a class="boton boton-primario" href="#registro">Quiero registrarme</a>
-            <a class="boton boton-secundario" href="#que-es">Ver cómo funciona</a>
+            <a class="boton boton-secundario" href="#mapa-publico">Ver el mapa</a>
           </div>
         </div>
 
-        <aside class="ficha" aria-label="Ejemplo de ficha de contenedor">
-          <div class="ficha-cabecera">
-            <span class="ficha-codigo">CNT-018</span>
-            <span class="estado">Disponible</span>
-          </div>
-          <p class="ficha-direccion">Av. Italia 2734 esq. Comercio</p>
-
-          <div class="ficha-fila"><span>Capacidad</span><strong>1.100 L</strong></div>
-          <div class="ficha-fila"><span>Última recolección</span><strong>hoy 06:40</strong></div>
-
-          <div class="nivel" aria-hidden="true">
-            <div class="nivel-barra" style="width: 62%"></div>
-          </div>
-          <div class="ficha-fila"><span>Nivel de llenado</span><strong>62 %</strong></div>
-
-          <div class="ficha-tipos">
-            <span class="tipo" data-tipo="organico">Orgánico</span>
-            <span class="tipo" data-tipo="plastico">Plástico</span>
-            <span class="tipo" data-tipo="vidrio">Vidrio</span>
-          </div>
+        <aside class="ficha" aria-labelledby="titulo-cifras">
+          <h2 class="ficha-titulo" id="titulo-cifras">El sistema hoy</h2>
+          <dl class="cifras" id="cifras">
+            <div><dt>Contenedores en servicio</dt><dd id="cifra-contenedores">-</dd></div>
+            <div><dt>Disponibles</dt><dd id="cifra-disponibles">-</dd></div>
+            <div><dt>Llenos</dt><dd id="cifra-llenos">-</dd></div>
+            <div><dt>Zonas con contenedores</dt><dd id="cifra-zonas">-</dd></div>
+            <div><dt>Centros de acopio</dt><dd id="cifra-centros">-</dd></div>
+            <div><dt>Incidencias resueltas</dt><dd id="cifra-resueltas">-</dd></div>
+          </dl>
+          <p class="ficha-nota" id="nota-cifras" role="status">Cargando los datos del sistema...</p>
         </aside>
 
       </div>
@@ -84,16 +75,74 @@
           <h2 id="titulo-que-es">Qué es SiGeRU</h2>
           <p>
             Un Sistema de Gestión de Residuos Urbanos desarrollado para UTU/ESI 2026.
-            Administra la recolección, los contenedores y la flota de camiones, y le
-            abre a los vecinos un canal para participar.
+            Administra los contenedores, los centros de acopio, la flota de camiones y
+            las recolecciones, y le abre a los vecinos un canal para participar.
           </p>
         </div>
         <ul class="lista-marcada">
-          <li>Cada contenedor tiene código, dirección, capacidad y estado.</li>
-          <li>La flota se sigue por matrícula, capacidad y disponibilidad.</li>
-          <li>Los vecinos reportan incidencias sin llamar por teléfono.</li>
-          <li>La administración concentra el resumen del sistema.</li>
+          <li>Cada contenedor tiene código, dirección, ubicación en el mapa, tipo de residuo y estado.</li>
+          <li>Los camiones se siguen por matrícula y estado, y cada recolección guarda el peso y el volumen de lo que se vació.</li>
+          <li>Los vecinos registrados informan problemas sin llamar por teléfono.</li>
+          <li>La administración ve un panel por urgencias y reportes de cada período.</li>
         </ul>
+      </div>
+    </section>
+
+    <section id="mapa-publico" class="seccion" aria-labelledby="titulo-mapa">
+      <div class="contenedor">
+        <h2 id="titulo-mapa">Dónde están los contenedores</h2>
+        <p>Los contenedores en servicio y los centros de acopio activos de la ciudad. Tocá un punto para ver su dirección y su estado.</p>
+
+        <ul class="leyenda-mapa" aria-label="Referencias del mapa">
+          <li><span class="punto" data-estado="disponible"></span> Disponible</li>
+          <li><span class="punto" data-estado="lleno"></span> Lleno</li>
+          <li><span class="punto" data-estado="mantenimiento"></span> En mantenimiento</li>
+          <li><span class="punto-centro"></span> Centro de acopio</li>
+        </ul>
+
+        <div class="mapa-caja">
+          <div id="mapa-contenedores" class="mapa-publico" role="region" aria-label="Mapa de contenedores y centros de acopio"></div>
+          <p class="aviso-mapa oculto" id="aviso-sin-red" role="status">
+            No se pudo cargar el fondo del mapa (sin conexión a internet). Los puntos se ven igual; la lista de abajo tiene las mismas direcciones.
+          </p>
+        </div>
+        <p class="texto-chico" id="nota-mapa" role="status"></p>
+
+        <details class="lista-alternativa">
+          <summary>Ver la lista de contenedores y centros</summary>
+          <div class="tabla-scroll">
+            <table class="tabla-publica">
+              <caption class="solo-lectores">Contenedores en servicio y centros de acopio activos</caption>
+              <thead><tr><th scope="col">Código</th><th scope="col">Dirección</th><th scope="col">Zona</th><th scope="col">Tipo</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="cuerpo-lista"></tbody>
+            </table>
+          </div>
+        </details>
+        <p class="texto-chico">El mapa muestra solo lugares públicos; no muestra datos de ninguna persona.</p>
+      </div>
+    </section>
+
+    <section id="como-informar" class="seccion seccion-gris" aria-labelledby="titulo-como">
+      <div class="contenedor">
+        <h2 id="titulo-como">Cómo informar un problema</h2>
+        <p>Un contenedor desbordado, roto o mal ubicado se informa en tres pasos.</p>
+        <ol class="pasos">
+          <li>
+            <span class="paso-numero" aria-hidden="true">1</span>
+            <h3>Creá tu cuenta de vecino</h3>
+            <p>Con tu correo y una contraseña. No necesita aprobación del administrador.</p>
+          </li>
+          <li>
+            <span class="paso-numero" aria-hidden="true">2</span>
+            <h3>Elegí el contenedor</h3>
+            <p>Buscalo en el mapa o escribí su código (está en el mapa de arriba) y contá qué pasa.</p>
+          </li>
+          <li>
+            <span class="paso-numero" aria-hidden="true">3</span>
+            <h3>Seguí tu reclamo</h3>
+            <p>En «Mis reclamos» ves el estado y todo el historial hasta que se resuelve. No enviamos avisos por correo: tenés que entrar a mirarlo.</p>
+          </li>
+        </ol>
       </div>
     </section>
 
@@ -114,7 +163,7 @@
               </svg>
             </div>
             <h3>Contenedores</h3>
-            <p>Ubicación, capacidad y estado de cada contenedor de la ciudad.</p>
+            <p>Ubicación, capacidad, tipo de residuo y estado de cada contenedor, con el historial de sus cambios de estado.</p>
           </article>
 
           <article class="tarjeta" data-color="plastico">
@@ -128,7 +177,7 @@
               </svg>
             </div>
             <h3>Recolección</h3>
-            <p>Flota de camiones y rutas de recolección organizadas por turno.</p>
+            <p>Flota de camiones, rutas por zona con día y hora, y recolecciones que registran el peso y el volumen de cada vaciado.</p>
           </article>
 
           <article class="tarjeta" data-color="papel">
@@ -140,11 +189,11 @@
               </svg>
             </div>
             <h3>Incidencias</h3>
-            <p>El vecino reporta un problema y queda registrado con fecha y lugar.</p>
+            <p>El vecino registrado informa un problema; la administración lo asigna a una cuadrilla y queda todo anotado, con fecha y responsable.</p>
           </article>
         </div>
 
-        <ul class="tipos-lista">
+        <ul class="tipos-lista" id="tipos-lista" aria-label="Tipos de residuo">
           <li class="tipo" data-tipo="organico">Orgánico</li>
           <li class="tipo" data-tipo="plastico">Plástico</li>
           <li class="tipo" data-tipo="vidrio">Vidrio</li>
@@ -156,31 +205,13 @@
 
     <section id="registro" class="seccion seccion-gris" aria-labelledby="titulo-registro">
       <div class="contenedor contenedor-angosto">
-        <h2 id="titulo-registro">Solicitar registro</h2>
-        <p>Completá tus datos. Un administrador revisa la solicitud y te habilita el acceso.</p>
-
+        <h2 id="titulo-registro">Tu cuenta de vecino, en minutos</h2>
+        <p>Registrate con tu correo y una contraseña. No necesitás aprobación del administrador.</p>
         <div class="caja-formulario">
-
-          <form id="form-registro" class="formulario">
-            <label>Nombre
-              <input type="text" name="nombre" autocomplete="given-name" placeholder="Ana" required>
-            </label>
-            <label>Apellido
-              <input type="text" name="apellido" autocomplete="family-name" placeholder="Pérez" required>
-            </label>
-            <label>Email
-              <input type="email" name="email" autocomplete="email" placeholder="ana@ejemplo.uy" required>
-            </label>
-            <label>Teléfono
-              <input type="tel" name="telefono" autocomplete="tel" placeholder="099 123 456">
-            </label>
-            <label>Dirección
-              <input type="text" name="direccion" autocomplete="street-address" placeholder="Av. Italia 2734">
-            </label>
-            <button type="submit" class="boton boton-primario">Enviar solicitud</button>
-          </form>
-
-          <p id="mensaje-registro" class="mensaje" role="status" aria-live="polite"></p>
+          <h3>Participá en tu barrio</h3>
+          <p>Creá tu cuenta para informar problemas y seguir tus reclamos.</p>
+          <a class="boton boton-primario" href="../frontend-usuarios/registro.html">Crear cuenta de vecino</a>
+          <p>¿Ya tenés cuenta? <a href="../frontend-usuarios/login.html">Iniciar sesión</a></p>
         </div>
       </div>
     </section>
@@ -197,7 +228,7 @@
     </div>
   </footer>
 
-  <script src="../frontend-usuarios/js/formularios.js"></script>
-  <script src="js/main.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/publico.js"></script>
 </body>
 </html>

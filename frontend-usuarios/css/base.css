@@ -1,0 +1,192 @@
+/* Base visual compartida de SiGeRU. Es una COPIA IDENTICA en landing/css/base.css:
+   se edita aca (frontend-usuarios es el origen) y se copia a la otra. La prueba
+   tests/unitarias.php falla si las dos copias difieren. */
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-sans-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-sans-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-sans-600.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-mono-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --hueso:        #f6f7f2;
+  --blanco:       #ffffff;
+  --tinta:        #0e241c;
+  --tinta-suave:  #55685f;
+  --tinta-tenue:  #64756c;
+  --borde:        #e3e7df;
+
+  --verde:        #15654a;
+  --verde-oscuro: #0e4a36;
+  --verde-agua:   #e6f1ea;
+  --lima:         #cdeb4b;
+
+  --organico:  #7a5c3e;
+  --plastico:  #d9a300;
+  --vidrio:    #2e9e8f;
+  --papel:     #2f6fd0;
+  --metal:     #8b94a3;
+
+  --ok-texto:     #15654a;   --ok-fondo:     #dff0e5;
+  --alerta-texto: #8a5000;   --alerta-fondo: #fdeccf;
+  --error-texto:  #b3261e;   --error-fondo:  #fce4e2;
+  --neutro-texto: #4b5a54;   --neutro-fondo: #e8ece8;
+
+  --fuente-titulo: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --fuente-texto:  "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --fuente-dato:   "IBM Plex Mono", "Consolas", monospace;
+
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 24px;
+  --esp-6: 32px;
+  --esp-7: 48px;
+  --esp-8: 64px;
+
+  --radio-1: 10px;
+  --radio-2: 16px;
+  --radio-3: 24px;
+  --radio-full: 999px;
+  --sombra-1: 0 1px 2px rgba(14, 36, 28, .06), 0 2px 8px rgba(14, 36, 28, .04);
+  --sombra-2: 0 18px 40px -18px rgba(14, 36, 28, .35);
+
+  --transicion: .15s ease;
+  --alto-toque: 44px;
+  --alto-banda: 4px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--lima);
+  outline-offset: 2px;
+  border-radius: var(--esp-1);
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saltar-contenido {
+  position: absolute;
+  top: var(--esp-2);
+  left: var(--esp-2);
+  z-index: 2000;
+  transform: translateY(-200%);
+  background: var(--verde);
+  color: var(--blanco);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--radio-1);
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform var(--transicion);
+}
+.saltar-contenido:focus { transform: translateY(0); }
+
+.banda { display: flex; height: var(--alto-banda); flex: none; }
+.banda span { flex: 1; }
+.banda span:nth-child(1) { background: var(--organico); }
+.banda span:nth-child(2) { background: var(--plastico); }
+.banda span:nth-child(3) { background: var(--vidrio); }
+.banda span:nth-child(4) { background: var(--papel); }
+.banda span:nth-child(5) { background: var(--metal); }
+
+.icono { width: 18px; height: 18px; flex-shrink: 0; }
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--alto-toque);
+  padding: var(--esp-3) var(--esp-5);
+  border: 1px solid transparent;
+  border-radius: var(--radio-full);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform var(--transicion), background var(--transicion),
+              border-color var(--transicion), color var(--transicion),
+              box-shadow var(--transicion);
+}
+.boton:hover { transform: translateY(-1px); }
+.boton:active { transform: translateY(0); }
+
+.boton-primario { background: var(--verde); color: var(--blanco); box-shadow: var(--sombra-1); }
+.boton-primario:hover { background: var(--verde-oscuro); color: var(--blanco); }
+
+.boton-secundario { background: var(--blanco); color: var(--verde-oscuro); border-color: var(--borde); }
+.boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); color: var(--verde-oscuro); }
+
+.boton:disabled,
+.boton[aria-busy="true"] {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.boton[aria-busy="true"]::before {
+  content: "";
+  width: 14px; height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: girar .7s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }

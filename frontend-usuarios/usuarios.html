@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -17,89 +15,11 @@
 
 <div class="layout">
 
-  <aside class="sidebar" id="sidebar" aria-label="Menú principal">
-
-    <a class="sidebar-marca" href="dashboard.html">
-      <img src="img/logo.svg" alt="">
-      SiGeRU
-    </a>
-    <div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-
-    <nav class="sidebar-nav" aria-label="Secciones del sistema">
-      <a class="sidebar-link" href="dashboard.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-4v-6H9v6H4a1 1 0 0 1-1-1z"/>
-        </svg>
-        Inicio
-      </a>
-      <a class="sidebar-link activo" href="usuarios.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
-          <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/><path d="M17.8 14.4A6.2 6.2 0 0 1 21.2 20"/>
-        </svg>
-        Usuarios
-      </a>
-      <a class="sidebar-link" href="contenedores.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
-          <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
-          <path d="M10 11v6M14 11v6"/>
-        </svg>
-        Contenedores
-      </a>
-      <a class="sidebar-link" href="camiones.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
-          <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
-        </svg>
-        Camiones
-      </a>
-      <a class="sidebar-link" href="centros.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 10.5 12 5l9 5.5V20H3z"/><path d="M8 20v-6h8v6"/>
-        </svg>
-        Centros de acopio
-      </a>
-      <a class="sidebar-link" href="maquinaria.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="3.2"/>
-          <path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21"/>
-          <path d="m5.6 5.6 1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/>
-        </svg>
-        Maquinaria
-      </a>
-      <a class="sidebar-link" href="solicitudes.html">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 12h5l2 3h4l2-3h5"/><path d="M4 6h16v12H4z"/>
-        </svg>
-        Solicitudes
-      </a>
-    </nav>
-
-    <div class="sidebar-pie">
-      <div class="sidebar-usuario">
-        <div class="nombre" id="sidebar-nombre"></div>
-        <div class="rol" id="sidebar-rol"></div>
-      </div>
-      <a class="sidebar-link" href="#" id="btn-salir">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/>
-          <path d="M10 8l-4 4 4 4"/><path d="M6 12h11"/>
-        </svg>
-        Cerrar sesión
-      </a>
-    </div>
-
-  </aside>
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
 
   <div class="principal">
 
     <header class="topbar">
-      <button class="btn-menu" id="btn-menu" aria-label="Abrir menú">
-        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-          <path d="M3 6h18M3 12h18M3 18h18"/>
-        </svg>
-      </button>
       <div class="topbar-titulo">
         <h1>Usuarios</h1>
         <p class="bajada">Personas con acceso al sistema y el rol que tiene cada una.</p>
@@ -120,13 +40,15 @@
           <h2 class="titulo" id="titulo-listado">Listado</h2>
 
           <div class="buscador-caja">
-            <label class="solo-lectores" for="buscador">Buscar usuarios</label>
+            <label class="solo-lectores" for="buscar">Buscar usuarios</label>
             <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             </svg>
-            <input type="search" class="buscador" id="buscador"
-                   placeholder="Buscar por nombre, email o rol">
+            <input type="search" class="buscador" id="buscar" maxlength="60"
+                   placeholder="Buscar por nombre, apellido o email">
           </div>
+
+          <button type="button" class="boton boton-secundario" id="btn-exportar">Exportar CSV</button>
 
           <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
             <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -135,8 +57,30 @@
           </button>
         </div>
 
+        <form class="filtros" id="form-filtros" aria-label="Filtrar usuarios">
+          <label>Rol
+            <select name="rol">
+              <option value="">Todos</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Operario">Operario</option>
+              <option value="Cuadrilla">Cuadrilla</option>
+              <option value="Vecino">Vecino</option>
+            </select>
+          </label>
+          <label>Estado
+            <select name="estado">
+              <option value="">Todos</option>
+              <option value="activo">Activo</option>
+              <option value="pendiente">Pendiente (sin contraseña)</option>
+              <option value="inactivo">Dado de baja</option>
+            </select>
+          </label>
+          <div class="filtros-acciones">
+            <button type="reset" class="boton boton-secundario boton-chico">Limpiar</button>
+          </div>
+        </form>
+
         <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
-        <p class="contador-resultados" id="contador-resultados" data-sustantivo="usuarios"></p>
 
         <div class="tabla-scroll">
           <table class="tabla" id="tabla-usuarios" role="table">
@@ -165,6 +109,8 @@
           </table>
         </div>
 
+        <nav class="paginacion" id="paginacion" aria-label="Paginación de usuarios"></nav>
+
       </section>
     </main>
   </div>
@@ -180,8 +126,8 @@
       </div>
 
       <div class="modal-body">
-        <p class="ayuda">El alta desde el panel crea la cuenta activa. El registro
-          público, en cambio, genera una solicitud que hay que aprobar.</p>
+        <p class="ayuda">Los vecinos pueden registrarse solos. Si creás una cuenta desde
+          este panel, SiGeRU enviará un enlace por correo para que la persona elija su contraseña.</p>
 
         <form id="form-usuario" class="formulario">
           <div class="formulario-columnas">
@@ -216,8 +162,9 @@
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
 <script src="js/formularios.js"></script>
-<script src="js/sidebar.js"></script>
+<script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
+<script src="js/lista.js"></script>
 <script src="js/usuarios.js"></script>
 </body>
 </html>

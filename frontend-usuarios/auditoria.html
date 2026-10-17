@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Auditoría</h1>
+        <p class="bajada">Quién hizo qué: cada cambio que salió bien y cada acceso negado por permisos. No guarda contraseñas ni datos enviados.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-listado">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-listado">Registro</h2>
+
+          <div class="buscador-caja">
+            <label class="solo-lectores" for="buscar">Buscar en las rutas</label>
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="search" class="buscador" id="buscar" maxlength="60" placeholder="Buscar por ruta (por ejemplo, contenedores)">
+          </div>
+
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el registro">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <form class="filtros" id="form-filtros" aria-label="Filtrar el registro">
+          <label>Resultado
+            <select name="resultado">
+              <option value="">Todos</option>
+              <option value="hecho">Hecho</option>
+              <option value="negado">Negado por permisos</option>
+            </select>
+          </label>
+          <label>Operación
+            <select name="metodo">
+              <option value="">Todas</option>
+              <option value="POST">Crear o accionar (POST)</option>
+              <option value="PUT">Modificar (PUT)</option>
+              <option value="DELETE">Dar de baja (DELETE)</option>
+            </select>
+          </label>
+          <label>Desde
+            <input type="date" name="desde">
+          </label>
+          <label>Hasta
+            <input type="date" name="hasta">
+          </label>
+          <div class="filtros-acciones">
+            <button type="reset" class="boton boton-secundario boton-chico">Limpiar</button>
+          </div>
+        </form>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-auditoria" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Fecha</th>
+                <th role="columnheader">Persona</th>
+                <th role="columnheader">Rol</th>
+                <th role="columnheader">Qué hizo</th>
+                <th role="columnheader">Resultado</th>
+                <th role="columnheader">Dirección IP</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="paginacion" id="paginacion" aria-label="Paginación del registro"></nav>
+
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/lista.js"></script>
+<script src="js/auditoria.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rutas - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Rutas</h1>
+        <p class="bajada">Recorridos de recolección: día, hora y zona. Se planifican desde «Recolecciones».</p>
+      </div>
+      <button class="boton boton-primario" id="btn-nuevo" data-bs-toggle="modal" data-bs-target="#modal-ruta">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nueva ruta
+      </button>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-listado">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-listado">Listado</h2>
+
+          <div class="buscador-caja">
+            <label class="solo-lectores" for="buscador">Buscar rutas</label>
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="search" class="buscador" id="buscador"
+                   placeholder="Buscar por nombre, día o zona">
+          </div>
+
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="rutas"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-rutas" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" data-orden>Nombre</th>
+                <th role="columnheader" data-orden>Día</th>
+                <th role="columnheader" data-orden>Hora</th>
+                <th role="columnheader" data-orden>Zona</th>
+                <th role="columnheader" data-orden>Estado</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-ruta" tabindex="-1" aria-labelledby="titulo-modal-ruta" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-ruta">Nueva ruta</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="form-ruta" class="formulario">
+          <label>Nombre
+            <input type="text" name="nombre" minlength="3" maxlength="80" placeholder="Ruta Pocitos Mañana" required>
+          </label>
+          <div class="formulario-columnas">
+            <label>Día de la semana
+              <select name="dia_semana" required>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </label>
+            <label>Hora de inicio
+              <input type="time" name="hora_inicio" value="06:00" required>
+            </label>
+          </div>
+          <div class="formulario-columnas">
+            <label>Zona
+              <select name="id_zona" required></select>
+            </label>
+            <label>Estado
+              <select name="estado">
+                <option value="activa">Activa</option>
+                <option value="inactiva">Inactiva</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit" class="boton boton-primario">Guardar ruta</button>
+        </form>
+
+        <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/rutas.js"></script>
+</body>
+</html>

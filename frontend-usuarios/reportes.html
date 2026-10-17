@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/reportes.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Reportes</h1>
+        <p class="bajada">Incidencias y recolección de un período: totales, tiempos de resolución y exportación.</p>
+      </div>
+      <button type="button" class="boton boton-secundario" id="btn-imprimir">Imprimir</button>
+      <button type="button" class="boton boton-primario" id="btn-csv-detalle">Exportar detalle (CSV)</button>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+
+      <section class="panel sin-impresion" aria-labelledby="titulo-periodo">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-periodo">Período</h2>
+          <button type="button" class="boton boton-secundario boton-chico" data-rapido="30">Últimos 30 días</button>
+          <button type="button" class="boton boton-secundario boton-chico" data-rapido="mes">Este mes</button>
+          <button type="button" class="boton boton-secundario boton-chico" data-rapido="todo">Todo el historial</button>
+        </div>
+        <form class="filtros" id="form-periodo" aria-label="Período del informe">
+          <label>Desde
+            <input type="date" name="desde">
+          </label>
+          <label>Hasta
+            <input type="date" name="hasta">
+          </label>
+          <label>Zona
+            <select name="zona">
+              <option value="">Todas</option>
+            </select>
+          </label>
+          <div class="filtros-acciones">
+            <button type="submit" class="boton boton-primario boton-chico">Generar informe</button>
+          </div>
+        </form>
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+      </section>
+
+      <div class="encabezado-impresion" id="encabezado-impresion">
+        <strong>SiGeRU - Informe de incidencias y recolección</strong>
+        <span id="texto-periodo"></span>
+      </div>
+
+      <h2 class="solo-lectores">Indicadores del período</h2>
+      <div class="metricas" id="metricas">
+        <div class="metrica">
+          <p class="metrica-etiqueta">Incidencias del período</p>
+          <strong class="metrica-valor" id="m-total">-</strong>
+        </div>
+        <div class="metrica" data-color="alerta">
+          <p class="metrica-etiqueta">Pendientes (abiertas y en curso)</p>
+          <strong class="metrica-valor" id="m-pendientes">-</strong>
+        </div>
+        <div class="metrica" data-color="flota">
+          <p class="metrica-etiqueta">Cerradas (resueltas y descartadas)</p>
+          <strong class="metrica-valor" id="m-cerradas">-</strong>
+        </div>
+        <div class="metrica" data-color="gente">
+          <p class="metrica-etiqueta">Tiempo medio de resolución</p>
+          <strong class="metrica-valor" id="m-tiempo">-</strong>
+        </div>
+        <div class="metrica">
+          <p class="metrica-etiqueta">Residuos recolectados</p>
+          <strong class="metrica-valor" id="m-kg">-</strong>
+        </div>
+      </div>
+
+      <section class="panel" aria-labelledby="titulo-zonas">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-zonas">Incidencias por zona</h2>
+          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-zonas">Exportar (CSV)</button>
+        </div>
+        <div class="grafico" id="grafico-zonas"></div>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-zonas" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Zona</th><th role="columnheader">Abiertas</th>
+              <th role="columnheader">En curso</th><th role="columnheader">Resueltas</th>
+              <th role="columnheader">Descartadas</th><th role="columnheader">Total</th>
+              <th role="columnheader">Tiempo medio de resolución</th>
+            </tr></thead>
+            <tbody id="cuerpo-zonas" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="dos-columnas">
+        <section class="panel" aria-labelledby="titulo-tipos">
+          <h2 class="titulo-seccion" id="titulo-tipos">Por tipo de problema</h2>
+          <div class="grafico" id="grafico-tipos"></div>
+          <div class="resumen-prioridad" id="resumen-prioridad"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="titulo-tiempos">
+          <h2 class="titulo-seccion" id="titulo-tiempos">Tiempo de resolución</h2>
+          <p class="texto-tenue">Horas entre el reporte y la resolución, solo de las incidencias resueltas del período.</p>
+          <dl class="datos-tiempo" id="datos-tiempo"></dl>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="titulo-top">
+        <h2 class="titulo-seccion" id="titulo-top">Contenedores con más incidencias</h2>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-top" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Código</th><th role="columnheader">Dirección</th>
+              <th role="columnheader">Zona</th><th role="columnheader">Incidencias</th>
+              <th role="columnheader">Pendientes</th><th role="columnheader">Problema más frecuente</th>
+            </tr></thead>
+            <tbody id="cuerpo-top" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-recoleccion">
+        <h2 class="titulo-seccion" id="titulo-recoleccion">Recolección</h2>
+        <p class="texto-tenue" id="texto-recoleccion"></p>
+        <div class="dos-columnas">
+          <div>
+            <h3 class="subtitulo">Kilos por tipo de residuo</h3>
+            <div class="grafico" id="grafico-residuos"></div>
+          </div>
+          <div>
+            <h3 class="subtitulo">Kilos por zona</h3>
+            <div class="grafico" id="grafico-kg-zonas"></div>
+          </div>
+        </div>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-residuos" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Tipo de residuo</th><th role="columnheader">Vaciados</th>
+              <th role="columnheader">Peso (kg)</th><th role="columnheader">Volumen (L)</th>
+            </tr></thead>
+            <tbody id="cuerpo-residuos" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-detalle">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-detalle">Detalle de incidencias</h2>
+        </div>
+        <p class="contador-resultados" id="contador-detalle" aria-live="polite"></p>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-detalle" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Número</th><th role="columnheader">Fecha</th>
+              <th role="columnheader">Contenedor</th><th role="columnheader">Zona</th>
+              <th role="columnheader">Tipo</th><th role="columnheader">Prioridad</th>
+              <th role="columnheader">Estado</th><th role="columnheader">Horas hasta resolver</th>
+            </tr></thead>
+            <tbody id="cuerpo-detalle" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/lista.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/reportes.js"></script>
+</body>
+</html>

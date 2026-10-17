@@ -36,6 +36,11 @@ function celda(etiqueta, valor, valorOrden) {
          "</td>";
 }
 
+function celdaEnlace(etiqueta, texto, destino) {
+  return '<td role="cell" data-etiqueta="' + escaparHtml(etiqueta) + '">' +
+         '<a href="' + escaparHtml(destino) + '">' + escaparHtml(texto) + "</a></td>";
+}
+
 function celdaEstado(etiqueta, valor, color) {
   return '<td role="cell" data-etiqueta="' + escaparHtml(etiqueta) + '">' +
          '<span class="estado ' + color + '">' + escaparHtml(textoEstado(valor)) +
@@ -234,8 +239,11 @@ function prepararModal(idModal, formulario) {
   });
 }
 
-function celdaAcciones(id, etiquetaEditar, etiquetaBaja) {
-  return '<td role="cell" data-etiqueta="Acciones">' +
+function celdaAcciones(id, etiquetaEditar, etiquetaBaja, editaOperario) {
+  const claseCelda = editaOperario ? "" : ' class="solo-admin"';
+  const claseBaja = editaOperario ? " solo-admin" : "";
+
+  return '<td role="cell" data-etiqueta="Acciones"' + claseCelda + ">" +
     '<div class="acciones-fila">' +
     '<button type="button" class="boton boton-icono js-editar" data-id="' + $entero(id) + '" ' +
     'aria-label="' + escaparHtml(etiquetaEditar) + '" title="' + escaparHtml(etiquetaEditar) + '">' +
@@ -243,7 +251,7 @@ function celdaAcciones(id, etiquetaEditar, etiquetaBaja) {
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>' +
     "</button>" +
-    '<button type="button" class="boton boton-icono js-baja" data-id="' + $entero(id) + '" ' +
+    '<button type="button" class="boton boton-icono js-baja' + claseBaja + '" data-id="' + $entero(id) + '" ' +
     'aria-label="' + escaparHtml(etiquetaBaja) + '" title="' + escaparHtml(etiquetaBaja) + '">' +
     '<svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -288,6 +296,8 @@ function confirmar(opciones) {
     const anterior = modal.querySelector(".js-confirmar");
     const boton = anterior.cloneNode(true);
     boton.textContent = opciones.textoBoton || "Confirmar";
+    // Rojo solo para lo que destruye o da de baja; una confirmacion positiva usa el boton principal.
+    boton.className = "boton " + (opciones.peligro === false ? "boton-primario" : "boton-peligro") + " js-confirmar";
     anterior.replaceWith(boton);
 
     const instancia = bootstrap.Modal.getOrCreateInstance(modal);
@@ -296,6 +306,14 @@ function confirmar(opciones) {
     boton.addEventListener("click", function () {
       confirmado = true;
       instancia.hide();
+    });
+    // El foco va a "Cancelar": es lo seguro si alguien aprieta Enter sin leer.
+    modal.addEventListener("shown.bs.modal", function alMostrar() {
+      modal.removeEventListener("shown.bs.modal", alMostrar);
+      const cancelar = modal.querySelector(".modal-footer .boton-secundario");
+      if (cancelar) {
+        cancelar.focus();
+      }
     });
     modal.addEventListener("hidden.bs.modal", function alCerrar() {
       modal.removeEventListener("hidden.bs.modal", alCerrar);

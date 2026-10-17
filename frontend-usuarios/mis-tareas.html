@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis tareas - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Mis tareas</h1>
+        <p class="bajada">Las recolecciones de tu cuadrilla: iniciá el recorrido, registrá cada vaciado y finalizalo.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal" data-vista="cuadrilla">
+      <section class="panel" aria-labelledby="titulo-listado">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-listado">Listado</h2>
+
+          <div class="buscador-caja">
+            <label class="solo-lectores" for="buscador">Buscar recolecciones</label>
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="search" class="buscador" id="buscador"
+                   placeholder="Buscar por número, ruta o camión">
+          </div>
+
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <form class="filtros" id="form-filtros" aria-label="Filtrar recolecciones">
+          <label>Estado
+            <select name="estado">
+              <option value="pendientes" selected>Pendientes (planificadas y en curso)</option>
+              <option value="todas">Todas</option>
+              <option value="planificada">Planificada</option>
+              <option value="en_curso">En curso</option>
+              <option value="finalizada">Finalizada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </label>
+        </form>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="recolecciones" aria-live="polite"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-recolecciones" role="table">
+            <thead role="rowgroup"></thead>
+            <tbody id="cuerpo-tabla" role="rowgroup"></tbody>
+          </table>
+        </div>
+
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/recolecciones.js"></script>
+</body>
+</html>

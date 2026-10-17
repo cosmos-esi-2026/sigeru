@@ -15,32 +15,66 @@ function colorEstado(estado) {
   return "gris";
 }
 
+const formFiltros = document.getElementById("form-filtros");
+const campoBusqueda = document.getElementById("buscar");
+const paginador = crearPaginador("paginacion", "contenedores", function () { cargarContenedores(); });
+let hayFiltros = false;
+
+function consultaDeLaLista(extra) {
+  const q = campoBusqueda.value.trim();
+  const base = consultaDeFormulario(formFiltros, ["estado", "zona", "tipo"], extra);
+  if (q === "") return base;
+  return (base === "" ? "?" : base + "&") + "q=" + encodeURIComponent(q);
+}
+
 async function cargarContenedores() {
   cuerpoTabla.innerHTML = filaEsqueleto(COLUMNAS, 4);
+  hayFiltros = consultaDeLaLista({}) !== "";
 
   try {
-    const datos = await apiGet(API.gestion + "/contenedores");
+    const datos = await apiGet(API.gestion + "/contenedores" + consultaDeLaLista({
+      pagina: paginador.estado.pagina, por_pagina: paginador.estado.porPagina,
+    }));
+    if (paginador.ajustar(datos.meta)) {
+      return cargarContenedores();
+    }
     dibujarTabla(datos.datos);
+    paginador.dibujar(datos.meta);
   } catch (error) {
     cuerpoTabla.innerHTML = filaError(COLUMNAS, mensajeDeFallo(error));
-    actualizarContador();
+    paginador.dibujar(null);
+  }
+}
+
+async function exportarContenedores() {
+  try {
+    const datos = await apiGet(API.gestion + "/contenedores" + consultaDeLaLista({}));
+    const filas = [["Código", "Dirección", "Zona", "Tipo de residuo", "Capacidad (L)", "Estado", "Latitud", "Longitud"]];
+    datos.datos.forEach(function (c) {
+      filas.push([c.codigo, c.direccion, c.zona, c.tipo_residuo, c.capacidad, textoEstado(c.estado), c.latitud, c.longitud]);
+    });
+    descargarCsv("contenedores_" + fechaParaArchivo() + ".csv", filas);
+    avisoPagina("Se exportaron " + datos.datos.length + " contenedores (con los filtros que están activos).");
+  } catch (error) {
+    avisoPaginaError("No se pudo exportar. " + mensajeDeFallo(error));
   }
 }
 
 function dibujarTabla(contenedores) {
   if (!contenedores || contenedores.length === 0) {
-    cuerpoTabla.innerHTML = filaVacia(
-      COLUMNAS,
-      "Todavía no hay contenedores",
-      "Cargá el primero con «Nuevo contenedor» para empezar a seguir su estado."
-    );
-    actualizarContador();
+    cuerpoTabla.innerHTML = hayFiltros
+      ? filaVacia(COLUMNAS, "Ningún contenedor coincide", "Probá con otra búsqueda o limpiá los filtros.")
+      : filaVacia(
+          COLUMNAS,
+          "Todavía no hay contenedores",
+          "Cargá el primero con «Nuevo contenedor» para empezar a seguir su estado."
+        );
     return;
   }
 
   cuerpoTabla.innerHTML = contenedores.map(function (c) {
     return '<tr role="row">' +
-      celda("Código", c.codigo) +
+      celdaEnlace("Código", c.codigo, "contenedor.html?id=" + $entero(c.id_contenedor)) +
       celda("Dirección", c.direccion) +
       celda("Zona", c.zona) +
       celda("Capacidad", c.capacidad ? c.capacidad + " L" : null, c.capacidad) +
@@ -49,8 +83,6 @@ function dibujarTabla(contenedores) {
       celdaAcciones(c.id_contenedor, "Editar " + c.codigo, "Retirar " + c.codigo) +
       "</tr>";
   }).join("");
-
-  actualizarContador();
 }
 
 async function cargarCatalogos() {
@@ -67,6 +99,13 @@ async function cargarCatalogos() {
     formContenedor.tipo_residuo.innerHTML = tipos.datos.map(function (t) {
       return '<option value="' + escaparHtml(t.nombre) + '">' + escaparHtml(t.nombre) + "</option>";
     }).join("");
+
+    formFiltros.zona.insertAdjacentHTML("beforeend", zonas.datos.map(function (z) {
+      return '<option value="' + z.id_zona + '">' + escaparHtml(z.nombre) + "</option>";
+    }).join(""));
+    formFiltros.tipo.insertAdjacentHTML("beforeend", tipos.datos.map(function (t) {
+      return '<option value="' + escaparHtml(t.nombre) + '">' + escaparHtml(t.nombre) + "</option>";
+    }).join(""));
   } catch (error) {
     avisoPaginaError("No se pudieron cargar las zonas y los tipos de residuo. " +
                      mensajeDeFallo(error));
@@ -178,6 +217,11 @@ function mostrar(texto, tipo) {
 }
 
 document.getElementById("btn-recargar").addEventListener("click", cargarContenedores);
+document.getElementById("btn-exportar").addEventListener("click", exportarContenedores);
+function volverALaPrimera() { paginador.volverAlPrincipio(); cargarContenedores(); }
+formFiltros.addEventListener("change", volverALaPrimera);
+formFiltros.addEventListener("reset", function () { campoBusqueda.value = ""; setTimeout(volverALaPrimera, 0); });
+campoBusqueda.addEventListener("input", retrasar(volverALaPrimera, 350));
 document.getElementById("btn-nuevo").addEventListener("click", prepararAlta);
 
 activarValidacion(formContenedor);
