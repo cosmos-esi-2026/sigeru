@@ -9,13 +9,17 @@
 --  defensa se ve el sistema con datos que parecen de produccion y no con
 --  "prueba1 / prueba2".
 --
---  Todos los usuarios tienen la contrasena 123456, guardada como hash bcrypt.
+--  Todos los usuarios tienen la contrasena sigeru2026, guardada como hash bcrypt.
 -- ============================================================================
 
 USE sigeru;
 
 -- Se vacia todo antes de cargar, para poder reimportar cuantas veces haga falta.
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE limite_peticion;
+TRUNCATE TABLE auditoria;
+TRUNCATE TABLE foto_incidencia;
+TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
 TRUNCATE TABLE vaciado;
 TRUNCATE TABLE recoleccion;
@@ -87,14 +91,14 @@ INSERT INTO solicitud_registro (id_solicitud, nombre, apellido, email, telefono,
 
 
 -- --- 7) Usuarios ------------------------------------------------------------
--- Contrasena de todos: 123456
+-- Contrasena de todos: sigeru2026
 INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefono, direccion, id_rol, id_cuadrilla, id_solicitud, estado, fecha_registro) VALUES
-(1, 'Ana',    'Perez',     'admin@sigeru.uy',     '$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym', '099 123 456', 'Av. 18 de Julio 1360', 1, NULL, NULL, 'activo', '2026-07-01 08:00:00'),
-(2, 'Luis',   'Gomez',     'cuadrilla@sigeru.uy', '$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym', '099 234 567', 'Cno. Castro 1502',     3, 1,    NULL, 'activo', '2026-07-01 08:05:00'),
-(3, 'Marta',  'Rodriguez', 'vecino@sigeru.uy',    '$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym', '099 415 220', 'Bvar. Espana 2233',    4, NULL, 1,    'activo', '2026-08-15 10:30:00'),
-(4, 'Sergio', 'Ferreira',  'operario@sigeru.uy',  '$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym', '098 771 300', 'Cno. Felipe Cardoso 3200', 2, NULL, NULL, 'activo', '2026-07-03 09:15:00'),
-(5, 'Carla',  'Nunez',     'carla.nunez@sigeru.uy','$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym','091 556 043', 'Av. Rivera 2890',      3, 2,    NULL, 'activo', '2026-07-20 14:00:00'),
-(6, 'Pablo',  'Machado',   'pablo.machado@mail.uy','$2y$10$hDCZ02JPdOHZz6oJNgENCOAgpB3QeicLJqjVjxX/6dtbGm/yNiFym','092 664 118', 'Ellauri 470',          4, NULL, NULL, 'inactivo','2026-07-25 16:40:00');
+(1, 'Ana',    'Perez',     'admin@sigeru.uy',     '$2y$10$H5klpmFEY46Q3pfZMgtDCe.6HDupk7oeccGU1eibv1xwFmSp.WL4.', '099 123 456', 'Av. 18 de Julio 1360', 1, NULL, NULL, 'activo', '2026-07-01 08:00:00'),
+(2, 'Luis',   'Gomez',     'cuadrilla@sigeru.uy', '$2y$10$162Z9Fe9GVaJcVZPwInJh.OIRj.R5gQCM.Itn/FA3B2h3dwkrJkvy', '099 234 567', 'Cno. Castro 1502',     3, 1,    NULL, 'activo', '2026-07-01 08:05:00'),
+(3, 'Marta',  'Rodriguez', 'vecino@sigeru.uy',    '$2y$10$2Ryr1HOO2dr.pFE/Gx30ROkDkAJu3NDGq1xwmAn05IEPo6SH1YKPa', '099 415 220', 'Bvar. Espana 2233',    4, NULL, 1,    'activo', '2026-08-15 10:30:00'),
+(4, 'Sergio', 'Ferreira',  'operario@sigeru.uy',  '$2y$10$IODPFdxYVUCc.l0QbvCnneAW4Vg7JxFYRH.FYoejSUr0yk/Gv4k2C', '098 771 300', 'Cno. Felipe Cardoso 3200', 2, NULL, NULL, 'activo', '2026-07-03 09:15:00'),
+(5, 'Carla',  'Nunez',     'carla.nunez@sigeru.uy','$2y$10$uLkwdfDG1wH7NNYX7e1haelu/RF73IgChPwXStcZsdDEG0o/YGYPS','091 556 043', 'Av. Rivera 2890',      3, 2,    NULL, 'activo', '2026-07-20 14:00:00'),
+(6, 'Pablo',  'Machado',   'pablo.machado@mail.uy','$2y$10$u6PlgW/z9bQYoTFyAroD8.ESzHPMzQgLBGdKt015MnWl4v6FrqPK2','092 664 118', 'Ellauri 470',          4, NULL, NULL, 'inactivo','2026-07-25 16:40:00');
 
 
 -- --- 8) Contenedores --------------------------------------------------------
@@ -116,7 +120,7 @@ INSERT INTO contenedor (id_contenedor, codigo, direccion, latitud, longitud, cap
 -- CNT-010 se dio de baja despues de reparaciones repetidas.
 INSERT INTO estado_contenedor (id_contenedor, fecha_hora, estado, observacion) VALUES
 (2,  '2026-09-07 07:10:00', 'disponible',    'Vaciado en recoleccion matutina'),
-(2,  '2026-09-08 19:35:00', 'lleno',         'Reportado por vecino'),
+(2,  '2026-09-08 19:30:00', 'lleno',         'Desborde informado en INC-0001'),
 (5,  '2026-08-30 10:20:00', 'mantenimiento', 'Tapa rota, se solicita reparacion'),
 (7,  '2026-09-08 21:05:00', 'lleno',         'Desborde en fin de semana largo'),
 (10, '2026-07-12 09:00:00', 'mantenimiento', 'Rueda partida'),
@@ -175,12 +179,29 @@ INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen
 
 
 -- --- 15) Incidencias --------------------------------------------------------
-INSERT INTO incidencia (descripcion, fecha_reporte, fecha_resolucion, estado, prioridad, id_usuario, id_contenedor, id_cuadrilla) VALUES
-('El contenedor esta desbordado y hay bolsas en la vereda', '2026-09-08 19:30:00', NULL,                  'reportada',  'alta',  3, 2,  NULL),
-('La tapa no cierra y entran perros',                       '2026-08-30 10:05:00', '2026-09-01 11:00:00', 'resuelta',   'media', 3, 5,  1),
-('Contenedor quemado durante la noche',                     '2026-09-06 08:15:00', NULL,                  'en_proceso', 'alta',  6, 7,  2),
-('Olor muy fuerte, parece que no se levanta hace dias',     '2026-09-09 09:40:00', NULL,                  'reportada',  'media', 3, 7,  NULL),
-('Reporte duplicado del mismo vecino',                      '2026-09-02 12:00:00', '2026-09-02 12:30:00', 'descartada', 'baja',  6, 1,  NULL);
+-- Una por cada estado: dos abiertas, una en curso (asignada a una cuadrilla), una
+-- resuelta y una descartada. El numero que ve el usuario sale del id: INC-0001, etc.
+INSERT INTO incidencia (descripcion, tipo_problema, fecha_reporte, fecha_resolucion, estado, prioridad, id_usuario, id_contenedor, id_cuadrilla) VALUES
+('El contenedor esta desbordado y hay bolsas en la vereda', 'desbordado', '2026-09-08 19:30:00', NULL,                  'abierta',    'alta',  3, 2,  NULL),
+('La tapa no cierra y entran perros',                       'roto',       '2026-08-30 10:05:00', '2026-09-01 11:00:00', 'resuelta',   'media', 3, 5,  1),
+('Contenedor quemado durante la noche',                     'roto',       '2026-09-06 08:15:00', NULL,                  'en_curso',   'alta',  6, 7,  2),
+('Olor muy fuerte, parece que no se levanta hace dias',     'otro',       '2026-09-09 09:40:00', NULL,                  'abierta',    'media', 3, 7,  NULL),
+('Reporte duplicado del mismo vecino',                      'otro',       '2026-09-02 12:00:00', '2026-09-02 12:30:00', 'descartada', 'baja',  6, 1,  NULL);
+
+
+-- --- 15 bis) Historial de las incidencias -----------------------------------
+-- Solo agregado: cada fila es un hecho. Refleja los estados de la tabla anterior.
+INSERT INTO historial_incidencia (id_incidencia, fecha_hora, estado, observacion, id_usuario) VALUES
+(1, '2026-09-08 19:30:00', 'abierta',    'Incidencia registrada',                              3),
+(2, '2026-08-30 10:05:00', 'abierta',    'Incidencia registrada',                              3),
+(2, '2026-08-30 10:20:00', 'en_curso',   'Asignada a Cuadrilla Norte',                         1),
+(2, '2026-08-31 15:00:00', 'en_curso',   'Se pidio una tapa de repuesto al deposito',          2),
+(2, '2026-09-01 11:00:00', 'resuelta',   'Tapa reemplazada',                                   2),
+(3, '2026-09-06 08:15:00', 'abierta',    'Incidencia registrada',                              6),
+(3, '2026-09-06 09:00:00', 'en_curso',   'Asignada a Cuadrilla Sur',                           1),
+(4, '2026-09-09 09:40:00', 'abierta',    'Incidencia registrada',                              3),
+(5, '2026-09-02 12:00:00', 'abierta',    'Incidencia registrada',                              6),
+(5, '2026-09-02 12:30:00', 'descartada', 'Reporte duplicado del mismo vecino',                 1);
 
 -- ============================================================================
 --  Fin de los datos de prueba.

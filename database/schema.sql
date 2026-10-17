@@ -1,7 +1,13 @@
 -- ============================================================================
 --  SiGeRU 2026 - Sistema de Gestion de Residuos Urbanos
 --  Archivo: schema.sql
---  Que es : DDL de la base de datos. Crea la base y las 15 tablas del modelo.
+--  Que es : DDL de la base de datos. Crea la base y las 16 tablas del modelo:
+--           las 15 de la 2da entrega mas historial_incidencia (15 bis), de la 3ra.
+--           Mas seis tablas fuera del modelo de clases: migracion, intento_login,
+--           limite_peticion (freno por IP a los pedidos publicos), enlace_clave
+--           (activar cuentas), auditoria (quien hizo que) y
+--           foto_incidencia (la foto opcional de una incidencia, RF-222; es parte
+--           de Incidencia, no una clase aparte).
 --  Motor  : MySQL / MariaDB (InnoDB, utf8mb4)
 --  Entrega: 2da entrega. Reemplaza al schema de 7 tablas de la 1ra.
 -- ============================================================================
@@ -11,6 +17,11 @@
 --  que es la misma fuente del Diagrama de Clases y del Pasaje a Tablas 3FN.
 --  Cada clase es una tabla y cada relacion "0..* a 1" es una clave foranea del
 --  lado "muchos".
+--  La tabla 15 bis (historial_incidencia) entro en la 3ra entrega, con las
+--  migraciones 002 y 003: el requerimiento RF-232 pide conservar cada cambio de
+--  estado de una incidencia con su fecha, su autor y su observacion, y la tabla
+--  incidencia sola no puede guardarlo. Ver programacion-full-stack/
+--  ampliacion-incidencias-3ra.md.
 --  La tabla 11 (maquinaria) entro despues, con la Adenda de Alcance del
 --  09/09/2026: el modelo original tenia 14 tablas y no cubria la "maquinaria
 --  basica" que la letra pide para esta entrega. El motivo y el calculo que
@@ -37,6 +48,10 @@ CREATE DATABASE IF NOT EXISTS sigeru
 USE sigeru;
 
 -- El orden inverso al de creacion, para poder reimportar sin errores de FK.
+DROP TABLE IF EXISTS limite_peticion;
+DROP TABLE IF EXISTS auditoria;
+DROP TABLE IF EXISTS foto_incidencia;
+DROP TABLE IF EXISTS historial_incidencia;
 DROP TABLE IF EXISTS incidencia;
 DROP TABLE IF EXISTS vaciado;
 DROP TABLE IF EXISTS recoleccion;
@@ -45,6 +60,7 @@ DROP TABLE IF EXISTS maquinaria;
 DROP TABLE IF EXISTS camion;
 DROP TABLE IF EXISTS estado_contenedor;
 DROP TABLE IF EXISTS contenedor;
+DROP TABLE IF EXISTS enlace_clave;
 DROP TABLE IF EXISTS usuario;
 DROP TABLE IF EXISTS solicitud_registro;
 DROP TABLE IF EXISTS cuadrilla;
@@ -52,6 +68,8 @@ DROP TABLE IF EXISTS tipo_residuo;
 DROP TABLE IF EXISTS zona;
 DROP TABLE IF EXISTS centro_acopio;
 DROP TABLE IF EXISTS rol;
+DROP TABLE IF EXISTS intento_login;
+DROP TABLE IF EXISTS migracion;
 
 
 -- ----------------------------------------------------------------------------
@@ -155,7 +173,7 @@ CREATE TABLE usuario (
     id_rol         INT          NOT NULL,
     id_cuadrilla   INT          NULL,
     id_solicitud   INT          NULL,
-    estado         ENUM('activo','inactivo') NOT NULL DEFAULT 'activo',
+    estado         ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
     fecha_registro DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_usuario_rol
         FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
@@ -165,6 +183,17 @@ CREATE TABLE usuario (
         FOREIGN KEY (id_solicitud) REFERENCES solicitud_registro(id_solicitud)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- Enlaces de un solo uso para activar cuentas y renovar contrasenas.
+CREATE TABLE enlace_clave (
+    id_enlace   INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario  INT      NOT NULL,
+    token_hash  CHAR(64) NOT NULL UNIQUE,
+    vence_en    DATETIME NOT NULL,
+    CONSTRAINT fk_enlace_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    INDEX idx_enlace_usuario (id_usuario)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
 -- 8) contenedor
@@ -326,15 +355,21 @@ CREATE TABLE vaciado (
 -- ----------------------------------------------------------------------------
 -- 15) incidencia
 -- El reporte que hace un vecino sobre un contenedor. Puede quedar asignado a
--- una cuadrilla para que lo atienda.
+-- una cuadrilla para que lo atienda. Estados: abierta (recien reportada),
+-- en_curso (asignada a una cuadrilla), resuelta y descartada (las dos finales).
+-- Hasta la 2da entrega se llamaban reportada y en_proceso: la migracion 002 los
+-- renombro para coincidir con la especificacion (RF-219, RF-227).
 -- ----------------------------------------------------------------------------
 CREATE TABLE incidencia (
     id_incidencia    INT AUTO_INCREMENT PRIMARY KEY,
     descripcion      VARCHAR(500) NOT NULL,
+    tipo_problema    ENUM('desbordado','roto','residuo_no_permitido',
+                          'ausente_o_mal_ubicado','otro')
+                         NOT NULL DEFAULT 'otro',
     fecha_reporte    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_resolucion DATETIME NULL,
-    estado           ENUM('reportada','en_proceso','resuelta','descartada')
-                         NOT NULL DEFAULT 'reportada',
+    estado           ENUM('abierta','en_curso','resuelta','descartada')
+                         NOT NULL DEFAULT 'abierta',
     prioridad        ENUM('baja','media','alta') NOT NULL DEFAULT 'media',
     id_usuario       INT NOT NULL,
     id_contenedor    INT NOT NULL,
@@ -345,6 +380,62 @@ CREATE TABLE incidencia (
         FOREIGN KEY (id_contenedor) REFERENCES contenedor(id_contenedor),
     CONSTRAINT fk_incidencia_cuadrilla
         FOREIGN KEY (id_cuadrilla) REFERENCES cuadrilla(id_cuadrilla)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 15 bis) historial_incidencia
+-- Cada cambio de una incidencia: su apertura, la asignacion a una cuadrilla, los
+-- avances, el cambio de prioridad y el cierre. "estado" es el estado en que queda
+-- la incidencia tras ese asiento. Es COMPOSICION respecto de la incidencia (ON
+-- DELETE CASCADE) y es de SOLO AGREGADO (RNF-016): los triggers del final impiden
+-- modificar o borrar un asiento. id_usuario es quien hizo el cambio (RNF-017).
+-- Nace con las migraciones 002 y 003.
+-- ----------------------------------------------------------------------------
+CREATE TABLE historial_incidencia (
+    id_registro   INT AUTO_INCREMENT PRIMARY KEY,
+    id_incidencia INT      NOT NULL,
+    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estado        ENUM('abierta','en_curso','resuelta','descartada') NOT NULL,
+    observacion   VARCHAR(300) NULL,
+    id_usuario    INT      NOT NULL,
+    CONSTRAINT fk_histinc_incidencia
+        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_histinc_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    INDEX idx_histinc_incidencia_fecha (id_incidencia, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 16) migracion
+-- Tabla TECNICA, fuera del modelo de clases. Guarda el nombre de cada archivo de
+-- database/migraciones/ que ya se aplico a esta base, para que database/migrar.php
+-- aplique solo los pendientes. Este schema.sql es siempre el estado FINAL: una base
+-- creada desde cero ya trae todos los cambios, y por eso al final de este archivo
+-- se registran todas las migraciones existentes (ver database/migraciones/LEEME.md).
+-- ----------------------------------------------------------------------------
+CREATE TABLE migracion (
+    nombre      VARCHAR(120) NOT NULL PRIMARY KEY,
+    aplicada_en DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 17) intento_login
+-- Tabla TECNICA, fuera del modelo de clases. Una fila por intento de iniciar
+-- sesion (exitoso o no): es el registro de accesos y la base del limite de
+-- intentos (5 fallos en 15 minutos bloquean ese email por un rato). El email
+-- va normalizado. Nace con la migracion 001-intento-login.sql.
+-- ----------------------------------------------------------------------------
+CREATE TABLE intento_login (
+    id_intento INT AUTO_INCREMENT PRIMARY KEY,
+    email      VARCHAR(120) NOT NULL,
+    ip         VARCHAR(45)  NOT NULL,
+    fecha_hora DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    exitoso    TINYINT(1)   NOT NULL DEFAULT 0,
+    INDEX idx_intento_email_fecha (email, fecha_hora)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -361,6 +452,88 @@ CREATE INDEX idx_solicitud_estado    ON solicitud_registro(estado);
 CREATE INDEX idx_incidencia_estado   ON incidencia(estado);
 CREATE INDEX idx_estadocont_fecha    ON estado_contenedor(id_contenedor, fecha_hora);
 
+-- ----------------------------------------------------------------------------
+-- Migraciones que este schema ya incluye (ver database/migraciones/LEEME.md).
+-- ----------------------------------------------------------------------------
+INSERT INTO migracion (nombre) VALUES
+    ('001-intento-login.sql'),
+    ('002-incidencias-historial.sql'),
+    ('003-historial-solo-agregado.sql'),
+    ('004-enlace-clave.sql'),
+    ('005-estado-pendiente.sql'),
+    ('006-foto-incidencia.sql'),
+    ('007-auditoria.sql'),
+    ('008-limite-peticion.sql');
+
+-- ----------------------------------------------------------------------------
+-- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
+-- ----------------------------------------------------------------------------
+CREATE TABLE limite_peticion (
+    id_limite  BIGINT AUTO_INCREMENT PRIMARY KEY,
+    clave      VARCHAR(80) NOT NULL,
+    fecha_hora DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_limite_clave (clave, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- Auditoria (OWASP A09). Una fila por accion que cambia datos y sale bien, y por cada
+-- acceso negado por permisos. No guarda el cuerpo de la peticion. La aplicacion solo
+-- agrega y lee. Nace con la migracion 007.
+-- ----------------------------------------------------------------------------
+CREATE TABLE auditoria (
+    id_auditoria BIGINT AUTO_INCREMENT PRIMARY KEY,
+    fecha_hora   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_usuario   INT           NULL,
+    rol          VARCHAR(20)   NULL,
+    metodo       VARCHAR(6)    NOT NULL,
+    ruta         VARCHAR(200)  NOT NULL,
+    codigo       SMALLINT UNSIGNED NOT NULL,
+    ip           VARCHAR(45)   NOT NULL,
+    INDEX idx_auditoria_fecha (fecha_hora),
+    INDEX idx_auditoria_usuario (id_usuario, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- Foto opcional de una incidencia (RF-222, RF-223). El archivo se guarda fuera de
+-- la carpeta publica (almacen/incidencias/), con un nombre al azar y ya reconvertido
+-- a JPEG sin metadatos; aca queda su ficha. Una por incidencia. Nace con la
+-- migracion 006.
+-- ----------------------------------------------------------------------------
+CREATE TABLE foto_incidencia (
+    id_foto       INT AUTO_INCREMENT PRIMARY KEY,
+    id_incidencia INT      NOT NULL UNIQUE,
+    archivo       CHAR(32) NOT NULL UNIQUE,
+    bytes         INT      NOT NULL,
+    ancho         SMALLINT UNSIGNED NOT NULL,
+    alto          SMALLINT UNSIGNED NOT NULL,
+    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_foto_incidencia
+        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- Historiales de solo agregado (RNF-016, RF-235). Nacen con la migracion 003.
+-- Un asiento de historial_incidencia o de estado_contenedor no se puede modificar
+-- ni borrar. Borrar la incidencia o el contenedor completos si se puede: el
+-- ON DELETE CASCADE no dispara estos triggers.
+-- ----------------------------------------------------------------------------
+CREATE TRIGGER trg_histinc_sin_update BEFORE UPDATE ON historial_incidencia
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado';
+
+CREATE TRIGGER trg_histinc_sin_delete BEFORE DELETE ON historial_incidencia
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado';
+
+CREATE TRIGGER trg_estadocont_sin_update BEFORE UPDATE ON estado_contenedor
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de un contenedor es de solo agregado';
+
+CREATE TRIGGER trg_estadocont_sin_delete BEFORE DELETE ON estado_contenedor
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de un contenedor es de solo agregado';
+
 -- ============================================================================
---  Fin del schema. 15 tablas, derivadas del modelo de clases del proyecto.
+--  Fin del schema. 16 tablas del modelo de clases (15 + historial_incidencia)
+--  mas las tecnicas migracion e intento_login.
 -- ============================================================================

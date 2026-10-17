@@ -17,8 +17,13 @@ class Response
 
     public static function json($datos, int $codigo = 200): void
     {
+        if (class_exists("Auditoria", false)) {
+            Auditoria::registrar($codigo);
+        }
         http_response_code($codigo);
         header("Content-Type: application/json; charset=utf-8");
+        header("Cache-Control: no-store");
+        header("X-Content-Type-Options: nosniff");
         echo json_encode($datos, JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -28,9 +33,14 @@ class Response
         self::json(["ok" => false, "mensaje" => $mensaje], $codigo);
     }
 
+    // Solo se acepta JSON. Un formulario de otro sitio no puede mandar "application/json" sin pedir permiso
+    // antes (y esta API no lo da): es una defensa en profundidad contra CSRF, ademas de la cookie SameSite.
     public static function leerJson(): array
     {
         $crudo = file_get_contents("php://input");
+        if ($crudo !== "" && stripos($_SERVER["CONTENT_TYPE"] ?? "", "application/json") !== 0) {
+            self::error("El cuerpo de la petición tiene que ser JSON (Content-Type: application/json)", 415);
+        }
         $datos = json_decode($crudo, true);
         return is_array($datos) ? $datos : [];
     }

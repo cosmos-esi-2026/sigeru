@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../config/database.php";
+require_once __DIR__ . "/Paginacion.php";
 
 class Contenedor
 {
@@ -15,10 +16,78 @@ class Contenedor
                            JOIN zona z ON z.id_zona = c.id_zona
                            JOIN tipo_residuo t ON t.id_tipo_residuo = c.id_tipo_residuo";
 
-    public static function listar(): array
+    private static function condiciones(array $filtros): array
     {
-        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . " ORDER BY c.id_contenedor";
-        return Database::conexion()->query($sql)->fetchAll();
+        $donde = [];
+        $valores = [];
+        if (isset($filtros["q"])) {
+            $like = Paginacion::paraLike($filtros["q"]);
+            $donde[] = "(c.codigo LIKE :q1 OR c.direccion LIKE :q2 OR z.nombre LIKE :q3 OR t.nombre LIKE :q4)";
+            foreach ([":q1", ":q2", ":q3", ":q4"] as $nombre) {
+                $valores[$nombre] = $like;
+            }
+        }
+        if (isset($filtros["estado"])) {
+            $donde[] = "c.estado = :estado";
+            $valores[":estado"] = $filtros["estado"];
+        }
+        if (isset($filtros["zona"])) {
+            $donde[] = "c.id_zona = :zona";
+            $valores[":zona"] = $filtros["zona"];
+        }
+        if (isset($filtros["tipo"])) {
+            $donde[] = "t.nombre = :tipo";
+            $valores[":tipo"] = $filtros["tipo"];
+        }
+        return [$donde === [] ? "" : " WHERE " . implode(" AND ", $donde), $valores];
+    }
+
+    public static function contar(array $filtros = []): int
+    {
+        [$donde, $valores] = self::condiciones($filtros);
+        $consulta = Database::conexion()->prepare("SELECT COUNT(*) " . self::DESDE . $donde);
+        $consulta->execute($valores);
+        return (int) $consulta->fetchColumn();
+    }
+
+    // $pagina = ["pagina" => n, "por_pagina" => n] para devolver solo un tramo; null devuelve todo.
+    public static function listar(array $filtros = [], ?array $pagina = null): array
+    {
+        [$donde, $valores] = self::condiciones($filtros);
+        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . $donde . " ORDER BY c.id_contenedor";
+        if ($pagina !== null) {
+            $sql .= " LIMIT :limite OFFSET :desplazamiento";
+        }
+        $consulta = Database::conexion()->prepare($sql);
+        foreach ($valores as $nombre => $valor) {
+            $consulta->bindValue($nombre, $valor);
+        }
+        if ($pagina !== null) {
+            $consulta->bindValue(":limite", $pagina["por_pagina"], PDO::PARAM_INT);
+            $consulta->bindValue(":desplazamiento", ($pagina["pagina"] - 1) * $pagina["por_pagina"], PDO::PARAM_INT);
+        }
+        $consulta->execute();
+        return $consulta->fetchAll();
+    }
+
+    public static function existeZona(int $id): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM zona WHERE id_zona = :id");
+        $consulta->execute([":id" => $id]);
+        return $consulta->fetchColumn() !== false;
+    }
+
+    public static function idDeZonaPorNombre(string $nombre): ?int
+    {
+        $consulta = Database::conexion()->prepare("SELECT id_zona FROM zona WHERE nombre = :nombre");
+        $consulta->execute([":nombre" => $nombre]);
+        $id = $consulta->fetchColumn();
+        return $id === false ? null : (int) $id;
+    }
+
+    public static function existeTipo(string $nombre): bool
+    {
+        return self::idDeTipo($nombre) !== null;
     }
 
     public static function obtener(int $id): ?array
@@ -40,7 +109,7 @@ class Contenedor
         return $consulta->fetchColumn() !== false;
     }
 
-    private static function idDeTipo(?string $nombre): ?int
+    public static function idDeTipo(?string $nombre): ?int
     {
         if ($nombre === null || $nombre === "") {
             return null;
@@ -53,22 +122,13 @@ class Contenedor
         return $id === false ? null : (int) $id;
     }
 
+    // La zona la valida el controlador antes de llegar acá: no hay zona "por omision".
     private static function resolverZona(array $datos): ?int
     {
         if (!empty($datos["id_zona"])) {
             return (int) $datos["id_zona"];
         }
-        if (!empty($datos["zona"])) {
-            $sql = "SELECT id_zona FROM zona WHERE nombre = :nombre";
-            $consulta = Database::conexion()->prepare($sql);
-            $consulta->execute([":nombre" => $datos["zona"]]);
-            $id = $consulta->fetchColumn();
-            if ($id !== false) {
-                return (int) $id;
-            }
-        }
-        $primera = Database::conexion()->query("SELECT MIN(id_zona) FROM zona")->fetchColumn();
-        return $primera === false ? null : (int) $primera;
+        return empty($datos["zona"]) ? null : self::idDeZonaPorNombre($datos["zona"]);
     }
 
     public static function crear(array $datos): array
@@ -97,8 +157,7 @@ class Contenedor
                 ":capacidad" => ($datos["capacidad"] ?? "") === "" ? null : (int) $datos["capacidad"],
                 ":estado"    => $estado,
                 ":id_zona"   => self::resolverZona($datos),
-                ":id_tipo"   => self::idDeTipo($datos["tipo_residuo"] ?? null)
-                                ?? self::idDeTipo("Mixto"),
+                ":id_tipo"   => self::idDeTipo($datos["tipo_residuo"] ?? null),
             ]);
 
             $id = (int) $conexion->lastInsertId();
@@ -114,8 +173,12 @@ class Contenedor
 
     public static function actualizar(int $id, array $datos): ?array
     {
-        $anterior = self::obtener($id);
-        if ($anterior === null) {
+        return Database::transaccion(fn () => self::aplicarCambios($id, $datos));
+    }
+
+    private static function aplicarCambios(int $id, array $datos): ?array
+    {
+        if (self::obtener($id) === null) {
             return null;
         }
 
@@ -127,10 +190,6 @@ class Contenedor
                 $partes[] = "$campo = :$campo";
                 $valores[":$campo"] = $datos[$campo] === "" ? null : $datos[$campo];
             }
-        }
-        if (isset($datos["estado"]) && in_array($datos["estado"], self::ESTADOS, true)) {
-            $partes[] = "estado = :estado";
-            $valores[":estado"] = $datos["estado"];
         }
         if (isset($datos["tipo_residuo"])) {
             $idTipo = self::idDeTipo($datos["tipo_residuo"]);
@@ -150,8 +209,8 @@ class Contenedor
             $consulta->execute($valores);
         }
 
-        if (isset($valores[":estado"]) && $valores[":estado"] !== $anterior["estado"]) {
-            self::registrarEstado($id, $valores[":estado"], "Cambio de estado desde el panel");
+        if (isset($datos["estado"]) && in_array($datos["estado"], self::ESTADOS, true)) {
+            self::cambiarEstado($id, $datos["estado"], "Cambio de estado desde el panel");
         }
 
         return self::obtener($id);
@@ -159,16 +218,33 @@ class Contenedor
 
     public static function darDeBaja(int $id, string $motivo = "Retirado desde el panel"): ?array
     {
-        if (self::obtener($id) === null) {
-            return null;
-        }
+        return Database::transaccion(function () use ($id, $motivo) {
+            if (self::obtener($id) === null) {
+                return null;
+            }
 
-        $sql = "UPDATE contenedor SET estado = 'retirado' WHERE id_contenedor = :id";
-        $consulta = Database::conexion()->prepare($sql);
-        $consulta->execute([":id" => $id]);
+            self::cambiarEstado($id, "retirado", $motivo);
+            return self::obtener($id);
+        });
+    }
 
-        self::registrarEstado($id, "retirado", $motivo);
-        return self::obtener($id);
+    public static function cambiarEstado(int $id, string $estado, string $observacion): bool
+    {
+        return Database::transaccion(function (PDO $conexion) use ($id, $estado, $observacion) {
+            $consulta = $conexion->prepare("SELECT estado FROM contenedor WHERE id_contenedor = :id FOR UPDATE");
+            $consulta->execute([":id" => $id]);
+
+            $actual = $consulta->fetchColumn();
+            if ($actual === false || $actual === $estado) {
+                return false;
+            }
+
+            $consulta = $conexion->prepare("UPDATE contenedor SET estado = :estado WHERE id_contenedor = :id");
+            $consulta->execute([":estado" => $estado, ":id" => $id]);
+
+            self::registrarEstado($id, $estado, $observacion);
+            return true;
+        });
     }
 
     public static function registrarEstado(int $id, string $estado, ?string $observacion = null): void

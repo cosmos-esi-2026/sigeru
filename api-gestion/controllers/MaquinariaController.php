@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../models/Maquinaria.php";
 require_once __DIR__ . "/../core/Response.php";
+require_once __DIR__ . "/../models/ValidacionMaquinaria.php";
 
 class MaquinariaController
 {
@@ -23,9 +24,11 @@ class MaquinariaController
     {
         $datos = Response::leerJson();
 
-        if (empty($datos["codigo"])) {
-            Response::error("Falta el código de la maquinaria", 400);
+        $error = ValidacionMaquinaria::error($datos, true);
+        if ($error !== null) {
+            Response::error($error, 400);
         }
+        $datos["codigo"] = trim($datos["codigo"]);
         if (Maquinaria::existeCodigo($datos["codigo"])) {
             Response::error("Ya existe una maquinaria con ese código", 409);
         }
@@ -53,6 +56,13 @@ class MaquinariaController
         $actual = Maquinaria::obtener($id);
         if ($actual === null) {
             Response::error("Maquinaria no encontrada", 404);
+        }
+        $error = ValidacionMaquinaria::error($datos, false);
+        if ($error !== null) {
+            Response::error($error, 400);
+        }
+        if (isset($datos["codigo"])) {
+            $datos["codigo"] = trim($datos["codigo"]);
         }
         if (isset($datos["codigo"]) && $datos["codigo"] !== $actual["codigo"]
             && Maquinaria::existeCodigo($datos["codigo"])) {

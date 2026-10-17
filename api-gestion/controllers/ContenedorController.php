@@ -1,13 +1,49 @@
 <?php
 
 require_once __DIR__ . "/../models/Contenedor.php";
+require_once __DIR__ . "/../models/ValidacionContenedor.php";
+require_once __DIR__ . "/../models/Paginacion.php";
 require_once __DIR__ . "/../core/Response.php";
 
 class ContenedorController
 {
+    // Sin "pagina" devuelve todo (lo usan el mapa y los formularios). Con "pagina" devuelve un tramo y "meta".
     public function listar(): void
     {
-        Response::json(["ok" => true, "datos" => Contenedor::listar()]);
+        $consulta = ValidacionContenedor::filtrosDe($_GET);
+        if ($consulta["error"] !== null) {
+            Response::error($consulta["error"], 400);
+        }
+        $pagina = Paginacion::de($_GET);
+        if ($pagina["error"] !== null) {
+            Response::error($pagina["error"], 400);
+        }
+
+        if (!$pagina["paginar"]) {
+            Response::json(["ok" => true, "datos" => Contenedor::listar($consulta["filtros"])]);
+        }
+        $total = Contenedor::contar($consulta["filtros"]);
+        Response::json([
+            "ok"    => true,
+            "datos" => Contenedor::listar($consulta["filtros"], $pagina),
+            "meta"  => Paginacion::meta($total, $pagina["pagina"], $pagina["por_pagina"]),
+        ]);
+    }
+
+    // Que la zona y el tipo existan lo sabe solo la base; el resto de las reglas son de ValidacionContenedor.
+    private function errorDeReferencias(array $datos, bool $esAlta): ?string
+    {
+        if (!empty($datos["id_zona"]) && !Contenedor::existeZona((int) $datos["id_zona"])) {
+            return "La zona indicada no existe";
+        }
+        if ($esAlta && empty($datos["id_zona"]) && !empty($datos["zona"])
+            && Contenedor::idDeZonaPorNombre((string) $datos["zona"]) === null) {
+            return "La zona indicada no existe";
+        }
+        if (!empty($datos["tipo_residuo"]) && !Contenedor::existeTipo((string) $datos["tipo_residuo"])) {
+            return "El tipo de residuo indicado no existe";
+        }
+        return null;
     }
 
     public function obtener(int $id): void
@@ -31,17 +67,14 @@ class ContenedorController
     {
         $datos = Response::leerJson();
 
-        if (empty($datos["codigo"]) || empty($datos["direccion"])) {
-            Response::error("Faltan datos: código y dirección", 400);
+        $error = ValidacionContenedor::error($datos, true) ?? $this->errorDeReferencias($datos, true);
+        if ($error !== null) {
+            Response::error($error, 400);
         }
+        $datos["codigo"] = trim($datos["codigo"]);
+        $datos["direccion"] = trim($datos["direccion"]);
         if (Contenedor::existeCodigo($datos["codigo"])) {
             Response::error("Ya existe un contenedor con ese código", 409);
-        }
-        if (isset($datos["estado"]) && !in_array($datos["estado"], Contenedor::ESTADOS, true)) {
-            Response::error(
-                "Estado inválido. Valores admitidos: " . implode(", ", Contenedor::ESTADOS),
-                400
-            );
         }
 
         $nuevo = Contenedor::crear($datos);
@@ -56,11 +89,14 @@ class ContenedorController
         if ($actual === null) {
             Response::error("Contenedor no encontrado", 404);
         }
-        if (isset($datos["estado"]) && !in_array($datos["estado"], Contenedor::ESTADOS, true)) {
-            Response::error(
-                "Estado inválido. Valores admitidos: " . implode(", ", Contenedor::ESTADOS),
-                400
-            );
+        $error = ValidacionContenedor::error($datos, false) ?? $this->errorDeReferencias($datos, false);
+        if ($error !== null) {
+            Response::error($error, 400);
+        }
+        foreach (["codigo", "direccion"] as $campo) {
+            if (isset($datos[$campo])) {
+                $datos[$campo] = trim($datos[$campo]);
+            }
         }
 
         if (isset($datos["codigo"]) && $datos["codigo"] !== $actual["codigo"]

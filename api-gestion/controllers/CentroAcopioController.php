@@ -2,7 +2,9 @@
 
 require_once __DIR__ . "/../models/CentroAcopio.php";
 require_once __DIR__ . "/../models/Maquinaria.php";
+require_once __DIR__ . "/../core/Auth.php";
 require_once __DIR__ . "/../core/Response.php";
+require_once __DIR__ . "/../models/ValidacionCentro.php";
 
 class CentroAcopioController
 {
@@ -24,9 +26,11 @@ class CentroAcopioController
     {
         $datos = Response::leerJson();
 
-        if (empty($datos["nombre"])) {
-            Response::error("Falta el nombre del centro de acopio", 400);
+        $error = ValidacionCentro::error($datos, true);
+        if ($error !== null) {
+            Response::error($error, 400);
         }
+        $datos["nombre"] = trim($datos["nombre"]);
         if (CentroAcopio::existeNombre($datos["nombre"])) {
             Response::error("Ya existe un centro de acopio con ese nombre", 409);
         }
@@ -43,9 +47,20 @@ class CentroAcopioController
         if ($actual === null) {
             Response::error("Centro de acopio no encontrado", 404);
         }
+        $error = ValidacionCentro::error($datos, false);
+        if ($error !== null) {
+            Response::error($error, 400);
+        }
+        if (isset($datos["nombre"])) {
+            $datos["nombre"] = trim($datos["nombre"]);
+        }
         if (isset($datos["nombre"]) && $datos["nombre"] !== $actual["nombre"]
             && CentroAcopio::existeNombre($datos["nombre"])) {
             Response::error("Ya existe un centro de acopio con ese nombre", 409);
+        }
+        if (isset($datos["estado"]) && $datos["estado"] !== $actual["estado"]
+            && Auth::identificar()["rol"] !== "Administrador") {
+            Response::error("Solo un administrador puede cambiar el estado de un centro de acopio", 403);
         }
 
         $actualizado = CentroAcopio::actualizar($id, $datos);

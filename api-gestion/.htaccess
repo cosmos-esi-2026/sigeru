@@ -1,4 +1,6 @@
 RewriteEngine On
+# El codigo interno (config, controllers, core, models) no se ejecuta desde la web: todo eso va al router, que responde 404.
+RewriteRule ^(config|controllers|core|models)(/|$) index.php [QSA,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]

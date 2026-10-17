@@ -1,14 +1,17 @@
 <?php
 
 require_once __DIR__ . "/../config/database.php";
+require_once __DIR__ . "/../core/Paginacion.php";
 
 class Usuario
 {
     public const ROLES = ["Administrador", "Cuadrilla", "Operario", "Vecino"];
 
+    private const HASH_FALSO = '$2y$10$726ooijwYffp.y0Zo54Ulu7IbL6EQlG/sI2FtIRy/GDNMwjpSFJla';
+
     private const CAMPOS = "u.id_usuario, u.nombre, u.apellido, u.email,
                             u.telefono, u.direccion, r.nombre AS rol, u.estado,
-                            u.fecha_registro";
+                            u.id_cuadrilla, u.fecha_registro";
 
     private static function sinClave(array $u): array
     {
@@ -26,14 +29,57 @@ class Usuario
         return $id === false ? null : (int) $id;
     }
 
-    public static function listar(): array
+    private static function condiciones(array $filtros): array
     {
+        $donde = [];
+        $valores = [];
+        if (isset($filtros["q"])) {
+            $like = Paginacion::paraLike($filtros["q"]);
+            $donde[] = "(u.nombre LIKE :q1 OR u.apellido LIKE :q2 OR u.email LIKE :q3)";
+            foreach ([":q1", ":q2", ":q3"] as $nombre) {
+                $valores[$nombre] = $like;
+            }
+        }
+        if (isset($filtros["rol"])) {
+            $donde[] = "r.nombre = :rol";
+            $valores[":rol"] = $filtros["rol"];
+        }
+        if (isset($filtros["estado"])) {
+            $donde[] = "u.estado = :estado";
+            $valores[":estado"] = $filtros["estado"];
+        }
+        return [$donde === [] ? "" : " WHERE " . implode(" AND ", $donde), $valores];
+    }
+
+    public static function contar(array $filtros = []): int
+    {
+        [$donde, $valores] = self::condiciones($filtros);
+        $consulta = Database::conexion()->prepare(
+            "SELECT COUNT(*) FROM usuario u JOIN rol r ON r.id_rol = u.id_rol" . $donde
+        );
+        $consulta->execute($valores);
+        return (int) $consulta->fetchColumn();
+    }
+
+    // $pagina = ["pagina" => n, "por_pagina" => n] devuelve un tramo; null devuelve todo.
+    public static function listar(array $filtros = [], ?array $pagina = null): array
+    {
+        [$donde, $valores] = self::condiciones($filtros);
         $sql = "SELECT " . self::CAMPOS . "
                 FROM usuario u
-                JOIN rol r ON r.id_rol = u.id_rol
-                ORDER BY u.id_usuario";
+                JOIN rol r ON r.id_rol = u.id_rol" . $donde . "
+                ORDER BY u.id_usuario" . ($pagina === null ? "" : " LIMIT :limite OFFSET :desplazamiento");
 
-        return Database::conexion()->query($sql)->fetchAll();
+        $consulta = Database::conexion()->prepare($sql);
+        foreach ($valores as $nombre => $valor) {
+            $consulta->bindValue($nombre, $valor);
+        }
+        if ($pagina !== null) {
+            $consulta->bindValue(":limite", $pagina["por_pagina"], PDO::PARAM_INT);
+            $consulta->bindValue(":desplazamiento", ($pagina["pagina"] - 1) * $pagina["por_pagina"], PDO::PARAM_INT);
+        }
+        $consulta->execute();
+        return $consulta->fetchAll();
     }
 
     public static function obtener(int $id): ?array
@@ -76,10 +122,7 @@ class Usuario
         }
         $idRol = self::idDeRol($rol);
 
-        $clave = $datos["password"] ?? "";
-        if ($clave === "") {
-            $clave = bin2hex(random_bytes(8));
-        }
+        $clave = $datos["password"];
 
         $sql = "INSERT INTO usuario
                    (nombre, apellido, email, password_hash, telefono, direccion,
@@ -117,6 +160,11 @@ class Usuario
             }
         }
 
+        if (array_key_exists("password", $datos)) {
+            $partes[] = "password_hash = :password_hash";
+            $valores[":password_hash"] = password_hash($datos["password"], PASSWORD_DEFAULT);
+        }
+
         if ($rol !== null && in_array($rol, self::ROLES, true)) {
             $partes[] = "id_rol = :id_rol";
             $valores[":id_rol"] = self::idDeRol($rol);
@@ -135,9 +183,18 @@ class Usuario
 
     public static function darDeBaja(int $id): ?array
     {
-        $sql = "UPDATE usuario SET estado = 'inactivo' WHERE id_usuario = :id";
-        $consulta = Database::conexion()->prepare($sql);
-        $consulta->execute([":id" => $id]);
+        $db = Database::conexion();
+        $db->beginTransaction();
+        try {
+            $db->prepare("UPDATE usuario SET estado = 'inactivo' WHERE id_usuario = :id")
+                ->execute([":id" => $id]);
+            $db->prepare("DELETE FROM enlace_clave WHERE id_usuario = :id")
+                ->execute([":id" => $id]);
+            $db->commit();
+        } catch (Throwable $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            throw $e;
+        }
 
         return self::obtener($id);
     }
@@ -147,6 +204,7 @@ class Usuario
         $u = self::porEmail($email);
 
         if ($u === null || ($u["estado"] ?? "") !== "activo") {
+            password_verify($clave, self::HASH_FALSO);
             return null;
         }
         if (!password_verify($clave, $u["password_hash"] ?? "")) {
@@ -201,7 +259,7 @@ class Usuario
         return self::obtenerSolicitud((int) $conexion->lastInsertId());
     }
 
-    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino"): ?array
+    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?callable $notificar = null): ?array
     {
         $solicitud = self::obtenerSolicitud($id);
         if ($solicitud === null) {
@@ -225,13 +283,17 @@ class Usuario
                     "telefono"     => $solicitud["telefono"],
                     "direccion"    => $solicitud["direccion"],
                     "id_solicitud" => $id,
-                ], $rol, "activo");
+                    "password"     => bin2hex(random_bytes(32)),
+                ], $rol, "pendiente");
+                if ($notificar !== null) {
+                    $notificar($usuario);
+                }
             }
 
             $conexion->commit();
             return [self::obtenerSolicitud($id), $usuario];
-        } catch (PDOException $e) {
-            $conexion->rollBack();
+        } catch (Throwable $e) {
+            if ($conexion->inTransaction()) $conexion->rollBack();
             throw $e;
         }
     }

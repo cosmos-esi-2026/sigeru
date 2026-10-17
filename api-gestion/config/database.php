@@ -48,4 +48,24 @@ class Database
 
         return self::$conexion;
     }
+
+    public static function transaccion(callable $trabajo)
+    {
+        $conexion = self::conexion();
+        if ($conexion->inTransaction()) {
+            return $trabajo($conexion);
+        }
+
+        $conexion->beginTransaction();
+        try {
+            $resultado = $trabajo($conexion);
+            $conexion->commit();
+            return $resultado;
+        } catch (Throwable $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
+            throw $e;
+        }
+    }
 }

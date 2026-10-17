@@ -16,6 +16,12 @@
 --  del modelo vigente (las 14 del pasaje a tablas mas maquinaria, ver la
 --  Adenda de Alcance). Hasta hoy seguia siendo el volcado de julio, y era la
 --  ultima pieza de la base que quedaba desactualizada.
+--
+--  Actualizado el 12/10/2026: pasa de 15 a 16 tablas del modelo (suma
+--  historial_incidencia, ver programacion-full-stack/ampliacion-incidencias-3ra.md),
+--  con las columnas y los estados nuevos de incidencia y los cuatro triggers que
+--  hacen de solo agregado a los dos historiales. Mas las tablas tecnicas migracion
+--  e intento_login.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -73,7 +79,7 @@ CREATE TABLE `contenedor` (
   KEY `idx_contenedor_estado` (`estado`),
   CONSTRAINT `fk_contenedor_tipo` FOREIGN KEY (`id_tipo_residuo`) REFERENCES `tipo_residuo` (`id_tipo_residuo`),
   CONSTRAINT `fk_contenedor_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `cuadrilla`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -99,17 +105,103 @@ CREATE TABLE `estado_contenedor` (
   PRIMARY KEY (`id_registro`),
   KEY `idx_estadocont_fecha` (`id_contenedor`,`fecha_hora`),
   CONSTRAINT `fk_estadocont_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_estadocont_sin_update BEFORE UPDATE ON estado_contenedor
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de un contenedor es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_estadocont_sin_delete BEFORE DELETE ON estado_contenedor
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de un contenedor es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+DROP TABLE IF EXISTS `historial_incidencia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `historial_incidencia` (
+  `id_registro` int(11) NOT NULL AUTO_INCREMENT,
+  `id_incidencia` int(11) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `estado` enum('abierta','en_curso','resuelta','descartada') NOT NULL,
+  `observacion` varchar(300) DEFAULT NULL,
+  `id_usuario` int(11) NOT NULL,
+  PRIMARY KEY (`id_registro`),
+  KEY `fk_histinc_usuario` (`id_usuario`),
+  KEY `idx_histinc_incidencia_fecha` (`id_incidencia`,`fecha_hora`),
+  CONSTRAINT `fk_histinc_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE,
+  CONSTRAINT `fk_histinc_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_histinc_sin_update BEFORE UPDATE ON historial_incidencia
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_histinc_sin_delete BEFORE DELETE ON historial_incidencia
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 DROP TABLE IF EXISTS `incidencia`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `incidencia` (
   `id_incidencia` int(11) NOT NULL AUTO_INCREMENT,
   `descripcion` varchar(500) NOT NULL,
+  `tipo_problema` enum('desbordado','roto','residuo_no_permitido','ausente_o_mal_ubicado','otro') NOT NULL DEFAULT 'otro',
   `fecha_reporte` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_resolucion` datetime DEFAULT NULL,
-  `estado` enum('reportada','en_proceso','resuelta','descartada') NOT NULL DEFAULT 'reportada',
+  `estado` enum('abierta','en_curso','resuelta','descartada') NOT NULL DEFAULT 'abierta',
   `prioridad` enum('baja','media','alta') NOT NULL DEFAULT 'media',
   `id_usuario` int(11) NOT NULL,
   `id_contenedor` int(11) NOT NULL,
@@ -122,7 +214,20 @@ CREATE TABLE `incidencia` (
   CONSTRAINT `fk_incidencia_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`),
   CONSTRAINT `fk_incidencia_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_incidencia_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `intento_login`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `intento_login` (
+  `id_intento` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(120) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `exitoso` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_intento`),
+  KEY `idx_intento_email_fecha` (`email`,`fecha_hora`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `maquinaria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -141,6 +246,15 @@ CREATE TABLE `maquinaria` (
   KEY `idx_maquinaria_estado` (`estado`),
   CONSTRAINT `fk_maquinaria_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `migracion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `migracion` (
+  `nombre` varchar(120) NOT NULL,
+  `aplicada_en` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `recoleccion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -245,7 +359,7 @@ CREATE TABLE `usuario` (
   CONSTRAINT `fk_usuario_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`),
   CONSTRAINT `fk_usuario_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitud_registro` (`id_solicitud`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `vaciado`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -276,7 +390,7 @@ CREATE TABLE `zona` (
   UNIQUE KEY `nombre` (`nombre`),
   KEY `fk_zona_centro` (`id_centro`),
   CONSTRAINT `fk_zona_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -284,3 +398,4 @@ CREATE TABLE `zona` (
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
