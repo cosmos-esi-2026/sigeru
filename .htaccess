@@ -7,6 +7,11 @@ RewriteRule ^ - [F]
 
 # Cabeceras de seguridad para todo lo que sirve el sistema (OWASP A05). Si el servidor no tiene mod_headers
 # simplemente no se agregan; las pruebas (tests/correr-tests.php) avisan si faltan.
+# El manifiesto de la aplicacion instalable (extras, parte 21) con su tipo correcto.
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
@@ -20,7 +25,7 @@ RewriteRule ^ - [F]
 
     # Las paginas, scripts y estilos se revalidan siempre (el servidor contesta 304 si no cambiaron): sin esto un
     # navegador que ya abrio el sitio puede seguir con una copia vieja y ver la pagina rota.
-    <FilesMatch "\.(html|js|css|svg)$">
+    <FilesMatch "\.(html|js|css|svg|webmanifest)$">
         Header set Cache-Control "no-cache"
     </FilesMatch>
 </IfModule>

@@ -210,11 +210,12 @@ zonaAcciones.addEventListener("submit", async function (evento) {
   }
 
   const boton = bloquearEnvio(form, "Guardando...");
+  // El vaciado lleva una clave unica: si la respuesta se pierde, reenviarlo no lo carga dos veces. Si no hay red y es la Cuadrilla, se guarda en el telefono.
+  const urlAccion = API.recoleccion + "/recolecciones/" + idRecoleccion + "/" + accion;
+  const datosAccion = datosDe(accion, form);
+  const clave = accion === "vaciados" && typeof ColaOffline !== "undefined" ? ColaOffline.nuevaClave() : null;
   try {
-    const { ok, resultado } = await apiPost(
-      API.recoleccion + "/recolecciones/" + idRecoleccion + "/" + accion,
-      datosDe(accion, form)
-    );
+    const { ok, resultado } = await apiPost(urlAccion, datosAccion, clave ? { "Idempotency-Key": clave } : undefined);
     if (ok) {
       dibujar(resultado.datos);
       avisoPagina((resultado.mensaje || "Cambio guardado") + ".");
@@ -236,9 +237,20 @@ zonaAcciones.addEventListener("submit", async function (evento) {
     }
   } catch (e) {
     liberarEnvio(boton);
+    if (clave && ColaOffline.disponible() && ColaOffline.esFalloDeRed(e)) {
+      try {
+        await ColaOffline.encolar({ tipo: "vaciado", url: urlAccion, cuerpo: datosAccion, clave: clave, etiqueta: "Vaciado de " + datosAccion.codigo_contenedor + " (" + datosAccion.peso_kg + " kg) en la recolección " + idRecoleccion });
+        form.reset();
+        avisoPagina("Sin conexión: el vaciado quedó guardado en este teléfono y se envía solo cuando vuelva la señal");
+        return;
+      } catch (guardado) { /* no se pudo guardar: se avisa abajo */ }
+    }
     avisoPaginaError("No se pudo conectar con el servidor. Revisá que esté corriendo.");
   }
 });
+
+// Cuando la cola envia algo, se vuelve a leer la recoleccion para que el vaciado aparezca en la lista.
+document.addEventListener("sigeru:cola-enviada", function () { cargarRecoleccion(); });
 
 document.getElementById("detalle").addEventListener("click", function (evento) {
   if (evento.target.closest(".js-reintentar")) {

@@ -276,8 +276,10 @@ zonaAcciones.addEventListener("submit", async function (evento) {
 
   const pedido = pedidoDe(accion, form);
   const boton = bloquearEnvio(form, "Guardando...");
+  // El avance de la Cuadrilla lleva una clave unica (un reenvio no lo duplica) y, sin red, se guarda en el telefono.
+  const clave = accion === "avance" && typeof ColaOffline !== "undefined" && ColaOffline.disponible() ? ColaOffline.nuevaClave() : null;
   try {
-    const { ok, resultado } = await pedido.enviar(pedido.url, pedido.datos);
+    const { ok, resultado } = clave ? await apiPost(pedido.url, pedido.datos, { "Idempotency-Key": clave }) : await pedido.enviar(pedido.url, pedido.datos);
     if (ok) {
       dibujar(resultado.datos);
       avisoPagina((resultado.mensaje || "Cambio guardado") + ".");
@@ -288,9 +290,20 @@ zonaAcciones.addEventListener("submit", async function (evento) {
     }
   } catch (e) {
     liberarEnvio(boton);
+    if (clave && ColaOffline.esFalloDeRed(e)) {
+      try {
+        await ColaOffline.encolar({ tipo: "avance", url: pedido.url, cuerpo: pedido.datos, clave: clave, etiqueta: "Avance de la incidencia " + idIncidencia + ": " + String(pedido.datos.observacion).slice(0, 60) });
+        form.reset();
+        avisoPagina("Sin conexión: el avance quedó guardado en este teléfono y se envía solo cuando vuelva la señal");
+        return;
+      } catch (guardado) { /* no se pudo guardar: se avisa abajo */ }
+    }
     avisoPaginaError("No se pudo conectar con el servidor. Revisá que esté corriendo.");
   }
 });
+
+// Cuando la cola envia algo, se vuelve a leer la incidencia para que el avance aparezca en el historial.
+document.addEventListener("sigeru:cola-enviada", function () { cargarIncidencia(); });
 
 document.getElementById("zona-calificacion").addEventListener("submit", async function (evento) {
   evento.preventDefault();

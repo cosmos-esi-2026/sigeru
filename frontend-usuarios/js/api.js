@@ -4,13 +4,13 @@ const API = {
   recoleccion: "/sigeru/api-recoleccion",
 };
 
-function opciones(metodo, datos) {
+function opciones(metodo, datos, cabeceras) {
   const config = {
     method: metodo,
     credentials: "same-origin",
   };
   if (datos !== undefined) {
-    config.headers = { "Content-Type": "application/json" };
+    config.headers = Object.assign({ "Content-Type": "application/json" }, cabeceras || {});
     config.body = JSON.stringify(datos);
   }
   return config;
@@ -31,8 +31,9 @@ async function apiGet(url) {
   return await respuesta.json();
 }
 
-async function apiPost(url, datos) {
-  const respuesta = await fetch(url, opciones("POST", datos));
+// cabeceras (opcional): por ejemplo {"Idempotency-Key": uuid} para que un reenvio no cargue el dato dos veces.
+async function apiPost(url, datos, cabeceras) {
+  const respuesta = await fetch(url, opciones("POST", datos, cabeceras));
   const resultado = await respuesta.json();
   return { ok: respuesta.ok, resultado };
 }
