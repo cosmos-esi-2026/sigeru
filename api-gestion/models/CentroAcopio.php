@@ -8,10 +8,14 @@ class CentroAcopio
 
     private const CAMPOS = "id_centro, nombre, direccion, latitud, longitud, capacidad, estado";
 
-    public static function listar(): array
+    // $idCentro: solo ese centro (el Operario); null devuelve todos.
+    public static function listar(?int $idCentro = null): array
     {
-        $sql = "SELECT " . self::CAMPOS . " FROM centro_acopio ORDER BY id_centro";
-        return Database::conexion()->query($sql)->fetchAll();
+        $sql = "SELECT " . self::CAMPOS . " FROM centro_acopio" . ($idCentro === null ? "" : " WHERE id_centro = :centro")
+             . " ORDER BY id_centro";
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute($idCentro === null ? [] : [":centro" => $idCentro]);
+        return $consulta->fetchAll();
     }
 
     public static function obtener(int $id): ?array

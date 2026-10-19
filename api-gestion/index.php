@@ -12,6 +12,7 @@ require_once __DIR__ . "/controllers/ZonaController.php";
 require_once __DIR__ . "/controllers/IncidenciaController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
 require_once __DIR__ . "/controllers/PublicoController.php";
+require_once __DIR__ . "/controllers/RecepcionController.php";
 
 Response::manejarErrores();
 Response::cors();
@@ -54,16 +55,27 @@ switch ($recurso) {
 
     case "centros":
         $controlador = new CentroAcopioController();
-        Permisos::exigir("centros", $metodo);
+        $correccion = $subrecurso === "movimientos" && ($partes[4] ?? null) === "correccion";
+        $usuario = Permisos::exigir($correccion ? "centros/correccion" : ($subrecurso === null ? "centros" : "centros/$subrecurso"), $metodo);
 
-        if ($metodo === "GET" && $id !== null) {
-            $controlador->obtener($id);
+        if ($subrecurso === "stock" && $metodo === "GET" && $id !== null) {
+            $controlador->stock($id, $usuario);
+        } elseif ($subrecurso === "movimientos" && $metodo === "GET" && $id !== null && !isset($partes[3])) {
+            $controlador->movimientos($id, $usuario);
+        } elseif ($subrecurso === "movimientos" && $metodo === "POST" && $id !== null && !isset($partes[3])) {
+            $controlador->retirar($id, $usuario);
+        } elseif ($correccion && $metodo === "POST" && $id !== null && ctype_digit($partes[3] ?? "")) {
+            $controlador->corregir($id, (int) $partes[3], $usuario);
+        } elseif ($subrecurso !== null) {
+            Response::error("Método no permitido", 405);
+        } elseif ($metodo === "GET" && $id !== null) {
+            $controlador->obtener($id, $usuario);
         } elseif ($metodo === "GET") {
-            $controlador->listar();
+            $controlador->listar($usuario);
         } elseif ($metodo === "POST") {
             $controlador->crear();
         } elseif ($metodo === "PUT" && $id !== null) {
-            $controlador->actualizar($id);
+            $controlador->actualizar($id, $usuario);
         } elseif ($metodo === "DELETE" && $id !== null) {
             $controlador->darDeBaja($id);
         } else {
@@ -73,18 +85,24 @@ switch ($recurso) {
 
     case "maquinaria":
         $controlador = new MaquinariaController();
-        Permisos::exigir("maquinaria", $metodo);
+        $usuario = Permisos::exigir($subrecurso === null ? "maquinaria" : "maquinaria/$subrecurso", $metodo);
 
-        if ($metodo === "GET" && $id !== null) {
-            $controlador->obtener($id);
+        if ($subrecurso === "estado" && $metodo === "POST" && $id !== null) {
+            $controlador->cambiarEstado($id, $usuario);
+        } elseif ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
+            $controlador->historial($id, $usuario);
+        } elseif ($subrecurso !== null) {
+            Response::error("Método no permitido", 405);
+        } elseif ($metodo === "GET" && $id !== null) {
+            $controlador->obtener($id, $usuario);
         } elseif ($metodo === "GET") {
-            $controlador->listar();
+            $controlador->listar($usuario);
         } elseif ($metodo === "POST") {
-            $controlador->crear();
+            $controlador->crear($usuario);
         } elseif ($metodo === "PUT" && $id !== null) {
-            $controlador->actualizar($id);
+            $controlador->actualizar($id, $usuario);
         } elseif ($metodo === "DELETE" && $id !== null) {
-            $controlador->darDeBaja($id);
+            $controlador->darDeBaja($id, $usuario);
         } else {
             Response::error("Método no permitido", 405);
         }
@@ -165,12 +183,29 @@ switch ($recurso) {
         }
         break;
 
+    case "recepciones":
+        $controlador = new RecepcionController();
+        $usuario = Permisos::exigir("recepciones", $metodo);
+
+        if ($metodo === "GET" && $id !== null) {
+            $controlador->obtener($id, $usuario);
+        } elseif ($metodo === "GET") {
+            $controlador->listar($usuario);
+        } elseif ($metodo === "POST" && $id !== null) {
+            $controlador->confirmar($id, $usuario);
+        } else {
+            Response::error("Método no permitido", 405);
+        }
+        break;
+
     case "estadisticas":
         $controlador = new EstadisticaController();
-        Permisos::exigir("estadisticas", $metodo);
         $tema = $partes[1] ?? "";
+        $usuario = Permisos::exigir($tema === "centro" ? "estadisticas/centro" : "estadisticas", $metodo);
 
-        if ($metodo === "GET" && $tema === "incidencias") {
+        if ($metodo === "GET" && $tema === "centro") {
+            $controlador->centro($usuario);
+        } elseif ($metodo === "GET" && $tema === "incidencias") {
             $controlador->incidencias();
         } elseif ($metodo === "GET" && $tema === "urgencias") {
             $controlador->urgencias();
@@ -187,14 +222,15 @@ switch ($recurso) {
             "mensaje" => "API de gestión SiGeRU funcionando",
             "endpoints" => [
                 "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial",
-                "/centros", "/centros/{id}",
-                "/maquinaria", "/maquinaria/{id}",
+                "/centros", "/centros/{id}", "/centros/{id}/stock", "/centros/{id}/movimientos",
+                "/centros/{id}/movimientos/{id}/correccion", "/recepciones", "/recepciones/{id}",
+                "/maquinaria", "/maquinaria/{id}", "/maquinaria/{id}/estado", "/maquinaria/{id}/historial",
                 "/tipos-residuo", "/tipos-residuo/{id}",
                 "/zonas", "/zonas/{id}",
                 "/incidencias", "/incidencias/{id}", "/incidencias/{id}/asignacion",
                 "/incidencias/{id}/avance", "/incidencias/{id}/resolucion", "/incidencias/{id}/descarte",
                 "/incidencias/{id}/foto",
-                "/estadisticas/incidencias", "/estadisticas/urgencias",
+                "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
                 "/publico/mapa",
             ],
         ]);

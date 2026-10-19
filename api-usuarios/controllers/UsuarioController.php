@@ -47,6 +47,20 @@ class UsuarioController
         Response::json(["ok" => true, "datos" => $usuario]);
     }
 
+    // El centro de acopio es solo para el Operario: tiene que existir y el rol final tiene que ser Operario.
+    private function errorDeCentro(array $datos, string $rolFinal): ?string
+    {
+        $centro = $datos["id_centro"] ?? null;
+        if ($centro === null || $centro === "") {
+            return null;
+        }
+        $esEntero = is_int($centro) || (is_string($centro) && ctype_digit($centro));
+        if (!$esEntero || (int) $centro < 1 || !Usuario::existeCentro((int) $centro)) {
+            return "El centro de acopio indicado no existe";
+        }
+        return $rolFinal === "Operario" ? null : "Solo un Operario se asocia a un centro de acopio";
+    }
+
     public function crear(): void
     {
         Auth::exigirRol("Administrador");
@@ -65,6 +79,11 @@ class UsuarioController
         $rol = $datos["rol"] ?? "Vecino";
         if (!in_array($rol, Usuario::ROLES, true)) {
             Response::error("Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES), 400);
+        }
+
+        $errorCentro = $this->errorDeCentro($datos, $rol);
+        if ($errorCentro !== null) {
+            Response::error($errorCentro, 400);
         }
 
         try {
@@ -115,6 +134,11 @@ class UsuarioController
                 "Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES),
                 400
             );
+        }
+
+        $errorCentro = $this->errorDeCentro($datos, $rol ?? $actual["rol"]);
+        if ($errorCentro !== null) {
+            Response::error($errorCentro, 400);
         }
 
         if (array_key_exists("password", $datos)) {

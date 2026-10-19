@@ -4,9 +4,38 @@ require_once __DIR__ . "/../config/database.php";
 require_once __DIR__ . "/../models/Estadisticas.php";
 require_once __DIR__ . "/../models/FlujoIncidencia.php";
 require_once __DIR__ . "/../core/Response.php";
+require_once __DIR__ . "/../core/Alcance.php";
+require_once __DIR__ . "/../models/CentroAcopio.php";
+require_once __DIR__ . "/../models/CentroStock.php";
+require_once __DIR__ . "/../models/Maquinaria.php";
+require_once __DIR__ . "/../models/Recepcion.php";
 
 class EstadisticaController
 {
+    // Resumen del centro para el inicio del Operario: recepciones pendientes, ocupacion y maquinas en mantenimiento.
+    // El Operario ve el suyo; el Administrador elige uno con ?centro=ID.
+    public function centro(array $usuario): void
+    {
+        $idCentro = Alcance::centro($usuario);
+        if ($idCentro === null) {
+            $pedido = $_GET["centro"] ?? null;
+            if (!is_string($pedido) || !ctype_digit($pedido) || (int) $pedido < 1) {
+                Response::error("Indicá el centro: ?centro=ID", 400);
+            }
+            $idCentro = (int) $pedido;
+        }
+        $centro = CentroAcopio::obtener($idCentro);
+        if ($centro === null) {
+            Response::error("Centro de acopio no encontrado", 404);
+        }
+        Response::json(["ok" => true, "datos" => [
+            "id_centro"                 => $idCentro,
+            "centro"                    => $centro["nombre"],
+            "recepciones_pendientes"    => Recepcion::pendientesDelCentro($idCentro),
+            "maquinas_en_mantenimiento" => Maquinaria::enMantenimientoEnCentro($idCentro),
+        ] + array_diff_key(CentroStock::resumen($centro), ["saldos" => 1])]);
+    }
+
     // Informe de incidencias de un periodo (RF-242 a RF-244): se filtra por fecha de reporte.
     public function incidencias(): void
     {

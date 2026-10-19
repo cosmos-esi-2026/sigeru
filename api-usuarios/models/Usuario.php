@@ -11,7 +11,9 @@ class Usuario
 
     private const CAMPOS = "u.id_usuario, u.nombre, u.apellido, u.email,
                             u.telefono, u.direccion, r.nombre AS rol, u.estado,
-                            u.id_cuadrilla, u.fecha_registro";
+                            u.id_cuadrilla, u.id_centro,
+                            (SELECT ce.nombre FROM centro_acopio ce WHERE ce.id_centro = u.id_centro) AS centro,
+                            u.fecha_registro";
 
     private static function sinClave(array $u): array
     {
@@ -110,6 +112,13 @@ class Usuario
         return $usuario === false ? null : $usuario;
     }
 
+    public static function existeCentro(int $id): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM centro_acopio WHERE id_centro = :id");
+        $consulta->execute([":id" => $id]);
+        return $consulta->fetchColumn() !== false;
+    }
+
     public static function existeEmail(string $email): bool
     {
         return self::porEmail($email) !== null;
@@ -126,10 +135,10 @@ class Usuario
 
         $sql = "INSERT INTO usuario
                    (nombre, apellido, email, password_hash, telefono, direccion,
-                    id_rol, id_solicitud, estado)
+                    id_rol, id_centro, id_solicitud, estado)
                 VALUES
                    (:nombre, :apellido, :email, :hash, :telefono, :direccion,
-                    :id_rol, :id_solicitud, :estado)";
+                    :id_rol, :id_centro, :id_solicitud, :estado)";
 
         $conexion = Database::conexion();
         $consulta = $conexion->prepare($sql);
@@ -141,6 +150,7 @@ class Usuario
             ":telefono"     => $datos["telefono"]  ?? null,
             ":direccion"    => $datos["direccion"] ?? null,
             ":id_rol"       => $idRol,
+            ":id_centro"    => $rol === "Operario" && !empty($datos["id_centro"]) ? (int) $datos["id_centro"] : null,
             ":id_solicitud" => $datos["id_solicitud"] ?? null,
             ":estado"       => $estado,
         ]);
@@ -158,6 +168,11 @@ class Usuario
                 $partes[] = "$campo = :$campo";
                 $valores[":$campo"] = $datos[$campo];
             }
+        }
+
+        if (array_key_exists("id_centro", $datos) || ($rol !== null && $rol !== "Operario")) {
+            $partes[] = "id_centro = :id_centro";
+            $valores[":id_centro"] = ($rol !== null && $rol !== "Operario") || empty($datos["id_centro"]) ? null : (int) $datos["id_centro"];
         }
 
         if (array_key_exists("password", $datos)) {

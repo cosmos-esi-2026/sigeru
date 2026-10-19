@@ -15,7 +15,13 @@ class Permisos
         "contenedores/historial" => ["GET" => ["Administrador", "Cuadrilla"]],
         "centros"                => ["GET" => self::PERSONAL_DE_CENTRO, "PUT" => self::PERSONAL_DE_CENTRO,
                                      "*" => self::ADMINISTRADOR],
+        "centros/stock"          => ["GET" => self::PERSONAL_DE_CENTRO],
+        "centros/movimientos"    => ["GET" => self::PERSONAL_DE_CENTRO, "POST" => self::PERSONAL_DE_CENTRO],
+        "centros/correccion"     => ["POST" => self::PERSONAL_DE_CENTRO],
         "maquinaria"             => ["GET" => self::PERSONAL_DE_CENTRO, "*" => self::ADMINISTRADOR],
+        "maquinaria/estado"      => ["POST" => self::PERSONAL_DE_CENTRO],
+        "maquinaria/historial"   => ["GET" => self::PERSONAL_DE_CENTRO],
+        "recepciones"            => ["GET" => self::PERSONAL_DE_CENTRO, "POST" => self::PERSONAL_DE_CENTRO],
         "tipos-residuo"          => ["GET" => self::TODOS, "*" => self::ADMINISTRADOR],
         "zonas"                  => ["GET" => self::TODOS, "*" => self::ADMINISTRADOR],
         "incidencias"            => ["GET" => ["Administrador", "Cuadrilla", "Vecino"],
@@ -26,6 +32,7 @@ class Permisos
         "incidencias/descarte"   => ["POST" => self::ADMINISTRADOR],
         "incidencias/foto"       => ["GET" => ["Administrador", "Cuadrilla", "Vecino"], "POST" => ["Vecino"]],
         "estadisticas"           => ["GET" => self::ADMINISTRADOR],
+        "estadisticas/centro"    => ["GET" => self::PERSONAL_DE_CENTRO],
         "publico"                => ["GET" => self::ANONIMO],
     ];
 

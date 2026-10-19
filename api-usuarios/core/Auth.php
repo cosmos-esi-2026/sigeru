@@ -92,7 +92,7 @@ class Auth
         $_SESSION["ultima_actividad"] = time();
 
         $sql = "SELECT u.id_usuario, u.nombre, u.apellido, u.email,
-                       r.nombre AS rol, u.estado, u.id_cuadrilla
+                       r.nombre AS rol, u.estado, u.id_cuadrilla, u.id_centro
                 FROM usuario u
                 JOIN rol r ON r.id_rol = u.id_rol
                 WHERE u.id_usuario = :id";
