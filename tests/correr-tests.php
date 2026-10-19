@@ -678,6 +678,8 @@ require __DIR__ . "/correr-tests-recoleccion.php";
 require __DIR__ . "/correr-tests-operario.php";
 require __DIR__ . "/correr-tests-notificaciones.php";
 require __DIR__ . "/correr-tests-participacion.php";
+require __DIR__ . "/correr-tests-pasaje.php";
+require __DIR__ . "/correr-tests-prediccion.php";
 require __DIR__ . "/correr-tests-estadisticas.php";
 require __DIR__ . "/correr-tests-publico.php";
 require __DIR__ . "/correr-tests-listas.php";
