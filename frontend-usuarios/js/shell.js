@@ -82,6 +82,12 @@
       trazos: '<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M6 15.8V9a3 3 0 0 1 3-3h6.8"/>',
     },
     {
+      href: "ruta-sugerida.html",
+      texto: "Ruta sugerida",
+      roles: ["Administrador"],
+      trazos: '<circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M5 17c0-5 4-4 6-7s1-5 6-5"/><path d="m14 9 3 .5.5-3"/>',
+    },
+    {
       href: "recolecciones.html",
       texto: "Recolecciones",
       roles: ["Administrador"],

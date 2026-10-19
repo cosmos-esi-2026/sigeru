@@ -1255,3 +1255,25 @@ body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal
 .como-se-calcula summary { cursor: pointer; font-weight: 600; }
 .como-se-calcula p { margin: var(--esp-3) 0 0; font-size: 14px; color: var(--tinta-suave); }
 .tarjeta-pronto { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }
+
+/* ---- Ruta sugerida (parte 17) ---- */
+.marca-orden {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  background: var(--verde);
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 13px;
+  font-family: var(--fuente-dato);
+  border: 2px solid var(--blanco);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(14, 36, 28, .5);
+}
+.marca-orden.lleno { background: #b3261e; }
+.cifras-ruta { display: flex; flex-wrap: wrap; gap: var(--esp-4) var(--esp-6); margin: 0 0 var(--esp-3); }
+.cifras-ruta div { min-width: 110px; }
+.cifras-ruta dt { font-size: 12.5px; color: var(--tinta-suave); }
+.cifras-ruta dd { margin: 0; font-size: 22px; font-weight: 700; font-family: var(--fuente-titulo); }
+.precarga-aviso { margin: 0 0 var(--esp-3); padding: var(--esp-3) var(--esp-4); border-radius: var(--radio-1); font-size: 14px; color: var(--alerta-texto); background: var(--alerta-fondo); }

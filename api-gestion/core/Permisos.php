@@ -14,6 +14,7 @@ class Permisos
         "contenedores"           => ["GET" => self::TODOS, "*" => self::ADMINISTRADOR],
         "contenedores/historial" => ["GET" => ["Administrador", "Cuadrilla"]],
         "contenedores/prediccion" => ["GET" => ["Administrador", "Cuadrilla"]],
+        "contenedores/ruta-sugerida" => ["GET" => self::ADMINISTRADOR],
         "centros"                => ["GET" => self::PERSONAL_DE_CENTRO, "PUT" => self::PERSONAL_DE_CENTRO,
                                      "*" => self::ADMINISTRADOR],
         "centros/stock"          => ["GET" => self::PERSONAL_DE_CENTRO],

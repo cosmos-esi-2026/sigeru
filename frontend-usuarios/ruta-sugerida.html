@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruta sugerida - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Ruta sugerida</h1>
+        <p class="bajada">Una propuesta de recorrido solo con los contenedores que lo necesitan. No crea nada: la planificás vos.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-parametros">
+        <h2 class="titulo-panel" id="titulo-parametros">¿Para qué salida?</h2>
+
+        <form class="filtros" id="form-ruta-sugerida" aria-label="Parámetros de la ruta sugerida">
+          <label>Zona
+            <select name="id_zona"><option value="">Todas las zonas</option></select>
+          </label>
+          <label>Horizonte
+            <select name="horizonte">
+              <option value="24">Próximas 24 horas</option>
+              <option value="48">Próximas 48 horas</option>
+            </select>
+          </label>
+          <label>Centro de destino
+            <select name="id_centro"><option value="">Sin definir</option></select>
+          </label>
+          <label>Camión
+            <select name="id_camion"><option value="">Sin elegir</option></select>
+          </label>
+          <button type="submit" class="boton boton-primario" id="btn-sugerir">Sugerir ruta</button>
+        </form>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="ayuda" id="ayuda-ruta">Entran los contenedores ya llenos y los que, según la <a href="contenedores.html">predicción de llenado</a>, llegan al 90 % dentro del horizonte elegido (hasta 25).</p>
+      </section>
+
+      <section class="panel oculto" id="panel-resultado" aria-labelledby="titulo-resultado">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-resultado">Recorrido propuesto</h2>
+          <button class="boton boton-primario oculto" id="btn-crear" type="button">Crear recolección con esta ruta</button>
+        </div>
+
+        <dl class="cifras-ruta" id="cifras-ruta"></dl>
+        <p class="ayuda" id="supuestos-ruta"></p>
+        <p class="mensaje aviso oculto" id="aviso-sin-red" role="status">Sin conexión a internet: no se pudo cargar el fondo con las calles. El recorrido se dibuja igual, sobre fondo liso.</p>
+
+        <div class="mapa" id="mapa-ruta" aria-label="Mapa del recorrido propuesto. El mismo orden está en la tabla de abajo." role="region"></div>
+
+        <div class="tabla-scroll">
+          <table class="tabla" data-sin-clic-fila id="tabla-ruta" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">N.º</th>
+                <th role="columnheader">Contenedor</th>
+                <th role="columnheader">Dirección</th>
+                <th role="columnheader">Zona</th>
+                <th role="columnheader">Se llena</th>
+                <th role="columnheader">Desde la anterior</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-ruta" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/ruta-sugerida.js"></script>
+</body>
+</html>
