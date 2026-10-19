@@ -34,6 +34,10 @@
 --  recepcion, movimiento_stock e historial_maquinaria (migraciones 009 y 010), la
 --  columna usuario.id_centro y los cuatro triggers de solo agregado de las dos
 --  ultimas. Las tablas del modelo pasan de 16 a 19.
+--
+--  Actualizado el 19/10/2026 (extras, parte 13): pasa de 25 a 26 tablas fisicas. Suma
+--  notificacion (migracion 011) y la columna usuario.avisos_por_correo. Las
+--  tablas del modelo pasan de 19 a 20.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -441,6 +445,23 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+DROP TABLE IF EXISTS `notificacion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notificacion` (
+  `id_notificacion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `tipo` varchar(40) NOT NULL,
+  `titulo` varchar(120) NOT NULL,
+  `mensaje` varchar(300) NOT NULL,
+  `enlace` varchar(120) DEFAULT NULL,
+  `leida` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_notificacion`),
+  KEY `idx_notificacion_usuario` (`id_usuario`,`leida`,`fecha_hora`),
+  CONSTRAINT `fk_notificacion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `recepcion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -554,6 +575,7 @@ CREATE TABLE `usuario` (
   `id_centro` int(11) DEFAULT NULL,
   `id_solicitud` int(11) DEFAULT NULL,
   `estado` enum('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
+  `avisos_por_correo` tinyint(1) NOT NULL DEFAULT 1,
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`),

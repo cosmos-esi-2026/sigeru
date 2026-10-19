@@ -21,6 +21,7 @@ TRUNCATE TABLE auditoria;
 TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
+TRUNCATE TABLE notificacion;
 TRUNCATE TABLE historial_maquinaria;
 TRUNCATE TABLE movimiento_stock;
 TRUNCATE TABLE recepcion;
