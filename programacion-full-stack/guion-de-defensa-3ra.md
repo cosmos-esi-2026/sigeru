@@ -41,7 +41,7 @@ en el repo (números al final). Usuario de prueba: `admin@sigeru.uy`, `cuadrilla
 | Pregunta | Respuesta honesta |
 |---|---|
 | ¿Por qué PHP plano y no un framework? | Para entender y poder explicar cada línea; la letra permite elegir. El costo: más código repetido (se vigila con pruebas de «copias idénticas»). |
-| ¿Cómo se organiza el sistema? | Seis aplicaciones independientes que comparten la base: `landing`, `frontend-usuarios` (incluye el backoffice), `api-usuarios`, `api-gestion`, `api-recoleccion` y la base MySQL. El backoffice **no es una aplicación aparte**: es la sección de administración (decisión de diseño documentada). |
+| ¿Cómo se organiza el sistema? | Cinco aplicaciones independientes que comparten una base MySQL: `landing`, `frontend-usuarios` (incluye el backoffice), `api-usuarios`, `api-gestion` y `api-recoleccion`. La letra propone seis: el backoffice **no es una aplicación aparte**, es la sección de administración de `frontend-usuarios` (decisión del 12/10, en la adenda de alcance). |
 | ¿Cómo evitan que un vecino vea lo del administrador? | La API relee el rol de la base en **cada petición** y una tabla de permisos por recurso y método niega por defecto. El menú solo es cosmético; una prueba compara menú y API. Se prueba con los cuatro roles y sin sesión. |
 | ¿Qué pasa con las fotos que sube un vecino? | Se lee el tipo del **contenido**, se rechaza lo que no sea JPG/PNG/WebP o pase de 2 MB, y se **vuelve a dibujar** como JPEG nuevo: así se pierden los datos de ubicación de la cámara y cualquier cosa escondida. Se guarda fuera de la carpeta pública con un nombre al azar y solo la ve quien la sube, la administración y la cuadrilla asignada. |
 | ¿Dónde se guardan las contraseñas? | Con `password_hash` (bcrypt) y sal propia; el seed tiene un hash distinto por usuario. Nunca se comparan en texto plano. |
@@ -66,7 +66,7 @@ en el repo (números al final). Usuario de prueba: `admin@sigeru.uy`, `cuadrilla
 
 ## 4. Números exactos (17/10/2026)
 
-16 tablas del modelo (+ `enlace_clave`, `intento_login`, `migracion` y `foto_incidencia` de soporte) · 6 aplicaciones · 4 roles · 410 pruebas
+16 tablas del modelo (+ 6 de soporte: `migracion`, `intento_login`, `enlace_clave`, `foto_incidencia`, `auditoria` y `limite_peticion`) · 5 aplicaciones y la base · 4 roles · 410 pruebas
 unitarias · 590 por HTTP (con el correo en modo archivo; con el arranque común se omiten 2 bloques y el resumen lo dice) · base
 restaurable con huella `60e98084441a8c3b` · congelamiento 30/10 · entrega 06/11.
 
@@ -74,5 +74,5 @@ restaurable con huella `60e98084441a8c3b` · congelamiento 30/10 · entrega 06/1
 
 - «Es seguro»: decir «aplica estas defensas y tiene estas limitaciones» (sin límite de pedidos en lo público, sin CSRF
   por token —`SameSite=Lax` y JSON—, sin HTTPS en local).
-- «Está terminado»: no se verificó a ojo el aspecto visual, ni el envío real de correo, ni la instalación en Docker/MySQL 8; ver la adenda de alcance.
+- «Está terminado»: no se verificó a ojo el aspecto visual, ni el envío real de correo, ni la instalación en MySQL 8 del servidor; ver la adenda de alcance.
 - Cualquier cifra de rendimiento: no se midió.

@@ -12,14 +12,14 @@ responsables y reportes.
 | Carpeta | Qué es | Estado |
 | --- | --- | --- |
 | `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, cómo informar un problema y enlace al registro | Funcionando |
-| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol y reportes (panel por urgencias, informe del período, exportación a CSV) | Funcionando |
-| `api-usuarios/` | API de usuarios, login, sesión y solicitudes de registro | Funcionando, sobre MySQL |
+| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período, exportación a CSV) y auditoría | Funcionando |
+| `api-usuarios/` | API de usuarios, login, sesión, solicitudes de registro, registro de vecinos, enlaces de contraseña por correo y auditoría | Funcionando, sobre MySQL |
 | `api-gestion/` | API de contenedores, centros de acopio, maquinaria, tipos de residuo, zonas e incidencias (informar, asignar, avance, resolver; historial de solo agregado) y estadísticas (informe de un período, panel por urgencias) | Funcionando, sobre MySQL |
 | `api-recoleccion/` | API de camiones, cuadrillas, rutas y recolecciones (planificar, iniciar, registrar vaciados con peso y volumen, finalizar, cancelar) y estadísticas de lo recolectado | Funcionando, sobre MySQL (desde el 14/10/2026) |
 | `database/` | Modelo físico: DDL de creación, datos de prueba, volcado de la estructura y migraciones del esquema (`migrar.php`) | 16 tablas del modelo (desde el 12/10/2026) |
-| `tests/` | Pruebas de las dos APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 590 por HTTP + 410 unitarias (17/10/2026) |
+| `tests/` | Pruebas de las tres APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 590 por HTTP + 410 unitarias (17/10/2026) |
 
-Los datos **se persisten en MySQL** desde el 09/09/2026: las dos APIs abren su conexión
+Los datos **se persisten en MySQL** desde el 09/09/2026: las tres APIs abren su conexión
 por PDO y todas las consultas van preparadas. La sesión es de servidor (cookie `httponly`)
 y el rol se relee de la base en cada petición.
 
@@ -43,17 +43,15 @@ comprueba si una cuadrilla está libre) son copias idénticas que vigila `tests/
 | `proyecto-utu-lab/` | Proyecto UTU LAB (incluye el prototipo Low-Fi navegable) |
 | `Emprendedurismo y Gestion/` | Emprendedurismo y Gestión |
 | `administracion-sistemas-operativos/` | Administración de Sistemas Operativos |
+| `ciberseguridad/` | Ciberseguridad |
+| `programacion-full-stack/` | Programación Full Stack (una ampliación por cada mejora de la 3ra entrega y el guion de defensa) |
+| `manuales/` | Manuales de uso de los cuatro roles |
 
 ## Cómo levantarlo desde cero
 
-Hay dos maneras de correr SiGeRU. Las dos levantan **lo mismo** (Apache + PHP 8.2 + MySQL
-con las tablas del modelo y los datos de prueba) y se usan igual desde el navegador.
-
-| | Con el pendrive (XAMPP portable) | Con Docker |
-| --- | --- | --- |
-| Qué necesita la PC | Nada. Todo corre desde el pendrive | Docker Desktop instalado |
-| Dirección | `http://localhost/sigeru/landing/` | `http://localhost:8080/sigeru/landing/` |
-| Para qué sirve | Desarrollar y presentar | Instalarlo en cualquier máquina o servidor |
+Hay dos maneras de correr SiGeRU: desde el pendrive (XAMPP portable, `http://localhost/sigeru/landing/`),
+para desarrollar y presentar, o con un XAMPP común en otra máquina. Las dos levantan **lo mismo** (Apache + PHP 8.2 +
+MySQL con las tablas del modelo y los datos de prueba) y se usan igual desde el navegador.
 
 Usuarios de prueba (todos con contraseña `sigeru2026`): `admin@sigeru.uy` (Administrador),
 `operario@sigeru.uy`, `cuadrilla@sigeru.uy` y `vecino@sigeru.uy`.
@@ -83,8 +81,8 @@ viene de OpenStreetMap y, sin internet, el mapa sigue funcionando sobre fondo li
    abiertas, el sistema está encendido.
 3. Abrir el navegador y entrar a **`http://localhost/sigeru/landing/`**. Es la página
    pública. El botón de ingresar lleva al login.
-4. Entrar con `admin@sigeru.uy` / `sigeru2026`. Aparece el panel de control con los
-   contenedores, camiones, centros, maquinaria, usuarios y solicitudes.
+4. Entrar con `admin@sigeru.uy` / `sigeru2026`. Aparece el inicio del administrador:
+   indicadores y «Requiere atención» (lo urgente primero), con el menú a todo el sistema.
 5. Para mostrar que las pruebas pasan: doble clic en **`sigeru/tests/correr-tests.cmd`**.
    Corre las pruebas contra las APIs por HTTP y termina con `Fallaron: 0` (al 17/10/2026
    son 590 si Apache arrancó con `SIGERU_MAIL_MODE=archivo`, ver «Correo»; con el arranque común faltan las 2 pruebas de enlaces por correo y el
@@ -111,39 +109,9 @@ Si algo falla:
   **`restaurar-base-demo.cmd`** (en `herramientas/xampp`). Pide confirmación, guarda antes
   una copia en `respaldo-bd/` y vuelve a crear la base con los datos de prueba.
 
-### Camino 2 — Con Docker (cualquier máquina, sin el pendrive)
+### Camino 2 — Con un XAMPP común, sin el pendrive
 
-1. Tener **Docker Desktop** instalado y abierto. Esperar a que abajo a la izquierda diga
-   *Engine running*.
-2. Conseguir el proyecto en el **disco de la PC** (no en el pendrive, ver más abajo):
-   `git clone https://github.com/cosmos-esi-2026/sigeru.git`, o copiar la carpeta
-   `sigeru` del pendrive a, por ejemplo, `C:\sigeru`.
-3. Abrir una terminal (PowerShell o la que sea) **dentro de la carpeta `sigeru/docker`** y
-   correr:
-
-       docker compose up --build
-
-   La primera vez baja dos imágenes (unos 600 MB) y MySQL crea las tablas y carga los
-   datos: puede tardar varios minutos en una PC lenta. Está listo cuando la terminal deja de
-   moverse y muestra líneas de Apache y MySQL esperando.
-4. Abrir **`http://localhost:8080/sigeru/landing/`** y entrar con el mismo usuario.
-5. Para las pruebas, en **otra** terminal, en la misma carpeta:
-
-       docker compose exec web php /var/www/html/sigeru/tests/correr-tests.php
-
-   Corre las pruebas adentro del contenedor y termina con `Todo verde.`
-6. Para apagar: `Ctrl + C` en la primera terminal y después `docker compose down`. Para
-   borrar también la base y que la próxima vez cargue todo de cero: `docker compose down -v`.
-
-**Si el proyecto está en un pendrive**: Docker Desktop no ve las unidades extraíbles y, en
-vez de avisar, monta carpetas vacías. Antes del `up`, correr una vez
-`wsl -d docker-desktop mount -t drvfs D: /mnt/host/d` (con la letra del pendrive). Está
-explicado con detalle en `docker/LEEME.md`, junto con por qué el despliegue está armado
-así (un solo contenedor web, montado bajo `/sigeru`, healthcheck en la base).
-
-### Camino 3 — Con un XAMPP común, sin el pendrive ni Docker
-
-Es la instalación manual, la que se haría en un servidor sin Docker: instalar XAMPP
+Es la instalación manual, la que se haría en otro equipo: instalar XAMPP
 (apachefriends.org), copiar la carpeta `sigeru` dentro de `htdocs`, abrir phpMyAdmin
 (`http://localhost/phpmyadmin/`) e importar **primero** `database/schema.sql` y **después**
 `database/datos_prueba.sql`. Con eso el sistema queda en `http://localhost/sigeru/landing/`,
@@ -163,7 +131,8 @@ Francisco Goycochea
 
 ## Correo para activar cuentas y renovar contraseñas
 
-El vecino se registra en `landing/` y elige su contraseña sin aprobación. Si un
+El vecino se registra desde la landing (el botón «Crear cuenta de vecino» lleva a
+`frontend-usuarios/registro.html`) y elige su contraseña sin aprobación. Si un
 administrador crea una cuenta o aprueba una solicitud antigua, SIGERU envía al
 correo de esa persona un enlace de un solo uso, válido durante una hora. La cuenta
 nueva queda pendiente hasta que la persona crea su contraseña. En **Usuarios**,
@@ -183,12 +152,8 @@ crear o aprobar cuentas; no guardar las credenciales SMTP en el repositorio:
 
 Para Gmail, usar la dirección completa en `SIGERU_SMTP_USER` y
 `SIGERU_MAIL_FROM`. Se necesita la verificación en dos pasos y una contraseña
-de aplicación de Google, no la contraseña normal de la cuenta. El ejemplo
-`docker/.env.example` se puede copiar a `docker/.env` y completar sin subir
-este último a Git. La configuración SMTP se valida antes de crear la cuenta.
-
-En Docker Compose, declarar las variables en el entorno o en un archivo
-`docker/.env` local que no se suba a Git.
+de aplicación de Google, no la contraseña normal de la cuenta. La configuración SMTP se valida antes de
+crear la cuenta.
 
 **Para probar sin correo real** (las pruebas automáticas lo necesitan): arrancar Apache con
 `SIGERU_MAIL_MODE=archivo`. El mensaje se escribe en `tmp/correo/` en vez de enviarse, y solo
@@ -198,22 +163,23 @@ funciona si `SIGERU_PUBLIC_URL` es `localhost` (o está vacía). Ver
 Para la defensa con XAMPP portable:
 
 1. Detener el XAMPP anterior con `detener-xampp.cmd`.
-2. Desde la terminal de PowerShell, ejecutar el lanzador:
+2. Desde la terminal de PowerShell, parado en la carpeta `SIGERU 2026`, ejecutar el lanzador:
 
    ```powershell
-   & 'D:\SIGERU 2026\sigeru\iniciar-xampp-con-correo.cmd'
+   & '.\sigeru\iniciar-xampp-con-correo.cmd'
    ```
 
    El lanzador permite ejecutar el script solo en ese proceso, sin cambiar
    la política global de PowerShell.
 3. Ingresar la contraseña de aplicación de Gmail cuando el script la pida.
    El script no la guarda en archivos. El remitente ya está configurado como
-   `cosmoscorporation2026@gmail.com`.
+   `sigeruesi@gmail.com`.
 4. Abrir el correo recibido en esa misma computadora. El enlace usa
    `http://localhost/sigeru` y no funciona desde un teléfono u otra PC.
 
-La base existente necesita las migraciones `004-enlace-clave.sql` y
-`005-estado-pendiente.sql` mediante `database/migrar.php`; una base nueva ya
-incluye los cambios en `database/schema.sql`. Sin SMTP configurado o si el
+Una base existente se pone al día con `database/migrar.php`, que aplica solas las
+migraciones que le falten (hoy de la `001` a la `008`; el correo necesita la `004` y la
+`005`, y las fotos, la auditoría y el freno por IP, de la `006` a la `008`); una base
+nueva ya incluye todo en `database/schema.sql`. Sin SMTP configurado o si el
 envío falla, la creación o aprobación se cancela y se informa el error. Una
 cuenta dada de baja no puede reactivarse con un enlace.
