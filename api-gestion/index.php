@@ -13,6 +13,7 @@ require_once __DIR__ . "/controllers/IncidenciaController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
 require_once __DIR__ . "/controllers/PublicoController.php";
 require_once __DIR__ . "/controllers/RecepcionController.php";
+require_once __DIR__ . "/controllers/ReporteController.php";
 require_once __DIR__ . "/models/Calificaciones.php";
 
 Response::manejarErrores();
@@ -224,6 +225,18 @@ switch ($recurso) {
         }
         break;
 
+    case "reportes":
+        $usuario = Permisos::exigir("reportes/" . ($partes[1] ?? ""), $metodo);
+
+        if ($metodo === "GET" && ($partes[1] ?? "") === "pdf") {
+            (new ReporteController())->pdf($usuario);
+        } elseif ($metodo === "GET") {
+            Response::error("Recurso no encontrado", 404);
+        } else {
+            Response::error("Método no permitido", 405);
+        }
+        break;
+
     case "estadisticas":
         $controlador = new EstadisticaController();
         $tema = $partes[1] ?? "";
@@ -261,7 +274,7 @@ switch ($recurso) {
                 "/incidencias/{id}/avance", "/incidencias/{id}/resolucion", "/incidencias/{id}/descarte",
                 "/incidencias/{id}/foto", "/incidencias/{id}/calificacion",
                 "/participacion/progreso", "/participacion/ranking", "/estadisticas/satisfaccion",
-                "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
+                "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro", "/reportes/pdf",
                 "/publico/mapa", "/publico/impacto", "/estadisticas/impacto",
             ],
         ]);

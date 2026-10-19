@@ -45,8 +45,12 @@ class EstadisticaController
         if ($consulta["error"] !== null) {
             Response::error($consulta["error"], 400);
         }
-        $filtros = $consulta["filtros"];
+        Response::json(["ok" => true, "datos" => $this->datosIncidencias($consulta["filtros"])]);
+    }
 
+    // Los datos del informe de incidencias (los usa tambien el reporte en PDF): $filtros viene de FlujoIncidencia::filtrosDe.
+    public function datosIncidencias(array $filtros): array
+    {
         $donde = [];
         $valores = [];
         if (isset($filtros["desde"])) {
@@ -91,7 +95,7 @@ class EstadisticaController
             "zona"        => $nombreZona ?: null,
             "generado_en" => (string) $db->query("SELECT NOW()")->fetchColumn(),
         ];
-        Response::json(["ok" => true, "datos" => $datos]);
+        return $datos;
     }
 
     // Impacto ambiental por mes y total del periodo (extras, parte 18). Solo el Administrador.
@@ -101,12 +105,17 @@ class EstadisticaController
         if ($consulta["error"] !== null) {
             Response::error($consulta["error"], 400);
         }
-        $desde = $consulta["filtros"]["desde"] ?? null;
-        $hasta = $consulta["filtros"]["hasta"] ?? null;
+        Response::json(["ok" => true, "datos" => $this->datosImpacto($consulta["filtros"])]);
+    }
+
+    public function datosImpacto(array $filtros): array
+    {
+        $desde = $filtros["desde"] ?? null;
+        $hasta = $filtros["hasta"] ?? null;
         $datos = ImpactoDatos::resumen($desde, $hasta);
         $datos["por_mes"] = Impacto::porMes(ImpactoDatos::kgPorMesYTipo($desde, $hasta));
         $datos["periodo"] = ["desde" => $desde, "hasta" => $hasta, "generado_en" => (string) Database::conexion()->query("SELECT NOW()")->fetchColumn()];
-        Response::json(["ok" => true, "datos" => $datos]);
+        return $datos;
     }
 
     // Calidad del servicio (extras, parte 14): incidencias, satisfaccion promedio y tiempo medio de resolucion
@@ -117,7 +126,11 @@ class EstadisticaController
         if ($consulta["error"] !== null) {
             Response::error($consulta["error"], 400);
         }
-        $filtros = $consulta["filtros"];
+        Response::json(["ok" => true, "datos" => $this->datosSatisfaccion($consulta["filtros"])]);
+    }
+
+    public function datosSatisfaccion(array $filtros): array
+    {
         $donde = [];
         $valores = [];
         if (isset($filtros["desde"])) {
@@ -145,7 +158,7 @@ class EstadisticaController
         $datos = Satisfaccion::informe($consultaSql->fetchAll());
         $datos["periodo"] = ["desde" => $filtros["desde"] ?? null, "hasta" => $filtros["hasta"] ?? null,
                              "id_zona" => $filtros["zona"] ?? null, "generado_en" => (string) $db->query("SELECT NOW()")->fetchColumn()];
-        Response::json(["ok" => true, "datos" => $datos]);
+        return $datos;
     }
 
     // Panel por urgencias del administrador: lo abierto ordenado por gravedad, y los contenedores llenos.
@@ -155,7 +168,11 @@ class EstadisticaController
         if ($umbral === null) {
             Response::error("Filtro 'dias' inválido: usá un número entre 1 y 60", 400);
         }
+        Response::json(["ok" => true, "datos" => $this->datosUrgencias($umbral)]);
+    }
 
+    public function datosUrgencias(int $umbral): array
+    {
         $db = Database::conexion();
         $abiertas = $db->query(
             "SELECT i.id_incidencia, i.estado, i.prioridad, i.tipo_problema, i.id_cuadrilla,
@@ -186,6 +203,6 @@ class EstadisticaController
         }, $llenos);
         $datos["umbral_dias"] = $umbral;
 
-        Response::json(["ok" => true, "datos" => $datos]);
+        return $datos;
     }
 }

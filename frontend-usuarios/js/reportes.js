@@ -353,6 +353,37 @@ document.getElementById("btn-csv-calidad").addEventListener("click", exportarCal
 document.getElementById("btn-csv-impacto").addEventListener("click", exportarImpacto);
 document.getElementById("btn-imprimir").addEventListener("click", function () { window.print(); });
 
+// Reporte en PDF del periodo elegido (lo arma el servidor con los mismos datos de esta pantalla; queda en la auditoria).
+document.getElementById("btn-pdf").addEventListener("click", async function () {
+  const boton = this;
+  const texto = boton.textContent;
+  boton.disabled = true;
+  boton.textContent = "Generando PDF...";
+  try {
+    const respuesta = await fetch(API.gestion + "/reportes/pdf" + consultaDelPeriodo(), opciones("GET"));
+    if (!respuesta.ok) {
+      let mensaje = "No se pudo generar el PDF (" + respuesta.status + ").";
+      try { mensaje = (await respuesta.json()).mensaje || mensaje; } catch (e) { /* respuesta sin JSON */ }
+      avisoPaginaError(mensaje);
+      return;
+    }
+    const archivo = await respuesta.blob();
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(archivo);
+    enlace.download = "sigeru-reporte-" + fechaIso(new Date()) + ".pdf";
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(function () { URL.revokeObjectURL(enlace.href); }, 10000);
+    avisoPagina("El reporte se descargó como PDF.");
+  } catch (e) {
+    avisoPaginaError("No se pudo conectar con el servidor para generar el PDF.");
+  } finally {
+    boton.disabled = false;
+    boton.textContent = texto;
+  }
+});
+
 document.querySelectorAll("#tabla-detalle th").forEach(function (th) { th.setAttribute("data-orden", ""); });
 activarOrden("tabla-detalle");
 
