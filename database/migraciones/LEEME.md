@@ -9,7 +9,7 @@ migraciones son el camino para llevar una base **ya existente** hasta ese estado
     herramientas\php\php.exe sigeru\database\migrar.php            aplica las pendientes
     herramientas\php\php.exe sigeru\database\migrar.php --estado   lista cuáles faltan (sale con 1 si falta alguna)
 
-Con Docker: `docker compose exec web php /var/www/html/sigeru/database/migrar.php`.
+En un servidor Linux: `php /var/www/sigeru/database/migrar.php`.
 Usa las mismas variables de entorno que las APIs (`SIGERU_DB_HOST`, `SIGERU_DB_PORT`,
 `SIGERU_DB_NAME`, `SIGERU_DB_USER`, `SIGERU_DB_PASS`) y, para pruebas, `SIGERU_MIGRACIONES`
 con otra carpeta de archivos. Solo corre desde la terminal: por web responde 404.
@@ -21,7 +21,7 @@ con otra carpeta de archivos. Solo corre desde la terminal: por web responde 404
 2. **Tiene que poder repetirse sin error.** Si falla a la mitad, el archivo no se registra y se
    vuelve a correr entero. Para eso, `CREATE TABLE IF NOT EXISTS`, `INSERT IGNORE` y las
    guardas de abajo.
-3. **Tiene que andar en MariaDB 10.4 (XAMPP) y en MySQL 8 (Docker).** No usar
+3. **Tiene que andar en MariaDB 10.4 (XAMPP) y en MySQL 8 (el servidor).** No usar
    `ADD COLUMN IF NOT EXISTS` ni `CREATE INDEX IF NOT EXISTS` (solo existen en MariaDB), ni
    `DELIMITER`, ni procedimientos almacenados. Lo condicional se escribe con `information_schema`:
 
