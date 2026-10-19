@@ -95,7 +95,7 @@ body.pagina-acceso { background: var(--hueso); }
 .acceso-form label { font-size: 14px; margin-bottom: -10px; }
 .acceso-campos-dobles label { margin: 0 0 8px; }
 .acceso-fila label { margin-bottom: 0; }
-.acceso-form input { width: 100%; min-height: 50px; background: var(--blanco); }
+.acceso-form input { width: 100%; min-height: 50px; background: var(--superficie); }
 .acceso-form .boton { min-height: 50px; margin-top: 6px; }
 .acceso-form .boton-primario { justify-content: space-between; padding-inline: 22px; }
 .acceso-campos-dobles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -167,7 +167,7 @@ body.pagina-acceso { background: var(--hueso); }
 .con-escena .acceso-bajada,
 .con-escena .acceso-pie { text-shadow: 0 1px 2px rgba(5, 30, 22, .9), 0 2px 16px rgba(5, 30, 22, .8); }
 .con-escena .acceso-sello { text-shadow: 0 1px 2px rgba(5, 30, 22, .95), 0 0 10px rgba(5, 30, 22, .9); }
-.acceso-escena { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--verde-oscuro); }
+.acceso-escena { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--barra); }
 .acceso-calle {
   position: absolute;
   top: 0;

@@ -98,6 +98,96 @@
   --transicion: .15s ease;
   --alto-toque: 44px;
   --alto-banda: 4px;
+  --superficie:   #ffffff;   /* fondo de tarjetas, tablas y campos */
+  --accion:       #15654a;   /* fondo de botones principales (el texto encima es siempre blanco) */
+  --accion-hover: #0e4a36;
+  --barra:        #0e4a36;   /* menu lateral y escena del login */
+  --pie:          #0e241c;
+  --borde-fuerte: #cfd6cb;
+  --azul-texto:   #1d4f9e;   --azul-fondo:   #e1ebfa;
+  --mapa-fondo:   #e9eee6;
+  --cabecera-fondo: rgba(246, 247, 242, .85);
+  --ola-sombra:   14, 36, 28;
+  --resalte:      #cdeb4b;   /* subrayado de la palabra destacada del titulo */
+  --peligro:      #b3261e;   --peligro-hover: #8f1e17;   /* fondo de botones y marcas de peligro (texto blanco encima) */
+}
+
+/* Modo oscuro: sigue al sistema (prefers-color-scheme) y se puede forzar con el interruptor (data-tema en <html>; lo guarda js/tema.js). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    color-scheme: dark;
+    --hueso:        #0e1814;
+    --superficie:   #15231d;
+    --tinta:        #e6eee8;
+    --tinta-suave:  #aebdb4;
+    --tinta-tenue:  #9bada3;
+    --borde:        #2a3d33;
+    --borde-fuerte: #3b5246;
+
+    --verde:        #5fc79c;
+    --verde-oscuro: #8fd9ba;
+    --verde-agua:   #1b3429;
+    --accion:       #1f7a5a;
+    --accion-hover: #18684c;
+    --barra:        #0a2a20;
+    --pie:          #08130f;
+
+    --organico:  #b58f68;
+    --plastico:  #e0b02a;
+    --vidrio:    #3fb3a3;
+    --papel:     #6a9be6;
+    --metal:     #9aa3b2;
+
+    --ok-texto:     #86d9ac;   --ok-fondo:     #173528;
+    --alerta-texto: #f2c872;   --alerta-fondo: #3b2d10;
+    --error-texto:  #ffa39b;   --error-fondo:  #41191a;
+    --neutro-texto: #b9c7bf;   --neutro-fondo: #212f28;
+    --azul-texto:   #a9c6f5;   --azul-fondo:   #1c2f4d;
+    --mapa-fondo:   #1a2923;
+    --cabecera-fondo: rgba(14, 24, 20, .85);
+    --ola-sombra:   0, 0, 0;
+    --resalte:      #35521c;
+    --peligro:      #c0372e;   --peligro-hover: #a52c24;
+    --sombra-1: 0 1px 2px rgba(0, 0, 0, .4), 0 2px 8px rgba(0, 0, 0, .3);
+    --sombra-2: 0 18px 40px -18px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+  --hueso:        #0e1814;
+  --superficie:   #15231d;
+  --tinta:        #e6eee8;
+  --tinta-suave:  #aebdb4;
+  --tinta-tenue:  #9bada3;
+  --borde:        #2a3d33;
+  --borde-fuerte: #3b5246;
+
+  --verde:        #5fc79c;
+  --verde-oscuro: #8fd9ba;
+  --verde-agua:   #1b3429;
+  --accion:       #1f7a5a;
+  --accion-hover: #18684c;
+  --barra:        #0a2a20;
+  --pie:          #08130f;
+
+  --organico:  #b58f68;
+  --plastico:  #e0b02a;
+  --vidrio:    #3fb3a3;
+  --papel:     #6a9be6;
+  --metal:     #9aa3b2;
+
+  --ok-texto:     #86d9ac;   --ok-fondo:     #173528;
+  --alerta-texto: #f2c872;   --alerta-fondo: #3b2d10;
+  --error-texto:  #ffa39b;   --error-fondo:  #41191a;
+  --neutro-texto: #b9c7bf;   --neutro-fondo: #212f28;
+  --azul-texto:   #a9c6f5;   --azul-fondo:   #1c2f4d;
+  --mapa-fondo:   #1a2923;
+  --cabecera-fondo: rgba(14, 24, 20, .85);
+  --ola-sombra:   0, 0, 0;
+  --resalte:      #35521c;
+  --peligro:      #c0372e;   --peligro-hover: #a52c24;
+  --sombra-1: 0 1px 2px rgba(0, 0, 0, .4), 0 2px 8px rgba(0, 0, 0, .3);
+  --sombra-2: 0 18px 40px -18px rgba(0, 0, 0, .7);
 }
 
 a:focus-visible,
@@ -126,7 +216,7 @@ select:focus-visible,
   left: var(--esp-2);
   z-index: 2000;
   transform: translateY(-200%);
-  background: var(--verde);
+  background: var(--accion);
   color: var(--blanco);
   padding: var(--esp-3) var(--esp-4);
   border-radius: var(--radio-1);
@@ -167,10 +257,10 @@ select:focus-visible,
 .boton:hover { transform: translateY(-1px); }
 .boton:active { transform: translateY(0); }
 
-.boton-primario { background: var(--verde); color: var(--blanco); box-shadow: var(--sombra-1); }
-.boton-primario:hover { background: var(--verde-oscuro); color: var(--blanco); }
+.boton-primario { background: var(--accion); color: var(--blanco); box-shadow: var(--sombra-1); }
+.boton-primario:hover { background: var(--accion-hover); color: var(--blanco); }
 
-.boton-secundario { background: var(--blanco); color: var(--verde-oscuro); border-color: var(--borde); }
+.boton-secundario { background: var(--superficie); color: var(--verde-oscuro); border-color: var(--borde); }
 .boton-secundario:hover { border-color: var(--verde); background: var(--verde-agua); color: var(--verde-oscuro); }
 
 .boton:disabled,
@@ -190,3 +280,15 @@ select:focus-visible,
   animation: girar .7s linear infinite;
 }
 @keyframes girar { to { transform: rotate(360deg); } }
+
+/* Interruptor del tema de colores (js/tema.js). */
+.boton-tema {
+  position: fixed; right: 16px; bottom: 16px; z-index: 60;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--alto-toque); height: var(--alto-toque); padding: 0;
+  background: var(--superficie); color: var(--tinta);
+  border: 1px solid var(--borde-fuerte); border-radius: var(--radio-full);
+  box-shadow: var(--sombra-1); cursor: pointer;
+}
+.boton-tema:hover { border-color: var(--verde); color: var(--verde-oscuro); }
+@media print { .boton-tema { display: none !important; } }

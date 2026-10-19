@@ -8,11 +8,11 @@
 //    (los mosaicos del mapa).
 //  - Paginas: primero la red; si no hay red, la copia guardada, y si tampoco, "sin-conexion.html".
 //  - Estaticos: se contesta con lo guardado y se actualiza en segundo plano.
-const VERSION = "sigeru-estaticos-v1";
+const VERSION = "sigeru-estaticos-v2";
 const PRECARGA = [
   "sin-conexion.html", "login.html", "dashboard.html", "mis-tareas.html", "recoleccion.html", "mis-incidencias.html", "incidencia.html",
   "css/base.css", "css/styles.css",
-  "js/api.js", "js/formularios.js", "js/shell.js", "js/tabla.js", "js/incidencias-comun.js", "js/cola-offline.js", "js/pendientes.js", "js/pwa.js",
+  "js/api.js", "js/formularios.js", "js/tema.js", "js/shell.js", "js/tabla.js", "js/incidencias-comun.js", "js/cola-offline.js", "js/pendientes.js", "js/pwa.js",
   "js/recolecciones.js", "js/recoleccion-detalle.js", "js/incidencias.js", "js/incidencia-detalle.js", "js/sin-conexion.js", "js/bootstrap.bundle.min.js",
   "img/logo.svg", "img/logo-claro.svg", "img/icono-192.png",
 ];

@@ -62,14 +62,27 @@ function filaEsqueleto(columnas, filas) {
   return html;
 }
 
+// Ilustraciones propias de los estados vacios (dibujadas en el repo, no generadas con IA). Usan los colores del tema, asi que sirven en claro y en oscuro.
+// "contenedor": todavia no hay nada. "lupa": hay datos pero ninguno coincide con la busqueda o los filtros.
+function ilustracionVacia(tipo) {
+  const base = '<ellipse cx="60" cy="82" rx="38" ry="5" fill="currentColor" opacity=".10"/>' +
+    '<path d="M32 32h56l-5 46a4 4 0 0 1-4 3H41a4 4 0 0 1-4-3z" fill="var(--verde-agua)" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+    '<path d="M50 42v28M60 42v28M70 42v28" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".4"/>' +
+    '<path d="M28 32h64" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>';
+  const adorno = tipo === "lupa"
+    ? '<circle cx="84" cy="52" r="15" fill="var(--superficie)" fill-opacity=".85" stroke="currentColor" stroke-width="3"/>' +
+      '<path d="M95 63l11 11" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M34 28 28 14l42-8 4 14z" fill="var(--superficie)" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'
+    : '<path d="M34 28 28 14l42-8 4 14z" fill="var(--superficie)" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="94" cy="20" r="3.5" fill="var(--lima)"/><circle cx="104" cy="32" r="2" fill="var(--lima)"/>';
+  return '<svg class="ilustracion-vacia" viewBox="0 0 120 90" aria-hidden="true">' + base + adorno + "</svg>";
+}
+
 function filaVacia(columnas, titulo, detalle) {
+  const sinCoincidencias = /^(ning[uú]n|ninguna)/i.test(titulo) || /filtro|b[uú]squeda/i.test(detalle || "");
   return '<tr class="fila-estado"><td colspan="' + columnas + '">' +
          '<div class="estado-bloque">' +
-         '<svg class="icono-grande" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-         'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-         '<path d="M3 8.5 12 4l9 4.5v7L12 20l-9-4.5z"/>' +
-         '<path d="M3 8.5 12 13l9-4.5"/><path d="M12 13v7"/>' +
-         "</svg>" +
+         ilustracionVacia(sinCoincidencias ? "lupa" : "contenedor") +
          "<h3>" + escaparHtml(titulo) + "</h3>" +
          (detalle ? "<p>" + escaparHtml(detalle) + "</p>" : "") +
          "</div></td></tr>";

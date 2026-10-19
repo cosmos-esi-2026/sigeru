@@ -66,8 +66,13 @@
 .avisos-panel li.es-bien { background: var(--ok-fondo); color: var(--ok-texto); }
 
 @media print {
-  @page { size: A4; margin: 14mm; }
+  /* Hoja apaisada: la tabla de detalle tiene 8 columnas y en vertical se cortaba (hallazgo H11-1). Siempre sobre fondo blanco, aunque el tema sea oscuro. */
+  @page { size: A4 landscape; margin: 12mm; }
   body { background: #fff; color: #000; }
+  .panel, .metrica, .tabla, .tabla th, .tabla td, .tabla tbody tr { background: #fff !important; color: #000 !important; }
+  .grafico-etiqueta, .grafico-valor { fill: #000; }
+  .grafico { max-width: 100%; }
+  .grafico svg { width: 100%; }
   .sidebar, .topbar, .sin-impresion, .btn-menu, .saltar-contenido, .filtros, .mensaje { display: none !important; }
   .layout { display: block; }
   .contenido { padding: 0; }
@@ -80,9 +85,12 @@
   }
   .encabezado-impresion strong { display: block; font-size: 16px; }
   .tabla-scroll { overflow: visible; }
-  .tabla th, .tabla td { padding: 4px 6px; font-size: 11px; }
+  .tabla { table-layout: fixed; width: 100%; }
+  .tabla th, .tabla td { padding: 3px 5px; font-size: 9.5px; overflow-wrap: anywhere; word-break: break-word; }
   .tabla tr { break-inside: avoid; }
-  .th-orden { color: #000; }
+  /* Los botones de ordenar no se imprimen como botones: queda solo el titulo de la columna. */
+  .th-orden { color: #000 !important; background: none !important; border: 0 !important; padding: 0 !important; font: inherit; min-height: 0; }
+  .th-orden::after { display: none !important; }
   a { color: #000; text-decoration: none; }
 }
 
