@@ -6,6 +6,7 @@ const NUMERO_2 = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 2 });
 const DIAS = new Intl.NumberFormat("es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 let informeIncidencias = null;
+let informeCalidad = null;
 
 function formatoNumero(valor) {
   return valor === null || valor === undefined ? "-" : NUMERO.format(valor);
@@ -161,6 +162,43 @@ function mostrarRecoleccion(datos) {
   }
 }
 
+function promedioTexto(valor) {
+  return valor === null || valor === undefined ? "Sin calificaciones" : DIAS.format(valor) + " de 5";
+}
+
+function filaCalidad(nombre, a, b, c, d, e) {
+  return '<tr role="row">' + celda("Nombre", nombre) + celda("Incidencias", a) + celda("Resueltas", b) + celda("Calificaciones", c) +
+         celda("Satisfacción promedio", promedioTexto(d)) + celda("Tiempo medio de resolución", e === null ? "-" : formatoDuracion(e)) + "</tr>";
+}
+
+function mostrarCalidad(datos) {
+  const g = datos.general;
+  document.getElementById("texto-calidad").textContent = g.calificaciones === 0
+    ? "Todavía no hay calificaciones en este período. Los vecinos califican la atención de sus reclamos resueltos, de 1 a 5."
+    : g.calificaciones + (g.calificaciones === 1 ? " calificación" : " calificaciones") + " en el período: satisfacción promedio " + DIAS.format(g.promedio) + " de 5.";
+  document.getElementById("cuerpo-calidad-zonas").innerHTML = datos.por_zona.length === 0
+    ? filaVacia(6, "Sin incidencias en este período", "")
+    : datos.por_zona.map(function (z) { return filaCalidad(z.zona, z.incidencias, z.resueltas, z.calificaciones, z.promedio, z.tiempo_medio_horas); }).join("");
+  document.getElementById("cuerpo-calidad-cuadrillas").innerHTML = datos.por_cuadrilla.length === 0
+    ? filaVacia(6, "Ninguna incidencia asignada en este período", "")
+    : datos.por_cuadrilla.map(function (c) { return filaCalidad(c.cuadrilla, c.incidencias, c.resueltas, c.calificaciones, c.promedio, c.tiempo_medio_horas); }).join("");
+}
+
+function exportarCalidad() {
+  if (!informeCalidad) {
+    avisoPaginaError("Primero generá el informe.");
+    return;
+  }
+  const filas = [["Tipo", "Nombre", "Incidencias", "Resueltas", "Calificaciones", "Satisfacción promedio (de 5)", "Tiempo medio de resolución (horas)"]];
+  informeCalidad.por_zona.forEach(function (z) {
+    filas.push(["Zona", z.zona, z.incidencias, z.resueltas, z.calificaciones, decimalCsv(z.promedio), decimalCsv(z.tiempo_medio_horas)]);
+  });
+  informeCalidad.por_cuadrilla.forEach(function (c) {
+    filas.push(["Cuadrilla", c.cuadrilla, c.incidencias, c.resueltas, c.calificaciones, decimalCsv(c.promedio), decimalCsv(c.tiempo_medio_horas)]);
+  });
+  descargarCsv("calidad-del-servicio_" + sufijoDeArchivo() + ".csv", filas);
+}
+
 function fallaDeSeccion(ids, error) {
   ids.forEach(function (id) {
     document.getElementById(id).innerHTML = '<p class="texto-tenue">' + escaparHtml(mensajeDeFallo(error)) + "</p>";
@@ -180,6 +218,7 @@ async function generar() {
   const resultados = await Promise.allSettled([
     apiGet(API.gestion + "/estadisticas/incidencias" + consulta),
     apiGet(API.recoleccion + "/estadisticas/recoleccion" + consulta),
+    apiGet(API.gestion + "/estadisticas/satisfaccion" + consulta),
   ]);
 
   if (resultados[0].status === "fulfilled") {
@@ -194,6 +233,13 @@ async function generar() {
     mostrarRecoleccion(resultados[1].value.datos);
   } else {
     fallaDeSeccion(["grafico-residuos", "grafico-kg-zonas"], resultados[1].reason);
+  }
+  if (resultados[2].status === "fulfilled") {
+    informeCalidad = resultados[2].value.datos;
+    mostrarCalidad(informeCalidad);
+  } else {
+    informeCalidad = null;
+    document.getElementById("texto-calidad").textContent = mensajeDeFallo(resultados[2].reason);
   }
 }
 
@@ -265,6 +311,7 @@ document.querySelectorAll("[data-rapido]").forEach(function (boton) {
 
 document.getElementById("btn-csv-detalle").addEventListener("click", exportarDetalle);
 document.getElementById("btn-csv-zonas").addEventListener("click", exportarZonas);
+document.getElementById("btn-csv-calidad").addEventListener("click", exportarCalidad);
 document.getElementById("btn-imprimir").addEventListener("click", function () { window.print(); });
 
 document.querySelectorAll("#tabla-detalle th").forEach(function (th) { th.setAttribute("data-orden", ""); });

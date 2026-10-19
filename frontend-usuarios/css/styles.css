@@ -1225,3 +1225,22 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
   .topbar-titulo { flex: 1 1 120px; }
   .campanita { margin-left: auto; }
 }
+
+/* Participacion del vecino (extras, parte 14): calificar, mi progreso, insignias y ranking */
+.calificacion-valor { margin: 0 0 var(--esp-2); font-size: 18px; color: var(--tinta); }
+.calificacion-valor { letter-spacing: .04em; }
+.grupo-radios { border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); display: grid; gap: var(--esp-2); margin: 0; }
+.grupo-radios legend { font-size: 14px; font-weight: 600; padding: 0 var(--esp-2); float: none; width: auto; margin: 0; }
+.radio-puntaje { display: flex; align-items: center; gap: var(--esp-2); font-weight: 400; min-height: 32px; cursor: pointer; }
+.radio-puntaje input { width: 20px; height: 20px; }
+.progreso-cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-3) var(--esp-5); margin-bottom: var(--esp-4); }
+.progreso-puntos { font-family: var(--fuente-titulo); font-size: 40px; font-weight: 700; color: var(--verde); line-height: 1; }
+.insignias { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--esp-3); }
+.insignia { border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); background: var(--blanco); }
+.insignia strong { display: block; }
+.insignia small { color: var(--tinta-suave); }
+.insignia[data-lograda="true"] { border-color: var(--verde); background: var(--verde-agua); }
+.insignia[data-lograda="false"] { color: var(--tinta-suave); }
+.insignia .marca { font-size: 12.5px; font-weight: 700; }
+.lista-simple { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: grid; gap: var(--esp-2); }
+.lista-simple li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }

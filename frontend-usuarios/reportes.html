@@ -118,6 +118,34 @@
         </section>
       </div>
 
+      <section class="panel" aria-labelledby="titulo-calidad">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-calidad">Calidad del servicio</h2>
+          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-calidad">Exportar (CSV)</button>
+        </div>
+        <p class="texto-tenue" id="texto-calidad">Incidencias, satisfacción de los vecinos (calificación de 1 a 5) y tiempo medio de resolución, por zona y por cuadrilla.</p>
+        <h3 class="subtitulo">Por zona</h3>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-calidad-zonas" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Zona</th><th role="columnheader">Incidencias</th><th role="columnheader">Resueltas</th>
+              <th role="columnheader">Calificaciones</th><th role="columnheader">Satisfacción promedio</th><th role="columnheader">Tiempo medio de resolución</th>
+            </tr></thead>
+            <tbody id="cuerpo-calidad-zonas" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <h3 class="subtitulo">Por cuadrilla</h3>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-calidad-cuadrillas" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Cuadrilla</th><th role="columnheader">Asignadas</th><th role="columnheader">Resueltas</th>
+              <th role="columnheader">Calificaciones</th><th role="columnheader">Satisfacción promedio</th><th role="columnheader">Tiempo medio de resolución</th>
+            </tr></thead>
+            <tbody id="cuerpo-calidad-cuadrillas" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="panel" aria-labelledby="titulo-top">
         <h2 class="titulo-seccion" id="titulo-top">Contenedores con más incidencias</h2>
         <div class="tabla-scroll">

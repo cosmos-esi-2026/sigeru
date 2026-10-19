@@ -240,6 +240,50 @@ function dibujarReclamos(incidencias) {
     }).join("") + "</ul>";
 }
 
+function plural2(n, uno, varios) {
+  return n + " " + (n === 1 ? uno : varios);
+}
+
+async function cargarProgreso() {
+  const zona = document.getElementById("zona-progreso");
+  zona.innerHTML = '<span class="esqueleto"></span>';
+  try {
+    const p = (await apiGet(API.gestion + "/participacion/progreso")).datos;
+    zona.innerHTML =
+      '<div class="progreso-cabecera"><span class="progreso-puntos">' + parseInt(p.puntos, 10) + '</span><span>puntos · ' +
+      escaparHtml(plural2(p.resueltos, "reclamo resuelto", "reclamos resueltos")) + " · " +
+      escaparHtml(plural2(p.calificados, "calificación", "calificaciones")) + "</span></div>" +
+      '<p class="texto-tenue">Sumás ' + parseInt(p.puntos_por_resuelto, 10) + " puntos cuando un reclamo tuyo se resuelve y " + parseInt(p.puntos_por_calificar, 10) +
+      " por calificar la atención. Informar un problema no suma (para que nadie abuse); un reclamo descartado tampoco.</p>" +
+      (p.por_calificar.length === 0 ? "" : '<h3 class="subtitulo-panel">Reclamos para calificar</h3><ul class="lista-simple">' + p.por_calificar.map(function (r) {
+        return '<li><a href="incidencia.html?id=' + $entero(r.id_incidencia) + '">' + escaparHtml(r.numero + " · " + r.direccion) + "</a><span>hasta el " +
+               escaparHtml(fechaLegible(r.hasta).slice(0, 10)) + "</span></li>";
+      }).join("") + "</ul>") +
+      '<h3 class="subtitulo-panel">Insignias</h3><ul class="insignias">' + p.insignias.map(function (i) {
+        return '<li class="insignia" data-lograda="' + (i.lograda ? "true" : "false") + '"><strong>' + escaparHtml(i.nombre) + "</strong><small>" +
+               escaparHtml(i.descripcion) + '</small><br><span class="marca">' + (i.lograda ? "✓ Lograda" : "Te faltan " + (i.meta - i.progreso) + " (" + i.progreso + " de " + i.meta + ")") + "</span></li>";
+      }).join("") + "</ul>" +
+      (p.movimientos.length === 0 ? "" : '<h3 class="subtitulo-panel">Últimos puntos</h3><ul class="lista-simple">' + p.movimientos.map(function (m) {
+        return "<li><span>" + escaparHtml(m.motivo + " (" + m.numero + ")") + "</span><span>+" + parseInt(m.puntos, 10) + " · " + escaparHtml(fechaLegible(m.fecha_hora).slice(0, 10)) + "</span></li>";
+      }).join("") + "</ul>");
+  } catch (error) {
+    zona.innerHTML = bloqueEstado("No se pudo traer tu progreso", mensajeDeFallo(error), true);
+  }
+}
+
+async function cargarRanking() {
+  const cuerpo = document.getElementById("cuerpo-ranking");
+  cuerpo.innerHTML = filaEsqueleto(4, 3);
+  try {
+    const filas = (await apiGet(API.gestion + "/participacion/ranking")).datos || [];
+    cuerpo.innerHTML = filas.length === 0 ? filaVacia(4, "Todavía no hay zonas", "") : filas.map(function (f) {
+      return '<tr role="row">' + celda("Posición", f.posicion) + celda("Zona", f.zona) + celda("Reclamos resueltos", f.resueltos) + celda("Puntos", f.puntos) + "</tr>";
+    }).join("");
+  } catch (error) {
+    cuerpo.innerHTML = filaError(4, mensajeDeFallo(error));
+  }
+}
+
 async function cargarPreferencia() {
   const casilla = document.getElementById("pref-correo");
   const estado = document.getElementById("pref-estado");
@@ -317,6 +361,8 @@ function cargarPanel() {
   if (Sesion.obtener().rol === "Vecino") {
     document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
     cargarReclamos();
+    cargarProgreso();
+    cargarRanking();
     cargarPreferencia();
     return;
   }

@@ -53,6 +53,33 @@
         <p class="texto-tenue" id="pref-estado" role="status" aria-live="polite"></p>
       </section>
 
+      <section class="panel solo-vecino" aria-labelledby="titulo-progreso">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-progreso">Mi progreso</h2>
+        </div>
+        <div id="zona-progreso" aria-live="polite"></div>
+      </section>
+
+      <section class="panel solo-vecino" aria-labelledby="titulo-ranking">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-ranking">Ranking de zonas</h2>
+        </div>
+        <p class="texto-tenue">Qué zonas de la ciudad participan más: por reclamos resueltos y puntos. Es por zona, nunca por persona.</p>
+        <div class="tabla-scroll">
+          <table class="tabla" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Posición</th>
+                <th role="columnheader">Zona</th>
+                <th role="columnheader">Reclamos resueltos</th>
+                <th role="columnheader">Puntos</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-ranking" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="panel solo-operario" aria-labelledby="titulo-mi-centro">
         <div class="barra-herramientas">
           <h2 class="titulo" id="titulo-mi-centro">Mi centro de acopio</h2>

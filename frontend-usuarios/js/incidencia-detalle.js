@@ -164,6 +164,42 @@ async function cargarCuadrillas(i) {
   }
 }
 
+const ETIQUETAS_PUNTAJE = { 1: "Muy mala", 2: "Mala", 3: "Regular", 4: "Buena", 5: "Excelente" };
+
+function estrellas(n) {
+  return "★".repeat(n) + "☆".repeat(5 - n);
+}
+
+// Calificacion de la atencion (extras, parte 14): el vecino que informo califica un reclamo resuelto, una sola vez.
+function dibujarCalificacion(i) {
+  const panel = document.getElementById("panel-calificacion");
+  const zona = document.getElementById("zona-calificacion");
+  const rol = rolActual();
+  let html = "";
+  if (i.calificacion) {
+    html = '<p class="calificacion-valor" aria-label="' + i.calificacion.puntaje + ' de 5">' + estrellas(i.calificacion.puntaje) +
+      " <strong>" + i.calificacion.puntaje + " de 5</strong> · " + escaparHtml(ETIQUETAS_PUNTAJE[i.calificacion.puntaje]) + "</p>" +
+      (i.calificacion.comentario ? '<p class="texto-largo">«' + escaparHtml(i.calificacion.comentario) + "»</p>" : "") +
+      '<p class="texto-tenue">Calificado el ' + escaparHtml(fechaLegible(i.calificacion.fecha_hora)) + ".</p>";
+  } else if (i.puede_calificar) {
+    html = '<form class="formulario" id="form-calificacion" novalidate>' +
+      '<p class="ayuda">Tu reclamo se resolvió. Contanos cómo fue la atención: sumás ' + 5 + ' puntos. Podés calificar hasta el ' +
+      escaparHtml(fechaLegible(i.calificar_hasta).slice(0, 10)) + " y no se puede cambiar después.</p>" +
+      '<fieldset class="grupo-radios"><legend>¿Cómo fue la atención?</legend>' +
+      [1, 2, 3, 4, 5].map(function (n) {
+        return '<label class="radio-puntaje"><input type="radio" name="puntaje" value="' + n + '"> ' + n + " · " + ETIQUETAS_PUNTAJE[n] + "</label>";
+      }).join("") + "</fieldset>" +
+      '<label>Comentario (opcional)<textarea name="comentario" rows="2" maxlength="300" placeholder="Qué estuvo bien o qué se puede mejorar"></textarea></label>' +
+      '<button type="submit" class="boton boton-primario">Enviar la calificación</button></form>';
+  } else if (i.estado === "resuelta" && rol === "Vecino") {
+    html = '<p class="texto-tenue">El plazo para calificar este reclamo (30 días desde que se resolvió) venció.</p>';
+  } else if (i.estado === "resuelta") {
+    html = '<p class="texto-tenue">El vecino todavía no calificó la atención.</p>';
+  }
+  panel.classList.toggle("oculto", html === "");
+  zona.innerHTML = html;
+}
+
 function dibujar(i) {
   incidenciaActual = i;
   document.title = i.numero + " - SiGeRU";
@@ -171,6 +207,7 @@ function dibujar(i) {
   document.getElementById("bajada-pagina").textContent =
     textoTipoProblema(i.tipo_problema) + " en " + i.contenedor + " · " + i.direccion;
   dibujarDatos(i);
+  dibujarCalificacion(i);
   dibujarAcciones(i);
   zonaHistorial.innerHTML = lineaDeTiempo(i.historial);
 }
@@ -248,6 +285,33 @@ zonaAcciones.addEventListener("submit", async function (evento) {
     } else {
       liberarEnvio(boton);
       avisoPaginaError(resultado.mensaje || "No se pudo guardar el cambio.");
+    }
+  } catch (e) {
+    liberarEnvio(boton);
+    avisoPaginaError("No se pudo conectar con el servidor. Revisá que esté corriendo.");
+  }
+});
+
+document.getElementById("zona-calificacion").addEventListener("submit", async function (evento) {
+  evento.preventDefault();
+  const form = evento.target;
+  const elegido = form.querySelector('input[name="puntaje"]:checked');
+  if (!elegido) {
+    avisoPaginaError("Elegí un puntaje de 1 a 5.");
+    form.querySelector('input[name="puntaje"]').focus();
+    return;
+  }
+  const boton = bloquearEnvio(form, "Enviando...");
+  try {
+    const { ok, resultado } = await apiPost(API.gestion + "/incidencias/" + idIncidencia + "/calificacion", {
+      puntaje: parseInt(elegido.value, 10), comentario: form.elements.comentario.value.trim(),
+    });
+    if (ok) {
+      await cargarIncidencia();
+      avisoPagina((resultado.mensaje || "Calificación enviada") + ".");
+    } else {
+      liberarEnvio(boton);
+      avisoPaginaError(resultado.mensaje || "No se pudo enviar la calificación.");
     }
   } catch (e) {
     liberarEnvio(boton);
