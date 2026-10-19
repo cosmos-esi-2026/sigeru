@@ -53,19 +53,28 @@
           </div>
         </div>
 
-        <aside class="ficha" aria-labelledby="titulo-cifras">
-          <h2 class="ficha-titulo" id="titulo-cifras">El sistema hoy</h2>
-          <dl class="cifras" id="cifras">
-            <div><dt>Contenedores en servicio</dt><dd id="cifra-contenedores">-</dd></div>
-            <div><dt>Disponibles</dt><dd id="cifra-disponibles">-</dd></div>
-            <div><dt>Llenos</dt><dd id="cifra-llenos">-</dd></div>
-            <div><dt>Zonas con contenedores</dt><dd id="cifra-zonas">-</dd></div>
-            <div><dt>Centros de acopio</dt><dd id="cifra-centros">-</dd></div>
-            <div><dt>Incidencias resueltas</dt><dd id="cifra-resueltas">-</dd></div>
-          </dl>
-          <p class="ficha-nota" id="nota-cifras" role="status">Cargando los datos del sistema...</p>
-        </aside>
+        <figure class="hero-foto">
+          <img src="img/fotos/camion-hero.webp"
+               srcset="img/fotos/camion-hero-720.webp 720w, img/fotos/camion-hero.webp 1280w"
+               sizes="(max-width: 900px) 100vw, 540px" width="1280" height="720" fetchpriority="high"
+               alt="Camión recolector de residuos verde y blanco circulando por una calle arbolada, junto a un contenedor verde en la vereda">
+        </figure>
 
+      </div>
+
+      <div class="contenedor hero-cifras">
+      <aside class="ficha ficha-franja" aria-labelledby="titulo-cifras">
+        <h2 class="ficha-titulo" id="titulo-cifras">El sistema hoy</h2>
+        <dl class="cifras" id="cifras">
+          <div><dt>Contenedores en servicio</dt><dd id="cifra-contenedores">-</dd></div>
+          <div><dt>Disponibles</dt><dd id="cifra-disponibles">-</dd></div>
+          <div><dt>Llenos</dt><dd id="cifra-llenos">-</dd></div>
+          <div><dt>Zonas con contenedores</dt><dd id="cifra-zonas">-</dd></div>
+          <div><dt>Centros de acopio</dt><dd id="cifra-centros">-</dd></div>
+          <div><dt>Incidencias resueltas</dt><dd id="cifra-resueltas">-</dd></div>
+        </dl>
+        <p class="ficha-nota" id="nota-cifras" role="status">Cargando los datos del sistema...</p>
+      </aside>
       </div>
     </section>
 
@@ -123,26 +132,34 @@
     </section>
 
     <section id="como-informar" class="seccion seccion-gris" aria-labelledby="titulo-como">
-      <div class="contenedor">
-        <h2 id="titulo-como">Cómo informar un problema</h2>
-        <p>Un contenedor desbordado, roto o mal ubicado se informa en tres pasos.</p>
-        <ol class="pasos">
-          <li>
-            <span class="paso-numero" aria-hidden="true">1</span>
-            <h3>Creá tu cuenta de vecino</h3>
-            <p>Con tu correo y una contraseña. No necesita aprobación del administrador.</p>
-          </li>
-          <li>
-            <span class="paso-numero" aria-hidden="true">2</span>
-            <h3>Elegí el contenedor</h3>
-            <p>Buscalo en el mapa o escribí su código (está en el mapa de arriba) y contá qué pasa.</p>
-          </li>
-          <li>
-            <span class="paso-numero" aria-hidden="true">3</span>
-            <h3>Seguí tu reclamo</h3>
-            <p>En «Mis reclamos» ves el estado y todo el historial hasta que se resuelve. No enviamos avisos por correo: tenés que entrar a mirarlo.</p>
-          </li>
-        </ol>
+      <div class="contenedor informar-dos">
+        <figure class="foto-lateral">
+          <img src="img/fotos/vecina-informa.webp"
+               srcset="img/fotos/vecina-informa-720.webp 720w, img/fotos/vecina-informa.webp 1280w"
+               sizes="(max-width: 900px) 100vw, 520px" width="1280" height="720" loading="lazy"
+               alt="Una vecina mira su celular junto a un contenedor verde en la vereda de su barrio">
+        </figure>
+        <div class="informar-texto">
+          <h2 id="titulo-como">Cómo informar un problema</h2>
+          <p>Un contenedor desbordado, roto o mal ubicado se informa en tres pasos.</p>
+          <ol class="pasos">
+            <li>
+              <span class="paso-numero" aria-hidden="true">1</span>
+              <h3>Creá tu cuenta de vecino</h3>
+              <p>Con tu correo y una contraseña. No necesita aprobación del administrador.</p>
+            </li>
+            <li>
+              <span class="paso-numero" aria-hidden="true">2</span>
+              <h3>Elegí el contenedor</h3>
+              <p>Buscalo en el mapa o escribí su código (está en el mapa de arriba) y contá qué pasa.</p>
+            </li>
+            <li>
+              <span class="paso-numero" aria-hidden="true">3</span>
+              <h3>Seguí tu reclamo</h3>
+              <p>En «Mis reclamos» ves el estado y todo el historial hasta que se resuelve. No enviamos avisos por correo: tenés que entrar a mirarlo.</p>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -150,6 +167,13 @@
       <div class="contenedor">
         <h2 id="titulo-servicios">Servicios</h2>
         <p>Tres módulos que funcionan juntos y comparten los mismos datos.</p>
+
+        <figure class="foto-ancha">
+          <img src="img/fotos/cuadrilla.webp"
+               srcset="img/fotos/cuadrilla-720.webp 720w, img/fotos/cuadrilla.webp 1280w"
+               sizes="(max-width: 1120px) 100vw, 1072px" width="1280" height="720" loading="lazy"
+               alt="Dos trabajadores de recolección con chalecos reflectantes vaciando un contenedor en la parte trasera de un camión recolector">
+        </figure>
 
         <div class="tarjetas">
           <article class="tarjeta" data-color="vidrio">

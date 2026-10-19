@@ -57,11 +57,9 @@ h1, h2, h3 {
 
 .logo::before {
   content: "";
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--verde);
-  box-shadow: 0 0 0 4px var(--verde-agua);
+  width: 30px;
+  height: 30px;
+  background: url("../img/logo.svg") center / contain no-repeat;
 }
 
 .menu {
@@ -83,7 +81,7 @@ h1, h2, h3 {
 .menu .boton { margin-left: 6px; }
 
 .hero {
-  padding: 72px 0 84px;
+  padding: 72px 0 72px;
   overflow: hidden;
 }
 .hero-interno {
@@ -519,3 +517,67 @@ h1, h2, h3 {
 /* Contraste (WCAG AA): enlaces del cuerpo y atribucion del mapa */
 .seccion p a:not(.boton), .caja-formulario a:not(.boton) { color: var(--verde-oscuro); font-weight: 600; }
 .leaflet-control-attribution a { color: #005a7d; }
+
+/* ---- Fotos (generadas con IA): portada, como informar y servicios ---- */
+.hero-foto {
+  margin: 0;
+  aspect-ratio: 5 / 4;
+  border-radius: var(--radio-3);
+  overflow: hidden;
+  background: var(--verde-agua);
+  box-shadow: var(--sombra-2);
+}
+.hero-foto img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 56% center; }
+
+.hero-cifras { margin-top: 52px; }
+.ficha-franja {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 6px 36px;
+  align-items: center;
+  padding: 22px 30px;
+}
+.ficha-franja .ficha-titulo { margin: 0; grid-row: 1 / 3; }
+.ficha-franja .cifras { grid-template-columns: repeat(6, minmax(0, 1fr)); margin: 0; gap: 10px 22px; }
+.ficha-franja .ficha-nota { grid-column: 2; margin-top: 6px; }
+
+.informar-dos {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 56px;
+  align-items: center;
+}
+.foto-lateral { margin: 0; aspect-ratio: 1 / 1; border-radius: var(--radio-3); overflow: hidden; box-shadow: var(--sombra-2); background: var(--verde-agua); }
+.foto-lateral img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 38% center; }
+.informar-texto > p { color: var(--tinta-suave); max-width: 62ch; font-size: 17px; }
+.informar-dos .pasos { grid-template-columns: 1fr; gap: 14px; margin-top: 24px; }
+.informar-dos .pasos li { display: grid; grid-template-columns: 34px 1fr; column-gap: 16px; align-items: start; padding: 18px 22px; }
+.informar-dos .pasos .paso-numero { grid-row: 1 / 3; margin-top: 2px; }
+.informar-dos .pasos h3 { margin: 0 0 4px; }
+
+.foto-ancha {
+  margin: 34px 0 0;
+  aspect-ratio: 21 / 9;
+  border-radius: var(--radio-3);
+  overflow: hidden;
+  box-shadow: var(--sombra-2);
+  background: var(--verde-agua);
+}
+.foto-ancha img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 62%; }
+
+@media (max-width: 1000px) {
+  .ficha-franja { grid-template-columns: 1fr; padding: 22px; }
+  .ficha-franja .ficha-titulo { grid-row: auto; }
+  .ficha-franja .cifras { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ficha-franja .ficha-nota { grid-column: 1; }
+}
+@media (max-width: 900px) {
+  .hero-foto { aspect-ratio: 16 / 10; }
+  .hero-cifras { margin-top: 36px; }
+  .informar-dos { grid-template-columns: 1fr; gap: 32px; }
+  .foto-lateral { aspect-ratio: 4 / 3; }
+  .foto-ancha { aspect-ratio: 16 / 9; }
+}
+@media (max-width: 640px) {
+  .ficha-franja .cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
