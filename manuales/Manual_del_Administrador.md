@@ -69,6 +69,11 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Reportes:** período (Últimos 30 días, Este mes, Todo el historial o Desde/Hasta) y Zona; **Generar informe**, **Imprimir**,
 **Exportar (CSV)** y **Exportar detalle (CSV)**.
 
+## Reporte en PDF
+
+En **Reportes**, elegí el período (y la zona si querés) y tocá **«Descargar PDF»**. El archivo (`sigeru-reporte-AAAA-MM-DD.pdf`) trae portada con el período, resumen, urgencias, incidencias por zona y tipo, satisfacción, impacto ambiental (marcado como estimación, con sus fuentes) y el detalle de las incidencias.
+Las cifras son las mismas de la pantalla. Para que no sea interminable muestra hasta 100 incidencias y 25 contenedores llenos, y lo avisa; para ver todas usá «Exportar (CSV)». **Cada descarga queda anotada en Auditoría.**
+
 ## Impacto ambiental
 
 En **Reportes**, la sección **Impacto ambiental** muestra por mes los kilos recolectados, cuántos son de tipos reciclables, el porcentaje y el **CO2 evitado estimado**, con **Exportar (CSV)**. **Es una estimación**: kilos de cada tipo reciclable por un factor de la

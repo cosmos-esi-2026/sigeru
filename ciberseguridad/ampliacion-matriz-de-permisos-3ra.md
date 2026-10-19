@@ -279,3 +279,11 @@ Sin sesión, lo que se puede hacer ahora es: `POST /login`, `/solicitudes`, `/re
 | `GET /api-gestion/contenedores/ruta-sugerida` | Solo Administrador | Solo lectura (no crea recolecciones); `horizonte` 24 o 48, `id_zona` e `id_centro` opcionales y validados (400). Cuadrilla, Operario y Vecino: 403; sin sesión: 401 |
 
 No expone datos de personas (solo contenedores, ubicaciones y el centro de destino). Cubierto por la clase pura `RutaSugerida` (unitarias) y por `correr-tests-ruta.php` (HTTP).
+
+## 21. Actualización del 19/10/2026 (extras, parte 20: reporte en PDF)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET /api-gestion/reportes/pdf` | Solo Administrador | Descarga un PDF con los mismos datos de la pantalla de Reportes (`desde`, `hasta`, `zona` opcionales y validados: 400; zona inexistente: 404). Cuadrilla, Operario y Vecino: 403; sin sesión: 401. **La descarga queda en la auditoría** (método `GET`, rol, código 200, IP), aunque los GET no se registran solos |
+
+El PDF trae personas solo como nombres de cuadrillas (no de vecinos ni de usuarios). Sin dependencias de terceros: el generador de PDF es propio (`PdfSimple`). Cubierto por unitarias (`unitarias-pdf.php`) y HTTP (`correr-tests-pdf.php`).
