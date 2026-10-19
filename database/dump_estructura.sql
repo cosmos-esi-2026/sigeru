@@ -42,6 +42,9 @@
 --  Actualizado el 19/10/2026 (extras, parte 14): pasa de 26 a 28 tablas fisicas. Suma
 --  calificacion y movimiento_punto (migraciones 012 y 013) y sus cuatro triggers
 --  de solo agregado. Las tablas del modelo pasan de 20 a 22.
+--
+--  Actualizado el 19/10/2026 (extras, parte 15): la tabla usuario suma id_zona
+--  (la zona que elige el vecino; migracion 014). Siguen 28 tablas fisicas.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -680,6 +683,7 @@ CREATE TABLE `usuario` (
   `id_rol` int(11) NOT NULL,
   `id_cuadrilla` int(11) DEFAULT NULL,
   `id_centro` int(11) DEFAULT NULL,
+  `id_zona` int(11) DEFAULT NULL,
   `id_solicitud` int(11) DEFAULT NULL,
   `estado` enum('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
   `avisos_por_correo` tinyint(1) NOT NULL DEFAULT 1,
@@ -691,10 +695,12 @@ CREATE TABLE `usuario` (
   KEY `fk_usuario_centro` (`id_centro`),
   KEY `fk_usuario_solicitud` (`id_solicitud`),
   KEY `idx_usuario_estado` (`estado`),
+  KEY `fk_usuario_zona` (`id_zona`),
   CONSTRAINT `fk_usuario_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`),
   CONSTRAINT `fk_usuario_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`),
-  CONSTRAINT `fk_usuario_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitud_registro` (`id_solicitud`)
+  CONSTRAINT `fk_usuario_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitud_registro` (`id_solicitud`),
+  CONSTRAINT `fk_usuario_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `vaciado`;

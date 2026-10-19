@@ -181,6 +181,7 @@ CREATE TABLE usuario (
     id_rol         INT          NOT NULL,
     id_cuadrilla   INT          NULL,
     id_centro      INT          NULL,
+    id_zona        INT          NULL,
     id_solicitud   INT          NULL,
     estado         ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
     avisos_por_correo TINYINT(1) NOT NULL DEFAULT 1,
@@ -191,6 +192,8 @@ CREATE TABLE usuario (
         FOREIGN KEY (id_cuadrilla) REFERENCES cuadrilla(id_cuadrilla),
     CONSTRAINT fk_usuario_centro
         FOREIGN KEY (id_centro) REFERENCES centro_acopio(id_centro),
+    CONSTRAINT fk_usuario_zona
+        FOREIGN KEY (id_zona) REFERENCES zona(id_zona),
     CONSTRAINT fk_usuario_solicitud
         FOREIGN KEY (id_solicitud) REFERENCES solicitud_registro(id_solicitud)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -480,7 +483,8 @@ INSERT INTO migracion (nombre) VALUES
     ('010-stock-solo-agregado.sql'),
     ('011-notificaciones.sql'),
     ('012-participacion-vecino.sql'),
-    ('013-participacion-solo-agregado.sql');
+    ('013-participacion-solo-agregado.sql'),
+    ('014-zona-del-vecino.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.

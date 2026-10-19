@@ -178,6 +178,16 @@ INSERT INTO recoleccion (id_recoleccion, fecha_hora_inicio, fecha_hora_fin, esta
 (5, '2026-09-04 22:00:00', NULL,                  'cancelada',  'Camion fuera de servicio',              5, 5, 3, 2);
 
 
+-- Recolecciones planificadas para la semana de la defensa (16 al 23/11/2026), para que el vecino vea "cuando pasa el camion por mi zona".
+-- DATOS DE DEMOSTRACION con fechas fijas: pasada esa semana, el vecino vera "todavia no hay recolecciones planificadas para tu zona".
+INSERT INTO recoleccion (id_recoleccion, fecha_hora_inicio, fecha_hora_fin, estado, observaciones, id_ruta, id_camion, id_cuadrilla, id_centro) VALUES
+(6,  '2026-11-16 06:00:00', NULL, 'planificada', 'Planificada de demostracion', 1, 1, 1, 3),
+(7,  '2026-11-16 06:30:00', NULL, 'planificada', 'Planificada de demostracion', 2, 4, 3, 3),
+(8,  '2026-11-23 06:30:00', NULL, 'planificada', 'Planificada de demostracion', 2, 4, 3, 3),
+(9,  '2026-11-18 14:00:00', NULL, 'planificada', 'Planificada de demostracion', 3, 1, 2, 1),
+(10, '2026-11-20 06:15:00', NULL, 'planificada', 'Planificada de demostracion', 4, 4, 1, 1);
+
+
 -- --- 14) Vaciados -----------------------------------------------------------
 INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen_l) VALUES
 (1, 4,  '2026-09-07 06:25:00', 210.50, 640.00),
