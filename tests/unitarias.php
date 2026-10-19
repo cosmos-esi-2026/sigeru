@@ -436,6 +436,7 @@ require __DIR__ . "/unitarias-notificaciones.php";
 require __DIR__ . "/unitarias-participacion.php";
 require __DIR__ . "/unitarias-pasaje.php";
 require __DIR__ . "/unitarias-prediccion.php";
+require __DIR__ . "/unitarias-impacto.php";
 
 echo "\n" . str_repeat("=", 50) . "\n";
 echo "Pasaron: $pasaron   Fallaron: $fallaron\n";
