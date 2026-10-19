@@ -1,0 +1,970 @@
+{
+ "titulo": "¿Dónde tiro esto? Guía de clasificación de residuos domiciliarios",
+ "aviso": "Guía basada en el Manual de residuos domiciliarios de la Intendencia de Montevideo (2024). Las reglas pueden cambiar y varían según el departamento: ante la duda, consultá a tu intendencia.",
+ "fuentes": [
+  {
+   "id": "manual-imm",
+   "texto": "Intendencia de Montevideo, Departamento de Desarrollo Ambiental. Manual de residuos domiciliarios: claves para mejorar nuestra gestión de residuos (2024).",
+   "url": "https://montevideo.gub.uy/sites/default/files/biblioteca/manualderesiduosdomiciliarios.pdf"
+  }
+ ],
+ "enlaces_del_manual": [
+  {
+   "texto": "Ubicación de los contenedores y puntos de entrega (indicado en el manual)",
+   "url": "https://montevideo.gub.uy/clasificacion"
+  },
+  {
+   "texto": "Ecocentros (indicado en el manual)",
+   "url": "https://montevideo.gub.uy/ecocentros"
+  },
+  {
+   "texto": "Compostaje domiciliario (indicado en el manual)",
+   "url": "https://montevideo.gub.uy/compostaje"
+  }
+ ],
+ "items": [
+  {
+   "nombre": "Aceite de cocina usado",
+   "sinonimos": [
+    "aceite",
+    "fritura",
+    "aceite",
+    "usado",
+    "cocina"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853) o puntos de entrega voluntaria",
+   "consejo": "Después de cocinar, enfrascalo. Un litro vertido al saneamiento puede contaminar hasta mil litros de agua.",
+   "fuente": "manual-imm",
+   "pagina": 26
+  },
+  {
+   "nombre": "Bandeja descartable con restos de comida",
+   "sinonimos": [
+    "bandeja",
+    "sucia",
+    "descartable",
+    "restos",
+    "de",
+    "alimento",
+    "envase",
+    "sucio"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Con restos de comida no se recicla: va con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Bandeja o pote de plástico limpio",
+   "sinonimos": [
+    "bandeja",
+    "tupper",
+    "recipiente",
+    "de",
+    "plastico"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Sin restos de comida: si está sucio va con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Baterías de auto (plomo-ácido)",
+   "sinonimos": [
+    "bateria",
+    "de",
+    "auto",
+    "bateria",
+    "de",
+    "moto",
+    "plomo"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Comercios que venden baterías (están obligados a recibirlas)",
+   "consejo": "Es obligación de quien las vende contar con un centro de recepción.",
+   "fuente": "manual-imm",
+   "pagina": 27
+  },
+  {
+   "nombre": "Baterías de celular o portátiles",
+   "sinonimos": [
+    "bateria",
+    "bateria",
+    "de",
+    "celular",
+    "bateria",
+    "de",
+    "notebook"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "No las tires en los contenedores de la calle: tienen elementos peligrosos.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Bidón de plástico vacío",
+   "sinonimos": [
+    "bidon",
+    "balde",
+    "garrafa",
+    "de",
+    "agua"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Vacío y enjuagado.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Bolsa de papel",
+   "sinonimos": [
+    "bolsas",
+    "de",
+    "papel",
+    "envoltorio",
+    "de",
+    "papel"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Bolsas de plástico",
+   "sinonimos": [
+    "bolsa",
+    "nylon",
+    "bolsa",
+    "de",
+    "supermercado",
+    "bolsita"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Que estén limpias y secas; metelas dentro de una sola bolsa para que ocupen menos.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Botella de aceite vacía",
+   "sinonimos": [
+    "botella",
+    "de",
+    "aceite",
+    "aceite",
+    "vacio",
+    "envase",
+    "de",
+    "aceite"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Vacía y escurrida; el aceite usado se entrega aparte (mirá «Aceite de cocina usado»).",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Botella de plástico (PET)",
+   "sinonimos": [
+    "botella",
+    "botellas",
+    "agua",
+    "gaseosa",
+    "pet",
+    "envase",
+    "de",
+    "bebida"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagala y apretala. Podés dejarle la tapa puesta.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Botella de vidrio",
+   "sinonimos": [
+    "botella",
+    "vino",
+    "cerveza",
+    "botellas",
+    "de",
+    "vidrio",
+    "envase",
+    "de",
+    "vidrio"
+   ],
+   "tipo": "Vidrio",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "No va al contenedor de la calle (puede ser peligroso). Tiene que ser un envase liso, sin relieves ni grabados.",
+   "fuente": "manual-imm",
+   "pagina": 25
+  },
+  {
+   "nombre": "Brasas y carbón encendido",
+   "sinonimos": [
+    "brasas",
+    "carbon",
+    "asado",
+    "cenizas",
+    "calientes"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle), solo cuando estén apagadas del todo",
+   "consejo": "No se pueden depositar brasas encendidas en el contenedor: evita incendios.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Caja de cartón",
+   "sinonimos": [
+    "carton",
+    "cajas",
+    "caja",
+    "de",
+    "zapatos",
+    "embalaje"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Aplastala para que ocupe poco lugar: así queda espacio para otras personas.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Caja de cereales o galletitas",
+   "sinonimos": [
+    "caja",
+    "de",
+    "cereal",
+    "cereales",
+    "galletitas",
+    "caja",
+    "de",
+    "cartulina",
+    "cartulina"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Sin la bolsa de adentro y aplastada.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Caja de jugo o de leche (tetra brik)",
+   "sinonimos": [
+    "tetra",
+    "pak",
+    "tetrabrik",
+    "envase",
+    "compuesto",
+    "caja",
+    "de",
+    "leche",
+    "caja",
+    "de",
+    "jugo"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Es un envase compuesto (cartón, plástico y aluminio): el manual de la Intendencia lo cuenta como reciclable. Enjuagalo y aplastalo.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Caja de pizza con grasa",
+   "sinonimos": [
+    "pizza",
+    "caja",
+    "engrasada",
+    "grasa"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Con grasa o restos de comida contamina el reciclaje: el manual pide reciclables limpios y sin restos de comida. Si la caja está limpia, va con los reciclables.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Cartuchos de tinta",
+   "sinonimos": [
+    "cartucho",
+    "tinta",
+    "toner",
+    "impresora"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Tienen elementos peligrosos: no van al contenedor de la calle.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Cáscaras de frutas y verduras",
+   "sinonimos": [
+    "cascara",
+    "banana",
+    "naranja",
+    "manzana",
+    "restos",
+    "de",
+    "verduras",
+    "restos",
+    "de",
+    "fruta"
+   ],
+   "tipo": "Organico",
+   "contenedor": "Compostera domiciliaria (programa Compostaje Domiciliario de la Intendencia)",
+   "consejo": "Las frutas y verduras son compostables; el programa da la compostera y explica cómo usarla (montevideo.gub.uy/compostaje).",
+   "fuente": "manual-imm",
+   "pagina": 29
+  },
+  {
+   "nombre": "Celulares y cargadores",
+   "sinonimos": [
+    "celular",
+    "telefono",
+    "cargador",
+    "cable",
+    "auriculares"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Los artículos electrónicos tienen elementos peligrosos: no van a los contenedores de la calle.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Cerámica y platos rotos",
+   "sinonimos": [
+    "ceramica",
+    "plato",
+    "roto",
+    "taza",
+    "rota",
+    "azulejo",
+    "loza"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "La cerámica no es reciclable: no la mezcles con el vidrio.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Colillas de cigarrillo",
+   "sinonimos": [
+    "colilla",
+    "cigarrillo",
+    "cigarro",
+    "pucho"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Apagadas del todo.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Computadoras, notebooks y tablets",
+   "sinonimos": [
+    "pc",
+    "computadora",
+    "notebook",
+    "laptop",
+    "tablet",
+    "monitor",
+    "impresora",
+    "teclado"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853) o Retiro sin costo por WhatsApp 092 250 260 de la Intendencia",
+   "consejo": "Los aparatos eléctricos y electrónicos tienen sustancias peligrosas: no van al contenedor común.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Cuadernos y hojas",
+   "sinonimos": [
+    "hojas",
+    "cuaderno",
+    "papel",
+    "de",
+    "oficina",
+    "fotocopias",
+    "apuntes"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Diario o periódico",
+   "sinonimos": [
+    "diarios",
+    "periodicos",
+    "papel",
+    "de",
+    "diario"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Envase de detergente o shampoo",
+   "sinonimos": [
+    "botella",
+    "de",
+    "limpieza",
+    "shampoo",
+    "detergente",
+    "jabon",
+    "liquido",
+    "suavizante"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagalo antes de tirarlo.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Envase de helado",
+   "sinonimos": [
+    "pote",
+    "de",
+    "helado",
+    "helado",
+    "balde",
+    "de",
+    "helado"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagalo para sacarle los restos.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Envase de yogur o postre",
+   "sinonimos": [
+    "pote",
+    "vasito",
+    "yogur",
+    "postre",
+    "pote",
+    "de",
+    "plastico"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagalo para sacarle los restos de comida.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Envases de agroquímicos",
+   "sinonimos": [
+    "agroquimico",
+    "plaguicida",
+    "veneno",
+    "envase",
+    "de",
+    "fitosanitario"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Plan Maestro para Envases de Plaguicidas (no es un residuo domiciliario común)",
+   "consejo": "Lavalos tres veces reutilizando el agua y entregalos al Plan Maestro.",
+   "fuente": "manual-imm",
+   "pagina": 27
+  },
+  {
+   "nombre": "Escombro de pequeñas obras",
+   "sinonimos": [
+    "escombro",
+    "reforma",
+    "obra",
+    "ladrillos",
+    "cascotes",
+    "revoque",
+    "pintura"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853) o Retiro sin costo por WhatsApp 092 250 260 de la Intendencia",
+   "consejo": "Limpio, sin madera, plástico, cerámica, tierra, yeso ni aislantes, en hasta cinco bolsas que pueda levantar una persona. En el contenedor, por su peso, daña el sistema de levante.",
+   "fuente": "manual-imm",
+   "pagina": 22
+  },
+  {
+   "nombre": "Frasco de mermelada o conservas",
+   "sinonimos": [
+    "frasco",
+    "tarro",
+    "pote",
+    "de",
+    "vidrio",
+    "mermelada",
+    "conserva"
+   ],
+   "tipo": "Vidrio",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Enjuagalo. Envase liso, sin relieves ni grabados.",
+   "fuente": "manual-imm",
+   "pagina": 25
+  },
+  {
+   "nombre": "Frasco de salsa o aderezo",
+   "sinonimos": [
+    "frasco",
+    "salsa",
+    "aderezo",
+    "mayonesa",
+    "mostaza",
+    "frasco",
+    "de",
+    "vidrio"
+   ],
+   "tipo": "Vidrio",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Enjuagalo. Llevalo sin romper.",
+   "fuente": "manual-imm",
+   "pagina": 25
+  },
+  {
+   "nombre": "Huesos",
+   "sinonimos": [
+    "hueso",
+    "huesos",
+    "carne"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Los huesos van con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Lata de conserva",
+   "sinonimos": [
+    "hojalata",
+    "lata",
+    "de",
+    "atun",
+    "lata",
+    "de",
+    "arvejas",
+    "lata",
+    "de",
+    "tomate",
+    "conserva"
+   ],
+   "tipo": "Metal",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagala; sacale los restos de comida.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Lata de gaseosa o cerveza",
+   "sinonimos": [
+    "lata",
+    "aluminio",
+    "lata",
+    "de",
+    "bebida"
+   ],
+   "tipo": "Metal",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagala y aplastala.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Lámparas LED y de mercurio",
+   "sinonimos": [
+    "lampara",
+    "lamparita",
+    "tubo",
+    "fluorescente",
+    "led",
+    "bajo",
+    "consumo"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Pueden ser muy peligrosas: no las tires en el contenedor.",
+   "fuente": "manual-imm",
+   "pagina": 24
+  },
+  {
+   "nombre": "Maple de huevos",
+   "sinonimos": [
+    "carton",
+    "de",
+    "huevos",
+    "huevos"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Material de barrido",
+   "sinonimos": [
+    "barrido",
+    "tierra",
+    "polvo",
+    "escoba"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Va con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Medicamentos vencidos",
+   "sinonimos": [
+    "remedios",
+    "pastillas",
+    "jarabes",
+    "medicamento",
+    "vencido",
+    "ecofarma"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Buzones Ecofarma de las farmacias o Ecocentro",
+   "consejo": "Llevá también los envases.",
+   "fuente": "manual-imm",
+   "pagina": 24
+  },
+  {
+   "nombre": "Muebles, colchones y objetos grandes",
+   "sinonimos": [
+    "mueble",
+    "sillon",
+    "colchon",
+    "escritorio",
+    "mesa",
+    "silla",
+    "somier"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Retiro sin costo por WhatsApp 092 250 260 de la Intendencia",
+   "consejo": "No los dejes junto al contenedor: forman basurales.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Neumáticos",
+   "sinonimos": [
+    "neumatico",
+    "cubierta",
+    "rueda",
+    "goma"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Comercios que venden neumáticos (están obligados a recibirlos gratis)",
+   "consejo": "Al comprar neumáticos nuevos podés dejar los viejos.",
+   "fuente": "manual-imm",
+   "pagina": 27
+  },
+  {
+   "nombre": "Pañales",
+   "sinonimos": [
+    "panal",
+    "panales",
+    "descartables",
+    "bebe"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "No tienen alternativa de valorización.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Paños húmedos",
+   "sinonimos": [
+    "panos",
+    "humedos",
+    "toallitas",
+    "humedas"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Aunque parezcan de papel, no son reciclables.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Papel higiénico",
+   "sinonimos": [
+    "papel",
+    "higienico"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Usado, va con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Paquete de galletitas, snacks o fideos",
+   "sinonimos": [
+    "envase",
+    "metalizado",
+    "paquete",
+    "galletitas",
+    "snack",
+    "fideos",
+    "envoltorio"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Los envases metalizados se cuentan como reciclables si están limpios y secos.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Pilas",
+   "sinonimos": [
+    "pila",
+    "pilas",
+    "baterias",
+    "chicas",
+    "alcalinas"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Contenedores de pilas de la vía pública o Ecocentro",
+   "consejo": "Guardalas en un recipiente seco de plástico hasta llevarlas. Ubicación de los contenedores: montevideo.gub.uy/clasificacion.",
+   "fuente": "manual-imm",
+   "pagina": 24
+  },
+  {
+   "nombre": "Restos de poda y ramas",
+   "sinonimos": [
+    "poda",
+    "ramas",
+    "pasto",
+    "hojas",
+    "jardin"
+   ],
+   "tipo": "Organico",
+   "contenedor": "Ecocentro Prado (Lucas Obes 853) o Retiro sin costo por WhatsApp 092 250 260 de la Intendencia",
+   "consejo": "Atadas en paquetes de 1 metro como máximo o en bolsas de 15 kg; hasta 20 por solicitud. No van al contenedor porque lo saturan.",
+   "fuente": "manual-imm",
+   "pagina": 26
+  },
+  {
+   "nombre": "Revistas y folletos",
+   "sinonimos": [
+    "revista",
+    "folleto",
+    "catalogo",
+    "publicidad"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Rollo de cartón del papel higiénico",
+   "sinonimos": [
+    "tubo",
+    "de",
+    "carton",
+    "rollo"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "El cartón limpio es reciclable; el papel higiénico usado no.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Ropa y calzado en buen estado",
+   "sinonimos": [
+    "ropa",
+    "zapatillas",
+    "calzado",
+    "ropa",
+    "usada",
+    "zapatos",
+    "campera"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Si está en buen estado tiene una segunda oportunidad: no la mezcles con los residuos mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 25
+  },
+  {
+   "nombre": "Sachet de leche",
+   "sinonimos": [
+    "sachet",
+    "leche",
+    "bolsa",
+    "de",
+    "leche",
+    "bolsita",
+    "de",
+    "leche"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Enjuagalo y apretalo. Es una bolsa de plástico.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Sobras de comida cocida",
+   "sinonimos": [
+    "comida",
+    "cocida",
+    "sobras",
+    "arroz",
+    "restos",
+    "de",
+    "comida",
+    "restos",
+    "de",
+    "alimentos"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "El manual cuenta los restos de alimentos entre los residuos mezclados. Si tenés compostera, consultá qué admite el programa.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Sobres y cartas",
+   "sinonimos": [
+    "sobre",
+    "carta",
+    "correspondencia"
+   ],
+   "tipo": "Papel",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 18
+  },
+  {
+   "nombre": "Tapas de plástico",
+   "sinonimos": [
+    "tapa",
+    "tapita",
+    "tapitas",
+    "tapa",
+    "de",
+    "botella"
+   ],
+   "tipo": "Plastico",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Tapas metálicas",
+   "sinonimos": [
+    "tapa",
+    "de",
+    "frasco",
+    "tapa",
+    "corona",
+    "chapita",
+    "tapa",
+    "de",
+    "lata"
+   ],
+   "tipo": "Metal",
+   "contenedor": "Contenedor de materiales reciclables (puerta de supermercados y grandes superficies) o punto de entrega voluntaria",
+   "consejo": "Limpio, seco y lo más compacto posible.",
+   "fuente": "manual-imm",
+   "pagina": 11
+  },
+  {
+   "nombre": "Televisores y electrodomésticos",
+   "sinonimos": [
+    "tv",
+    "televisor",
+    "heladera",
+    "microondas",
+    "estufa",
+    "electrodomestico",
+    "lavarropas"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853) o Retiro sin costo por WhatsApp 092 250 260 de la Intendencia",
+   "consejo": "Rotos o que quieras descartar. No van al contenedor común.",
+   "fuente": "manual-imm",
+   "pagina": 23
+  },
+  {
+   "nombre": "Textiles (sábanas y telas)",
+   "sinonimos": [
+    "textil",
+    "sabanas",
+    "telas",
+    "trapos",
+    "tela"
+   ],
+   "tipo": "Especial",
+   "contenedor": "Ecocentro (Buceo: Tomás Basáñez 1212; Prado: Lucas Obes 853)",
+   "consejo": "Los textiles no recuperables como ropa pueden valorizarse: no van con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 25
+  },
+  {
+   "nombre": "Toallas de papel para manos",
+   "sinonimos": [
+    "toalla",
+    "de",
+    "papel",
+    "servilleta",
+    "papel",
+    "de",
+    "cocina",
+    "servilletas"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "Usadas, van con los mezclados.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  },
+  {
+   "nombre": "Toallas sanitarias",
+   "sinonimos": [
+    "toallita",
+    "sanitaria",
+    "protector",
+    "higiene",
+    "femenina"
+   ],
+   "tipo": "Mixto",
+   "contenedor": "Contenedor de residuos mezclados (el de la calle)",
+   "consejo": "No tienen alternativa de valorización.",
+   "fuente": "manual-imm",
+   "pagina": 17
+  }
+ ]
+}
