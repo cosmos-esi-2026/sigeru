@@ -21,6 +21,8 @@ TRUNCATE TABLE auditoria;
 TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
+TRUNCATE TABLE movimiento_punto;
+TRUNCATE TABLE calificacion;
 TRUNCATE TABLE notificacion;
 TRUNCATE TABLE historial_maquinaria;
 TRUNCATE TABLE movimiento_stock;
@@ -237,6 +239,16 @@ INSERT INTO incidencia (descripcion, tipo_problema, fecha_reporte, fecha_resoluc
 ('Contenedor quemado durante la noche',                     'roto',       '2026-09-06 08:15:00', NULL,                  'en_curso',   'alta',  6, 7,  2),
 ('Olor muy fuerte, parece que no se levanta hace dias',     'otro',       '2026-09-09 09:40:00', NULL,                  'abierta',    'media', 3, 7,  NULL),
 ('Reporte duplicado del mismo vecino',                      'otro',       '2026-09-02 12:00:00', '2026-09-02 12:30:00', 'descartada', 'baja',  6, 1,  NULL);
+
+
+-- --- 15 ter) Calificacion y puntos (extras, parte 14) ----------------------------
+-- DATOS DE DEMOSTRACION: la unica incidencia resuelta del seed (INC-0002) ya esta calificada, y de ahi salen
+-- los 15 puntos de Marta (10 por el reclamo resuelto y 5 por calificar). El descartado (INC-0005) no suma.
+INSERT INTO calificacion (id_incidencia, id_usuario, puntaje, comentario, fecha_hora) VALUES
+(2, 3, 4, 'Rapido y prolijo (calificacion de demostracion)', '2026-09-01 18:00:00');
+INSERT INTO movimiento_punto (id_usuario, id_incidencia, motivo, puntos, fecha_hora) VALUES
+(3, 2, 'reclamo_resuelto', 10, '2026-09-01 11:00:00'),
+(3, 2, 'calificacion',      5, '2026-09-01 18:00:00');
 
 
 -- --- 15 bis) Historial de las incidencias -----------------------------------

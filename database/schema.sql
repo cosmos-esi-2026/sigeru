@@ -1,10 +1,10 @@
 -- ============================================================================
 --  SiGeRU 2026 - Sistema de Gestion de Residuos Urbanos
 --  Archivo: schema.sql
---  Que es : DDL de la base de datos. Crea la base y las 20 tablas del modelo:
+--  Que es : DDL de la base de datos. Crea la base y las 22 tablas del modelo:
 --           las 15 de la 2da entrega, historial_incidencia (15 bis, de la 3ra) y, de
 --           las extras, recepcion, movimiento_stock, historial_maquinaria (parte 12) y
---           notificacion (parte 13).
+--           notificacion (parte 13), calificacion y movimiento_punto (parte 14).
 --           Mas seis tablas fuera del modelo de clases: migracion, intento_login,
 --           limite_peticion (freno por IP a los pedidos publicos), enlace_clave
 --           (activar cuentas), auditoria (quien hizo que) y
@@ -50,6 +50,8 @@ CREATE DATABASE IF NOT EXISTS sigeru
 USE sigeru;
 
 -- El orden inverso al de creacion, para poder reimportar sin errores de FK.
+DROP TABLE IF EXISTS movimiento_punto;
+DROP TABLE IF EXISTS calificacion;
 DROP TABLE IF EXISTS notificacion;
 DROP TABLE IF EXISTS historial_maquinaria;
 DROP TABLE IF EXISTS movimiento_stock;
@@ -476,7 +478,9 @@ INSERT INTO migracion (nombre) VALUES
     ('008-limite-peticion.sql'),
     ('009-operario-centro-stock.sql'),
     ('010-stock-solo-agregado.sql'),
-    ('011-notificaciones.sql');
+    ('011-notificaciones.sql'),
+    ('012-participacion-vecino.sql'),
+    ('013-participacion-solo-agregado.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -601,6 +605,36 @@ CREATE TABLE notificacion (
     INDEX idx_notificacion_usuario (id_usuario, leida, fecha_hora)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Parte 14 de las extras: calificacion del vecino y sus puntos.
+CREATE TABLE calificacion (
+    id_calificacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_incidencia   INT          NOT NULL UNIQUE,
+    id_usuario      INT          NOT NULL,
+    puntaje         TINYINT      NOT NULL,
+    comentario      VARCHAR(300) NULL,
+    fecha_hora      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_calificacion_puntaje CHECK (puntaje BETWEEN 1 AND 5),
+    CONSTRAINT fk_calificacion_incidencia
+        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE,
+    CONSTRAINT fk_calificacion_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE movimiento_punto (
+    id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario    INT      NOT NULL,
+    id_incidencia INT      NOT NULL,
+    motivo        ENUM('reclamo_resuelto','calificacion') NOT NULL,
+    puntos        SMALLINT NOT NULL,
+    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_punto_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    CONSTRAINT fk_punto_incidencia
+        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE,
+    UNIQUE KEY uq_punto_incidencia_motivo (id_incidencia, motivo),
+    INDEX idx_punto_usuario (id_usuario, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TRIGGER trg_histinc_sin_update BEFORE UPDATE ON historial_incidencia
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado';
@@ -633,8 +667,24 @@ CREATE TRIGGER trg_histmaq_sin_delete BEFORE DELETE ON historial_maquinaria
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado';
 
+CREATE TRIGGER trg_calificacion_sin_update BEFORE UPDATE ON calificacion
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Una calificacion no se edita';
+
+CREATE TRIGGER trg_calificacion_sin_delete BEFORE DELETE ON calificacion
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Una calificacion no se borra';
+
+CREATE TRIGGER trg_punto_sin_update BEFORE UPDATE ON movimiento_punto
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los puntos son de solo agregado';
+
+CREATE TRIGGER trg_punto_sin_delete BEFORE DELETE ON movimiento_punto
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los puntos son de solo agregado';
+
 -- ============================================================================
---  Fin del schema. 20 tablas del modelo de clases (15 + historial_incidencia + recepcion,
---  movimiento_stock, historial_maquinaria y notificacion, de las extras)
+--  Fin del schema. 22 tablas del modelo de clases (15 + historial_incidencia + recepcion,
+--  movimiento_stock, historial_maquinaria, notificacion, calificacion y movimiento_punto, de las extras)
 --  mas las tecnicas migracion e intento_login.
 -- ============================================================================
