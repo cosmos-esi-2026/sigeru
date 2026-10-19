@@ -5,8 +5,9 @@
 --           las 15 de la 2da entrega, historial_incidencia (15 bis, de la 3ra) y, de
 --           las extras, recepcion, movimiento_stock, historial_maquinaria (parte 12) y
 --           notificacion (parte 13), calificacion y movimiento_punto (parte 14).
---           Mas seis tablas fuera del modelo de clases: migracion, intento_login,
---           limite_peticion (freno por IP a los pedidos publicos), enlace_clave
+--           Mas siete tablas fuera del modelo de clases: migracion, intento_login,
+--           limite_peticion (freno por IP a los pedidos publicos), clave_idempotencia
+--           (reenvios sin duplicar, parte 21), enlace_clave
 --           (activar cuentas), auditoria (quien hizo que) y
 --           foto_incidencia (la foto opcional de una incidencia, RF-222; es parte
 --           de Incidencia, no una clase aparte).
@@ -56,6 +57,7 @@ DROP TABLE IF EXISTS notificacion;
 DROP TABLE IF EXISTS historial_maquinaria;
 DROP TABLE IF EXISTS movimiento_stock;
 DROP TABLE IF EXISTS recepcion;
+DROP TABLE IF EXISTS clave_idempotencia;
 DROP TABLE IF EXISTS limite_peticion;
 DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS foto_incidencia;
@@ -488,7 +490,8 @@ INSERT INTO migracion (nombre) VALUES
     ('012-participacion-vecino.sql'),
     ('013-participacion-solo-agregado.sql'),
     ('014-zona-del-vecino.sql'),
-    ('015-factor-ambiental.sql');
+    ('015-factor-ambiental.sql'),
+    ('016-clave-idempotencia.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -498,6 +501,21 @@ CREATE TABLE limite_peticion (
     clave      VARCHAR(80) NOT NULL,
     fecha_hora DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_limite_clave (clave, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- Claves de operacion: que un vaciado o un avance guardado sin conexion y reenviado no se
+-- cargue dos veces (extras, parte 21). Nace con la migracion 016.
+-- ----------------------------------------------------------------------------
+CREATE TABLE clave_idempotencia (
+    clave      CHAR(36)     NOT NULL PRIMARY KEY,
+    id_usuario INT          NOT NULL,
+    operacion  VARCHAR(40)  NOT NULL,
+    estado     ENUM('en_proceso','terminada') NOT NULL DEFAULT 'en_proceso',
+    codigo     SMALLINT UNSIGNED NULL,
+    respuesta  MEDIUMTEXT   NULL,
+    creada     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_clave_idempotencia_creada (creada)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------

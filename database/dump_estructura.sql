@@ -48,6 +48,10 @@
 --
 --  Actualizado el 19/10/2026 (extras, parte 18): tipo_residuo suma factor_co2_kg_por_kg,
 --  fuente_factor y url_fuente (migracion 015). Siguen 28 tablas fisicas.
+--
+--  Actualizado el 19/10/2026 (extras, parte 21): suma clave_idempotencia (migracion 016: reenvios
+--  sin duplicar de la Cuadrilla sin conexion). Es una tabla de soporte, no del modelo: pasa de 28 a 29
+--  tablas fisicas y las del modelo siguen siendo 22.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -152,6 +156,21 @@ CREATE TABLE `centro_acopio` (
   `capacidad` int(11) DEFAULT NULL COMMENT 'Capacidad en kg',
   `estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
   PRIMARY KEY (`id_centro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `clave_idempotencia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clave_idempotencia` (
+  `clave` char(36) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `operacion` varchar(40) NOT NULL,
+  `estado` enum('en_proceso','terminada') NOT NULL DEFAULT 'en_proceso',
+  `codigo` smallint(5) unsigned DEFAULT NULL,
+  `respuesta` mediumtext DEFAULT NULL,
+  `creada` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`clave`),
+  KEY `idx_clave_idempotencia_creada` (`creada`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `contenedor`;
@@ -668,7 +687,7 @@ CREATE TABLE `tipo_residuo` (
   `nombre` varchar(60) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `reciclable` tinyint(1) NOT NULL DEFAULT 0,
-  `factor_co2_kg_por_kg` decimal(6,3) DEFAULT NULL,
+  `factor_co2_kg_por_kg` decimal(6,3) DEFAULT NULL COMMENT 'kg de CO2e evitados por kg reciclado (EPA WARM v16); NULL = sin fuente verificada',
   `fuente_factor` varchar(255) DEFAULT NULL,
   `url_fuente` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_tipo_residuo`),

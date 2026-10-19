@@ -7,6 +7,7 @@ require_once __DIR__ . "/../models/ProcesadorFoto.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Notificador.php";
+require_once __DIR__ . "/../core/Idempotencia.php";
 require_once __DIR__ . "/../models/Calificaciones.php";
 require_once __DIR__ . "/../models/Participacion.php";
 
@@ -116,6 +117,7 @@ class IncidenciaController
 
     public function registrarAvance(int $id, array $usuario): void
     {
+        Idempotencia::comenzar($usuario, "avance");
         $observacion = $this->observacion(true);
 
         $this->ejecutar(function () use ($id, $observacion, $usuario) {

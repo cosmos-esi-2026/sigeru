@@ -16,6 +16,7 @@ USE sigeru;
 
 -- Se vacia todo antes de cargar, para poder reimportar cuantas veces haga falta.
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE clave_idempotencia;
 TRUNCATE TABLE limite_peticion;
 TRUNCATE TABLE auditoria;
 TRUNCATE TABLE foto_incidencia;

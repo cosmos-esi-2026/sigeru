@@ -20,6 +20,9 @@ class Response
         if (class_exists("Auditoria", false)) {
             Auditoria::registrar($codigo);
         }
+        if (class_exists("Idempotencia", false)) {
+            Idempotencia::terminar($codigo, $datos);
+        }
         http_response_code($codigo);
         header("Content-Type: application/json; charset=utf-8");
         header("Cache-Control: no-store");
