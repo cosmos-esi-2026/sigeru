@@ -218,3 +218,18 @@ de uno que no existe) y un Operario sin centro, 403. El Administrador no tiene l
 Vecino y Cuadrilla reciben 403 y sin sesión 401 en todas. Crear o dar de baja centros y máquinas sigue siendo solo del Administrador. Los
 movimientos de stock y el historial de máquinas son de solo agregado (triggers), como el historial de incidencias. Cubierto por 85 pruebas
 unitarias y 115 por HTTP.
+
+## 15. Actualización del 19/10/2026 (extras, parte 13: avisos)
+
+`api-usuarios` no tiene `Permisos.php`: cada acción exige sesión en el controlador (`Auth::exigirSesion`). Rutas nuevas, todas para cualquier persona **con sesión**
+(sin sesión, 401) y siempre sobre **los avisos propios** (un aviso ajeno responde 404, igual que uno que no existe):
+
+| Ruta | Notas |
+|---|---|
+| `GET /notificaciones` | Solo los de quien pregunta; `limite` de 1 a 50 |
+| `POST /notificaciones/{id}/leida` | Solo si el aviso es propio |
+| `POST /notificaciones/leer-todas` | Solo los propios |
+| `GET /preferencias`, `PUT /preferencias` | La preferencia de la propia cuenta |
+
+Los avisos se **escriben** solo desde el servidor (las acciones de las otras APIs); no hay un endpoint para crearlos. Los textos no llevan datos de otra persona y
+los enlaces se limitan a pantallas del sistema. Cubierto por las pruebas unitarias (22) y por HTTP (53).

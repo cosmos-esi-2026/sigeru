@@ -68,6 +68,15 @@ y no hace falta repetirlo.
 Tocá el número para ver el detalle: los datos, tu foto y el **historial** de cada paso. El personal aparece por su función
 (Administrador, Cuadrilla), no por su nombre. **El sistema no manda avisos por correo cuando cambia el estado:** entrá a mirarlo.
 
+## Avisos (la campanita)
+
+En la esquina de arriba a la derecha hay una **campanita** con un número: son los avisos que todavía no leíste. Te avisamos cuando tu reclamo **pasa a
+«en curso»**, cuando se **resuelve** y cuando se **descarta**. Tocá la campanita para ver los avisos; tocá uno para ir a tu reclamo (queda como leído), o usá
+**Marcar como leído** / **Marcar todos como leídos**. Se actualiza sola cada minuto.
+
+Además te mandamos un **correo** con cada cambio. Si no lo querés, desmarcá **«Recibir avisos por correo…»** en tu **Inicio** (los avisos siguen en la campanita).
+Los avisos solo hablan de tus reclamos: nunca traen datos de otras personas.
+
 ## 7. Preguntas frecuentes
 
 - **No me deja informar:** solo pueden hacerlo los vecinos con cuenta. Los demás roles (administración, cuadrilla, operario) no reportan.

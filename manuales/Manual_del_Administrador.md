@@ -74,6 +74,12 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Auditoría** registra cada operación de escritura, hecha o negada por permisos. Filtros: Resultado (Hecho, Negado por permisos),
 Operación (POST, PUT, DELETE), Desde, Hasta.
 
+## Avisos (la campanita)
+
+La **campanita** de arriba a la derecha avisa, con un número, lo que pide tu atención: cuando **entra una incidencia de prioridad alta** y cuando un **centro de acopio
+pasa del 80 % de su capacidad** (el aviso salta al cruzar el umbral, no en cada recepción). Tocá un aviso para ir a la incidencia o al centro. Los vecinos y las
+cuadrillas reciben sus propios avisos cuando asignás, resolvés o descartás una incidencia y cuando planificás una recolección.
+
 ## 10. Preguntas frecuentes
 
 - **Un usuario no puede entrar:** revisá que no esté dado de baja o pendiente; usá **Enviar acceso**.

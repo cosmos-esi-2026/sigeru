@@ -55,6 +55,11 @@ Dar de alta, editar los datos o dar de baja una máquina lo hace la administraci
 
 **Mapa** muestra los centros de acopio y los contenedores de la ciudad. Tocá un punto para ver su nombre y dirección.
 
+## Avisos (la campanita)
+
+La **campanita** de arriba a la derecha te avisa cuando **tu centro pasa del 80 % de su capacidad**. Tocá el aviso para abrir la ficha del centro y planificar un retiro;
+**Marcar todos como leídos** limpia el contador.
+
 ## 7. Preguntas frecuentes
 
 - **Dice que no tengo un centro asignado:** pedile a la administración que te lo asigne en «Usuarios».

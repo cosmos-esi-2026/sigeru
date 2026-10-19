@@ -50,6 +50,12 @@ Cancelar una recolección lo hace la administración. Si abrís una recolección
 **Mapa** muestra los contenedores y las incidencias abiertas que te tocan. **Contenedores** lista los contenedores; al abrir uno se ve
 su **ficha** con el historial de sus estados (disponible, lleno, mantenimiento, retirado).
 
+## Avisos (la campanita)
+
+La **campanita** de arriba a la derecha te muestra, con un número, lo que todavía no leíste: cuando el administrador **les asigna una incidencia** y cuando
+**planifica una recolección** para tu cuadrilla. Tocá un aviso para ir directo a la incidencia o a la recolección; **Marcar todos como leídos** limpia el contador.
+Se actualiza sola cada minuto. Cada persona de la cuadrilla recibe los avisos de su cuadrilla.
+
 ## 5. Problemas frecuentes
 
 - **«Esa recolección no es de tu cuadrilla»:** abrila desde **Mis tareas**; solo ves las propias.
