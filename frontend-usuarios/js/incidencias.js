@@ -143,7 +143,7 @@ if (formFiltros) {
   });
 
   formFiltros.addEventListener("change", function (evento) {
-    if (evento.target.tagName === "SELECT") {
+    if (evento.target.tagName === "SELECT" || evento.target.type === "date") {
       formFiltros.requestSubmit();
     }
   });

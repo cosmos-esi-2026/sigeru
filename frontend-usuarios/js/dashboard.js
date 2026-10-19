@@ -99,29 +99,63 @@ function avisosDelPanel(datos, recoleccionesEnCurso) {
   const avisos = [];
   if (i.criticas > 0) {
     avisos.push(["es-critico", plural(i.criticas, "incidencia crítica", "incidencias críticas") +
-      " (prioridad alta y más de " + plural(datos.umbral_dias, "día", "días") + " abierta)."]);
+      " (prioridad alta y más de " + plural(datos.umbral_dias, "día", "días") + " abierta).",
+      "incidencias.html", "Ver incidencias"]);
   }
   if (i.sin_asignar > 0) {
-    avisos.push(["", plural(i.sin_asignar, "incidencia sin cuadrilla asignada", "incidencias sin cuadrilla asignada") + "."]);
+    avisos.push(["", plural(i.sin_asignar, "incidencia sin cuadrilla asignada", "incidencias sin cuadrilla asignada") + ".",
+      "incidencias.html?estado=abierta", "Asignar"]);
   }
   if (i.vencidas > 0) {
     avisos.push(["", plural(i.vencidas, "incidencia abierta", "incidencias abiertas") + " hace más de " +
-      plural(datos.umbral_dias, "día", "días") + "."]);
+      plural(datos.umbral_dias, "día", "días") + ".", "incidencias.html", "Ver incidencias"]);
   }
   if (i.contenedores_llenos > 0) {
-    avisos.push(["", plural(i.contenedores_llenos, "contenedor lleno", "contenedores llenos") + " esperando recolección."]);
+    avisos.push(["", plural(i.contenedores_llenos, "contenedor lleno", "contenedores llenos") + " esperando recolección.",
+      "contenedores.html?estado=lleno", "Ver contenedores"]);
   }
   if (i.contenedores_mantenimiento > 0) {
-    avisos.push(["", plural(i.contenedores_mantenimiento, "contenedor en mantenimiento", "contenedores en mantenimiento") + "."]);
+    avisos.push(["", plural(i.contenedores_mantenimiento, "contenedor en mantenimiento", "contenedores en mantenimiento") + ".",
+      "contenedores.html?estado=mantenimiento", "Ver contenedores"]);
   }
   if (recoleccionesEnCurso > 0) {
-    avisos.push(["", plural(recoleccionesEnCurso, "recolección en curso", "recolecciones en curso") + " ahora."]);
+    avisos.push(["", plural(recoleccionesEnCurso, "recolección en curso", "recolecciones en curso") + " ahora.",
+      "recolecciones.html", "Ver recolecciones"]);
   }
   if (avisos.length === 0) {
     avisos.push(["es-bien", "Todo en orden: no hay incidencias abiertas ni contenedores llenos."]);
   }
   return avisos;
 }
+
+const AVISOS_VISIBLES = 3;
+
+// Los avisos ya vienen ordenados por gravedad: se muestran los primeros y el resto se despliega.
+function dibujarAvisos(lista, avisos) {
+  const boton = document.getElementById("mas-avisos");
+  lista.innerHTML = avisos.map(function (a, posicion) {
+    return '<li class="' + a[0] + (posicion >= AVISOS_VISIBLES ? " oculto aviso-extra" : "") + '">' +
+      "<span>" + escaparHtml(a[1]) + "</span>" +
+      (a[2] ? '<a class="aviso-enlace" href="' + escaparHtml(a[2]) + '">' + escaparHtml(a[3]) + "</a>" : "") +
+      "</li>";
+  }).join("");
+
+  const extra = avisos.length - AVISOS_VISIBLES;
+  boton.classList.toggle("oculto", extra <= 0);
+  boton.setAttribute("aria-expanded", "false");
+  boton.textContent = "Mostrar " + plural(extra, "aviso más", "avisos más");
+  boton.dataset.extra = String(Math.max(extra, 0));
+}
+
+document.getElementById("mas-avisos").addEventListener("click", function (evento) {
+  const boton = evento.currentTarget;
+  const abrir = boton.getAttribute("aria-expanded") !== "true";
+  document.querySelectorAll("#avisos-panel .aviso-extra").forEach(function (li) {
+    li.classList.toggle("oculto", !abrir);
+  });
+  boton.setAttribute("aria-expanded", abrir ? "true" : "false");
+  boton.textContent = abrir ? "Mostrar menos" : "Mostrar " + plural(Number(boton.dataset.extra), "aviso más", "avisos más");
+});
 
 async function cargarUrgencias() {
   const cuerpo = document.getElementById("cuerpo-urgencias");
@@ -141,9 +175,7 @@ async function cargarUrgencias() {
     pintarMetrica("metrica-incidencias", datos.indicadores.abiertas);
     pintarMetrica("metrica-criticas", datos.indicadores.criticas);
 
-    lista.innerHTML = avisosDelPanel(datos, enCurso).map(function (a) {
-      return '<li class="' + a[0] + '">' + escaparHtml(a[1]) + "</li>";
-    }).join("");
+    dibujarAvisos(lista, avisosDelPanel(datos, enCurso));
 
     if (datos.incidencias.length === 0) {
       cuerpo.innerHTML = filaVacia(7, "No hay incidencias abiertas", "Cuando un vecino informe un problema va a aparecer acá, ordenado por urgencia.");
@@ -170,8 +202,65 @@ async function cargarUrgencias() {
   }
 }
 
+const EXPLICACION_ESTADO = {
+  abierta:    "Recibido. La administración lo va a revisar y asignar a una cuadrilla.",
+  en_curso:   "Una cuadrilla ya lo está atendiendo.",
+  resuelta:   "Resuelto. Gracias por avisar.",
+  descartada: "La administración lo descartó. Abrilo para ver el motivo.",
+};
+
+function dibujarReclamos(incidencias) {
+  const zona = document.getElementById("zona-reclamos");
+  if (incidencias.length === 0) {
+    zona.innerHTML = '<div class="estado-bloque"><h3>Todavía no informaste ningún problema</h3>' +
+      "<p>Si ves un contenedor desbordado, roto o mal ubicado, avisá y seguí acá cómo se resuelve.</p>" +
+      '<a class="boton boton-primario" href="informar-problema.html">Informar un problema</a></div>';
+    return;
+  }
+
+  const ordenadas = incidencias.slice().sort(function (a, b) {
+    return String(b.fecha_reporte).localeCompare(String(a.fecha_reporte));
+  });
+  const abiertas = ordenadas.filter(function (i) { return i.estado === "abierta" || i.estado === "en_curso"; }).length;
+
+  zona.innerHTML = '<p class="resumen-reclamos">' +
+    (abiertas === 0
+      ? "No tenés reclamos abiertos."
+      : "Tenés <strong>" + plural(abiertas, "reclamo abierto", "reclamos abiertos") + "</strong>.") +
+    "</p>" +
+    '<ul class="lista-reclamos">' + ordenadas.slice(0, 3).map(function (i) {
+      return '<li class="reclamo" data-estado="' + escaparHtml(i.estado) + '">' +
+        '<div class="reclamo-cabecera">' +
+        '<a class="reclamo-numero" href="incidencia.html?id=' + $entero(i.id_incidencia) + '">' + escaparHtml(i.numero) + "</a>" +
+        marcaDeEstado("estado", i.estado) +
+        '<time class="reclamo-fecha">' + escaparHtml(fechaLegible(i.fecha_reporte)) + "</time></div>" +
+        '<p class="reclamo-titulo">' + escaparHtml(textoTipoProblema(i.tipo_problema) +
+          (i.direccion ? " · " + i.direccion : "")) + "</p>" +
+        '<p class="reclamo-explicacion">' + escaparHtml(EXPLICACION_ESTADO[i.estado] || "") + "</p></li>";
+    }).join("") + "</ul>";
+}
+
+async function cargarReclamos() {
+  const zona = document.getElementById("zona-reclamos");
+  zona.innerHTML = '<span class="esqueleto"></span>';
+  try {
+    const respuesta = await apiGet(API.gestion + "/incidencias");
+    dibujarReclamos(respuesta.datos || []);
+  } catch (error) {
+    zona.innerHTML = bloqueEstado("No se pudieron traer tus reclamos", mensajeDeFallo(error), true);
+  }
+}
+
 function cargarPanel() {
+  if (Sesion.obtener().rol === "Vecino") {
+    document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
+    cargarReclamos();
+    return;
+  }
   const esAdministrador = Sesion.esAdministrador();
+  if (Sesion.obtener().rol === "Operario") {
+    document.querySelectorAll("a.metrica").forEach(function (tarjeta) { tarjeta.removeAttribute("href"); });
+  }
   const metricas = ["metrica-contenedores", "metrica-llenos"];
   if (esAdministrador) {
     metricas.push("metrica-camiones", "metrica-usuarios", "metrica-incidencias", "metrica-criticas");

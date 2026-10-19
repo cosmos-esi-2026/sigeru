@@ -85,3 +85,9 @@
   .th-orden { color: #000; }
   a { color: #000; text-decoration: none; }
 }
+
+/* Avisos del panel: cada uno lleva a su lista y se muestran los 3 mas graves */
+.avisos-panel { margin-bottom: var(--esp-3); }
+.avisos-panel li { align-items: center; }
+.aviso-enlace { margin-left: auto; padding-left: var(--esp-3); color: inherit; font-weight: 600; white-space: nowrap; }
+#mas-avisos { margin-bottom: var(--esp-4); }

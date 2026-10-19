@@ -2,6 +2,8 @@ Sesion.exigir();
 
 const CENTRO_MONTEVIDEO = [-34.885, -56.165];
 const COLORES = { disponible: "#15654a", lleno: "#b3261e", mantenimiento: "#8a5000", retirado: "#64756c" };
+// Cada estado se distingue por color y por simbolo: el color solo no alcanza para quien no lo percibe bien.
+const SIMBOLOS = { disponible: "✓", lleno: "▲", mantenimiento: "M", retirado: "–" };
 const EN_SERVICIO = ["disponible", "lleno", "mantenimiento"];
 const COLUMNAS = 6;
 
@@ -87,13 +89,18 @@ function dibujarContenedores(lista) {
   Object.keys(marcadores).forEach(function (id) { delete marcadores[id]; });
 
   lista.filter(tieneUbicacion).forEach(function (c) {
-    const marcador = L.circleMarker(posicion(c), {
-      radius: 9,
-      color: "#ffffff",
-      weight: 2,
-      fillColor: COLORES[c.estado] || COLORES.retirado,
-      fillOpacity: 0.95,
-    }).bindPopup(popupContenedor(c)).bindTooltip(c.codigo);
+    const titulo = c.codigo + ": " + textoEstado(c.estado);
+    const marcador = L.marker(posicion(c), {
+      icon: L.divIcon({
+        className: "marca-contenedor estado-" + (COLORES[c.estado] ? c.estado : "retirado"),
+        html: SIMBOLOS[c.estado] || SIMBOLOS.retirado,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+        popupAnchor: [0, -13],
+      }),
+      title: titulo,
+      alt: titulo,
+    }).bindPopup(popupContenedor(c)).bindTooltip(c.codigo, { direction: "top", offset: [0, -12] });
     marcador.addTo(capaContenedores);
     marcadores[c.id_contenedor] = marcador;
   });
@@ -115,7 +122,7 @@ function dibujarIncidencias(lista) {
       ? abiertas[0].numero + ": " + textoTipoProblema(abiertas[0].tipo_problema) + " en " + c.codigo
       : abiertas.length + " incidencias abiertas en " + c.codigo;
     L.marker(posicion(c), {
-      icon: L.divIcon({ className: "marca-incidencia", html: "!", iconSize: [20, 20], iconAnchor: [-4, 26] }),
+      icon: L.divIcon({ className: "marca-incidencia", html: "!", iconSize: [20, 20], iconAnchor: [-2, 22] }),
       title: titulo,
       alt: titulo,
     }).bindPopup('<div class="popup-mapa"><strong>' + escaparHtml(c.codigo) + "</strong>" + abiertas.map(function (i) {

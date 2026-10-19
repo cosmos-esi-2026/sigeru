@@ -22,7 +22,7 @@
     <header class="topbar">
       <div class="topbar-titulo">
         <h1>Panel de control</h1>
-        <p class="bajada">Resumen del estado de los contenedores, la flota y los usuarios.</p>
+        <p class="bajada" id="bajada-panel">Resumen del estado de los contenedores, la flota y los usuarios.</p>
       </div>
       <a class="boton boton-primario oculto" href="informar-problema.html" data-pagina="informar-problema.html">
         <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -40,55 +40,86 @@
 
     <main class="contenido" id="contenido-principal">
 
-      <h2 class="solo-lectores">Indicadores del sistema</h2>
-      <div class="metricas">
-        <div class="metrica">
-          <p class="metrica-etiqueta">
-            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
-              <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
-            </svg>
-            Contenedores
-          </p>
-          <strong class="metrica-valor" id="metrica-contenedores"></strong>
+      <section class="panel solo-vecino" aria-labelledby="titulo-mis-reclamos">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-mis-reclamos">Mis reclamos</h2>
+          <a class="boton boton-secundario boton-chico" href="mis-reclamos.html" data-pagina="mis-reclamos.html">Ver todos</a>
         </div>
-        <div class="metrica" data-color="alerta">
-          <p class="metrica-etiqueta">
-            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 3l9 16H3z"/><path d="M12 9v5M12 17h.01"/>
-            </svg>
-            Contenedores llenos
-          </p>
-          <strong class="metrica-valor" id="metrica-llenos"></strong>
-        </div>
-        <div class="metrica solo-admin" data-color="critica">
-          <p class="metrica-etiqueta">Incidencias abiertas</p>
-          <strong class="metrica-valor" id="metrica-incidencias"></strong>
-        </div>
-        <div class="metrica solo-admin" data-color="atencion">
-          <p class="metrica-etiqueta">Críticas</p>
-          <strong class="metrica-valor" id="metrica-criticas"></strong>
-        </div>
-        <div class="metrica solo-admin" data-color="flota">
-          <p class="metrica-etiqueta">
-            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
-              <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
-            </svg>
-            Camiones operativos
-          </p>
-          <strong class="metrica-valor" id="metrica-camiones"></strong>
-        </div>
-        <div class="metrica solo-admin" data-color="gente">
-          <p class="metrica-etiqueta">
-            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
-              <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/>
-            </svg>
-            Usuarios registrados
-          </p>
-          <strong class="metrica-valor" id="metrica-usuarios"></strong>
-        </div>
+        <div id="zona-reclamos" aria-live="polite"></div>
+      </section>
+
+      <h2 class="solo-lectores no-vecino">Indicadores del sistema</h2>
+      <div class="metricas-grupos no-vecino">
+
+        <section class="grupo-metricas" aria-labelledby="grupo-accion">
+          <h3 class="grupo-metricas-titulo" id="grupo-accion">Requiere acción</h3>
+          <div class="metricas">
+            <a class="metrica solo-admin" data-color="critica" href="#titulo-urgencias">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/>
+                </svg>
+                Críticas
+              </p>
+              <strong class="metrica-valor" id="metrica-criticas"></strong>
+            </a>
+            <a class="metrica" data-color="alerta" href="contenedores.html?estado=lleno">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3l9 16H3z"/><path d="M12 9v5M12 17h.01"/>
+                </svg>
+                Contenedores llenos
+              </p>
+              <strong class="metrica-valor" id="metrica-llenos"></strong>
+            </a>
+            <a class="metrica solo-admin" data-color="atencion" href="incidencias.html">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 4h14v16l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 9h6M9 13h4"/>
+                </svg>
+                Incidencias abiertas
+              </p>
+              <strong class="metrica-valor" id="metrica-incidencias"></strong>
+            </a>
+          </div>
+        </section>
+
+        <section class="grupo-metricas" aria-labelledby="grupo-sistema">
+          <h3 class="grupo-metricas-titulo" id="grupo-sistema">Estado del sistema</h3>
+          <div class="metricas">
+            <a class="metrica" href="contenedores.html">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/>
+                  <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
+                </svg>
+                Contenedores
+              </p>
+              <strong class="metrica-valor" id="metrica-contenedores"></strong>
+            </a>
+            <a class="metrica solo-admin" data-color="flota" href="camiones.html">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 6h11v10H2z"/><path d="M13 9.5h4l4 3.5V16h-8z"/>
+                  <circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>
+                </svg>
+                Camiones operativos
+              </p>
+              <strong class="metrica-valor" id="metrica-camiones"></strong>
+            </a>
+            <a class="metrica solo-admin" data-color="gente" href="usuarios.html">
+              <p class="metrica-etiqueta">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/>
+                  <path d="M16.5 5.3a3.2 3.2 0 0 1 0 5.4"/>
+                </svg>
+                Usuarios registrados
+              </p>
+              <strong class="metrica-valor" id="metrica-usuarios"></strong>
+            </a>
+          </div>
+        </section>
+
       </div>
 
       <section class="panel solo-admin" aria-labelledby="titulo-urgencias">
@@ -98,6 +129,7 @@
           <a class="boton boton-secundario boton-chico" href="reportes.html">Ver reportes</a>
         </div>
         <ul class="avisos-panel" id="avisos-panel" aria-live="polite"></ul>
+        <button type="button" class="boton boton-secundario boton-chico oculto" id="mas-avisos" aria-expanded="false">Mostrar más avisos</button>
         <div class="tabla-scroll">
           <table class="tabla" role="table">
             <thead role="rowgroup">
@@ -117,7 +149,7 @@
         <p class="texto-tenue" id="nota-urgencias"></p>
       </section>
 
-      <section class="panel" aria-labelledby="titulo-llenos">
+      <section class="panel no-vecino" aria-labelledby="titulo-llenos">
         <div class="barra-herramientas">
           <h2 class="titulo" id="titulo-llenos">Contenedores llenos</h2>
           <a class="boton boton-secundario boton-chico" href="contenedores.html" data-pagina="contenedores.html">

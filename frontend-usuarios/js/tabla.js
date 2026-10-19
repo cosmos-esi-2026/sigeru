@@ -332,6 +332,14 @@ function avisoPagina(texto) {
     return;
   }
 
+  // avisoPagina("") sirve para borrar el aviso: sin texto no se dibuja el recuadro verde con el tilde solo.
+  if (!texto) {
+    clearTimeout(temporizadorAviso);
+    elemento.textContent = "";
+    elemento.className = "mensaje";
+    return;
+  }
+
   elemento.innerHTML =
     '<svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
     'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -359,3 +367,98 @@ function avisoPaginaError(texto) {
     escaparHtml(texto);
   elemento.className = "mensaje error";
 }
+
+// ---- Mejoras comunes de las listas ----
+
+// Tocar cualquier parte de la fila abre su detalle. El enlace de la fila sigue siendo el camino con teclado.
+document.addEventListener("click", function (evento) {
+  const fila = evento.target.closest(".tabla tbody tr");
+  if (!fila || evento.target.closest("a, button, input, select, textarea, label, summary")) {
+    return;
+  }
+  // El mapa tiene su propia accion principal en cada fila («Ver en el mapa»): no se le agrega otra.
+  if (fila.closest("table[data-sin-clic-fila]")) {
+    return;
+  }
+  const enlace = fila.querySelector("td a[href]");
+  if (!enlace || String(window.getSelection()).length > 0) {
+    return;
+  }
+  if (evento.ctrlKey || evento.metaKey) {
+    window.open(enlace.href, "_blank", "noopener");
+  } else {
+    window.location.href = enlace.href;
+  }
+});
+
+function etiquetaDeFiltro(control) {
+  const etiqueta = control.closest("label");
+  let texto = "";
+  if (etiqueta) {
+    etiqueta.childNodes.forEach(function (nodo) {
+      if (nodo.nodeType === 3) {
+        texto += nodo.textContent;
+      }
+    });
+  }
+  return texto.trim() || control.getAttribute("aria-label") || control.name;
+}
+
+function valorDeFiltro(control) {
+  if (control.tagName === "SELECT") {
+    return control.options[control.selectedIndex].text;
+  }
+  const fecha = /^(\d{4})-(\d{2})-(\d{2})$/.exec(control.value);
+  return fecha ? fecha[3] + "/" + fecha[2] + "/" + fecha[1] : control.value;
+}
+
+function opcionVacia(selector) {
+  return Array.prototype.findIndex.call(selector.options, function (o) { return o.value === ""; });
+}
+
+// Muestra los filtros activos de un formulario como botones que se pueden quitar de a uno.
+function dibujarChipsDeFiltros(formulario, zona) {
+  const activos = Array.prototype.filter.call(formulario.elements, function (c) {
+    if (!c.name || c.value === "" || ["submit", "reset", "button"].indexOf(c.type) !== -1) {
+      return false;
+    }
+    return c.tagName !== "SELECT" || opcionVacia(c) !== -1;
+  });
+  zona.innerHTML = activos.map(function (c) {
+    const texto = etiquetaDeFiltro(c) + ": " + valorDeFiltro(c);
+    return '<button type="button" class="chip-filtro" data-campo="' + escaparHtml(c.name) + '" ' +
+           'aria-label="Quitar el filtro ' + escaparHtml(texto) + '">' + escaparHtml(texto) + " ×</button>";
+  }).join("");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("form[data-chips]").forEach(function (formulario) {
+    const zona = document.createElement("div");
+    zona.className = "chips-filtros";
+    zona.setAttribute("role", "group");
+    zona.setAttribute("aria-label", "Filtros activos");
+    formulario.insertAdjacentElement("afterend", zona);
+
+    const refrescar = function () { dibujarChipsDeFiltros(formulario, zona); };
+    formulario.addEventListener("change", refrescar);
+    formulario.addEventListener("reset", function () { setTimeout(refrescar, 0); });
+    // Las listas de zonas y tipos se cargan despues: cuando llegan, el valor de la direccion ya puede estar puesto.
+    new MutationObserver(refrescar).observe(formulario, { childList: true, subtree: true });
+
+    zona.addEventListener("click", function (evento) {
+      const chip = evento.target.closest(".chip-filtro");
+      if (!chip) {
+        return;
+      }
+      const control = formulario.elements[chip.dataset.campo];
+      if (control.tagName === "SELECT") {
+        control.selectedIndex = opcionVacia(control);
+      } else {
+        control.value = "";
+      }
+      control.dispatchEvent(new Event("change", { bubbles: true }));
+      control.focus();
+    });
+    refrescar();
+  });
+});

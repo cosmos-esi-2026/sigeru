@@ -61,12 +61,13 @@ function campoObservacion(nombre, etiqueta, obligatoria, ayuda) {
     ' placeholder="' + escaparHtml(ayuda) + '"></textarea></label>';
 }
 
-function formAccion(accion, titulo, contenido, textoBoton, clase) {
-  return '<form class="formulario form-accion" data-accion="' + accion + '" id="form-' + accion + '">' +
-    '<h3 class="subtitulo-panel">' + escaparHtml(titulo) + "</h3>" +
+// Cada accion es un bloque plegable: solo queda abierta la que corresponde al estado de la incidencia.
+function formAccion(accion, titulo, contenido, textoBoton, clase, abierta) {
+  return '<details class="accion-plegable"' + (abierta ? " open" : "") + "><summary>" + escaparHtml(titulo) + "</summary>" +
+    '<form class="formulario form-accion" data-accion="' + accion + '" id="form-' + accion + '">' +
     contenido +
     '<button type="submit" class="boton ' + (clase || "boton-secundario") + '">' + escaparHtml(textoBoton) + "</button>" +
-    "</form>";
+    "</form></details>";
 }
 
 function opcionesPrioridad(actual) {
@@ -77,20 +78,23 @@ function opcionesPrioridad(actual) {
 }
 
 function accionesDelAdministrador(i) {
-  return formAccion("asignacion", i.id_cuadrilla ? "Reasignar la cuadrilla" : "Asignar una cuadrilla",
-      '<label>Cuadrilla disponible *<select name="id_cuadrilla" required disabled>' +
-      '<option value="">Cargando cuadrillas...</option></select></label>' +
-      '<p class="ayuda-campo" id="ayuda-cuadrillas">Solo se ofrecen las cuadrillas activas que no están en una recolección.</p>',
-      i.id_cuadrilla ? "Reasignar" : "Asignar", "boton-primario") +
-    formAccion("prioridad", "Prioridad",
-      '<label>Nueva prioridad<select name="prioridad">' + opcionesPrioridad(i.prioridad) + "</select></label>",
-      "Cambiar la prioridad") +
-    formAccion("resolucion", "Cerrar como resuelta",
-      campoObservacion("observacion", "Qué se hizo", false, "Opcional"),
-      "Marcar como resuelta") +
-    formAccion("descarte", "Descartar",
-      campoObservacion("observacion", "Motivo", true, "Por ejemplo: reporte duplicado o problema inexistente"),
-      "Descartar la incidencia", "boton-peligro");
+  const conCuadrilla = Boolean(i.id_cuadrilla);
+  const asignar = formAccion("asignacion", conCuadrilla ? "Reasignar la cuadrilla" : "Asignar una cuadrilla",
+    '<label>Cuadrilla disponible *<select name="id_cuadrilla" required disabled>' +
+    '<option value="">Cargando cuadrillas...</option></select></label>' +
+    '<p class="ayuda-campo" id="ayuda-cuadrillas">Solo se ofrecen las cuadrillas activas que no están en una recolección.</p>',
+    conCuadrilla ? "Reasignar" : "Asignar", "boton-primario", !conCuadrilla);
+  const prioridad = formAccion("prioridad", "Cambiar la prioridad",
+    '<label>Nueva prioridad<select name="prioridad">' + opcionesPrioridad(i.prioridad) + "</select></label>",
+    "Cambiar la prioridad", "boton-secundario", false);
+  const resolver = formAccion("resolucion", "Cerrar como resuelta",
+    campoObservacion("observacion", "Qué se hizo", false, "Opcional"),
+    "Marcar como resuelta", "boton-primario", conCuadrilla);
+  const descartar = formAccion("descarte", "Descartar",
+    campoObservacion("observacion", "Motivo", true, "Por ejemplo: reporte duplicado o problema inexistente"),
+    "Descartar la incidencia", "boton-peligro", false);
+  // Sin cuadrilla lo primero es asignar; con una atendiendo lo primero es cerrar.
+  return conCuadrilla ? resolver + asignar + prioridad + descartar : asignar + prioridad + resolver + descartar;
 }
 
 function accionesDeLaCuadrilla(i) {
@@ -99,10 +103,10 @@ function accionesDeLaCuadrilla(i) {
   }
   return formAccion("avance", "Registrar un avance",
       campoObservacion("observacion", "Qué se hizo hasta ahora", true, "Por ejemplo: se pidió una tapa al depósito"),
-      "Registrar el avance", "boton-primario") +
+      "Registrar el avance", "boton-primario", true) +
     formAccion("resolucion", "Cerrar como resuelta",
       campoObservacion("observacion", "Qué se hizo", false, "Opcional"),
-      "Marcar como resuelta");
+      "Marcar como resuelta", "boton-secundario", false);
 }
 
 function dibujarAcciones(i) {

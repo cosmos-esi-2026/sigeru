@@ -1,6 +1,9 @@
 function mensajeDeError(campo) {
   const estado = campo.validity;
 
+  if (estado.valueMissing && campo.type === "radio") {
+    return "Elegí una opción.";
+  }
   if (estado.valueMissing) {
     return "Completá este campo.";
   }

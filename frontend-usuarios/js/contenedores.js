@@ -227,5 +227,10 @@ document.getElementById("btn-nuevo").addEventListener("click", prepararAlta);
 activarValidacion(formContenedor);
 prepararModal("modal-contenedor", formContenedor);
 activarOrden("tabla-contenedores");
+// Las tarjetas y avisos del panel llegan con ?estado=lleno (o mantenimiento, etc.)
+const estadoDeLaDireccion = new URLSearchParams(window.location.search).get("estado");
+if (estadoDeLaDireccion) {
+  formFiltros.estado.value = estadoDeLaDireccion;
+}
 cargarCatalogos();
 cargarContenedores();
