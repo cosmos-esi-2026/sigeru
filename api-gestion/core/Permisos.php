@@ -13,6 +13,7 @@ class Permisos
     private const REGLAS = [
         "contenedores"           => ["GET" => self::TODOS, "*" => self::ADMINISTRADOR],
         "contenedores/historial" => ["GET" => ["Administrador", "Cuadrilla"]],
+        "contenedores/prediccion" => ["GET" => ["Administrador", "Cuadrilla"]],
         "centros"                => ["GET" => self::PERSONAL_DE_CENTRO, "PUT" => self::PERSONAL_DE_CENTRO,
                                      "*" => self::ADMINISTRADOR],
         "centros/stock"          => ["GET" => self::PERSONAL_DE_CENTRO],

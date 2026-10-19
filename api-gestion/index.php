@@ -35,9 +35,14 @@ switch ($recurso) {
 
     case "contenedores":
         $controlador = new ContenedorController();
-        Permisos::exigir($subrecurso === "historial" ? "contenedores/historial" : "contenedores", $metodo);
+        $esPrediccion = ($partes[1] ?? "") === "prediccion";
+        Permisos::exigir($esPrediccion ? "contenedores/prediccion" : ($subrecurso === "historial" ? "contenedores/historial" : "contenedores"), $metodo);
 
-        if ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
+        if ($esPrediccion && $metodo === "GET") {
+            $controlador->prediccion();
+        } elseif ($esPrediccion) {
+            Response::error("Método no permitido", 405);
+        } elseif ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
             $controlador->historial($id);
         } elseif ($metodo === "GET" && $id !== null) {
             $controlador->obtener($id);
@@ -239,7 +244,7 @@ switch ($recurso) {
             "ok"      => true,
             "mensaje" => "API de gestión SiGeRU funcionando",
             "endpoints" => [
-                "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial",
+                "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial", "/contenedores/prediccion",
                 "/centros", "/centros/{id}", "/centros/{id}/stock", "/centros/{id}/movimientos",
                 "/centros/{id}/movimientos/{id}/correccion", "/recepciones", "/recepciones/{id}",
                 "/maquinaria", "/maquinaria/{id}", "/maquinaria/{id}/estado", "/maquinaria/{id}/historial",

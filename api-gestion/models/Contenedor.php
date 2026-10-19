@@ -70,6 +70,16 @@ class Contenedor
         return $consulta->fetchAll();
     }
 
+    // Las fechas de todos los vaciados de cada contenedor: [id_contenedor => ["AAAA-MM-DD HH:MM:SS", ...]] (para la prediccion).
+    public static function fechasDeVaciados(): array
+    {
+        $porContenedor = [];
+        foreach (Database::conexion()->query("SELECT id_contenedor, fecha_hora FROM vaciado ORDER BY fecha_hora")->fetchAll() as $v) {
+            $porContenedor[(int) $v["id_contenedor"]][] = $v["fecha_hora"];
+        }
+        return $porContenedor;
+    }
+
     public static function existeZona(int $id): bool
     {
         $consulta = Database::conexion()->prepare("SELECT 1 FROM zona WHERE id_zona = :id");
