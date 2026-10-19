@@ -146,6 +146,24 @@
         </div>
       </section>
 
+      <section class="panel" aria-labelledby="titulo-impacto">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-impacto">Impacto ambiental</h2>
+          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-impacto">Exportar (CSV)</button>
+        </div>
+        <p class="texto-tenue" id="texto-impacto"></p>
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-impacto" role="table">
+            <thead role="rowgroup"><tr role="row">
+              <th role="columnheader">Mes</th><th role="columnheader">Kilos recolectados</th><th role="columnheader">Kilos reciclables</th>
+              <th role="columnheader">% reciclable</th><th role="columnheader">CO2 evitado (estimación)</th>
+            </tr></thead>
+            <tbody id="cuerpo-impacto" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p class="texto-tenue" id="fuentes-impacto"></p>
+      </section>
+
       <section class="panel" aria-labelledby="titulo-top">
         <h2 class="titulo-seccion" id="titulo-top">Contenedores con más incidencias</h2>
         <div class="tabla-scroll">

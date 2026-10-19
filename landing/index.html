@@ -131,6 +131,26 @@
       </div>
     </section>
 
+    <section id="impacto" class="seccion" aria-labelledby="titulo-impacto">
+      <div class="contenedor">
+        <h2 id="titulo-impacto">Impacto ambiental</h2>
+        <p>Lo que se recolecta con SiGeRU y lo que se evita al reciclarlo. <strong>Las cifras de CO2 son una estimación</strong>, no una medición.</p>
+        <dl class="cifras" id="cifras-impacto">
+          <div><dt>Kilos recolectados</dt><dd id="impacto-kg">-</dd></div>
+          <div><dt>Reciclable</dt><dd id="impacto-pct">-</dd></div>
+          <div><dt>CO2 evitado (estimación)</dt><dd id="impacto-co2">-</dd></div>
+          <div><dt>Kilos recibidos en centros</dt><dd id="impacto-recibidos">-</dd></div>
+        </dl>
+        <p class="texto-chico" id="nota-impacto" role="status">Cargando los datos...</p>
+        <details class="fuente-impacto">
+          <summary>¿De dónde salen las cifras de CO2?</summary>
+          <p>Se multiplican los kilos recolectados de cada tipo de residuo reciclable por un factor de emisión evitada: los kilos de CO2 equivalente que se evitan al reciclar un kilo en lugar de enterrarlo.
+             Son factores de referencia del modelo WARM de la Agencia de Protección Ambiental de Estados Unidos (EPA), no medidos en Uruguay. Los tipos sin una fuente verificada (orgánico y mixto) se informan solo en kilos.</p>
+          <ul id="fuentes-impacto"></ul>
+        </details>
+      </div>
+    </section>
+
     <section id="como-informar" class="seccion seccion-gris" aria-labelledby="titulo-como">
       <div class="contenedor informar-dos">
         <figure class="foto-lateral">

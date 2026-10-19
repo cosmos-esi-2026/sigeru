@@ -581,3 +581,8 @@ h1, h2, h3 {
 @media (max-width: 640px) {
   .ficha-franja .cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Impacto ambiental (extras, parte 18) */
+.fuente-impacto { margin-top: 12px; border: 1px solid var(--borde); border-radius: var(--radio-1); padding: 12px 16px; background: var(--blanco); }
+.fuente-impacto summary { cursor: pointer; font-weight: 600; }
+.fuente-impacto p, .fuente-impacto li { font-size: 14px; color: var(--tinta-suave); }

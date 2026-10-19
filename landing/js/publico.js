@@ -109,6 +109,39 @@
     document.getElementById("mapa-contenedores").classList.add("sin-fondo");
   }
 
+  // Impacto ambiental: cifras agregadas de GET /api-gestion/publico/impacto (sin sesion, con freno por IP). Siempre rotulado como estimacion.
+  function numero(valor, decimales) {
+    return Number(valor).toLocaleString("es-UY", { minimumFractionDigits: 0, maximumFractionDigits: decimales });
+  }
+
+  function mostrarImpacto(d) {
+    document.getElementById("impacto-kg").textContent = numero(d.kg_total, 1) + " kg";
+    document.getElementById("impacto-pct").textContent = d.pct_reciclable === null ? "-" : numero(d.pct_reciclable, 1) + " %";
+    document.getElementById("impacto-co2").textContent = d.kg_total > 0 ? "≈ " + numero(d.co2_evitado_kg, 0) + " kg" : "-";
+    document.getElementById("impacto-recibidos").textContent = numero(d.kg_recibidos_en_centros, 1) + " kg";
+    document.getElementById("nota-impacto").textContent = "Estimación a partir de los kilos recolectados de los tipos reciclables. " +
+      (d.tipos_sin_factor.length ? "Sin fuente verificada para " + d.tipos_sin_factor.join(" y ") + ": solo se informan sus kilos." : "");
+    const lista = document.getElementById("fuentes-impacto");
+    lista.innerHTML = "";
+    (d.fuentes || []).forEach(function (f) {
+      const li = document.createElement("li");
+      li.textContent = f.tipos.join(", ") + ": " + f.fuente + ". ";
+      if (typeof f.url === "string" && f.url.indexOf("https://www.epa.gov/") === 0) {
+        const a = document.createElement("a");
+        a.href = f.url;
+        a.rel = "noopener";
+        a.textContent = "Ver la fuente";
+        li.appendChild(a);
+      }
+      lista.appendChild(li);
+    });
+  }
+
+  fetch("/sigeru/api-gestion/publico/impacto", { headers: { Accept: "application/json" } })
+    .then(function (r) { if (!r.ok) throw new Error("estado " + r.status); return r.json(); })
+    .then(function (r) { mostrarImpacto(r.datos); })
+    .catch(function () { document.getElementById("nota-impacto").textContent = "No se pudieron cargar las cifras de impacto en este momento."; });
+
   fetch(ENDPOINT, { headers: { Accept: "application/json" } })
     .then(function (respuesta) {
       if (!respuesta.ok) throw new Error("estado " + respuesta.status);
