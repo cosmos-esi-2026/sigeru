@@ -1,5 +1,11 @@
 Options -Indexes
 
+# Paginas de error propias (extras, parte 22): no muestran la version del servidor ni rutas internas. Solo se usan cuando el
+# error lo genera Apache; las APIs contestan sus errores en JSON y esos no se tocan.
+ErrorDocument 403 /sigeru/landing/errores/403.html
+ErrorDocument 404 /sigeru/landing/errores/404.html
+ErrorDocument 500 /sigeru/landing/errores/500.html
+
 RewriteEngine On
 RewriteRule ^(landing|frontend-usuarios|api-usuarios|api-gestion|api-recoleccion)(/|$) - [L]
 RewriteRule ^$ - [L]
