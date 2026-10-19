@@ -21,6 +21,9 @@ TRUNCATE TABLE auditoria;
 TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
+TRUNCATE TABLE historial_maquinaria;
+TRUNCATE TABLE movimiento_stock;
+TRUNCATE TABLE recepcion;
 TRUNCATE TABLE vaciado;
 TRUNCATE TABLE recoleccion;
 TRUNCATE TABLE ruta;
@@ -101,6 +104,10 @@ INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefon
 (6, 'Pablo',  'Machado',   'pablo.machado@mail.uy','$2y$10$u6PlgW/z9bQYoTFyAroD8.ESzHPMzQgLBGdKt015MnWl4v6FrqPK2','092 664 118', 'Ellauri 470',          4, NULL, NULL, 'inactivo','2026-07-25 16:40:00');
 
 
+-- El Operario trabaja en un centro (extras, parte 12): Sergio Ferreira, en el Felipe Cardoso.
+UPDATE usuario SET id_centro = 1 WHERE id_usuario = 4;
+
+
 -- --- 8) Contenedores --------------------------------------------------------
 INSERT INTO contenedor (id_contenedor, codigo, direccion, latitud, longitud, capacidad, estado, id_zona, id_tipo_residuo) VALUES
 (1,  'CNT-001', 'Av. Italia esq. Propios',        -34.8760000, -56.1520000, 1100, 'disponible',    4, 6),
@@ -176,6 +183,48 @@ INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen
 (2, 1,  '2026-09-07 08:20:00', 295.20, 950.00),
 (3, 6,  '2026-09-09 14:35:00', 150.00, 480.00),
 (3, 8,  '2026-09-09 15:10:00', 132.40, 410.00);
+
+
+-- --- 14 bis) Recepcion y stock de los centros (extras, parte 12) ---------------
+-- DATOS DE DEMOSTRACION. El inventario inicial es inventado para que haya stock que
+-- mirar; las dos recepciones salen de los vaciados de arriba. El centro de Ciudad
+-- Vieja queda sobre el 80 % de su capacidad (aviso). Los movimientos son de solo
+-- agregado: el 7 corrige al 6 con un movimiento inverso.
+INSERT INTO recepcion (id_recoleccion, id_centro, id_usuario, fecha_hora, observacion) VALUES
+(1, 3, 1, '2026-09-07 10:05:00', 'Recepcion de demostracion'),
+(2, 3, 1, '2026-09-07 10:40:00', 'Recepcion de demostracion');
+
+INSERT INTO movimiento_stock (id_movimiento, id_centro, id_tipo_residuo, sentido, motivo, kg, id_recoleccion, id_corregido, id_usuario, fecha_hora, observacion) VALUES
+(1,  1, 6, 'entrada', 'inventario_inicial', 41000.00, NULL, NULL, 1, '2026-09-01 08:00:00', 'Inventario inicial (demostracion)'),
+(2,  1, 1, 'entrada', 'inventario_inicial', 18500.00, NULL, NULL, 1, '2026-09-01 08:00:00', 'Inventario inicial (demostracion)'),
+(3,  1, 2, 'entrada', 'inventario_inicial',  9200.00, NULL, NULL, 1, '2026-09-01 08:00:00', 'Inventario inicial (demostracion)'),
+(4,  1, 3, 'entrada', 'inventario_inicial',  7400.00, NULL, NULL, 1, '2026-09-01 08:00:00', 'Inventario inicial (demostracion)'),
+(5,  1, 4, 'entrada', 'inventario_inicial',  6100.00, NULL, NULL, 1, '2026-09-01 08:00:00', 'Inventario inicial (demostracion)'),
+(6,  2, 6, 'entrada', 'inventario_inicial', 41000.00, NULL, NULL, 1, '2026-09-01 08:05:00', 'Inventario inicial (demostracion); error de tipeo, ver la correccion'),
+(7,  2, 6, 'salida',  'correccion',         41000.00, NULL, 6,    1, '2026-09-01 08:20:00', 'Correccion: eran 14000 kg y no 41000'),
+(8,  2, 6, 'entrada', 'inventario_inicial', 14000.00, NULL, NULL, 1, '2026-09-01 08:21:00', 'Inventario inicial (demostracion)'),
+(9,  2, 2, 'entrada', 'inventario_inicial', 12000.00, NULL, NULL, 1, '2026-09-01 08:21:00', 'Inventario inicial (demostracion)'),
+(10, 2, 4, 'entrada', 'inventario_inicial',  9500.00, NULL, NULL, 1, '2026-09-01 08:21:00', 'Inventario inicial (demostracion)'),
+(11, 2, 3, 'entrada', 'inventario_inicial',  5200.00, NULL, NULL, 1, '2026-09-01 08:21:00', 'Inventario inicial (demostracion)'),
+(12, 3, 6, 'entrada', 'inventario_inicial', 17000.00, NULL, NULL, 1, '2026-09-01 08:30:00', 'Inventario inicial (demostracion)'),
+(13, 3, 3, 'entrada', 'inventario_inicial',  6800.00, NULL, NULL, 1, '2026-09-01 08:30:00', 'Inventario inicial (demostracion)'),
+(14, 3, 4, 'entrada', 'inventario_inicial',  4500.00, NULL, NULL, 1, '2026-09-01 08:30:00', 'Inventario inicial (demostracion)'),
+(15, 3, 2, 'entrada', 'inventario_inicial',  3200.00, NULL, NULL, 1, '2026-09-01 08:30:00', 'Inventario inicial (demostracion)'),
+(16, 3, 3, 'entrada', 'recepcion',            210.50, 1,    NULL, 1, '2026-09-07 10:05:00', 'Recepcion de demostracion'),
+(17, 3, 6, 'entrada', 'recepcion',            180.00, 1,    NULL, 1, '2026-09-07 10:05:00', 'Recepcion de demostracion'),
+(18, 3, 6, 'entrada', 'recepcion',            635.95, 2,    NULL, 1, '2026-09-07 10:40:00', 'Recepcion de demostracion'),
+(19, 1, 2, 'salida',  'venta',               3000.00, NULL, NULL, 1, '2026-09-06 16:00:00', 'Venta a una recicladora (demostracion)');
+
+-- Estado de las maquinas, de solo agregado (extras, parte 12).
+INSERT INTO historial_maquinaria (id_maquinaria, fecha_hora, estado, observacion, id_usuario) VALUES
+(1, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(2, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(3, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(3, '2026-09-08 07:30:00', 'mantenimiento',  'Cambio de aceite hidraulico y revision de frenos', 4),
+(4, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(5, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(6, '2026-07-01 09:00:00', 'operativa',      'Alta en el sistema', 1),
+(6, '2026-08-15 11:00:00', 'fuera_servicio', 'Motor fundido, se evalua su reemplazo', 1);
 
 
 -- --- 15) Incidencias --------------------------------------------------------

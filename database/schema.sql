@@ -1,8 +1,9 @@
 -- ============================================================================
 --  SiGeRU 2026 - Sistema de Gestion de Residuos Urbanos
 --  Archivo: schema.sql
---  Que es : DDL de la base de datos. Crea la base y las 16 tablas del modelo:
---           las 15 de la 2da entrega mas historial_incidencia (15 bis), de la 3ra.
+--  Que es : DDL de la base de datos. Crea la base y las 19 tablas del modelo:
+--           las 15 de la 2da entrega, historial_incidencia (15 bis, de la 3ra) y, de
+--           las extras (parte 12), recepcion, movimiento_stock e historial_maquinaria.
 --           Mas seis tablas fuera del modelo de clases: migracion, intento_login,
 --           limite_peticion (freno por IP a los pedidos publicos), enlace_clave
 --           (activar cuentas), auditoria (quien hizo que) y
@@ -48,6 +49,9 @@ CREATE DATABASE IF NOT EXISTS sigeru
 USE sigeru;
 
 -- El orden inverso al de creacion, para poder reimportar sin errores de FK.
+DROP TABLE IF EXISTS historial_maquinaria;
+DROP TABLE IF EXISTS movimiento_stock;
+DROP TABLE IF EXISTS recepcion;
 DROP TABLE IF EXISTS limite_peticion;
 DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS foto_incidencia;
@@ -172,6 +176,7 @@ CREATE TABLE usuario (
     direccion      VARCHAR(200) NULL,
     id_rol         INT          NOT NULL,
     id_cuadrilla   INT          NULL,
+    id_centro      INT          NULL,
     id_solicitud   INT          NULL,
     estado         ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
     fecha_registro DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -179,6 +184,8 @@ CREATE TABLE usuario (
         FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
     CONSTRAINT fk_usuario_cuadrilla
         FOREIGN KEY (id_cuadrilla) REFERENCES cuadrilla(id_cuadrilla),
+    CONSTRAINT fk_usuario_centro
+        FOREIGN KEY (id_centro) REFERENCES centro_acopio(id_centro),
     CONSTRAINT fk_usuario_solicitud
         FOREIGN KEY (id_solicitud) REFERENCES solicitud_registro(id_solicitud)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -463,7 +470,9 @@ INSERT INTO migracion (nombre) VALUES
     ('005-estado-pendiente.sql'),
     ('006-foto-incidencia.sql'),
     ('007-auditoria.sql'),
-    ('008-limite-peticion.sql');
+    ('008-limite-peticion.sql'),
+    ('009-operario-centro-stock.sql'),
+    ('010-stock-solo-agregado.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -517,6 +526,62 @@ CREATE TABLE foto_incidencia (
 -- ni borrar. Borrar la incidencia o el contenedor completos si se puede: el
 -- ON DELETE CASCADE no dispara estos triggers.
 -- ----------------------------------------------------------------------------
+-- Parte 12 de las extras: recepcion en el centro, stock y estado de las maquinas.
+CREATE TABLE recepcion (
+    id_recepcion   INT AUTO_INCREMENT PRIMARY KEY,
+    id_recoleccion INT      NOT NULL UNIQUE,
+    id_centro      INT      NOT NULL,
+    id_usuario     INT      NOT NULL,
+    fecha_hora     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    observacion    VARCHAR(300) NULL,
+    CONSTRAINT fk_recepcion_recoleccion
+        FOREIGN KEY (id_recoleccion) REFERENCES recoleccion(id_recoleccion) ON DELETE CASCADE,
+    CONSTRAINT fk_recepcion_centro
+        FOREIGN KEY (id_centro) REFERENCES centro_acopio(id_centro) ON DELETE CASCADE,
+    CONSTRAINT fk_recepcion_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE movimiento_stock (
+    id_movimiento   INT AUTO_INCREMENT PRIMARY KEY,
+    id_centro       INT           NOT NULL,
+    id_tipo_residuo INT           NOT NULL,
+    sentido         ENUM('entrada','salida') NOT NULL,
+    motivo          ENUM('inventario_inicial','recepcion','venta','traslado','disposicion','correccion') NOT NULL,
+    kg              DECIMAL(10,2) NOT NULL,
+    id_recoleccion  INT           NULL,
+    id_corregido    INT           NULL UNIQUE,
+    id_usuario      INT           NOT NULL,
+    fecha_hora      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    observacion     VARCHAR(200)  NULL,
+    CONSTRAINT fk_movstock_centro
+        FOREIGN KEY (id_centro) REFERENCES centro_acopio(id_centro) ON DELETE CASCADE,
+    CONSTRAINT fk_movstock_tipo
+        FOREIGN KEY (id_tipo_residuo) REFERENCES tipo_residuo(id_tipo_residuo),
+    CONSTRAINT fk_movstock_recoleccion
+        FOREIGN KEY (id_recoleccion) REFERENCES recoleccion(id_recoleccion) ON DELETE SET NULL,
+    CONSTRAINT fk_movstock_corregido
+        FOREIGN KEY (id_corregido) REFERENCES movimiento_stock(id_movimiento) ON DELETE CASCADE,
+    CONSTRAINT fk_movstock_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    INDEX idx_movstock_centro_tipo (id_centro, id_tipo_residuo),
+    INDEX idx_movstock_centro_fecha (id_centro, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE historial_maquinaria (
+    id_registro   INT AUTO_INCREMENT PRIMARY KEY,
+    id_maquinaria INT      NOT NULL,
+    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estado        ENUM('operativa','mantenimiento','fuera_servicio') NOT NULL,
+    observacion   VARCHAR(300) NULL,
+    id_usuario    INT      NOT NULL,
+    CONSTRAINT fk_histmaq_maquinaria
+        FOREIGN KEY (id_maquinaria) REFERENCES maquinaria(id_maquinaria) ON DELETE CASCADE,
+    CONSTRAINT fk_histmaq_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    INDEX idx_histmaq_maquinaria_fecha (id_maquinaria, fecha_hora)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TRIGGER trg_histinc_sin_update BEFORE UPDATE ON historial_incidencia
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado';
@@ -533,7 +598,24 @@ CREATE TRIGGER trg_estadocont_sin_delete BEFORE DELETE ON estado_contenedor
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de un contenedor es de solo agregado';
 
+CREATE TRIGGER trg_movstock_sin_update BEFORE UPDATE ON movimiento_stock
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los movimientos de stock son de solo agregado';
+
+CREATE TRIGGER trg_movstock_sin_delete BEFORE DELETE ON movimiento_stock
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los movimientos de stock son de solo agregado';
+
+CREATE TRIGGER trg_histmaq_sin_update BEFORE UPDATE ON historial_maquinaria
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado';
+
+CREATE TRIGGER trg_histmaq_sin_delete BEFORE DELETE ON historial_maquinaria
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado';
+
 -- ============================================================================
---  Fin del schema. 16 tablas del modelo de clases (15 + historial_incidencia)
+--  Fin del schema. 19 tablas del modelo de clases (15 + historial_incidencia + recepcion,
+--  movimiento_stock e historial_maquinaria, de las extras)
 --  mas las tecnicas migracion e intento_login.
 -- ============================================================================

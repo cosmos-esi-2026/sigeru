@@ -29,6 +29,11 @@
 --  tablas tecnicas de las migraciones 004 a 008 (enlace_clave, foto_incidencia,
 --  auditoria y limite_peticion) y el estado 'pendiente' de usuario (005). Las
 --  16 tablas del modelo no cambian. Desde esta version va sin AUTO_INCREMENT.
+--
+--  Actualizado el 19/10/2026 (extras, parte 12): pasa de 22 a 25 tablas fisicas. Suma
+--  recepcion, movimiento_stock e historial_maquinaria (migraciones 009 y 010), la
+--  columna usuario.id_centro y los cuatro triggers de solo agregado de las dos
+--  ultimas. Las tablas del modelo pasan de 16 a 19.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -247,6 +252,57 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+DROP TABLE IF EXISTS `historial_maquinaria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `historial_maquinaria` (
+  `id_registro` int(11) NOT NULL AUTO_INCREMENT,
+  `id_maquinaria` int(11) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `estado` enum('operativa','mantenimiento','fuera_servicio') NOT NULL,
+  `observacion` varchar(300) DEFAULT NULL,
+  `id_usuario` int(11) NOT NULL,
+  PRIMARY KEY (`id_registro`),
+  KEY `fk_histmaq_usuario` (`id_usuario`),
+  KEY `idx_histmaq_maquinaria_fecha` (`id_maquinaria`,`fecha_hora`),
+  CONSTRAINT `fk_histmaq_maquinaria` FOREIGN KEY (`id_maquinaria`) REFERENCES `maquinaria` (`id_maquinaria`) ON DELETE CASCADE,
+  CONSTRAINT `fk_histmaq_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_histmaq_sin_update BEFORE UPDATE ON historial_maquinaria
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_histmaq_sin_delete BEFORE DELETE ON historial_maquinaria
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 DROP TABLE IF EXISTS `incidencia`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -320,6 +376,88 @@ CREATE TABLE `migracion` (
   `nombre` varchar(120) NOT NULL,
   `aplicada_en` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `movimiento_stock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `movimiento_stock` (
+  `id_movimiento` int(11) NOT NULL AUTO_INCREMENT,
+  `id_centro` int(11) NOT NULL,
+  `id_tipo_residuo` int(11) NOT NULL,
+  `sentido` enum('entrada','salida') NOT NULL,
+  `motivo` enum('inventario_inicial','recepcion','venta','traslado','disposicion','correccion') NOT NULL,
+  `kg` decimal(10,2) NOT NULL,
+  `id_recoleccion` int(11) DEFAULT NULL,
+  `id_corregido` int(11) DEFAULT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `observacion` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id_movimiento`),
+  UNIQUE KEY `id_corregido` (`id_corregido`),
+  KEY `fk_movstock_tipo` (`id_tipo_residuo`),
+  KEY `fk_movstock_recoleccion` (`id_recoleccion`),
+  KEY `fk_movstock_usuario` (`id_usuario`),
+  KEY `idx_movstock_centro_tipo` (`id_centro`,`id_tipo_residuo`),
+  KEY `idx_movstock_centro_fecha` (`id_centro`,`fecha_hora`),
+  CONSTRAINT `fk_movstock_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`) ON DELETE CASCADE,
+  CONSTRAINT `fk_movstock_corregido` FOREIGN KEY (`id_corregido`) REFERENCES `movimiento_stock` (`id_movimiento`) ON DELETE CASCADE,
+  CONSTRAINT `fk_movstock_recoleccion` FOREIGN KEY (`id_recoleccion`) REFERENCES `recoleccion` (`id_recoleccion`) ON DELETE SET NULL,
+  CONSTRAINT `fk_movstock_tipo` FOREIGN KEY (`id_tipo_residuo`) REFERENCES `tipo_residuo` (`id_tipo_residuo`),
+  CONSTRAINT `fk_movstock_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_movstock_sin_update BEFORE UPDATE ON movimiento_stock
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los movimientos de stock son de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_movstock_sin_delete BEFORE DELETE ON movimiento_stock
+FOR EACH ROW SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Los movimientos de stock son de solo agregado' */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+DROP TABLE IF EXISTS `recepcion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recepcion` (
+  `id_recepcion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_recoleccion` int(11) NOT NULL,
+  `id_centro` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `observacion` varchar(300) DEFAULT NULL,
+  PRIMARY KEY (`id_recepcion`),
+  UNIQUE KEY `id_recoleccion` (`id_recoleccion`),
+  KEY `fk_recepcion_centro` (`id_centro`),
+  KEY `fk_recepcion_usuario` (`id_usuario`),
+  CONSTRAINT `fk_recepcion_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`) ON DELETE CASCADE,
+  CONSTRAINT `fk_recepcion_recoleccion` FOREIGN KEY (`id_recoleccion`) REFERENCES `recoleccion` (`id_recoleccion`) ON DELETE CASCADE,
+  CONSTRAINT `fk_recepcion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `recoleccion`;
@@ -413,6 +551,7 @@ CREATE TABLE `usuario` (
   `direccion` varchar(200) DEFAULT NULL,
   `id_rol` int(11) NOT NULL,
   `id_cuadrilla` int(11) DEFAULT NULL,
+  `id_centro` int(11) DEFAULT NULL,
   `id_solicitud` int(11) DEFAULT NULL,
   `estado` enum('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
@@ -420,8 +559,10 @@ CREATE TABLE `usuario` (
   UNIQUE KEY `email` (`email`),
   KEY `fk_usuario_rol` (`id_rol`),
   KEY `fk_usuario_cuadrilla` (`id_cuadrilla`),
+  KEY `fk_usuario_centro` (`id_centro`),
   KEY `fk_usuario_solicitud` (`id_solicitud`),
   KEY `idx_usuario_estado` (`estado`),
+  CONSTRAINT `fk_usuario_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`),
   CONSTRAINT `fk_usuario_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`),
   CONSTRAINT `fk_usuario_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitud_registro` (`id_solicitud`)
