@@ -10,6 +10,7 @@ require_once __DIR__ . "/../models/CentroStock.php";
 require_once __DIR__ . "/../models/Maquinaria.php";
 require_once __DIR__ . "/../models/Recepcion.php";
 require_once __DIR__ . "/../models/Satisfaccion.php";
+require_once __DIR__ . "/../models/ImpactoDatos.php";
 
 class EstadisticaController
 {
@@ -90,6 +91,21 @@ class EstadisticaController
             "zona"        => $nombreZona ?: null,
             "generado_en" => (string) $db->query("SELECT NOW()")->fetchColumn(),
         ];
+        Response::json(["ok" => true, "datos" => $datos]);
+    }
+
+    // Impacto ambiental por mes y total del periodo (extras, parte 18). Solo el Administrador.
+    public function impacto(): void
+    {
+        $consulta = FlujoIncidencia::filtrosDe(array_intersect_key($_GET, array_flip(["desde", "hasta"])));
+        if ($consulta["error"] !== null) {
+            Response::error($consulta["error"], 400);
+        }
+        $desde = $consulta["filtros"]["desde"] ?? null;
+        $hasta = $consulta["filtros"]["hasta"] ?? null;
+        $datos = ImpactoDatos::resumen($desde, $hasta);
+        $datos["por_mes"] = Impacto::porMes(ImpactoDatos::kgPorMesYTipo($desde, $hasta));
+        $datos["periodo"] = ["desde" => $desde, "hasta" => $hasta, "generado_en" => (string) Database::conexion()->query("SELECT NOW()")->fetchColumn()];
         Response::json(["ok" => true, "datos" => $datos]);
     }
 

@@ -197,6 +197,8 @@ switch ($recurso) {
 
         if ($metodo === "GET" && ($partes[1] ?? "") === "mapa") {
             (new PublicoController())->mapa();
+        } elseif ($metodo === "GET" && ($partes[1] ?? "") === "impacto") {
+            (new PublicoController())->impacto();
         } elseif ($metodo === "GET") {
             Response::error("Recurso no encontrado", 404);
         } else {
@@ -226,6 +228,8 @@ switch ($recurso) {
 
         if ($metodo === "GET" && $tema === "centro") {
             $controlador->centro($usuario);
+        } elseif ($metodo === "GET" && $tema === "impacto") {
+            $controlador->impacto();
         } elseif ($metodo === "GET" && $tema === "satisfaccion") {
             $controlador->satisfaccion();
         } elseif ($metodo === "GET" && $tema === "incidencias") {
@@ -255,7 +259,7 @@ switch ($recurso) {
                 "/incidencias/{id}/foto", "/incidencias/{id}/calificacion",
                 "/participacion/progreso", "/participacion/ranking", "/estadisticas/satisfaccion",
                 "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
-                "/publico/mapa",
+                "/publico/mapa", "/publico/impacto", "/estadisticas/impacto",
             ],
         ]);
         break;
