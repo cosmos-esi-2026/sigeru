@@ -112,6 +112,18 @@ class Usuario
         return $usuario === false ? null : $usuario;
     }
 
+    public static function existeZona(int $id): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM zona WHERE id_zona = :id");
+        $consulta->execute([":id" => $id]);
+        return $consulta->fetchColumn() !== false;
+    }
+
+    public static function guardarZona(int $idUsuario, ?int $idZona): void
+    {
+        Database::conexion()->prepare("UPDATE usuario SET id_zona = :z WHERE id_usuario = :u")->execute([":z" => $idZona, ":u" => $idUsuario]);
+    }
+
     public static function existeCentro(int $id): bool
     {
         $consulta = Database::conexion()->prepare("SELECT 1 FROM centro_acopio WHERE id_centro = :id");

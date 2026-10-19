@@ -154,6 +154,28 @@ class UsuarioController
         Response::json(["ok" => true, "mensaje" => "Usuario actualizado", "datos" => $actualizado]);
     }
 
+    // PUT /mi-zona: el vecino elige (o cambia, o saca) su zona. Es de cada persona: no hay un id en la ruta.
+    public function guardarMiZona(): void
+    {
+        $usuario = Auth::exigirRol("Vecino");
+        $datos = Response::leerJson();
+        if (!array_key_exists("id_zona", $datos)) {
+            Response::error("Falta id_zona (un número, o null para sacarla)", 400);
+        }
+        $zona = $datos["id_zona"];
+        if ($zona !== null) {
+            $esEntero = is_int($zona) || (is_string($zona) && ctype_digit($zona));
+            if (!$esEntero || (int) $zona < 1) {
+                Response::error("La zona indicada no es válida", 400);
+            }
+            if (!Usuario::existeZona((int) $zona)) {
+                Response::error("La zona indicada no existe", 404);
+            }
+        }
+        Usuario::guardarZona((int) $usuario["id_usuario"], $zona === null ? null : (int) $zona);
+        Response::json(["ok" => true, "mensaje" => $zona === null ? "Zona quitada" : "Zona guardada", "datos" => ["id_zona" => $zona === null ? null : (int) $zona]]);
+    }
+
     public function enviarEnlace(int $id): void
     {
         Auth::exigirRol("Administrador");

@@ -46,6 +46,7 @@ if ($ruta === "/" && $metodo === "GET") {
             "POST /notificaciones/leer-todas",
             "GET /preferencias",
             "PUT /preferencias",
+            "PUT /mi-zona",
         ],
     ]);
 }
@@ -122,6 +123,10 @@ if ($recurso === "notificaciones") {
     if ($metodo === "POST" && count($segmentos) === 3 && $segmentos[2] === "leida" && ctype_digit($segmentos[1])) {
         $avisos->marcarLeida((int) $segmentos[1]);
     }
+}
+
+if ($recurso === "mi-zona" && $metodo === "PUT" && count($segmentos) === 1) {
+    $controlador->guardarMiZona();
 }
 
 if ($recurso === "preferencias" && count($segmentos) === 1) {

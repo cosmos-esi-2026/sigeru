@@ -17,6 +17,7 @@ class Permisos
         "recolecciones/fin"          => ["POST" => self::QUIEN_RECOLECTA],
         "recolecciones/cancelacion"  => ["POST" => self::ADMINISTRADOR],
         "estadisticas"               => ["GET" => self::ADMINISTRADOR],
+        "proximo-pasaje"             => ["GET" => ["Vecino"]],
     ];
 
     public static function recursos(): array
