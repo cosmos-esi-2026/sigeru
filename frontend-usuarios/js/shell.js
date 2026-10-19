@@ -158,7 +158,7 @@
 
   function armarSidebar() {
     sidebar.innerHTML =
-      '<a class="sidebar-marca" href="dashboard.html"><img src="img/logo.svg" alt="">SiGeRU</a>' +
+      '<a class="sidebar-marca" href="dashboard.html"><img src="img/logo-claro.svg" alt="">SiGeRU</a>' +
       '<div class="banda" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>' +
       '<nav class="sidebar-nav" aria-label="Secciones del sistema"></nav>' +
       '<div class="sidebar-pie">' +
