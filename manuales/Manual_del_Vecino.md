@@ -68,6 +68,12 @@ y no hace falta repetirlo.
 Tocá el número para ver el detalle: los datos, tu foto y el **historial** de cada paso. El personal aparece por su función
 (Administrador, Cuadrilla), no por su nombre. **El sistema no manda avisos por correo cuando cambia el estado:** entrá a mirarlo.
 
+## ¿Cuándo pasa el camión por mi zona?
+
+En tu **Inicio**, el panel **¿Cuándo pasa el camión por mi zona?** te dice el próximo pasaje: por ejemplo, «Próximo pasaje en Centro: lunes 16/11 a las 06:30». La primera vez elegí tu zona
+en la lista y tocá **Guardar mi zona**; después podés **Cambiar mi zona** cuando quieras. Si todavía no hay recolecciones planificadas para tu zona, te lo dice; si la administración cancela la de ese día,
+ves la siguiente y el aviso de la cancelada; y si el camión está recorriendo tu zona hoy, también te lo avisa.
+
 ## Calificar la atención, puntos e insignias
 
 Cuando un reclamo tuyo **se resuelve**, entrá a su detalle (desde **Mis reclamos** o desde el aviso de la campanita): aparece **Calificación de la atención**. Elegí de 1 a 5 y,

@@ -74,6 +74,12 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Auditoría** registra cada operación de escritura, hecha o negada por permisos. Filtros: Resultado (Hecho, Negado por permisos),
 Operación (POST, PUT, DELETE), Desde, Hasta.
 
+## Cuándo se llena cada contenedor
+
+**Contenedores** tiene la columna **Se llena en** (por ejemplo «en 1 día y 13 h (confianza media)») y el filtro **Se llena pronto** (24 h, 48 h o 7 días). La **ficha** de cada contenedor y tu **Inicio** (panel
+«Se llenan en las próximas 48 horas») muestran lo mismo. **No es inteligencia artificial**: se calcula con el ritmo de vaciado del contenedor (la caja **¿Cómo se calcula?** lo explica). Con menos de 3 vaciados dice
+«Sin datos suficientes»; es una guía para planificar rutas, no una certeza.
+
 ## Calidad del servicio (reportes)
 
 En **Reportes**, la sección **Calidad del servicio** muestra por zona y por cuadrilla: incidencias, resueltas, cuántas calificaciones dejaron los vecinos, la **satisfacción promedio** (de 1 a 5)

@@ -50,6 +50,11 @@ Cancelar una recolección lo hace la administración. Si abrís una recolección
 **Mapa** muestra los contenedores y las incidencias abiertas que te tocan. **Contenedores** lista los contenedores; al abrir uno se ve
 su **ficha** con el historial de sus estados (disponible, lleno, mantenimiento, retirado).
 
+## Cuándo se llena cada contenedor
+
+En **Contenedores**, la columna **Se llena en** estima cuánto falta para que cada contenedor llegue al 90 % (con su confianza), y el filtro **Se llena pronto** muestra los que se llenan en 24 h, 48 h o 7 días.
+Es una estimación según cada cuánto se vació (no es inteligencia artificial): la caja **¿Cómo se calcula?** la explica.
+
 ## Calificaciones de tus incidencias
 
 Cuando un vecino califica la atención de una incidencia que resolvió tu cuadrilla, la calificación (de 1 a 5 y su comentario, sin el nombre del vecino) aparece en el detalle de esa incidencia.

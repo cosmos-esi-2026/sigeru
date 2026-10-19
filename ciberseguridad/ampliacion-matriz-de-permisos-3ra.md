@@ -245,3 +245,20 @@ los enlaces se limitan a pantallas del sistema. Cubierto por las pruebas unitari
 
 El detalle de una incidencia (`GET /incidencias/{id}`) incluye la calificación solo para quien ya puede ver esa incidencia (el autor, el administrador y la cuadrilla asignada): otra cuadrilla y
 otros vecinos reciben 404. Las calificaciones y los puntos son de solo agregado (triggers). Cubierto por 53 pruebas unitarias y 66 por HTTP.
+
+## 17. Actualización del 19/10/2026 (extras, parte 15: pasaje por zona)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `PUT /api-usuarios/mi-zona` | Solo el Vecino | Sobre su propia cuenta (no lleva id): no se puede cambiar la zona de otra persona |
+| `GET /api-recoleccion/proximo-pasaje` | Solo el Vecino | Devuelve solo estado, zona, día y hora: nunca camión, cuadrilla ni ruta |
+
+Sin sesión 401; cualquier otro rol 403. Cubierto por 11 pruebas unitarias y 25 por HTTP.
+
+## 18. Actualización del 19/10/2026 (extras, parte 16: predicción de llenado)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET /api-gestion/contenedores/prediccion` | Administrador y Cuadrilla | Solo lectura; `dentro_de` de 1 a 720 horas. Vecino y Operario: 403; sin sesión: 401 |
+
+No expone datos de personas (solo contenedores y fechas de vaciado). Cubierto por 35 pruebas unitarias y 21 por HTTP.
