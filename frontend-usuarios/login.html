@@ -12,14 +12,23 @@
 <body class="pagina-acceso">
   <a class="saltar-contenido" href="#contenido">Saltar al formulario</a>
   <main class="acceso-layout" id="contenido">
-    <section class="acceso-presentacion" aria-label="SiGeRU">
+    <section class="acceso-presentacion con-escena" aria-label="SiGeRU">
+      <div class="acceso-escena" aria-hidden="true">
+        <div class="acceso-calle"></div>
+        <div class="acceso-camion">
+          <img src="img/acceso-camion.png" alt="" width="82" height="241" loading="lazy">
+        </div>
+      </div>
       <a class="acceso-marca" href="../landing/index.html">SiGeRU</a>
       <div class="acceso-relato">
         <span class="acceso-sello">Tu ciudad, tu espacio</span>
         <h2>Un barrio mejor empieza cerca.</h2>
-        <p>Entrá para informar problemas y seguir lo que pasa con los residuos de tu zona.</p>
       </div>
-      <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
+      <div class="acceso-abajo">
+        <p class="acceso-bajada">Entrá para informar problemas y seguir lo que pasa con los residuos de tu zona.</p>
+        <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
+        <button type="button" class="acceso-pausa" aria-pressed="false" hidden>Pausar la animación de fondo</button>
+      </div>
     </section>
 
     <section class="acceso-contenido" aria-labelledby="titulo-acceso">
@@ -60,5 +69,6 @@
   <script src="js/formularios.js"></script>
   <script src="js/acceso.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/acceso-escena.js"></script>
 </body>
 </html>

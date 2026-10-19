@@ -44,11 +44,9 @@ body.pagina-acceso { background: var(--hueso); }
 .acceso-marca:hover { color: var(--blanco); }
 .acceso-marca::before {
   content: "";
-  width: 22px;
-  height: 22px;
-  border-radius: 7px 18px 7px 18px;
-  background: var(--lima);
-  transform: rotate(-25deg);
+  width: 34px;
+  height: 34px;
+  background: url("../img/logo-claro.svg") center / contain no-repeat;
 }
 
 .acceso-relato { position: relative; z-index: 1; max-width: 470px; }
@@ -150,3 +148,73 @@ body.pagina-acceso { background: var(--hueso); }
 
 /* Enlaces de las pantallas de acceso con al menos 24 px de alto (WCAG 2.2, criterio 2.5.8) */
 .acceso-volver, .acceso-fila a { display: inline-block; padding: 4px 0; }
+
+/* Escena del login: barrio visto desde arriba que pasa sin fin bajo el camion de SiGeRU.
+   La calle es una pieza que se repite (un tramo y su reflejo, cortados en medio de una calle
+   transversal): por eso no hay ningun corte. Sale de los cuadros del video generado con IA.
+   El camion va en el centro exacto del panel y nada lo tapa: el texto queda arriba y abajo. */
+.con-escena { justify-content: flex-start; gap: 0; padding: clamp(28px, 4vw, 56px); }
+.con-escena::after { display: none; }
+.con-escena .acceso-relato { margin-top: clamp(20px, 4vh, 40px); }
+.con-escena .acceso-relato h2 { font-size: clamp(30px, 3vw, 46px); max-width: 13ch; }
+.acceso-abajo { margin-top: auto; }
+.acceso-bajada { max-width: 38ch; margin: 0 0 var(--esp-4); color: #e3efe7; font-size: 16px; }
+.con-escena .acceso-marca,
+.con-escena .acceso-relato,
+.con-escena .acceso-abajo { position: relative; z-index: 2; }
+.con-escena .acceso-marca,
+.con-escena .acceso-relato h2,
+.con-escena .acceso-bajada,
+.con-escena .acceso-pie { text-shadow: 0 1px 2px rgba(5, 30, 22, .9), 0 2px 16px rgba(5, 30, 22, .8); }
+.con-escena .acceso-sello { text-shadow: 0 1px 2px rgba(5, 30, 22, .95), 0 0 10px rgba(5, 30, 22, .9); }
+.acceso-escena { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--verde-oscuro); }
+.acceso-calle {
+  position: absolute;
+  top: 0;
+  left: -12.5%;
+  width: 125%;
+  aspect-ratio: 960 / 4482;
+  background: url("../img/acceso-calle.jpg") repeat-y center top / 100% auto;
+  filter: saturate(.88);
+  animation: calle-pasa 11s linear infinite;
+  will-change: transform;
+}
+@keyframes calle-pasa {
+  from { transform: translateY(-33.3333%); }
+  to   { transform: translateY(0); }
+}
+.acceso-camion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10.7%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, .38));
+  animation: camion-vibra 1.6s ease-in-out infinite;
+}
+.acceso-camion img { display: block; width: 100%; height: auto; }
+@keyframes camion-vibra {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50%      { transform: translate(calc(-50% + .5px), calc(-50% - .5px)); }
+}
+.acceso-escena.pausado .acceso-calle,
+.acceso-escena.pausado .acceso-camion { animation-play-state: paused; }
+.acceso-pausa {
+  margin-top: var(--esp-4);
+  min-height: 36px;
+  padding: 0 var(--esp-4);
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: var(--radio-full);
+  background: rgba(9, 46, 34, .6);
+  color: var(--blanco);
+  font: 600 13px var(--fuente-texto);
+  cursor: pointer;
+}
+.acceso-pausa:hover { background: rgba(9, 46, 34, .9); border-color: var(--blanco); }
+@media (prefers-reduced-motion: reduce) {
+  .acceso-calle, .acceso-camion { animation: none; }
+  .acceso-pausa { display: none; }
+}
+@media (max-width: 850px) {
+  .acceso-escena, .acceso-abajo { display: none; }
+}
