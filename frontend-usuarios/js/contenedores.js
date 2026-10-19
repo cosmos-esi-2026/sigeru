@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 7;
+const COLUMNAS = 8;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const formContenedor = document.getElementById("form-contenedor");
 const mensaje = document.getElementById("mensaje");
@@ -27,11 +27,34 @@ function consultaDeLaLista(extra) {
   return (base === "" ? "?" : base + "&") + "q=" + encodeURIComponent(q);
 }
 
+let prediccionPorId = {};
+
+function coincideConLosFiltros(c) {
+  const q = campoBusqueda.value.trim().toLowerCase();
+  const zona = formFiltros.zona.selectedOptions[0];
+  const texto = [c.codigo, c.direccion, c.zona, c.tipo_residuo].join(" ").toLowerCase();
+  return (q === "" || texto.indexOf(q) !== -1) &&
+    (formFiltros.estado.value === "" || c.estado === formFiltros.estado.value) &&
+    (formFiltros.zona.value === "" || (zona && c.zona === zona.textContent)) &&
+    (formFiltros.tipo.value === "" || c.tipo_residuo === formFiltros.tipo.value);
+}
+
 async function cargarContenedores() {
   cuerpoTabla.innerHTML = filaEsqueleto(COLUMNAS, 4);
-  hayFiltros = consultaDeLaLista({}) !== "";
+  hayFiltros = consultaDeLaLista({}) !== "" || formFiltros.llena.value !== "";
 
   try {
+    // Con el filtro «se llena pronto» la lista sale de la prediccion (son pocos): se aplican los demas filtros en la pantalla y no se pagina.
+    const dentroDe = formFiltros.llena.value;
+    if (dentroDe !== "") {
+      const { mapa, filas } = await traerPredicciones(dentroDe);
+      prediccionPorId = mapa;
+      dibujarTabla(filas.filter(coincideConLosFiltros));
+      paginador.dibujar(null);
+      return;
+    }
+    prediccionPorId = (await traerPredicciones()).mapa;
+
     const datos = await apiGet(API.gestion + "/contenedores" + consultaDeLaLista({
       pagina: paginador.estado.pagina, por_pagina: paginador.estado.porPagina,
     }));
@@ -80,6 +103,8 @@ function dibujarTabla(contenedores) {
       celda("Capacidad", c.capacidad ? c.capacidad + " L" : null, c.capacidad) +
       celda("Tipo", c.tipo_residuo) +
       celdaEstado("Estado", c.estado, colorEstado(c.estado)) +
+      celda("Se llena en", c.estado === "retirado" ? null : textoDePrediccion(prediccionPorId[c.id_contenedor]),
+            prediccionPorId[c.id_contenedor] && prediccionPorId[c.id_contenedor].horas_hasta_90 !== null ? prediccionPorId[c.id_contenedor].horas_hasta_90 : 99999) +
       celdaAcciones(c.id_contenedor, "Editar " + c.codigo, "Retirar " + c.codigo) +
       "</tr>";
   }).join("");
@@ -229,8 +254,13 @@ prepararModal("modal-contenedor", formContenedor);
 activarOrden("tabla-contenedores");
 // Las tarjetas y avisos del panel llegan con ?estado=lleno (o mantenimiento, etc.)
 const estadoDeLaDireccion = new URLSearchParams(window.location.search).get("estado");
+const llenaDeLaDireccion = new URLSearchParams(window.location.search).get("llena");
+if (llenaDeLaDireccion && ["24", "48", "168"].indexOf(llenaDeLaDireccion) !== -1) {
+  formFiltros.llena.value = llenaDeLaDireccion;
+}
 if (estadoDeLaDireccion) {
   formFiltros.estado.value = estadoDeLaDireccion;
 }
 cargarCatalogos();
 cargarContenedores();
+document.getElementById("explicacion-prediccion").innerHTML = EXPLICACION_PREDICCION;

@@ -240,6 +240,72 @@ function dibujarReclamos(incidencias) {
     }).join("") + "</ul>";
 }
 
+const DIAS_SEMANA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// "2026-11-16 06:30:00" -> "lunes 16/11 a las 06:30"
+function diaYHora(valor) {
+  const partes = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(valor || "");
+  if (!partes) {
+    return "";
+  }
+  const dia = DIAS_SEMANA[new Date(parseInt(partes[1], 10), parseInt(partes[2], 10) - 1, parseInt(partes[3], 10)).getDay()];
+  return dia + " " + partes[3] + "/" + partes[2] + " a las " + partes[4] + ":" + partes[5];
+}
+
+function textoDelPasaje(d) {
+  if (d.estado === "sin_zona") {
+    return "Elegí tu zona para saber cuándo pasa la recolección.";
+  }
+  const aviso = d.cancelada ? " Se canceló la recolección del " + diaYHora(d.cancelada) + "." : "";
+  if (d.estado === "en_curso") {
+    return "Hoy el camión está pasando por " + d.zona + "." + (d.proximo ? " La siguiente: " + diaYHora(d.proximo) + "." : "") + aviso;
+  }
+  if (d.estado === "sin_planificadas") {
+    return "Todavía no hay recolecciones planificadas para tu zona (" + d.zona + ")." + aviso;
+  }
+  return "Próximo pasaje en " + d.zona + ": " + diaYHora(d.proximo) + "." + aviso;
+}
+
+async function cargarPasaje() {
+  const zona = document.getElementById("zona-pasaje");
+  const selector = document.getElementById("select-zona");
+  try {
+    if (selector.options.length === 1) {
+      const zonas = (await apiGet(API.gestion + "/zonas")).datos || [];
+      selector.innerHTML = '<option value="">Elegí tu zona</option>' + zonas.map(function (z) {
+        return '<option value="' + $entero(z.id_zona) + '">' + escaparHtml(z.nombre) + "</option>";
+      }).join("");
+    }
+    const d = (await apiGet(API.recoleccion + "/proximo-pasaje")).datos;
+    selector.value = d.id_zona ? String(d.id_zona) : "";
+    document.getElementById("boton-zona").textContent = d.id_zona ? "Cambiar mi zona" : "Guardar mi zona";
+    zona.innerHTML = '<p class="pasaje-texto' + (d.estado === "programado" || d.estado === "en_curso" ? " con-pasaje" : "") + '">' + escaparHtml(textoDelPasaje(d)) + "</p>";
+  } catch (error) {
+    zona.innerHTML = bloqueEstado("No se pudo traer el pasaje", mensajeDeFallo(error), true);
+  }
+}
+
+document.getElementById("form-zona").addEventListener("submit", async function (evento) {
+  evento.preventDefault();
+  const selector = document.getElementById("select-zona");
+  if (selector.value === "") {
+    avisoPaginaError("Elegí una zona de la lista.");
+    selector.focus();
+    return;
+  }
+  try {
+    const { ok, resultado } = await apiPut(API.usuarios + "/mi-zona", { id_zona: parseInt(selector.value, 10) });
+    if (ok) {
+      avisoPagina("Zona guardada.");
+      cargarPasaje();
+    } else {
+      avisoPaginaError(resultado.mensaje || "No se pudo guardar la zona.");
+    }
+  } catch (error) {
+    avisoPaginaError("No se pudo conectar con el servidor. Revisá que esté corriendo.");
+  }
+});
+
 function plural2(n, uno, varios) {
   return n + " " + (n === 1 ? uno : varios);
 }
@@ -357,10 +423,27 @@ async function cargarMiCentro() {
   }
 }
 
+async function cargarPronto() {
+  const lista = document.getElementById("lista-pronto");
+  lista.innerHTML = '<li><span class="esqueleto"></span></li>';
+  try {
+    const { filas } = await traerPredicciones(48);
+    lista.innerHTML = filas.length === 0
+      ? '<li class="texto-tenue">Ningún contenedor se llena en las próximas 48 horas según el ritmo de vaciado (o todavía no hay datos suficientes).</li>'
+      : filas.slice(0, 6).map(function (f) {
+          return '<li class="tarjeta-pronto"><a href="contenedor.html?id=' + $entero(f.id_contenedor) + '">' + escaparHtml(f.codigo + " · " + f.direccion) + "</a><span>" +
+                 escaparHtml(textoDePrediccion(f.prediccion)) + "</span></li>";
+        }).join("") + (filas.length > 6 ? '<li class="texto-tenue">Y ' + (filas.length - 6) + " más: mirá la lista completa en Contenedores.</li>" : "");
+  } catch (error) {
+    lista.innerHTML = '<li class="texto-tenue">' + escaparHtml(mensajeDeFallo(error)) + "</li>";
+  }
+}
+
 function cargarPanel() {
   if (Sesion.obtener().rol === "Vecino") {
     document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
     cargarReclamos();
+    cargarPasaje();
     cargarProgreso();
     cargarRanking();
     cargarPreferencia();
@@ -382,6 +465,7 @@ function cargarPanel() {
   cargarContenedores();
   if (esAdministrador) {
     cargarCamiones();
+    cargarPronto();
     cargarUsuarios();
     cargarUrgencias();
   }

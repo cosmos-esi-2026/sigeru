@@ -50,6 +50,25 @@ function mostrarFallo(titulo, detalle, conReintento) {
     '<section class="panel">' + bloqueEstado(titulo, detalle, conReintento) + "</section>";
 }
 
+async function cargarLlenado() {
+  const zona = document.getElementById("zona-llenado");
+  document.getElementById("explicacion-prediccion").innerHTML = EXPLICACION_PREDICCION;
+  try {
+    const { mapa } = await traerPredicciones();
+    const p = mapa[idContenedor];
+    if (!p) {
+      zona.textContent = "Este contenedor está retirado o en mantenimiento: no se estima cuándo se llena.";
+      return;
+    }
+    zona.innerHTML = "<strong>" + escaparHtml(textoDePrediccion(p)) + "</strong>" +
+      (p.estado === "estimada"
+        ? '<br><span class="texto-tenue">Nivel estimado hoy: ' + parseInt(p.nivel_estimado_pct, 10) + " % · intervalo medio entre vaciados: " + escaparHtml(String(p.intervalo_medio_horas)) + " h (" + parseInt(p.vaciados, 10) + " vaciados).</span>"
+        : "");
+  } catch (error) {
+    zona.textContent = mensajeDeFallo(error);
+  }
+}
+
 async function cargarFicha() {
   if (idContenedor === null) {
     mostrarFallo("Falta indicar el contenedor", "Entrá desde la lista de contenedores.", false);
@@ -69,6 +88,7 @@ async function cargarFicha() {
     return;
   }
 
+  cargarLlenado();
   const [historial, incidencias] = await Promise.allSettled([
     apiGet(API.gestion + "/contenedores/" + idContenedor + "/historial"),
     apiGet(API.gestion + "/incidencias?contenedor=" + idContenedor),

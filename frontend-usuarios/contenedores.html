@@ -72,6 +72,14 @@
           <label>Tipo de residuo
             <select name="tipo"><option value="">Todos</option></select>
           </label>
+          <label class="solo-personal">Se llena pronto
+            <select name="llena" id="filtro-llena">
+              <option value="">Cualquiera</option>
+              <option value="24">En las próximas 24 h</option>
+              <option value="48">En las próximas 48 h</option>
+              <option value="168">En los próximos 7 días</option>
+            </select>
+          </label>
           <div class="filtros-acciones">
             <button type="reset" class="boton boton-secundario boton-chico">Limpiar</button>
           </div>
@@ -89,6 +97,7 @@
                 <th role="columnheader" data-orden>Capacidad</th>
                 <th role="columnheader" data-orden>Tipo</th>
                 <th role="columnheader" data-orden>Estado</th>
+                <th role="columnheader" data-orden>Se llena en</th>
                 <th role="columnheader" class="solo-admin"><span class="solo-lectores">Acciones</span></th>
               </tr>
             </thead>
@@ -100,11 +109,17 @@
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto esqueleto-corto"></span></td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <details class="como-se-calcula">
+          <summary>¿Cómo se calcula «Se llena en»?</summary>
+          <div id="explicacion-prediccion"></div>
+        </details>
 
         <nav class="paginacion" id="paginacion" aria-label="Paginación de contenedores"></nav>
 
@@ -168,6 +183,7 @@
 <script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/lista.js"></script>
+<script src="js/prediccion.js"></script>
 <script src="js/contenedores.js"></script>
 </body>
 </html>

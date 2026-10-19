@@ -1244,3 +1244,14 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
 .insignia .marca { font-size: 12.5px; font-weight: 700; }
 .lista-simple { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: grid; gap: var(--esp-2); }
 .lista-simple li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }
+
+/* Cuando pasa el camion (extras, parte 15) */
+.pasaje-texto { margin: 0 0 var(--esp-4); font-size: 17px; color: var(--tinta-suave); }
+.pasaje-texto.con-pasaje { color: var(--tinta); font-weight: 600; }
+
+/* Prediccion de llenado (extras, parte 16) */
+body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal { display: none !important; }
+.como-se-calcula { margin-top: var(--esp-4); border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); background: var(--hueso); }
+.como-se-calcula summary { cursor: pointer; font-weight: 600; }
+.como-se-calcula p { margin: var(--esp-3) 0 0; font-size: 14px; color: var(--tinta-suave); }
+.tarjeta-pronto { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }
