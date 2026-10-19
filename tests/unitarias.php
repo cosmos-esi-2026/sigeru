@@ -274,7 +274,7 @@ foreach (glob("$front/*.html") as $pagina) {
         $sinBase[] = $nombre;
     }
 }
-afirmar("Las paginas con menu lateral son las 20 de gestion", 20, count($conMenu));
+afirmar("Las paginas con menu lateral son las 23 de gestion", 23, count($conMenu));
 afirmar("Todas cargan shell.js", [], $sinShell);
 afirmar("Ninguna tiene copiado el menu ni la hamburguesa", [], $conMenuCopiado);
 afirmar(
@@ -391,7 +391,7 @@ foreach ($secciones as $seccion) {
     }
 }
 afirmar("El menu no muestra pantallas cuya lectura la API le niega al rol", [], $excedidos);
-afirmar("shell.js define las 20 pantallas de gestion", 20, count($secciones));
+afirmar("shell.js define las 23 pantallas de gestion", 23, count($secciones));
 afirmar("Cada pantalla de incidencias esta atada a su permiso de la API", [], array_values(array_diff(
     ["incidencias", "mis-incidencias", "mis-reclamos", "incidencia", "informar-problema", "contenedor",
      "recolecciones", "mis-tareas", "recoleccion", "camiones", "mapa", "reportes", "rutas"],
@@ -431,6 +431,7 @@ require __DIR__ . "/unitarias-listas.php";
 require __DIR__ . "/unitarias-accesibilidad.php";
 require __DIR__ . "/unitarias-foto.php";
 require __DIR__ . "/unitarias-seguridad.php";
+require __DIR__ . "/unitarias-operario.php";
 
 echo "\n" . str_repeat("=", 50) . "\n";
 echo "Pasaron: $pasaron   Fallaron: $fallaron\n";
