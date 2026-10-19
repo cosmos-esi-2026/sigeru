@@ -325,6 +325,12 @@ class UsuarioController
         }
 
         $nuevo = Usuario::crear($datos, "Vecino");
+        try {
+            Correo::enviarBienvenida($nuevo["email"], $nuevo["nombre"]);
+        } catch (CorreoException $e) {
+            // La cuenta ya existe: sin correo configurado o con SMTP caido el registro no se cae.
+            error_log("SiGeRU: no se pudo enviar la bienvenida.");
+        }
         Response::json([
             "ok" => true,
             "mensaje" => "Cuenta creada. Ya podés iniciar sesión.",

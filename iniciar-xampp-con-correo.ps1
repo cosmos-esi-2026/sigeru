@@ -21,10 +21,10 @@ if ($activos) {
 }
 
 $segura = Read-Host 'Contrasena de aplicacion de Gmail (no se guarda)' -AsSecureString
-$credencial = [PSCredential]::new('cosmoscorporation2026@gmail.com', $segura)
+$credencial = [PSCredential]::new('sigeruesi@gmail.com', $segura)
 $env:SIGERU_SMTP_URL = 'smtps://smtp.gmail.com:465'
-$env:SIGERU_SMTP_USER = 'cosmoscorporation2026@gmail.com'
-$env:SIGERU_MAIL_FROM = 'cosmoscorporation2026@gmail.com'
+$env:SIGERU_SMTP_USER = 'sigeruesi@gmail.com'
+$env:SIGERU_MAIL_FROM = 'sigeruesi@gmail.com'
 $env:SIGERU_PUBLIC_URL = 'http://localhost/sigeru'
 $env:SIGERU_SMTP_PASS = $credencial.GetNetworkCredential().Password
 

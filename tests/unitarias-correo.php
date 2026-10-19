@@ -76,6 +76,17 @@ Correo::enviarEnlace($destinoPrueba, "Ana", $token, true);
 afirmar("El de recuperacion cambia el asunto", true, str_starts_with(file_get_contents($ficheroPrueba), "Recuper"));
 @unlink($ficheroPrueba);
 
+// Bienvenida: va por su propio archivo y no lleva token ni contrasena.
+$ficheroBienvenida = Correo::carpetaArchivo() . "/" . hash("sha256", $destinoPrueba) . "-bienvenida.txt";
+Correo::enviarBienvenida($destinoPrueba, "Ana");
+$bienvenida = is_file($ficheroBienvenida) ? file_get_contents($ficheroBienvenida) : "";
+afirmar("La bienvenida deja su mensaje en tmp/correo, aparte del de enlaces", true, $bienvenida !== "");
+afirmar("Saluda por el nombre y tiene el asunto de bienvenida", true,
+    str_contains($bienvenida, "Hola Ana") && str_contains($bienvenida, "Bienvenido"));
+afirmar("Lleva el enlace al login y ningun token", true,
+    str_contains($bienvenida, "frontend-usuarios/login.html") && !str_contains($bienvenida, "token="));
+@unlink($ficheroBienvenida);
+
 $rechazado = false;
 try {
     Correo::enviarEnlace("a@sigeru.uy" . chr(13) . chr(10) . "Bcc: otro@sigeru.uy", "Ana", $token);
