@@ -240,6 +240,33 @@ function dibujarReclamos(incidencias) {
     }).join("") + "</ul>";
 }
 
+async function cargarPreferencia() {
+  const casilla = document.getElementById("pref-correo");
+  const estado = document.getElementById("pref-estado");
+  try {
+    const respuesta = await apiGet(API.usuarios + "/preferencias");
+    casilla.checked = respuesta.datos.avisos_por_correo === true;
+  } catch (error) {
+    estado.textContent = "No se pudo leer tu preferencia de avisos por correo.";
+  }
+  casilla.addEventListener("change", async function () {
+    const quiere = casilla.checked;
+    casilla.disabled = true;
+    try {
+      const { ok } = await apiPut(API.usuarios + "/preferencias", { avisos_por_correo: quiere });
+      if (!ok) {
+        throw new Error("no se pudo guardar");
+      }
+      estado.textContent = quiere ? "Listo: te vamos a avisar por correo." : "Listo: no te vamos a mandar correos (los avisos siguen en la campanita).";
+    } catch (error) {
+      casilla.checked = !quiere;
+      estado.textContent = "No se pudo guardar el cambio. Probá de nuevo.";
+    } finally {
+      casilla.disabled = false;
+    }
+  });
+}
+
 async function cargarReclamos() {
   const zona = document.getElementById("zona-reclamos");
   zona.innerHTML = '<span class="esqueleto"></span>';
@@ -290,6 +317,7 @@ function cargarPanel() {
   if (Sesion.obtener().rol === "Vecino") {
     document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
     cargarReclamos();
+    cargarPreferencia();
     return;
   }
   if (Sesion.obtener().rol === "Operario") {

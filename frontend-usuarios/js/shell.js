@@ -308,6 +308,161 @@
     });
   }
 
+  // La campanita de avisos (extras, parte 13): contador de no leidas, panel accesible por teclado y sondeo cada
+  // 60 segundos que se pausa con la pestana oculta. Cada persona ve solo sus avisos (lo garantiza la API).
+  const TRAZOS_CAMPANA = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>';
+  const PERIODO_AVISOS = 60000;
+
+  function fechaDelAviso(valor) {
+    const partes = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(valor || "");
+    return partes ? partes[3] + "/" + partes[2] + "/" + partes[1] + " " + partes[4] + ":" + partes[5] : "";
+  }
+
+  function textoSeguro(valor) {
+    return String(valor === null || valor === undefined ? "" : valor)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function enlaceSeguro(enlace) {
+    return /^[a-z0-9-]+\.html(\?[a-z0-9=&_-]*)?$/i.test(enlace || "") ? enlace : null;
+  }
+
+  function activarCampanita() {
+    const barra = document.querySelector(".topbar");
+    const titulo = barra ? barra.querySelector(".topbar-titulo") : null;
+    if (!titulo || typeof API === "undefined") {
+      return;
+    }
+    titulo.insertAdjacentHTML("afterend",
+      '<div class="campanita" id="campanita">' +
+      '<button type="button" class="boton boton-icono campanita-boton" id="campanita-boton" aria-haspopup="dialog" ' +
+      'aria-expanded="false" aria-controls="campanita-panel" aria-label="Avisos">' + icono(TRAZOS_CAMPANA) +
+      '<span class="campanita-cuenta oculto" id="campanita-cuenta" aria-hidden="true"></span></button>' +
+      '<div class="campanita-panel oculto" id="campanita-panel" role="dialog" aria-label="Avisos">' +
+      '<div class="campanita-cabecera"><strong>Avisos</strong>' +
+      '<button type="button" class="boton boton-secundario boton-chico" id="campanita-todas">Marcar todos como leídos</button></div>' +
+      '<ul class="campanita-lista" id="campanita-lista"></ul></div>' +
+      '<span class="solo-lectores" id="campanita-anuncio" role="status" aria-live="polite"></span></div>');
+
+    const contenedor = document.getElementById("campanita");
+    const boton = document.getElementById("campanita-boton");
+    const panel = document.getElementById("campanita-panel");
+    const lista = document.getElementById("campanita-lista");
+    const cuenta = document.getElementById("campanita-cuenta");
+    const anuncio = document.getElementById("campanita-anuncio");
+    let anterior = null;
+
+    function pintar(datos, noLeidas) {
+      cuenta.textContent = noLeidas > 99 ? "99+" : String(noLeidas);
+      cuenta.classList.toggle("oculto", noLeidas === 0);
+      boton.setAttribute("aria-label", noLeidas === 0 ? "Avisos: no hay nada sin leer" : "Avisos: " + noLeidas + (noLeidas === 1 ? " sin leer" : " sin leer"));
+      if (anterior !== null && noLeidas > anterior) {
+        anuncio.textContent = "Tenés " + noLeidas + (noLeidas === 1 ? " aviso nuevo" : " avisos sin leer");
+      }
+      anterior = noLeidas;
+      document.getElementById("campanita-todas").disabled = noLeidas === 0;
+      lista.innerHTML = datos.length === 0
+        ? '<li class="campanita-vacio">No tenés avisos todavía. Acá vas a ver los cambios de tus reclamos y tareas.</li>'
+        : datos.map(function (n) {
+            const destino = enlaceSeguro(n.enlace);
+            const cabeza = destino
+              ? '<a class="campanita-enlace" href="' + destino + '" data-id="' + parseInt(n.id_notificacion, 10) + '">' + textoSeguro(n.titulo) + "</a>"
+              : "<strong>" + textoSeguro(n.titulo) + "</strong>";
+            return '<li class="campanita-item' + (n.leida ? "" : " sin-leer") + '">' + cabeza +
+              "<p>" + textoSeguro(n.mensaje) + "</p>" +
+              '<div class="campanita-pie"><time>' + textoSeguro(fechaDelAviso(n.fecha_hora)) + "</time>" +
+              (n.leida ? "" : '<button type="button" class="boton boton-chico js-leida" data-id="' + parseInt(n.id_notificacion, 10) +
+                '">Marcar como leído<span class="solo-lectores">: ' + textoSeguro(n.titulo) + "</span></button>") + "</div></li>";
+          }).join("");
+    }
+
+    async function actualizar() {
+      try {
+        const respuesta = await fetch(API.usuarios + "/notificaciones?limite=20", { credentials: "same-origin" });
+        if (!respuesta.ok) {
+          return;
+        }
+        const cuerpo = await respuesta.json();
+        pintar(cuerpo.datos || [], cuerpo.no_leidas || 0);
+      } catch (error) {
+        return;
+      }
+    }
+
+    async function marcar(ruta) {
+      try {
+        await fetch(API.usuarios + ruta, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: "{}", keepalive: true });
+      } catch (error) {
+        return;
+      }
+      actualizar();
+    }
+
+    function abrir() {
+      panel.classList.remove("oculto");
+      boton.setAttribute("aria-expanded", "true");
+      actualizar();
+      const primero = panel.querySelector("a, button:not([disabled])");
+      if (primero) {
+        primero.focus();
+      }
+    }
+
+    function cerrar(devolverFoco) {
+      panel.classList.add("oculto");
+      boton.setAttribute("aria-expanded", "false");
+      if (devolverFoco === true) {
+        boton.focus();
+      }
+    }
+
+    boton.addEventListener("click", function () {
+      if (panel.classList.contains("oculto")) {
+        abrir();
+      } else {
+        cerrar(true);
+      }
+    });
+    document.getElementById("campanita-todas").addEventListener("click", function () { marcar("/notificaciones/leer-todas"); });
+    lista.addEventListener("click", function (evento) {
+      const marcarUno = evento.target.closest(".js-leida");
+      if (marcarUno) {
+        marcar("/notificaciones/" + parseInt(marcarUno.dataset.id, 10) + "/leida");
+        return;
+      }
+      const enlace = evento.target.closest(".campanita-enlace");
+      if (enlace) {
+        marcar("/notificaciones/" + parseInt(enlace.dataset.id, 10) + "/leida");
+      }
+    });
+    contenedor.addEventListener("keydown", function (evento) {
+      if (evento.key === "Escape" && !panel.classList.contains("oculto")) {
+        cerrar(true);
+      }
+    });
+    contenedor.addEventListener("focusout", function (evento) {
+      if (!panel.classList.contains("oculto") && evento.relatedTarget && !contenedor.contains(evento.relatedTarget)) {
+        cerrar(false);
+      }
+    });
+    document.addEventListener("click", function (evento) {
+      if (!panel.classList.contains("oculto") && !contenedor.contains(evento.target)) {
+        cerrar(false);
+      }
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) {
+        actualizar();
+      }
+    });
+    window.setInterval(function () {
+      if (!document.hidden) {
+        actualizar();
+      }
+    }, PERIODO_AVISOS);
+    actualizar();
+  }
+
   if (!sidebar) {
     return;
   }
@@ -321,5 +476,6 @@
   armarSidebar();
   aplicarRol(usuarioLocal);
   activarMenuMovil(agregarBotonMenu());
+  activarCampanita();
   verificarSesion();
 })();

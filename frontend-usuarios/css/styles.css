@@ -1188,3 +1188,40 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
 .tabla-lineas input[type="number"] { width: 100%; min-width: 90px; max-width: 150px; }
 .tabla-lineas th, .tabla-lineas td { padding-left: var(--esp-2); padding-right: var(--esp-2); }
 @media (max-width: 900px) { .columnas-detalle.columnas-anchas { grid-template-columns: minmax(0, 1fr); } }
+
+/* Campanita de avisos (extras, parte 13) */
+.campanita { position: relative; order: 5; }
+.campanita-boton { position: relative; }
+.campanita-cuenta {
+  position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: var(--radio-full); background: var(--error-texto); color: #fff;
+  font-size: 11.5px; font-weight: 700; line-height: 20px; text-align: center;
+}
+.campanita-panel {
+  position: absolute; right: 0; top: calc(100% + var(--esp-2)); z-index: 60;
+  width: min(380px, calc(100vw - 32px)); max-height: 70vh; overflow: auto;
+  background: var(--blanco); border: 1px solid var(--borde); border-radius: var(--radio-2); box-shadow: var(--sombra-2);
+}
+.campanita-cabecera {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
+  position: sticky; top: 0; padding: var(--esp-3) var(--esp-4); background: var(--blanco); border-bottom: 1px solid var(--borde);
+}
+.campanita-lista { list-style: none; margin: 0; padding: 0; }
+.campanita-item { padding: var(--esp-3) var(--esp-4); border-bottom: 1px solid var(--borde); }
+.campanita-item:last-child { border-bottom: none; }
+.campanita-item.sin-leer { background: var(--verde-agua); border-left: 4px solid var(--verde); }
+.campanita-item p { margin: var(--esp-1) 0 var(--esp-2); font-size: 14px; color: var(--tinta-suave); }
+.campanita-enlace { font-weight: 600; }
+.campanita-pie { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3); font-size: 12.5px; color: var(--tinta-tenue); }
+.campanita-pie .boton { min-height: 32px; padding: 4px 10px; }
+.campanita-vacio { padding: var(--esp-5) var(--esp-4); color: var(--tinta-suave); font-size: 14px; }
+@media (max-width: 767px) { .campanita { order: 0; } }
+.preferencia-avisos { display: flex; align-items: center; gap: var(--esp-3); margin: var(--esp-4) 0 0; font-size: 14px; color: var(--tinta-suave); }
+.preferencia-avisos input { width: 20px; height: 20px; }
+@media (max-width: 767px) {
+  .campanita-panel { position: fixed; left: var(--esp-3); right: var(--esp-3); top: 72px; width: auto; max-height: calc(100vh - 88px); }
+}
+@media (max-width: 767px) {
+  .topbar-titulo { flex: 1 1 120px; }
+  .campanita { margin-left: auto; }
+}
