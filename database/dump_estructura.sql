@@ -2,12 +2,14 @@
 --  SiGeRU 2026 - Dump de la estructura de la base de datos
 --  Archivo: dump_estructura.sql
 --  Que es : el volcado que pide la letra ("Dump de la estructura de la BD"),
---           tal como lo escribe el motor, sin retoques.
+--           tal como lo escribe el motor (solo sin los AUTO_INCREMENT).
 --
 --  ESTE ARCHIVO NO SE EDITA A MANO. Se regenera con:
 --      herramientas\xampp\mysql\bin\mysqldump.exe -u root --no-data
 --          --skip-comments --skip-set-charset sigeru
---  y se le vuelve a poner esta cabecera.
+--  se le quitan los ' AUTO_INCREMENT=N' (cuantas filas se crearon alguna vez:
+--  cambian con cada corrida de pruebas y no son estructura) y se le vuelve
+--  a poner esta cabecera.
 --
 --  El DDL comentado, con las decisiones de modelado explicadas una por una,
 --  esta en schema.sql: ese es el archivo que se lee. Este es el volcado.
@@ -22,6 +24,11 @@
 --  con las columnas y los estados nuevos de incidencia y los cuatro triggers que
 --  hacen de solo agregado a los dos historiales. Mas las tablas tecnicas migracion
 --  e intento_login.
+--
+--  Actualizado el 17/10/2026: pasa de 18 a 22 tablas fisicas. Suma las cuatro
+--  tablas tecnicas de las migraciones 004 a 008 (enlace_clave, foto_incidencia,
+--  auditoria y limite_peticion) y el estado 'pendiente' de usuario (005). Las
+--  16 tablas del modelo no cambian. Desde esta version va sin AUTO_INCREMENT.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -30,6 +37,23 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `auditoria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auditoria` (
+  `id_auditoria` bigint(20) NOT NULL AUTO_INCREMENT,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `id_usuario` int(11) DEFAULT NULL,
+  `rol` varchar(20) DEFAULT NULL,
+  `metodo` varchar(6) NOT NULL,
+  `ruta` varchar(200) NOT NULL,
+  `codigo` smallint(5) unsigned NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  PRIMARY KEY (`id_auditoria`),
+  KEY `idx_auditoria_fecha` (`fecha_hora`),
+  KEY `idx_auditoria_usuario` (`id_usuario`,`fecha_hora`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `camion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -43,7 +67,7 @@ CREATE TABLE `camion` (
   PRIMARY KEY (`id_camion`),
   UNIQUE KEY `matricula` (`matricula`),
   KEY `idx_camion_estado` (`estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `centro_acopio`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -57,7 +81,7 @@ CREATE TABLE `centro_acopio` (
   `capacidad` int(11) DEFAULT NULL COMMENT 'Capacidad en kg',
   `estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
   PRIMARY KEY (`id_centro`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `contenedor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -79,7 +103,7 @@ CREATE TABLE `contenedor` (
   KEY `idx_contenedor_estado` (`estado`),
   CONSTRAINT `fk_contenedor_tipo` FOREIGN KEY (`id_tipo_residuo`) REFERENCES `tipo_residuo` (`id_tipo_residuo`),
   CONSTRAINT `fk_contenedor_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `cuadrilla`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -91,7 +115,21 @@ CREATE TABLE `cuadrilla` (
   `estado` enum('activa','inactiva') NOT NULL DEFAULT 'activa',
   PRIMARY KEY (`id_cuadrilla`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `enlace_clave`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `enlace_clave` (
+  `id_enlace` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `vence_en` datetime NOT NULL,
+  PRIMARY KEY (`id_enlace`),
+  UNIQUE KEY `token_hash` (`token_hash`),
+  KEY `idx_enlace_usuario` (`id_usuario`),
+  CONSTRAINT `fk_enlace_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `estado_contenedor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -105,7 +143,7 @@ CREATE TABLE `estado_contenedor` (
   PRIMARY KEY (`id_registro`),
   KEY `idx_estadocont_fecha` (`id_contenedor`,`fecha_hora`),
   CONSTRAINT `fk_estadocont_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -141,6 +179,23 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+DROP TABLE IF EXISTS `foto_incidencia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `foto_incidencia` (
+  `id_foto` int(11) NOT NULL AUTO_INCREMENT,
+  `id_incidencia` int(11) NOT NULL,
+  `archivo` char(32) NOT NULL,
+  `bytes` int(11) NOT NULL,
+  `ancho` smallint(5) unsigned NOT NULL,
+  `alto` smallint(5) unsigned NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_foto`),
+  UNIQUE KEY `id_incidencia` (`id_incidencia`),
+  UNIQUE KEY `archivo` (`archivo`),
+  CONSTRAINT `fk_foto_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `historial_incidencia`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -156,7 +211,7 @@ CREATE TABLE `historial_incidencia` (
   KEY `idx_histinc_incidencia_fecha` (`id_incidencia`,`fecha_hora`),
   CONSTRAINT `fk_histinc_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE,
   CONSTRAINT `fk_histinc_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -214,7 +269,7 @@ CREATE TABLE `incidencia` (
   CONSTRAINT `fk_incidencia_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`),
   CONSTRAINT `fk_incidencia_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_incidencia_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `intento_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -227,7 +282,18 @@ CREATE TABLE `intento_login` (
   `exitoso` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_intento`),
   KEY `idx_intento_email_fecha` (`email`,`fecha_hora`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `limite_peticion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `limite_peticion` (
+  `id_limite` bigint(20) NOT NULL AUTO_INCREMENT,
+  `clave` varchar(80) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_limite`),
+  KEY `idx_limite_clave` (`clave`,`fecha_hora`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `maquinaria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -245,7 +311,7 @@ CREATE TABLE `maquinaria` (
   KEY `fk_maquinaria_centro` (`id_centro`),
   KEY `idx_maquinaria_estado` (`estado`),
   CONSTRAINT `fk_maquinaria_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `migracion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -278,7 +344,7 @@ CREATE TABLE `recoleccion` (
   CONSTRAINT `fk_recoleccion_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`),
   CONSTRAINT `fk_recoleccion_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_recoleccion_ruta` FOREIGN KEY (`id_ruta`) REFERENCES `ruta` (`id_ruta`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `rol`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -289,7 +355,7 @@ CREATE TABLE `rol` (
   `descripcion` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_rol`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `ruta`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -304,7 +370,7 @@ CREATE TABLE `ruta` (
   PRIMARY KEY (`id_ruta`),
   KEY `fk_ruta_zona` (`id_zona`),
   CONSTRAINT `fk_ruta_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `solicitud_registro`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -320,7 +386,7 @@ CREATE TABLE `solicitud_registro` (
   `fecha_solicitud` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_solicitud`),
   KEY `idx_solicitud_estado` (`estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tipo_residuo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -332,7 +398,7 @@ CREATE TABLE `tipo_residuo` (
   `reciclable` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_tipo_residuo`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `usuario`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -348,7 +414,7 @@ CREATE TABLE `usuario` (
   `id_rol` int(11) NOT NULL,
   `id_cuadrilla` int(11) DEFAULT NULL,
   `id_solicitud` int(11) DEFAULT NULL,
-  `estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
+  `estado` enum('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`),
@@ -359,7 +425,7 @@ CREATE TABLE `usuario` (
   CONSTRAINT `fk_usuario_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`),
   CONSTRAINT `fk_usuario_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitud_registro` (`id_solicitud`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `vaciado`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -376,7 +442,7 @@ CREATE TABLE `vaciado` (
   KEY `fk_vaciado_contenedor` (`id_contenedor`),
   CONSTRAINT `fk_vaciado_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`),
   CONSTRAINT `fk_vaciado_recoleccion` FOREIGN KEY (`id_recoleccion`) REFERENCES `recoleccion` (`id_recoleccion`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `zona`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -390,7 +456,7 @@ CREATE TABLE `zona` (
   UNIQUE KEY `nombre` (`nombre`),
   KEY `fk_zona_centro` (`id_centro`),
   CONSTRAINT `fk_zona_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
