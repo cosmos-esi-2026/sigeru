@@ -175,3 +175,24 @@ contenedor tenga exactamente los siete campos públicos y que la respuesta no co
 
 La regla de alcance es la misma de la incidencia (`FlujoIncidencia::alcanza`): una ajena responde 404. El archivo no
 se sirve como archivo: pasa siempre por la API, con sesión, y vive fuera de la lista blanca del `.htaccess`.
+
+## 13. Actualización del 17/10/2026 (revisión de coherencia: rutas de `api-usuarios`)
+
+La fila «Sin sesión» de la sección 1 decía que sin sesión solo se puede `POST /login` y `POST /solicitudes`. Era cierto el
+12/10; después se sumaron el mapa público (sección 11), el acceso por enlace de correo
+(`ampliacion-acceso-por-enlace-3ra.md`) y la auditoría. `api-usuarios` no tiene `Permisos.php`: cada acción exige su rol
+en el controlador (`Auth::exigirRol`) o pasa por el freno por IP (`LimitePeticion`). Las rutas que faltaban en esta matriz:
+
+| Ruta | Quién puede | Freno |
+|---|---|---|
+| `GET /auditoria` | Solo el Administrador | — |
+| `POST /usuarios/{id}/enlace` («Enviar acceso») | Solo el Administrador | — |
+| `POST /registro` (cuenta de vecino) | Cualquiera, sin sesión | 10 por hora por IP |
+| `POST /solicitudes` | Cualquiera, sin sesión | 10 por hora por IP |
+| `POST /recuperar-clave` | Cualquiera, sin sesión; responde igual exista o no el correo | 10 por hora por IP |
+| `POST /crear-clave` | Quien tenga un enlace válido (una hora, un solo uso) | 30 por hora por IP |
+
+Con esto, lo que se puede hacer **sin sesión** es: `POST /login` (con el límite de intentos de la sección 4),
+`POST /solicitudes`, `POST /registro`, `POST /recuperar-clave`, `POST /crear-clave` y `GET /api-gestion/publico/mapa`.
+Comprobado leyendo `api-usuarios/index.php` y `controllers/UsuarioController.php`; las pruebas por HTTP (590, 17/10) cubren
+cada una de estas rutas.

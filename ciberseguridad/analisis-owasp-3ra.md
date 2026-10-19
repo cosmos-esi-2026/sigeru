@@ -87,8 +87,8 @@ son pruebas dirigidas, no una auditoría exhaustiva.
 ### H7 — MariaDB 10.4 de XAMPP está fuera de soporte (A06) · riesgo medio, aceptado
 - **Evidencia:** `SELECT VERSION()` → 10.4.32; la rama 10.4 dejó de recibir parches en junio de 2024.
 - **Decisión:** se acepta para la demostración local (la base solo escucha en `127.0.0.1` y no hay datos reales). Docker usa
-  MySQL 8 y el servidor el paquete de la distribución (versión por verificar); el pendrive trae además MariaDB 11.8 LTS (`herramientas/mariadb/`, soporte hasta 2030) como destino
-  de una migración. Otros componentes: Bootstrap 5.3.3, Leaflet 1.9.4 (hashes verificados), PHP 8.2 (soporte de seguridad hasta fin de 2026).
+  MySQL 8 y el servidor el paquete de la distribución (versión por verificar); el pendrive traía además MariaDB 11.8 LTS (`herramientas/mariadb/`, soporte hasta 2030) como destino
+  de una migración; el 17/10 se sacó del pendrive (quedó una copia fuera) porque el sistema no lo usa. Otros componentes: Bootstrap 5.3.3, Leaflet 1.9.4 (hashes verificados), PHP 8.2 (soporte de seguridad hasta fin de 2026).
 
 ### H8 — Sesión: id impuesto y cookie sin `Secure` (A07) · riesgo medio
 - **Evidencia:** PHP aceptaba cualquier id de sesión que llegara en la cookie y la cookie nunca llevaba `Secure`. (La fijación de sesión ya

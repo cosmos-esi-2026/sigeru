@@ -7,7 +7,8 @@ fecha: 2026-10-14
 # Ampliación: `api-recoleccion/` — camiones, cuadrillas, rutas y recolecciones
 
 Amplía la arquitectura de la 2da entrega sin reescribirla. Se hizo en la parte 5 de la mejora de la página
-de la 3ra entrega y cierra el hallazgo H3: la letra pide seis aplicaciones y faltaba la API de recolección.
+de la 3ra entrega y cierra el hallazgo H3: la letra propone seis aplicaciones y faltaba la API de recolección (la otra que no está aparte, el backoffice, quedó
+como sección de `frontend-usuarios`: ver la adenda de alcance).
 **El modelo de datos no cambia:** `ruta`, `recoleccion` y `vaciado` ya estaban en el esquema (16 clases)
 desde la 2da entrega, con datos de prueba, pero ninguna API las usaba.
 

@@ -2,7 +2,7 @@
 documento: Manual de uso — Administrador
 sistema: SiGeRU 2026
 version: 1.0 (borrador, 17/10/2026)
-estado: Escrito leyendo las pantallas y el codigo. Faltan capturas, la revision por una persona y completar el detalle de Camiones, Cuadrillas y Rutas.
+estado: Escrito leyendo las pantallas y el codigo. Faltan capturas, la revision por una persona y completar el detalle de Camiones y Rutas.
 ---
 
 # Manual del Administrador

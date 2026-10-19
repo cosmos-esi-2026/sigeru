@@ -17,7 +17,7 @@ ajuste 1,10 sin cambios). **Es una estimación mía: conviene que la revise quie
 | Parte | Qué | Dónde |
 |---|---|---|
 | P3-P4 | Incidencias con estados, prioridad, asignación, avance y resolución; historial de solo agregado | `api-gestion`, pantallas por rol |
-| P5 | Sexta aplicación, `api-recoleccion`: camiones, cuadrillas, rutas, recolecciones con vaciados (peso y volumen) | `api-recoleccion`, pantallas de recolecciones |
+| P5 | `api-recoleccion`, la API de la arquitectura que faltaba: camiones, cuadrillas, rutas, recolecciones con vaciados (peso y volumen) | `api-recoleccion`, pantallas de recolecciones |
 | P6 | Mapa interactivo para los cuatro roles | `mapa.html` |
 | P7 | Panel por urgencias, informe de un período, tiempo de resolución, exportación CSV | `dashboard.html`, `reportes.html` |
 | P8 | Landing con datos reales y mapa público | `landing/`, `GET /publico/mapa` |
