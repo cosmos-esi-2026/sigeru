@@ -287,3 +287,12 @@ No expone datos de personas (solo contenedores, ubicaciones y el centro de desti
 | `GET /api-gestion/reportes/pdf` | Solo Administrador | Descarga un PDF con los mismos datos de la pantalla de Reportes (`desde`, `hasta`, `zona` opcionales y validados: 400; zona inexistente: 404). Cuadrilla, Operario y Vecino: 403; sin sesión: 401. **La descarga queda en la auditoría** (método `GET`, rol, código 200, IP), aunque los GET no se registran solos |
 
 El PDF trae personas solo como nombres de cuadrillas (no de vecinos ni de usuarios). Sin dependencias de terceros: el generador de PDF es propio (`PdfSimple`). Cubierto por unitarias (`unitarias-pdf.php`) y HTTP (`correr-tests-pdf.php`).
+
+## 22. Actualización del 19/10/2026 (extras, parte 21: reenvíos sin duplicar)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `POST /api-recoleccion/recolecciones/{id}/vaciados` | sin cambios | Acepta el encabezado opcional `Idempotency-Key` (UUID): el mismo pedido con la misma clave **no se repite** y devuelve la misma respuesta con `"repetida": true`. Clave inválida: 400; de otra persona u otra operación, o en proceso: 409 |
+| `POST /api-gestion/incidencias/{id}/avance` | sin cambios | Igual |
+
+La tabla `clave_idempotencia` es de soporte (como `auditoria`): no entra en la huella de la base, solo la usan estas dos operaciones y guarda la respuesta de la primera vez hasta 30 días. El service worker **no guarda respuestas de ninguna API**. Cubierto por `unitarias-offline.php`, `correr-tests-idempotencia.php`, `tests/js/cola-offline.html` y `tests/js/sw.html`.

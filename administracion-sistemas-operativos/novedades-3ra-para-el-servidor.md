@@ -48,3 +48,11 @@ curl -s  https://sigeru-srv/sigeru/api-gestion/publico/mapa | head -c 200
 
 Si `correr-tests.php` dice `Omitidas: 2`, el correo no está en modo archivo: es normal con SMTP real y las pruebas no mandan correos de verdad.
 Los puntos 1-5 no están probados en el servidor: **son la primera tarea** antes de la defensa de Administración de S.O.
+
+## 6. Novedades de los extras (partes 12 a 21, 19/10/2026)
+
+- [ ] **Migraciones nuevas, de la `009` a la `016`** (operario con centro y stock, notificaciones, participación, zona del vecino, factor ambiental, claves de operación): el mismo `php database/migrar.php` del punto 1 las aplica en orden.
+- [ ] **La aplicación instalable y el trabajo sin señal de la Cuadrilla (parte 21) necesitan HTTPS en el servidor:** los navegadores solo registran el service worker (y ofrecen «instalar») en `localhost` o con HTTPS. Sin HTTPS la página anda igual, pero sin instalación ni caché. Con el certificado propio del punto 3, el celular tiene que **confiar en el certificado** (instalarlo) o no lo aceptará.
+- [ ] **Apache sirve `.webmanifest` con su tipo** (`AddType application/manifest+json .webmanifest`, ya está en el `.htaccess` de la raíz; hace falta `mod_mime`, que viene activo).
+- [ ] **Reportes en PDF (parte 20):** el generador es propio (PHP puro), no hace falta instalar nada; solo `php-mbstring` y `php-zlib`, que vienen con `php` en Ubuntu Server (`php -m | grep -iE 'mbstring|zlib'`).
+- [ ] Las pruebas HTTP nuevas dejan datos propios (`TOPE`, `TNOT`, `TPAR`, `TPAS`, `TPRED`, `TIMP`, `TRUT`, `TIDEM`) y los borran al final; si una corrida se corta, revisar que no queden restos antes de comparar la base con el seed.
