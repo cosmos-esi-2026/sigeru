@@ -6,6 +6,7 @@ require_once __DIR__ . "/FlujoIncidencia.php";
 require_once __DIR__ . "/Contenedor.php";
 require_once __DIR__ . "/Cuadrilla.php";
 require_once __DIR__ . "/FotoIncidencia.php";
+require_once __DIR__ . "/Calificaciones.php";
 
 class Incidencia
 {
@@ -89,6 +90,15 @@ class Incidencia
         $detalle = self::formatear($fila, $usuario);
         $detalle["historial"] = FlujoIncidencia::historialVisible(self::historial($id), $usuario);
         $detalle["tiene_foto"] = FotoIncidencia::existe($id);
+        // La calificacion la ve quien ve la incidencia (el autor, el administrador y la cuadrilla asignada: nadie mas llega hasta aca).
+        $detalle["calificacion"] = Calificaciones::de($id);
+        $detalle["puede_calificar"] = false;
+        if ($detalle["calificacion"] === null && ($usuario["rol"] ?? "") === "Vecino" && $fila["estado"] === "resuelta"
+            && (int) $usuario["id_usuario"] === (int) $fila["id_usuario"]
+            && Participacion::dentroDelPlazo($fila["fecha_resolucion"], (string) Database::conexion()->query("SELECT NOW()")->fetchColumn())) {
+            $detalle["puede_calificar"] = true;
+            $detalle["calificar_hasta"] = Participacion::plazoHasta($fila["fecha_resolucion"]);
+        }
         return $detalle;
     }
 
@@ -306,6 +316,9 @@ class Incidencia
             $cierre->execute([":estado" => $estado, ":id" => $id]);
 
             self::asentar($conexion, $id, $estado, $observacion !== "" ? $observacion : "Incidencia resuelta", $usuario);
+            if ($estado === "resuelta") {
+                Calificaciones::sumarPorResolucion($conexion, (int) $incidencia["id_usuario"], $id);
+            }
 
             $otras = $conexion->prepare(
                 "SELECT COUNT(*) FROM incidencia

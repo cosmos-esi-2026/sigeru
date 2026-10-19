@@ -9,6 +9,7 @@ require_once __DIR__ . "/../models/CentroAcopio.php";
 require_once __DIR__ . "/../models/CentroStock.php";
 require_once __DIR__ . "/../models/Maquinaria.php";
 require_once __DIR__ . "/../models/Recepcion.php";
+require_once __DIR__ . "/../models/Satisfaccion.php";
 
 class EstadisticaController
 {
@@ -89,6 +90,45 @@ class EstadisticaController
             "zona"        => $nombreZona ?: null,
             "generado_en" => (string) $db->query("SELECT NOW()")->fetchColumn(),
         ];
+        Response::json(["ok" => true, "datos" => $datos]);
+    }
+
+    // Calidad del servicio (extras, parte 14): incidencias, satisfaccion promedio y tiempo medio de resolucion
+    // por zona y por cuadrilla, del periodo que se pida. Solo el Administrador.
+    public function satisfaccion(): void
+    {
+        $consulta = FlujoIncidencia::filtrosDe(array_intersect_key($_GET, array_flip(["desde", "hasta", "zona"])));
+        if ($consulta["error"] !== null) {
+            Response::error($consulta["error"], 400);
+        }
+        $filtros = $consulta["filtros"];
+        $donde = [];
+        $valores = [];
+        if (isset($filtros["desde"])) {
+            $donde[] = "i.fecha_reporte >= :desde";
+            $valores[":desde"] = $filtros["desde"] . " 00:00:00";
+        }
+        if (isset($filtros["hasta"])) {
+            $donde[] = "i.fecha_reporte <= :hasta";
+            $valores[":hasta"] = $filtros["hasta"] . " 23:59:59";
+        }
+        if (isset($filtros["zona"])) {
+            $donde[] = "c.id_zona = :zona";
+            $valores[":zona"] = $filtros["zona"];
+        }
+        $db = Database::conexion();
+        $sql = "SELECT i.id_incidencia, i.estado, i.fecha_reporte, i.fecha_resolucion, z.nombre AS zona, q.nombre AS cuadrilla, k.puntaje
+                FROM incidencia i
+                JOIN contenedor c ON c.id_contenedor = i.id_contenedor
+                JOIN zona z ON z.id_zona = c.id_zona
+                LEFT JOIN cuadrilla q ON q.id_cuadrilla = i.id_cuadrilla
+                LEFT JOIN calificacion k ON k.id_incidencia = i.id_incidencia" .
+               ($donde === [] ? "" : " WHERE " . implode(" AND ", $donde));
+        $consultaSql = $db->prepare($sql);
+        $consultaSql->execute($valores);
+        $datos = Satisfaccion::informe($consultaSql->fetchAll());
+        $datos["periodo"] = ["desde" => $filtros["desde"] ?? null, "hasta" => $filtros["hasta"] ?? null,
+                             "id_zona" => $filtros["zona"] ?? null, "generado_en" => (string) $db->query("SELECT NOW()")->fetchColumn()];
         Response::json(["ok" => true, "datos" => $datos]);
     }
 

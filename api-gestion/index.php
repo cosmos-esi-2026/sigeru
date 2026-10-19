@@ -13,6 +13,7 @@ require_once __DIR__ . "/controllers/IncidenciaController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
 require_once __DIR__ . "/controllers/PublicoController.php";
 require_once __DIR__ . "/controllers/RecepcionController.php";
+require_once __DIR__ . "/models/Calificaciones.php";
 
 Response::manejarErrores();
 Response::cors();
@@ -162,12 +163,27 @@ switch ($recurso) {
             $controlador->resolver($id, $usuario);
         } elseif ($subrecurso === "descarte" && $metodo === "POST" && $id !== null) {
             $controlador->descartar($id, $usuario);
+        } elseif ($subrecurso === "calificacion" && $metodo === "POST" && $id !== null) {
+            $controlador->calificar($id, $usuario);
         } elseif ($subrecurso === "foto" && $metodo === "POST" && $id !== null) {
             $controlador->subirFoto($id, $usuario);
         } elseif ($subrecurso === "foto" && $metodo === "GET" && $id !== null) {
             $controlador->verFoto($id, $usuario);
         } else {
             Response::error("Método no permitido", 405);
+        }
+        break;
+
+    case "participacion":
+        $tema = $partes[1] ?? "";
+        $usuario = Permisos::exigir("participacion/$tema", $metodo);
+
+        if ($metodo === "GET" && $tema === "progreso") {
+            Response::json(["ok" => true, "datos" => Calificaciones::progreso((int) $usuario["id_usuario"])]);
+        } elseif ($metodo === "GET" && $tema === "ranking") {
+            Response::json(["ok" => true, "datos" => Calificaciones::rankingZonas()]);
+        } else {
+            Response::error("Recurso no encontrado", 404);
         }
         break;
 
@@ -205,6 +221,8 @@ switch ($recurso) {
 
         if ($metodo === "GET" && $tema === "centro") {
             $controlador->centro($usuario);
+        } elseif ($metodo === "GET" && $tema === "satisfaccion") {
+            $controlador->satisfaccion();
         } elseif ($metodo === "GET" && $tema === "incidencias") {
             $controlador->incidencias();
         } elseif ($metodo === "GET" && $tema === "urgencias") {
@@ -229,7 +247,8 @@ switch ($recurso) {
                 "/zonas", "/zonas/{id}",
                 "/incidencias", "/incidencias/{id}", "/incidencias/{id}/asignacion",
                 "/incidencias/{id}/avance", "/incidencias/{id}/resolucion", "/incidencias/{id}/descarte",
-                "/incidencias/{id}/foto",
+                "/incidencias/{id}/foto", "/incidencias/{id}/calificacion",
+                "/participacion/progreso", "/participacion/ranking", "/estadisticas/satisfaccion",
                 "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
                 "/publico/mapa",
             ],
