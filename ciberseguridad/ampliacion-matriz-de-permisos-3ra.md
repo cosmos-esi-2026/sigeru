@@ -233,3 +233,15 @@ unitarias y 115 por HTTP.
 
 Los avisos se **escriben** solo desde el servidor (las acciones de las otras APIs); no hay un endpoint para crearlos. Los textos no llevan datos de otra persona y
 los enlaces se limitan a pantallas del sistema. Cubierto por las pruebas unitarias (22) y por HTTP (53).
+
+## 16. Actualización del 19/10/2026 (extras, parte 14: participación del vecino)
+
+| Ruta (`api-gestion`) | Quién puede | Notas |
+|---|---|---|
+| `POST /incidencias/{id}/calificacion` | Vecino, **solo el autor** | Un reclamo resuelto, una vez, hasta 30 días después. Otro vecino: 404 |
+| `GET /participacion/progreso` | Vecino | Solo los puntos e insignias propios |
+| `GET /participacion/ranking` | Cualquier rol con sesión | Por zona, sin nombres |
+| `GET /estadisticas/satisfaccion` | Solo el Administrador | Calidad del servicio por zona y por cuadrilla |
+
+El detalle de una incidencia (`GET /incidencias/{id}`) incluye la calificación solo para quien ya puede ver esa incidencia (el autor, el administrador y la cuadrilla asignada): otra cuadrilla y
+otros vecinos reciben 404. Las calificaciones y los puntos son de solo agregado (triggers). Cubierto por 53 pruebas unitarias y 66 por HTTP.

@@ -50,6 +50,11 @@ Cancelar una recolección lo hace la administración. Si abrís una recolección
 **Mapa** muestra los contenedores y las incidencias abiertas que te tocan. **Contenedores** lista los contenedores; al abrir uno se ve
 su **ficha** con el historial de sus estados (disponible, lleno, mantenimiento, retirado).
 
+## Calificaciones de tus incidencias
+
+Cuando un vecino califica la atención de una incidencia que resolvió tu cuadrilla, la calificación (de 1 a 5 y su comentario, sin el nombre del vecino) aparece en el detalle de esa incidencia.
+Solo ves las de tu cuadrilla. La administración mide la satisfacción por cuadrilla en **Reportes**.
+
 ## Avisos (la campanita)
 
 La **campanita** de arriba a la derecha te muestra, con un número, lo que todavía no leíste: cuando el administrador **les asigna una incidencia** y cuando

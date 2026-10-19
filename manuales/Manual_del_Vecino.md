@@ -68,6 +68,15 @@ y no hace falta repetirlo.
 Tocá el número para ver el detalle: los datos, tu foto y el **historial** de cada paso. El personal aparece por su función
 (Administrador, Cuadrilla), no por su nombre. **El sistema no manda avisos por correo cuando cambia el estado:** entrá a mirarlo.
 
+## Calificar la atención, puntos e insignias
+
+Cuando un reclamo tuyo **se resuelve**, entrá a su detalle (desde **Mis reclamos** o desde el aviso de la campanita): aparece **Calificación de la atención**. Elegí de 1 a 5 y,
+si querés, dejá un comentario; **Enviar la calificación**. Se califica **una sola vez**, no se puede cambiar después y hay **30 días** desde la resolución para hacerlo.
+
+Tu **Inicio** muestra **Mi progreso**: tus puntos (10 por cada reclamo que se resuelve y 5 por calificar; informar un problema no suma, y un reclamo descartado tampoco), las
+**insignias** que lograste y lo que te falta para las otras, los últimos puntos y los reclamos que todavía podés calificar. Abajo, el **Ranking de zonas** compara cómo participa cada zona
+de la ciudad (reclamos resueltos y puntos): es por zona, nunca por persona.
+
 ## Avisos (la campanita)
 
 En la esquina de arriba a la derecha hay una **campanita** con un número: son los avisos que todavía no leíste. Te avisamos cuando tu reclamo **pasa a

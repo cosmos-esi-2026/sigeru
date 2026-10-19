@@ -74,6 +74,12 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Auditoría** registra cada operación de escritura, hecha o negada por permisos. Filtros: Resultado (Hecho, Negado por permisos),
 Operación (POST, PUT, DELETE), Desde, Hasta.
 
+## Calidad del servicio (reportes)
+
+En **Reportes**, la sección **Calidad del servicio** muestra por zona y por cuadrilla: incidencias, resueltas, cuántas calificaciones dejaron los vecinos, la **satisfacción promedio** (de 1 a 5)
+y el **tiempo medio de resolución**, del período y la zona que elijas. **Exportar (CSV)** baja las dos tablas. Una zona o cuadrilla sin calificaciones muestra «Sin calificaciones» (no un cero).
+Los vecinos califican solo un reclamo resuelto, una vez y dentro de los 30 días; el detalle de la incidencia muestra la calificación.
+
 ## Avisos (la campanita)
 
 La **campanita** de arriba a la derecha avisa, con un número, lo que pide tu atención: cuando **entra una incidencia de prioridad alta** y cuando un **centro de acopio
