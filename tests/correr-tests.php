@@ -683,6 +683,7 @@ require __DIR__ . "/correr-tests-prediccion.php";
 require __DIR__ . "/correr-tests-impacto.php";
 require __DIR__ . "/correr-tests-estadisticas.php";
 require __DIR__ . "/correr-tests-publico.php";
+require __DIR__ . "/correr-tests-guia.php";
 require __DIR__ . "/correr-tests-listas.php";
 require __DIR__ . "/correr-tests-foto.php";
 require __DIR__ . "/correr-tests-seguridad.php";

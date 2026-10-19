@@ -83,6 +83,11 @@ Tu **Inicio** muestra **Mi progreso**: tus puntos (10 por cada reclamo que se re
 **insignias** que lograste y lo que te falta para las otras, los últimos puntos y los reclamos que todavía podés calificar. Abajo, el **Ranking de zonas** compara cómo participa cada zona
 de la ciudad (reclamos resueltos y puntos): es por zona, nunca por persona.
 
+## ¿Dónde tiro esto? (guía pública)
+
+No hace falta cuenta. En la página de inicio, menú **«¿Dónde tiro esto?»** (o desde «Informar un problema»): escribí qué querés tirar (por ejemplo «botella» o «pila») y la guía te muestra en qué contenedor va, cómo prepararlo y la **página del manual** de donde sale el dato.
+Funciona con el manual de residuos de la Intendencia de Montevideo (2024); las reglas pueden cambiar y varían según el departamento. «Especial» agrupa lo que no va al contenedor de la calle (pilas, medicamentos, aparatos, aceite, escombro, muebles).
+
 ## Avisos (la campanita)
 
 En la esquina de arriba a la derecha hay una **campanita** con un número: son los avisos que todavía no leíste. Te avisamos cuando tu reclamo **pasa a

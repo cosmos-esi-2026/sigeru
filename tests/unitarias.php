@@ -433,6 +433,7 @@ require __DIR__ . "/unitarias-foto.php";
 require __DIR__ . "/unitarias-seguridad.php";
 require __DIR__ . "/unitarias-operario.php";
 require __DIR__ . "/unitarias-notificaciones.php";
+require __DIR__ . "/unitarias-guia.php";
 require __DIR__ . "/unitarias-participacion.php";
 require __DIR__ . "/unitarias-pasaje.php";
 require __DIR__ . "/unitarias-prediccion.php";
