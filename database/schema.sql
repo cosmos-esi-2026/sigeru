@@ -131,7 +131,10 @@ CREATE TABLE tipo_residuo (
     id_tipo_residuo INT AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(60)  NOT NULL UNIQUE,
     descripcion     VARCHAR(200) NULL,
-    reciclable      BOOLEAN      NOT NULL DEFAULT FALSE
+    reciclable      BOOLEAN      NOT NULL DEFAULT FALSE,
+    factor_co2_kg_por_kg DECIMAL(6,3) NULL COMMENT 'kg de CO2e evitados por kg reciclado (EPA WARM v16); NULL = sin fuente verificada',
+    fuente_factor   VARCHAR(255) NULL,
+    url_fuente      VARCHAR(200) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -484,7 +487,8 @@ INSERT INTO migracion (nombre) VALUES
     ('011-notificaciones.sql'),
     ('012-participacion-vecino.sql'),
     ('013-participacion-solo-agregado.sql'),
-    ('014-zona-del-vecino.sql');
+    ('014-zona-del-vecino.sql'),
+    ('015-factor-ambiental.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.

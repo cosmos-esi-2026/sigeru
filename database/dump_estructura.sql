@@ -45,6 +45,9 @@
 --
 --  Actualizado el 19/10/2026 (extras, parte 15): la tabla usuario suma id_zona
 --  (la zona que elige el vecino; migracion 014). Siguen 28 tablas fisicas.
+--
+--  Actualizado el 19/10/2026 (extras, parte 18): tipo_residuo suma factor_co2_kg_por_kg,
+--  fuente_factor y url_fuente (migracion 015). Siguen 28 tablas fisicas.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -665,6 +668,9 @@ CREATE TABLE `tipo_residuo` (
   `nombre` varchar(60) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `reciclable` tinyint(1) NOT NULL DEFAULT 0,
+  `factor_co2_kg_por_kg` decimal(6,3) DEFAULT NULL,
+  `fuente_factor` varchar(255) DEFAULT NULL,
+  `url_fuente` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_tipo_residuo`),
   UNIQUE KEY `nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -693,9 +699,9 @@ CREATE TABLE `usuario` (
   KEY `fk_usuario_rol` (`id_rol`),
   KEY `fk_usuario_cuadrilla` (`id_cuadrilla`),
   KEY `fk_usuario_centro` (`id_centro`),
+  KEY `fk_usuario_zona` (`id_zona`),
   KEY `fk_usuario_solicitud` (`id_solicitud`),
   KEY `idx_usuario_estado` (`estado`),
-  KEY `fk_usuario_zona` (`id_zona`),
   CONSTRAINT `fk_usuario_centro` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`),
   CONSTRAINT `fk_usuario_cuadrilla` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`),

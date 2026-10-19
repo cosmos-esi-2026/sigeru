@@ -78,6 +78,26 @@ INSERT INTO tipo_residuo (id_tipo_residuo, nombre, descripcion, reciclable) VALU
 (6, 'Mixto',    'Residuo domiciliario sin separar',           FALSE);
 
 
+-- Factor de emision evitada por tipo (extras, parte 18): EPA WARM v16, ver migraciones/015-factor-ambiental.sql.
+-- Organico y Mixto no tienen fuente verificada: quedan sin factor (el sistema muestra solo kg).
+UPDATE tipo_residuo SET factor_co2_kg_por_kg = 1.047,
+    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 5-3, Mixed Plastics: reciclar -0.93 y enterrar +0.02 MTCO2E por tonelada corta (0.95 evitadas = 1.047 kg CO2e por kg)',
+    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
+WHERE nombre = 'Plastico';
+UPDATE tipo_residuo SET factor_co2_kg_por_kg = 0.331,
+    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 1-4, Glass: reciclar -0.28 y enterrar +0.02 MTCO2E por tonelada corta (0.30 evitadas = 0.331 kg CO2e por kg)',
+    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
+WHERE nombre = 'Vidrio';
+UPDATE tipo_residuo SET factor_co2_kg_por_kg = 3.990,
+    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 3-7, Mixed Paper (general): reciclar -3.55 y enterrar +0.07 MTCO2E por tonelada corta (3.62 evitadas = 3.990 kg CO2e por kg)',
+    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
+WHERE nombre = 'Papel';
+UPDATE tipo_residuo SET factor_co2_kg_por_kg = 4.861,
+    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 2-7, Mixed Metals (35 % latas de aluminio y 65 % de acero): reciclar -4.39 y enterrar +0.02 MTCO2E por tonelada corta (4.41 evitadas = 4.861 kg CO2e por kg)',
+    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
+WHERE nombre = 'Metal';
+
+
 -- --- 5) Cuadrillas ----------------------------------------------------------
 INSERT INTO cuadrilla (id_cuadrilla, nombre, turno, estado) VALUES
 (1, 'Cuadrilla Norte',  'matutino',   'activa'),
