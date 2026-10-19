@@ -121,6 +121,25 @@ class Correo
         self::despachar($destino, $asunto, $texto, $html, "-bienvenida");
     }
 
+    // Aviso de un cambio (extras, parte 13): un texto corto y el enlace a la pantalla. Nunca lleva datos de otra persona.
+    // $pagina es relativa a frontend-usuarios (por ejemplo "incidencia.html?id=3"); null lleva al inicio.
+    public static function enviarAviso(string $destino, string $nombre, string $titulo, string $mensaje, ?string $pagina = null): void
+    {
+        $destinoWeb = ($pagina !== null && preg_match('/^[a-z0-9-]+\.html(\?[a-z0-9=&_-]*)?$/i', $pagina)) ? $pagina : "dashboard.html";
+        $enlace = rtrim(self::urlPublica(), "/") . "/frontend-usuarios/" . $destinoWeb;
+        $pie = "Recibís este aviso porque tenés activada la opción «Recibir avisos por correo». Podés desactivarla desde tu Inicio en SiGeRU.";
+        $texto = "Hola " . $nombre . ",\r\n\r\n" . $mensaje . "\r\n\r\n" .
+            "Verlo en SiGeRU:\r\n" . $enlace . "\r\n\r\n" . $pie . "\r\n\r\nEquipo COSMOS - SiGeRU\r\n";
+        $html = self::plantillaHtml(
+            $titulo,
+            "<p>Hola <strong>" . self::e($nombre) . "</strong>,</p><p>" . self::e($mensaje) . "</p>",
+            "Ver en SiGeRU",
+            $enlace,
+            $pie
+        );
+        self::despachar($destino, $titulo, $texto, $html, "-aviso");
+    }
+
     private static function e(string $valor): string
     {
         return htmlspecialchars($valor, ENT_QUOTES, "UTF-8");

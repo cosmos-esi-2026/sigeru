@@ -3,6 +3,7 @@
 require_once __DIR__ . "/core/Response.php";
 require_once __DIR__ . "/core/Auditoria.php";
 require_once __DIR__ . "/controllers/UsuarioController.php";
+require_once __DIR__ . "/controllers/NotificacionController.php";
 
 Response::manejarErrores();
 Response::cors();
@@ -40,6 +41,11 @@ if ($ruta === "/" && $metodo === "GET") {
             "POST /solicitudes",
             "GET /solicitudes",
             "PUT /solicitudes/{id}",
+            "GET /notificaciones",
+            "POST /notificaciones/{id}/leida",
+            "POST /notificaciones/leer-todas",
+            "GET /preferencias",
+            "PUT /preferencias",
         ],
     ]);
 }
@@ -102,6 +108,29 @@ if ($recurso === "solicitudes") {
     }
     if ($metodo === "PUT" && count($segmentos) === 2) {
         $controlador->resolverSolicitud((int) $segmentos[1]);
+    }
+}
+
+if ($recurso === "notificaciones") {
+    $avisos = new NotificacionController();
+    if ($metodo === "GET" && count($segmentos) === 1) {
+        $avisos->listar();
+    }
+    if ($metodo === "POST" && count($segmentos) === 2 && $segmentos[1] === "leer-todas") {
+        $avisos->leerTodas();
+    }
+    if ($metodo === "POST" && count($segmentos) === 3 && $segmentos[2] === "leida" && ctype_digit($segmentos[1])) {
+        $avisos->marcarLeida((int) $segmentos[1]);
+    }
+}
+
+if ($recurso === "preferencias" && count($segmentos) === 1) {
+    $avisos = new NotificacionController();
+    if ($metodo === "GET") {
+        $avisos->preferencias();
+    }
+    if ($metodo === "PUT") {
+        $avisos->guardarPreferencias();
     }
 }
 

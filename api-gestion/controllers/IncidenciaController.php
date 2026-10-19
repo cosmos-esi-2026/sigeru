@@ -6,6 +6,7 @@ require_once __DIR__ . "/../models/FotoIncidencia.php";
 require_once __DIR__ . "/../models/ProcesadorFoto.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
+require_once __DIR__ . "/../core/Notificador.php";
 
 class IncidenciaController
 {
@@ -38,6 +39,10 @@ class IncidenciaController
 
         $this->ejecutar(function () use ($datos, $usuario) {
             $nueva = Incidencia::crear($datos, $usuario);
+            if (($nueva["prioridad"] ?? "") === "alta") {
+                [$titulo, $mensaje] = Notificador::incidenciaCritica($nueva["numero"], (string) ($nueva["direccion"] ?? ""));
+                Notificador::avisarA(Notificador::administradores(), "incidencia_critica", $titulo, $mensaje, "incidencia.html?id=" . (int) $nueva["id_incidencia"]);
+            }
             Response::json([
                 "ok"      => true,
                 "mensaje" => "Incidencia " . $nueva["numero"] . " registrada",
@@ -61,7 +66,13 @@ class IncidenciaController
         }
 
         $this->ejecutar(function () use ($id, $idCuadrilla, $prioridad, $usuario) {
+            $antes = Incidencia::obtener($id);
             $incidencia = Incidencia::asignar($id, $idCuadrilla, $prioridad, $usuario);
+            [$titulo, $mensaje] = Notificador::incidenciaAsignada($incidencia["numero"], (string) ($incidencia["direccion"] ?? ""));
+            Notificador::avisarA(Notificador::deCuadrilla($idCuadrilla), "incidencia_asignada", $titulo, $mensaje, "incidencia.html?id=" . $id);
+            if ($antes !== null && $antes["estado"] === "abierta") {
+                $this->avisarAlVecino($id, (int) $antes["id_usuario"], "en_curso");
+            }
             Response::json(["ok" => true, "mensaje" => "Incidencia asignada", "datos" => $incidencia]);
         });
     }
@@ -96,7 +107,11 @@ class IncidenciaController
         $observacion = $this->observacion(false);
 
         $this->ejecutar(function () use ($id, $observacion, $usuario) {
+            $antes = Incidencia::obtener($id);
             $incidencia = Incidencia::cerrar($id, "resolver", $observacion, $usuario);
+            if ($antes !== null) {
+                $this->avisarAlVecino($id, (int) $antes["id_usuario"], "resuelta");
+            }
             Response::json(["ok" => true, "mensaje" => "Incidencia resuelta", "datos" => $incidencia]);
         });
     }
@@ -106,7 +121,11 @@ class IncidenciaController
         $observacion = $this->observacion(true);
 
         $this->ejecutar(function () use ($id, $observacion, $usuario) {
+            $antes = Incidencia::obtener($id);
             $incidencia = Incidencia::cerrar($id, "descartar", $observacion, $usuario);
+            if ($antes !== null) {
+                $this->avisarAlVecino($id, (int) $antes["id_usuario"], "descartada");
+            }
             Response::json(["ok" => true, "mensaje" => "Incidencia descartada", "datos" => $incidencia]);
         });
     }
@@ -174,6 +193,13 @@ class IncidenciaController
         header("Cache-Control: private, max-age=300");
         echo $bytes;
         exit;
+    }
+
+    // Al vecino que informo: campanita y correo (si lo tiene activado). Nunca rompe la operacion.
+    private function avisarAlVecino(int $idIncidencia, int $idVecino, string $estado): void
+    {
+        [$titulo, $mensaje] = Notificador::incidenciaEstado(FlujoIncidencia::numero($idIncidencia), $estado);
+        Notificador::avisar($idVecino, "incidencia_" . $estado, $titulo, $mensaje, "incidencia.html?id=" . $idIncidencia, true);
     }
 
     private function observacion(bool $obligatoria): string

@@ -4,6 +4,7 @@ require_once __DIR__ . "/../models/Recoleccion.php";
 require_once __DIR__ . "/../models/FlujoRecoleccion.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
+require_once __DIR__ . "/../core/Notificador.php";
 
 class RecoleccionController
 {
@@ -36,6 +37,11 @@ class RecoleccionController
 
         $this->ejecutar(function () use ($datos) {
             $nueva = Recoleccion::planificar($datos);
+            [$titulo, $mensaje] = Notificador::recoleccionAsignada(
+                $nueva["numero"], (string) $nueva["ruta"], Notificador::fechaLegible((string) $nueva["fecha_hora_inicio"])
+            );
+            Notificador::avisarA(Notificador::deCuadrilla((int) $nueva["id_cuadrilla"]), "recoleccion_asignada", $titulo, $mensaje,
+                                 "recoleccion.html?id=" . (int) $nueva["id_recoleccion"]);
             Response::json([
                 "ok"      => true,
                 "mensaje" => "Recolección " . $nueva["numero"] . " planificada",
