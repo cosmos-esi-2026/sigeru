@@ -233,7 +233,7 @@ afirmar("La landing carga Leaflet y su script de datos desde su propia carpeta",
     str_contains($landingHtml, 'src="js/publico.js"') && is_file("$landing/js/publico.js"),
 ]);
 $inventos = [];
-foreach (["CNT-018", "62 %", "06:40", "Nivel de llenado", "Última recolección", "por turno", "te avisa", "en tiempo real"] as $frase) {
+foreach (["CNT-018", "62 %", "06:40", "Nivel de llenado", "Última recolección", "por turno", "en tiempo real"] as $frase) {
     if (stripos($landingHtml, $frase) !== false) {
         $inventos[] = $frase;
     }
@@ -432,6 +432,7 @@ require __DIR__ . "/unitarias-accesibilidad.php";
 require __DIR__ . "/unitarias-foto.php";
 require __DIR__ . "/unitarias-seguridad.php";
 require __DIR__ . "/unitarias-operario.php";
+require __DIR__ . "/unitarias-notificaciones.php";
 
 echo "\n" . str_repeat("=", 50) . "\n";
 echo "Pasaron: $pasaron   Fallaron: $fallaron\n";

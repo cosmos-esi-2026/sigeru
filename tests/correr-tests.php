@@ -676,6 +676,7 @@ foreach (["/landing/", "/frontend-usuarios/login.html", "/landing/fonts/space-gr
 require __DIR__ . "/correr-tests-incidencias.php";
 require __DIR__ . "/correr-tests-recoleccion.php";
 require __DIR__ . "/correr-tests-operario.php";
+require __DIR__ . "/correr-tests-notificaciones.php";
 require __DIR__ . "/correr-tests-estadisticas.php";
 require __DIR__ . "/correr-tests-publico.php";
 require __DIR__ . "/correr-tests-listas.php";
@@ -702,6 +703,7 @@ foreach (["test.$sufijo@sigeru.uy", $correoEnlace, $correoInexistente] as $desti
 $pdo->prepare("DELETE FROM solicitud_registro WHERE id_solicitud = ?")->execute([$idSolicitud]);
 $pdo->prepare("DELETE FROM usuario WHERE id_usuario = ?")->execute([$idUsuarioTemporal]);
 $pdo->prepare("DELETE FROM auditoria WHERE fecha_hora >= ?")->execute([$inicioDeLaCorrida]);
+$pdo->prepare("DELETE FROM notificacion WHERE fecha_hora >= ?")->execute([$inicioDeLaCorrida]);
 $pdo->prepare("DELETE FROM limite_peticion WHERE fecha_hora >= ?")->execute([$inicioDeLaCorrida]);
 $pdo->prepare("DELETE FROM intento_login WHERE fecha_hora >= ? OR email LIKE ?")
     ->execute([$inicioDeLaCorrida, "%-$sufijo@test.uy"]);
