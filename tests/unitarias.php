@@ -156,7 +156,7 @@ $landing = $raiz . "/landing";
 
 titulo("4. Front: copias compartidas entre landing y frontend-usuarios");
 
-foreach (["css/base.css", "js/formularios.js", "img/logo.svg"] as $relativa) {
+foreach (["css/base.css", "js/formularios.js", "js/tema.js", "img/logo.svg"] as $relativa) {
     afirmar(
         "$relativa es identico en las dos aplicaciones",
         true,
@@ -438,6 +438,8 @@ require __DIR__ . "/unitarias-guia.php";
 require __DIR__ . "/unitarias-ruta.php";
 require __DIR__ . "/unitarias-pdf.php";
 require __DIR__ . "/unitarias-offline.php";
+require __DIR__ . "/unitarias-tema.php";
+require __DIR__ . "/unitarias-pulido.php";
 require __DIR__ . "/unitarias-participacion.php";
 require __DIR__ . "/unitarias-pasaje.php";
 require __DIR__ . "/unitarias-prediccion.php";

@@ -72,13 +72,14 @@ async function montar(hayRed) {
 async function correr() {
   const fuente = await (await fetch(RUTA_SW)).text();
   const precarga = (fuente.match(/const PRECARGA = \[([\s\S]*?)\];/)[1].match(/"([^"]+)"/g) || []).map(function (s) { return s.replace(/"/g, ""); });
+  const VER = fuente.match(/const VERSION = "([^"]+)"/)[1];
   const sw = await montar(true);
   await sw.evento("install");
-  afirmar("Al instalarse precarga todos los archivos de la lista (" + precarga.length + ") en el cache versionado", [precarga.length, true], [sw.almacenes["sigeru-estaticos-v1"].size, precarga.every(function (a) { return sw.almacenes["sigeru-estaticos-v1"].has(BASE + a); })]);
+  afirmar("Al instalarse precarga todos los archivos de la lista (" + precarga.length + ") en el cache versionado", [precarga.length, true], [sw.almacenes[VER].size, precarga.every(function (a) { return sw.almacenes[VER].has(BASE + a); })]);
   sw.almacenes["sigeru-estaticos-v0"] = new Map([["x", 1]]);
   sw.almacenes["otra-cosa"] = new Map();
   await sw.evento("activate");
-  afirmar("Al activarse borra los caches de versiones anteriores y deja solo el actual", ["sigeru-estaticos-v1"], Object.keys(sw.almacenes));
+  afirmar("Al activarse borra los caches de versiones anteriores y deja solo el actual", [VER], Object.keys(sw.almacenes));
 
   const apis = ["http://localhost/sigeru/api-gestion/incidencias", "http://localhost/sigeru/api-usuarios/sesion", "http://localhost/sigeru/api-recoleccion/recolecciones/5", "http://localhost/sigeru/api-gestion/incidencias/3/foto"];
   const atendidos = [];
@@ -88,7 +89,7 @@ async function correr() {
     (await sw.pedir("POST", BASE + "css/styles.css")).atendido, (await sw.pedir("GET", "https://tile.openstreetmap.org/12/1/1.png")).atendido, (await sw.pedir("PUT", BASE + "login.html", "navigate")).atendido]);
 
   const pag = await sw.pedir("GET", BASE + "recoleccion.html?id=5", "navigate");
-  afirmar("Una pagina con red se trae de la red y se guarda en el cache", [true, true], [pag.atendido, sw.almacenes["sigeru-estaticos-v1"].has(BASE + "recoleccion.html?id=5")]);
+  afirmar("Una pagina con red se trae de la red y se guarda en el cache", [true, true], [pag.atendido, sw.almacenes[VER].has(BASE + "recoleccion.html?id=5")]);
   sw.red.hay = false;
   const sinRed = await sw.pedir("GET", BASE + "recoleccion.html?id=5", "navigate");
   afirmar("Sin red, esa pagina se contesta con la copia guardada", BASE + "recoleccion.html?id=5", sinRed.respuesta && sinRed.respuesta.url);
@@ -98,7 +99,7 @@ async function correr() {
   afirmar("Un estatico guardado se contesta aunque no haya red", BASE + "css/styles.css", css.respuesta && css.respuesta.url);
   sw.red.hay = true;
   await sw.pedir("GET", BASE + "img/nuevo.png");
-  const guardados = Array.from(sw.almacenes["sigeru-estaticos-v1"].keys());
+  const guardados = Array.from(sw.almacenes[VER].keys());
   afirmar("En todo el cache no hay ni una respuesta de las APIs", 0, guardados.filter(function (u) { return /\/api-/.test(u); }).length);
   afirmar("Solo se guardaron la precarga y lo que se pidio (" + guardados.length + " archivos: " + precarga.length + " de la precarga, la pagina y el estatico nuevo)", precarga.length + 2, guardados.length);
 }

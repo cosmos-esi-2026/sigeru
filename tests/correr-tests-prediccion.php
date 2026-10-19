@@ -49,7 +49,7 @@ foreach ([246, 198, 150, 102, 54, 6] as $horasAtras) {
 $p = array_column($cuerpo["datos"] ?? [], null, "codigo")["TPRED-A$sufijo"]["prediccion"] ?? [];
 afirmar("6 vaciados cada 48 h, el ultimo hace 6 h: estimada, 48 h de intervalo, 6 vaciados y confianza media", ["estimada", 48.0, 6, "media"], [
     $p["estado"] ?? null, (float) ($p["intervalo_medio_horas"] ?? 0), $p["vaciados"] ?? null, $p["confianza"] ?? null]);
-afirmar("Llega al 90 % en 0,9 x 48 - 6 = 37,2 horas (13 % hoy)", [true, 13], [abs((float) ($p["horas_hasta_90"] ?? 0) - 37.2) < 0.2, $p["nivel_estimado_pct"] ?? null]);
+afirmar("Llega al 90 % en 0,9 x 48 - 6 = 37,2 horas (entre 12 y 13 % hoy: 6 h de 48 h son 12,5 %, y el redondeo depende de los minutos que pasaron desde que se armo el caso)", [true, true], [abs((float) ($p["horas_hasta_90"] ?? 0) - 37.2) < 0.2, in_array($p["nivel_estimado_pct"] ?? null, [12, 13], true)]);
 afirmar("El texto para la pantalla dice dia y horas", true, str_contains($p["texto"] ?? "", "en 1 día"));
 [, $cuerpo] = peticion("GET", "/api-gestion/contenedores/prediccion?dentro_de=48", null, $admin);
 afirmar("Con dentro_de=48 figura (se llena en 37 h)", true, isset(array_column($cuerpo["datos"] ?? [], null, "codigo")["TPRED-A$sufijo"]));
