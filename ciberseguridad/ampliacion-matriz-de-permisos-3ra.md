@@ -196,3 +196,25 @@ Con esto, lo que se puede hacer **sin sesión** es: `POST /login` (con el límit
 `POST /solicitudes`, `POST /registro`, `POST /recuperar-clave`, `POST /crear-clave` y `GET /api-gestion/publico/mapa`.
 Comprobado leyendo `api-usuarios/index.php` y `controllers/UsuarioController.php`; las pruebas por HTTP (590, 17/10) cubren
 cada una de estas rutas.
+
+## 14. Actualización del 19/10/2026 (extras, parte 12: el Operario en su centro)
+
+El Operario queda asociado a un centro (`usuario.id_centro`) y **solo llega a ese centro**: un centro ajeno responde 404 (no se distingue
+de uno que no existe) y un Operario sin centro, 403. El Administrador no tiene límite. Rutas nuevas de `api-gestion`:
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET /centros/{id}/stock` | Administrador; Operario (su centro) | |
+| `GET /centros/{id}/movimientos` | Administrador; Operario (su centro) | Paginado |
+| `POST /centros/{id}/movimientos` (retiro) | Administrador; Operario (su centro) | No se saca más de lo que hay (409) |
+| `POST /centros/{id}/movimientos/{mid}/correccion` | Administrador; Operario (su centro) | Movimiento inverso, una sola vez |
+| `GET /recepciones`, `GET /recepciones/{id}` | Administrador; Operario (su centro) | Solo recolecciones que van al centro |
+| `POST /recepciones/{id}` | Administrador; Operario (su centro) | Una sola vez por recolección |
+| `POST /maquinaria/{id}/estado` | Administrador; Operario (su centro) | Nota obligatoria; queda en el historial |
+| `GET /maquinaria/{id}/historial` | Administrador; Operario (su centro) | |
+| `GET /estadisticas/centro` | Administrador (con `?centro=`); Operario | |
+
+`GET /centros`, `GET /centros/{id}`, `PUT /centros/{id}`, `GET /maquinaria` y `GET /maquinaria/{id}` quedan acotados al centro del Operario.
+Vecino y Cuadrilla reciben 403 y sin sesión 401 en todas. Crear o dar de baja centros y máquinas sigue siendo solo del Administrador. Los
+movimientos de stock y el historial de máquinas son de solo agregado (triggers), como el historial de incidencias. Cubierto por 85 pruebas
+unitarias y 115 por HTTP.

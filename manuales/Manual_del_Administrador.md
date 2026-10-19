@@ -22,6 +22,8 @@ Pendiente sin contraseña, Dado de baja); **Limpiar** borra los filtros y **Expo
 
 - **Alta:** botón de nuevo usuario, completar Nombre, Apellido, Email y rol, **Guardar usuario**. La cuenta queda *pendiente*.
 - **Enviar acceso:** manda al correo un enlace para crear la contraseña (vence en una hora, un solo uso).
+- **Centro del Operario:** al elegir el rol Operario aparece **Centro de acopio**. Un Operario solo ve y mueve el centro que le asignes; sin
+  centro no puede operar (la lista muestra «Operario · nombre del centro»).
 - **Editar:** lápiz de la fila, **Guardar cambios**. **Dar de baja:** pide confirmación.
 
 ## 3. Solicitudes de acceso
@@ -56,7 +58,11 @@ ficha con su historial. Dar de baja pide confirmación.
 
 **Centros de acopio:** Nombre, Dirección, Capacidad (kg), Estado (Activo, Inactivo); **Guardar centro**. **Maquinaria:** Código, Tipo
 (compactadora, pala cargadora, cinta de clasificación, retroexcavadora, montacargas, otra), Marca, Modelo, Centro de acopio y Estado
-(Operativa, En mantenimiento, Fuera de servicio); **Guardar máquina**.
+(Operativa, En mantenimiento, Fuera de servicio); **Guardar máquina**. Cada cambio de estado queda en el **Historial** de la máquina.
+
+**Stock y recepciones (parte de las extras):** cada centro tiene su ficha (tocá el nombre): ocupación, stock por tipo, retiros y movimientos.
+**Recepciones** lista lo que llega a los centros; el administrador puede recibir en cualquiera (filtrando por centro). Un error de stock se
+corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 80 % de su capacidad, la lista de centros lo marca.
 
 ## 8. Reportes
 
