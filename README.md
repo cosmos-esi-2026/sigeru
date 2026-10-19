@@ -11,13 +11,13 @@ responsables y reportes.
 
 | Carpeta | Qué es | Estado |
 | --- | --- | --- |
-| `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, cómo informar un problema y enlace al registro | Funcionando |
-| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período, exportación a CSV) y auditoría | Funcionando |
+| `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, impacto ambiental con su fuente, la guía «¿Dónde tiro esto?» (datos del Manual de la Intendencia de Montevideo), cómo informar un problema, enlace al registro y páginas de error propias | Funcionando |
+| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período, exportación a CSV y reporte en PDF), recepciones y stock del centro (Operario), notificaciones, participación del vecino, predicción de llenado, ruta sugerida, auditoría, modo oscuro y aplicación instalable con cola sin conexión para la Cuadrilla | Funcionando |
 | `api-usuarios/` | API de usuarios, login, sesión, solicitudes de registro, registro de vecinos, enlaces de contraseña por correo y auditoría | Funcionando, sobre MySQL |
 | `api-gestion/` | API de contenedores, centros de acopio, maquinaria, tipos de residuo, zonas e incidencias (informar, asignar, avance, resolver; historial de solo agregado) y estadísticas (informe de un período, panel por urgencias) | Funcionando, sobre MySQL |
 | `api-recoleccion/` | API de camiones, cuadrillas, rutas y recolecciones (planificar, iniciar, registrar vaciados con peso y volumen, finalizar, cancelar) y estadísticas de lo recolectado | Funcionando, sobre MySQL (desde el 14/10/2026) |
-| `database/` | Modelo físico: DDL de creación, datos de prueba, volcado de la estructura y migraciones del esquema (`migrar.php`) | 16 tablas del modelo (desde el 12/10/2026) |
-| `tests/` | Pruebas de las tres APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 590 por HTTP + 410 unitarias (17/10/2026) |
+| `database/` | Modelo físico: DDL de creación, datos de prueba, volcado de la estructura y migraciones del esquema (`migrar.php`) | 22 tablas del modelo y 29 con las de soporte (migraciones 001 a 016; huella `d6c2eadfbc82fcdb`) |
+| `tests/` | Pruebas de las tres APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 965 por HTTP + 737 unitarias (19/10/2026), más 26 pruebas de la cola y 10 del service worker que corren en el navegador (`tests/js/`) |
 
 Los datos **se persisten en MySQL** desde el 09/09/2026: las tres APIs abren su conexión
 por PDO y todas las consultas van preparadas. La sesión es de servidor (cookie `httponly`)

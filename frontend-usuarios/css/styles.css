@@ -110,7 +110,7 @@ body:not([data-rol="Administrador"]) .solo-admin { display: none !important; }
   gap: var(--esp-4);
   flex-wrap: wrap;
 }
-.topbar-titulo { flex: 1; min-width: 0; }
+.topbar-titulo { flex: 1 1 280px; min-width: 0; }   /* con 3 botones (Reportes) el titulo pasa a su propio renglon en vez de achicarse */
 .topbar h1 { font-size: 22px; }
 .topbar .bajada {
   margin: var(--esp-1) 0 0;

@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Vecino
 sistema: SiGeRU 2026
-version: 1.0 (borrador, 17/10/2026)
-estado: Escrito leyendo el sistema y probando los recorridos en el navegador. Faltan las capturas de pantalla y que lo pruebe alguien que no conozca el sistema.
+version: 1.1 (19/10/2026, con capturas propias)
+estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
 ---
 
 # Manual del Vecino
@@ -28,6 +28,9 @@ Después de **5 intentos fallidos en 15 minutos** el sistema bloquea ese correo 
 
 ## 3. Qué ves al entrar
 
+![Inicio del vecino: sus reclamos, con el estado de cada uno](img/vecino-inicio.png)
+*Inicio del vecino: sus reclamos, con el estado de cada uno*
+
 El menú de la izquierda (en el celular, el botón de las tres rayas) tiene: **Inicio**, **Mapa**, **Informar un problema** y **Mis reclamos**.
 Abajo, tu nombre y **Cerrar sesión**. Si pasan **2 horas sin usar** el sistema, la sesión se cierra sola.
 
@@ -38,6 +41,9 @@ Tocá un punto para ver su código, dirección y estado, y **Informar un problem
 Debajo del mapa hay una tabla con los mismos contenedores y filtros por estado, tipo de residuo y zona.
 
 ## 5. Informar un problema
+
+![Pantalla «Informar un problema»](img/vecino-informar.png)
+*Pantalla «Informar un problema»*
 
 1. Tocá **Informar un problema**.
 2. **Contenedor \*:** escribí el código (está pegado en el contenedor, por ejemplo `CNT-004`), elegilo de la lista de sugerencias o buscalo en el mapa.
@@ -84,6 +90,9 @@ Tu **Inicio** muestra **Mi progreso**: tus puntos (10 por cada reclamo que se re
 de la ciudad (reclamos resueltos y puntos): es por zona, nunca por persona.
 
 ## ¿Dónde tiro esto? (guía pública)
+
+![La guía «¿Dónde tiro esto?» buscando «botella»](img/vecino-guia.png)
+*La guía «¿Dónde tiro esto?» buscando «botella»*
 
 No hace falta cuenta. En la página de inicio, menú **«¿Dónde tiro esto?»** (o desde «Informar un problema»): escribí qué querés tirar (por ejemplo «botella» o «pila») y la guía te muestra en qué contenedor va, cómo prepararlo y la **página del manual** de donde sale el dato.
 Funciona con el manual de residuos de la Intendencia de Montevideo (2024); las reglas pueden cambiar y varían según el departamento. «Especial» agrupa lo que no va al contenedor de la calle (pilas, medicamentos, aparatos, aceite, escombro, muebles).

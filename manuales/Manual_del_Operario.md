@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Operario de centro de acopio
 sistema: SiGeRU 2026
-version: 1.1 (borrador, 19/10/2026)
-estado: Escrito leyendo el sistema y probando cada pantalla con el usuario de prueba. Faltan las capturas y la revisión por una persona que trabaje en un centro de acopio.
+version: 1.1 (19/10/2026, con capturas propias)
+estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
 ---
 
 # Manual del Operario de centro de acopio
@@ -17,6 +17,9 @@ El **administrador** es quien te asigna el centro (en «Usuarios»); si todavía
 **Nueva contraseña** dos veces y **Guardar contraseña**. Menú: **Inicio**, **Mapa**, **Centros de acopio**, **Recepciones** y **Maquinaria**.
 
 ## 2. Inicio
+
+![Inicio del operario: recepciones pendientes, ocupación del centro y máquinas en mantenimiento](img/operario-panel.png)
+*Inicio del operario: recepciones pendientes, ocupación del centro y máquinas en mantenimiento*
 
 Tres tarjetas de tu centro: **Recepciones pendientes** (te lleva a la lista), **Ocupación del centro** (porcentaje y kg sobre la capacidad) y
 **Máquinas en mantenimiento**. Si el centro pasó del 80 % de su capacidad aparece un aviso: conviene planificar un retiro.

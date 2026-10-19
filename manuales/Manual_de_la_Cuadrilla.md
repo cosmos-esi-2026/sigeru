@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Cuadrilla de recolección
 sistema: SiGeRU 2026
-version: 1.0 (borrador, 17/10/2026)
-estado: Escrito leyendo el sistema y probando los recorridos. Faltan las capturas de pantalla y la revisión por alguien de una cuadrilla real.
+version: 1.1 (19/10/2026, con capturas propias)
+estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
 ---
 
 # Manual de la Cuadrilla
@@ -32,6 +32,9 @@ Lo que **no** podés hacer: asignar a otra cuadrilla, cambiar la prioridad ni de
 informó el problema, solo que lo informó un vecino.
 
 ## 3. Mis tareas (recolecciones)
+
+![Mis tareas: las recolecciones de la cuadrilla](img/cuadrilla-tareas.png)
+*Mis tareas: las recolecciones de la cuadrilla*
 
 **Mis tareas** muestra las recolecciones de tu cuadrilla, con estado: **Planificada**, **En curso**, **Finalizada**, **Cancelada**.
 Tocá una para abrirla: ruta, camión, cuadrilla, centro de destino, inicio previsto y la tabla de **Vaciados**.

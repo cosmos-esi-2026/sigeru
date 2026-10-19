@@ -2,7 +2,7 @@
 documento: Adenda de alcance — tercera entrega
 sistema: SiGeRU
 fecha: 2026-10-17
-estado: BORRADOR para revisión de Fornos (hecho por la sesión autónoma de la madrugada del 17/10; no hay PDF todavía)
+estado: BORRADOR para revisión del equipo (secciones 1 a 5: sesión autónoma del 17/10; secciones 6 a 10: sesión autónoma del 19/10, partes 12 a 22; no hay PDF todavía)
 ---
 
 # Adenda de alcance — 3ra entrega
@@ -99,3 +99,98 @@ el menú único). **No debe leerse como productividad medida.**
 1. Los FTR/DET de la tabla de arriba, que son criterio mío.
 2. Si las exportaciones a CSV se cuentan como EO (aquí sí) o se consideran parte de la consulta.
 3. Si `HistorialIncidencia` como RET es el criterio que prefiere la docente (en 2da se hizo así con `EstadoContenedor`).
+
+---
+
+# Actualización del 19/10/2026 — partes 12 a 22 de las extras
+
+**Estado: PENDIENTE DE REVISIÓN DEL EQUIPO.** Lo escribió la sesión autónoma que hizo las partes 12 a 22 del plan de extras (Fornos pidió seguir sin responder). Mismo método que arriba (IFPUG, factor de ajuste 1,10, pesos EI 3/4/6, EO 4/5/7, EQ 3/4/6, ILF 7/10/15).
+**Los FTR, DET y complejidades son criterio de quien escribió esto; hay que revisarlos antes de citar el total.** El detalle de cada parte está en `programacion-full-stack/ampliacion-*-3ra.md` y el resumen en `ampliacion-extras-3ra.md`.
+
+## 6. Qué se agregó (partes 12 a 22)
+
+| Parte | Qué |
+|---|---|
+| 12 | Operario con trabajo real: recepciones, stock del centro con movimientos de solo agregado (corrección por movimiento inverso), estado de máquinas con historial |
+| 13 | Notificaciones: campanita, avisos a vecino/cuadrilla/administrador/operario y correo opcional |
+| 14 | Participación del vecino: calificar la atención, puntos, insignias, ranking de zonas; calidad del servicio en Reportes |
+| 15 | «¿Cuándo pasa el camión por mi zona?» |
+| 16 | Predicción de llenado de contenedores (estimación estadística, no IA) |
+| 17 | Ruta sugerida para el camión (vecino más cercano + 2-opt) con alta precargada |
+| 18 | Impacto ambiental con factores de la EPA (WARM v16) verificados |
+| 19 | Guía pública «¿Dónde tiro esto?» (Manual de la Intendencia de Montevideo) |
+| 20 | Reporte de gestión en PDF (generador propio) |
+| 21 | Aplicación instalable y Cuadrilla sin señal (cola y claves de operación) |
+| 22 | Pulido: modo oscuro, páginas de error, estados vacíos, imagen para compartir |
+
+## 7. Medición de lo nuevo
+
+**Archivos lógicos internos nuevos** (datos de negocio que el usuario reconoce y la aplicación mantiene): `Recepcion` (con su stock y movimientos como RET), `Notificacion`, `Calificacion` (con los puntos como RET) y `MovimientoStock` visto como el stock del centro. Los cuatro con 1 a 2 RET y pocos DET: complejidad baja, **7 PF cada uno = 28**.
+No se cuentan como ILF `historial_maquinaria` (RET de `Maquinaria`), `clave_idempotencia` (tabla técnica, como `auditoria`) ni los datos estáticos de la guía (un archivo JSON con la fuente citada, que el usuario no mantiene).
+
+| Proceso elemental | Tipo | FTR | DET | Compl. | PF |
+|---|---|---|---|---|---|
+| Confirmar una recepción en el centro | EI | 3 | 6 | Media | 4 |
+| Retirar material del centro | EI | 2 | 5 | Media | 4 |
+| Corregir un movimiento de stock | EI | 2 | 4 | Baja | 3 |
+| Cambiar el estado de una máquina (con nota) | EI | 2 | 4 | Baja | 3 |
+| Marcar una notificación como leída | EI | 1 | 2 | Baja | 3 |
+| Marcar todas las notificaciones como leídas | EI | 1 | 1 | Baja | 3 |
+| Elegir si quiero avisos por correo | EI | 1 | 2 | Baja | 3 |
+| Calificar la atención de un reclamo | EI | 3 | 5 | Media | 4 |
+| Elegir mi zona | EI | 1 | 2 | Baja | 3 |
+| **Subtotal EI (9)** | | | | | **30** |
+| Consultar recepciones | EQ | 2 | 8 | Media | 4 |
+| Ver el detalle de una recepción | EQ | 3 | 8 | Media | 4 |
+| Ver el stock y los movimientos de un centro | EQ | 3 | 9 | Media | 4 |
+| Consultar el historial de una máquina | EQ | 2 | 6 | Media | 4 |
+| Consultar mis notificaciones | EQ | 2 | 6 | Media | 4 |
+| Ver mi progreso (puntos e insignias) | EQ | 3 | 8 | Media | 4 |
+| Ver el ranking de zonas | EQ | 2 | 4 | Baja | 3 |
+| Ver cuándo pasa el camión por mi zona | EQ | 3 | 6 | Media | 4 |
+| Buscar en la guía «¿Dónde tiro esto?» | EQ | 1 | 8 | Baja | 3 |
+| **Subtotal EQ (9)** | | | | | **34** |
+| Predicción de llenado de contenedores | EO | 3 | 11 | Media | 5 |
+| Ruta sugerida (orden, km y tiempo) | EO | 3 | 12 | Media | 5 |
+| Calidad del servicio por zona y por cuadrilla | EO | 4 | 10 | Alta | 7 |
+| Impacto ambiental público | EO | 3 | 8 | Media | 5 |
+| Impacto ambiental por mes (Reportes) | EO | 4 | 10 | Alta | 7 |
+| Reporte de gestión en PDF | EO | 5 | 40 | Alta | 7 |
+| Exportar la calidad del servicio a CSV | EO | 3 | 8 | Media | 5 |
+| Exportar el impacto ambiental a CSV | EO | 3 | 8 | Media | 5 |
+| Panel del centro del Operario (ocupación y avisos) | EO | 3 | 8 | Media | 5 |
+| **Subtotal EO (9)** | | | | | **51** |
+| **Archivos lógicos internos (4 × 7)** | ILF | | | Baja | **28** |
+| **Total de lo nuevo (partes 12 a 22), sin ajustar** | | | | | **143** |
+
+La aplicación instalable, la cola sin conexión, las claves de operación, el modo oscuro, las páginas de error y la imagen para compartir **no suman puntos de función**: son requerimientos no funcionales (IFPUG no los mide; en COCOMO entrarían en el factor de ajuste, que acá no se modificó).
+
+| | Sin ajustar | Ajustados (× 1,10) |
+|---|---|---|
+| Conteo del 02/09 | 207 | 228 |
+| Con maquinaria (09/09) | 229 | 252 |
+| Con lo de octubre (partes 3 a 10) | 326 | 359 |
+| **Con las partes 12 a 22** | **469** | **516** |
+
+Vale la misma advertencia de arriba: a 10 h/PF serían unas 1.430 h, y **no es productividad medida**: se reusó el patrón de modelo, controlador y pantalla, el menú, las pruebas y las clases puras; casi todo lo hizo una persona con asistencia.
+
+## 8. Qué cambió respecto de lo que decía esta adenda
+
+- **Notificaciones:** la sección 3 decía «alertas calculadas en el panel, sin tabla nueva» y la 4, «avisos por correo: decidido que no». **Ya no es así** (parte 13): hay tabla `notificacion`, campanita en todas las pantallas y correo opcional al vecino (por defecto activado, se puede apagar). Es una decisión de producto que tomó la sesión autónoma y **el equipo debe confirmar o revertir**.
+- **Operario:** antes sin tarea propia ni vínculo con un centro; ahora cada Operario pertenece a un centro (`usuario.id_centro`), reemplazando la decisión del 12/10.
+- **Modelo de datos:** de 16 a 22 tablas del modelo (recepcion, movimiento_stock, historial_maquinaria, notificacion, calificacion, movimiento_punto), más columnas en `usuario` y `tipo_residuo`, y 29 tablas físicas con las técnicas (migraciones 009 a 016). Los diagramas de clases y de DER **no se rehicieron**: describen el modelo de 16 clases (se documentan por ampliación, no se reescriben).
+
+## 9. Lo que no se hizo / no se pudo verificar
+
+- **FPDF:** el plan lo pedía y no se descargó (no había quien autorizara la descarga); el PDF se hace con un generador propio.
+- **Instalación en un celular real, service worker registrado de verdad y HTTPS en `sigeru-srv`:** el navegador integrado no permite registrar service workers; ver `ampliacion-offline-3ra.md`.
+- **Envío real de correo** (avisos y accesos): sigue sin probarse contra Gmail.
+- **El servidor `sigeru-srv` no tiene nada de esto:** ver `administracion-sistemas-operativos/novedades-3ra-para-el-servidor.md`.
+- Los factores ambientales son de la EPA (Estados Unidos): son una **estimación**, rotulada así en pantalla.
+
+## 10. Qué revisar
+
+1. Todos los FTR/DET de la sección 7 y si el reporte en PDF cuenta como un EO o como parte de los informes ya contados.
+2. Si los cuatro ILF nuevos están bien elegidos (el stock del centro como ILF propio o como RET de `CentroAcopio`).
+3. Si las exportaciones a CSV se cuentan como EO (aquí sí, igual que arriba).
+4. La decisión de las notificaciones (sección 8).

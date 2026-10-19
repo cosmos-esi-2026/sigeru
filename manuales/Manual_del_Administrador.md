@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Administrador
 sistema: SiGeRU 2026
-version: 1.0 (borrador, 17/10/2026)
-estado: Escrito leyendo las pantallas y el codigo. Faltan capturas, la revision por una persona y completar el detalle de Camiones y Rutas.
+version: 1.1 (19/10/2026, con capturas propias)
+estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
 ---
 
 # Manual del Administrador
@@ -11,6 +11,9 @@ estado: Escrito leyendo las pantallas y el codigo. Faltan capturas, la revision 
 centros, maquinaria, reportes y auditoría.
 
 ## 1. Entrar y panel
+
+![Panel de control del administrador](img/admin-panel.png)
+*Panel de control del administrador*
 
 **Ingresar** con correo y contraseña. **Inicio** (Panel de control) muestra el bloque **Requiere atención**, con las incidencias urgentes
 calculadas al momento. Tras 2 horas sin actividad la sesión se cierra.
@@ -71,6 +74,9 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 
 ## Reporte en PDF
 
+![Reportes: período, «Descargar PDF», «Imprimir» y exportación](img/admin-reportes.png)
+*Reportes: período, «Descargar PDF», «Imprimir» y exportación*
+
 En **Reportes**, elegí el período (y la zona si querés) y tocá **«Descargar PDF»**. El archivo (`sigeru-reporte-AAAA-MM-DD.pdf`) trae portada con el período, resumen, urgencias, incidencias por zona y tipo, satisfacción, impacto ambiental (marcado como estimación, con sus fuentes) y el detalle de las incidencias.
 Las cifras son las mismas de la pantalla. Para que no sea interminable muestra hasta 100 incidencias y 25 contenedores llenos, y lo avisa; para ver todas usá «Exportar (CSV)». **Cada descarga queda anotada en Auditoría.**
 
@@ -91,6 +97,9 @@ Operación (POST, PUT, DELETE), Desde, Hasta.
 «Sin datos suficientes»; es una guía para planificar rutas, no una certeza.
 
 ## Ruta sugerida
+
+![Ruta sugerida: cifras, supuestos y recorrido en el mapa](img/admin-ruta-sugerida.png)
+*Ruta sugerida: cifras, supuestos y recorrido en el mapa*
 
 Menú **«Ruta sugerida»** (o el botón «Sugerir ruta» de Recolecciones). Elegí zona, horizonte (24 o 48 horas), centro de destino y camión, y tocá **«Sugerir ruta»**. Entran los contenedores ya llenos y los que, según la predicción de llenado, llegan al 90 % dentro del horizonte (hasta 25, los más urgentes).
 Ves el recorrido en el mapa (círculos numerados; rojo si ya está lleno), la tabla con el mismo orden, la distancia y el tiempo estimados. **Son estimaciones:** distancia en línea recta (no por calles), 20 km/h y 5 minutos por parada, y el orden es una propuesta (vecino más cercano mejorado), no el recorrido óptimo.
