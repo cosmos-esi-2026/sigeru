@@ -69,6 +69,11 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Reportes:** período (Últimos 30 días, Este mes, Todo el historial o Desde/Hasta) y Zona; **Generar informe**, **Imprimir**,
 **Exportar (CSV)** y **Exportar detalle (CSV)**.
 
+## Impacto ambiental
+
+En **Reportes**, la sección **Impacto ambiental** muestra por mes los kilos recolectados, cuántos son de tipos reciclables, el porcentaje y el **CO2 evitado estimado**, con **Exportar (CSV)**. **Es una estimación**: kilos de cada tipo reciclable por un factor de la
+EPA de Estados Unidos (modelo WARM v16), con la fuente a la vista; orgánico y mixto no tienen factor verificado y se informan solo en kilos. La landing pública muestra las cifras agregadas del total, también rotuladas como estimación.
+
 ## 9. Auditoría
 
 **Auditoría** registra cada operación de escritura, hecha o negada por permisos. Filtros: Resultado (Hecho, Negado por permisos),

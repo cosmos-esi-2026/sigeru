@@ -262,3 +262,12 @@ Sin sesión 401; cualquier otro rol 403. Cubierto por 11 pruebas unitarias y 25 
 | `GET /api-gestion/contenedores/prediccion` | Administrador y Cuadrilla | Solo lectura; `dentro_de` de 1 a 720 horas. Vecino y Operario: 403; sin sesión: 401 |
 
 No expone datos de personas (solo contenedores y fechas de vaciado). Cubierto por 35 pruebas unitarias y 21 por HTTP.
+
+## 19. Actualización del 19/10/2026 (extras, parte 18: impacto ambiental)
+
+| Ruta (`api-gestion`) | Quién puede | Notas |
+|---|---|---|
+| `GET /publico/impacto` | **Cualquiera, sin sesión** | Solo agregados (kg, porcentaje, CO2 estimado, fuentes); **freno por IP: 120 pedidos por hora** (429 con `Retry-After`) |
+| `GET /estadisticas/impacto` | Solo el Administrador | Lo mismo por mes y por período; 401 sin sesión y 403 a los demás roles |
+
+Sin sesión, lo que se puede hacer ahora es: `POST /login`, `/solicitudes`, `/registro`, `/recuperar-clave`, `/crear-clave`, `GET /publico/mapa` y `GET /publico/impacto`. Cubierto por 16 pruebas unitarias y 23 por HTTP.
