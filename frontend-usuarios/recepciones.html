@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recepciones - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Recepciones</h1>
+        <p class="bajada" id="bajada-pagina">Lo que traen los camiones al centro de acopio: se confirma con el peso recibido de cada tipo.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-listado">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-listado">Recolecciones que llegan</h2>
+
+          <form class="filtros" id="form-filtros" aria-label="Filtrar recepciones">
+            <label>Mostrar
+              <select name="estado" id="filtro-estado">
+                <option value="pendiente">Pendientes de recibir</option>
+                <option value="recibida">Ya recibidas</option>
+                <option value="todas">Todas</option>
+              </select>
+            </label>
+          </form>
+
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="recolecciones"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-recepciones" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" data-orden>Recolección</th>
+                <th role="columnheader" data-orden>Fecha</th>
+                <th role="columnheader" data-orden>Ruta y zona</th>
+                <th role="columnheader" data-orden>Camión</th>
+                <th role="columnheader" data-orden>Esperado</th>
+                <th role="columnheader" data-orden>Recepción</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/recepciones.js"></script>
+</body>
+</html>

@@ -99,7 +99,15 @@
       href: "centros.html",
       texto: "Centros de acopio",
       roles: ["Administrador", "Operario"],
+      incluye: ["centro.html"],
       trazos: '<path d="M3 10.5 12 5l9 5.5V20H3z"/><path d="M8 20v-6h8v6"/>',
+    },
+    {
+      href: "recepciones.html",
+      texto: "Recepciones",
+      roles: ["Administrador", "Operario"],
+      incluye: ["recepcion.html"],
+      trazos: '<path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>',
     },
     {
       href: "maquinaria.html",
@@ -130,6 +138,18 @@
       href: "recoleccion.html",
       texto: "Recolección",
       roles: ["Administrador", "Cuadrilla"],
+      oculta: true,
+    },
+    {
+      href: "recepcion.html",
+      texto: "Recepción",
+      roles: ["Administrador", "Operario"],
+      oculta: true,
+    },
+    {
+      href: "centro.html",
+      texto: "Centro de acopio",
+      roles: ["Administrador", "Operario"],
       oculta: true,
     },
     {

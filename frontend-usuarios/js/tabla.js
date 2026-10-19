@@ -94,7 +94,7 @@ function mensajeDeFallo(error) {
     return "Tu sesión venció. Cerrá sesión y volvé a entrar.";
   }
   if (error && error.estado === 403) {
-    return "Tu rol no tiene permiso para ver esta información.";
+    return error.mensaje || "Tu rol no tiene permiso para ver esta información.";
   }
   if (error && error.estado) {
     return "El servidor respondió con un error (código " + error.estado + ").";

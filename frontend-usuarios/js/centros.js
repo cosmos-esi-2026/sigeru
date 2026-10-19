@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 5;
+const COLUMNAS = 6;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const formCentro = document.getElementById("form-centro");
 const mensaje = document.getElementById("mensaje");
@@ -34,17 +34,30 @@ function dibujarTabla(centros) {
   cuerpoTabla.innerHTML = centros.map(function (c) {
     const color = c.estado === "activo" ? "verde" : "gris";
     return '<tr role="row">' +
-      celda("Nombre", c.nombre) +
+      celdaEnlace("Nombre", c.nombre, "centro.html?id=" + $entero(c.id_centro)) +
       celda("Dirección", c.direccion) +
       celda("Capacidad",
             c.capacidad ? Number(c.capacidad).toLocaleString("es-UY") + " kg" : null,
             c.capacidad) +
+      celdaOcupacion(c) +
       celdaEstado("Estado", c.estado, color) +
       celdaAcciones(c.id_centro, "Editar " + c.nombre, "Dar de baja " + c.nombre, true) +
       "</tr>";
   }).join("");
 
   actualizarContador();
+}
+
+function celdaOcupacion(c) {
+  if (c.ocupacion_pct === null || c.ocupacion_pct === undefined) {
+    return celda("Ocupación", c.stock_kg ? Number(c.stock_kg).toLocaleString("es-UY") + " kg" : null, c.stock_kg);
+  }
+  const pct = Number(c.ocupacion_pct);
+  const texto = pct.toLocaleString("es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %";
+  const aviso = c.nivel === "alerta" ? " · pasó del 80 %" : c.nivel === "lleno" ? " · lleno" : "";
+  return '<td role="cell" data-etiqueta="Ocupación" data-orden-valor="' + escaparHtml(pct) + '"><div class="celda-ocupacion">' +
+    '<div class="barra-ocupacion" data-nivel="' + escaparHtml(c.nivel) + '" role="img" aria-label="Ocupación: ' + escaparHtml(texto) + '"><span style="width:' +
+    Math.min(100, pct) + '%"></span></div><small>' + escaparHtml(texto + " (" + Number(c.stock_kg).toLocaleString("es-UY") + " kg)" + aviso) + "</small></div></td>";
 }
 
 function prepararAlta() {

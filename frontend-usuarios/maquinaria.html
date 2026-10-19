@@ -142,6 +142,47 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal-estado" tabindex="-1" aria-labelledby="titulo-modal-estado" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-estado">Cambiar el estado</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-estado" class="formulario" novalidate>
+          <p class="ayuda" id="texto-estado"></p>
+          <label>Nuevo estado
+            <select name="estado" required>
+              <option value="operativa">Operativa</option>
+              <option value="mantenimiento">En mantenimiento</option>
+              <option value="fuera_servicio">Fuera de servicio</option>
+            </select>
+          </label>
+          <label>Nota
+            <textarea name="observacion" rows="2" required maxlength="300" placeholder="Qué se hizo o por qué cambia: por ejemplo, cambio de correa"></textarea>
+          </label>
+          <button type="submit" class="boton boton-primario">Guardar el cambio</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-historial" tabindex="-1" aria-labelledby="titulo-modal-historial" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-historial">Historial de la máquina</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="zona-historial" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
 <script src="js/formularios.js"></script>

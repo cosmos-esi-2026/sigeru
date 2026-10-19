@@ -891,7 +891,7 @@ textarea:focus-visible { outline: 3px solid var(--lima); outline-offset: 2px; }
 .paginacion:empty { display: none; }
 .paginacion-texto { margin: 0; flex: 1 1 220px; font-size: 14px; color: var(--tinta-suave); }
 .paginacion-tamano { display: inline-flex; align-items: center; gap: var(--esp-2); font-size: 14px; color: var(--tinta-suave); }
-.paginacion-tamano select { min-height: 36px; border: 1px solid var(--borde); border-radius: var(--radio-1); padding: 0 var(--esp-2); background: var(--blanco); }
+.paginacion-tamano select { color: var(--tinta); min-height: 36px; border: 1px solid var(--borde); border-radius: var(--radio-1); padding: 0 var(--esp-2); background: var(--blanco); }
 .paginacion-botones { display: inline-flex; align-items: center; gap: var(--esp-3); }
 .paginacion-pagina { font-size: 14px; color: var(--tinta-suave); white-space: nowrap; }
 
@@ -1161,3 +1161,30 @@ a.metrica[href]:hover {
 .leyenda .punto.naranja::before { content: "M"; }
 .leyenda .punto.gris::before   { content: "–"; }
 .tabla[data-sin-clic-fila] tbody tr:has(td a[href]) { cursor: default; }
+
+/* Operario con trabajo real (extras, parte 12): inicio del centro, ocupacion y recepcion */
+body:not([data-rol="Operario"]) .solo-operario { display: none !important; }
+body[data-rol="Operario"] .no-operario { display: none !important; }
+
+.barra-ocupacion { height: 10px; min-width: 96px; border-radius: var(--radio-full); background: var(--borde); overflow: hidden; }
+.barra-ocupacion > span { display: block; height: 100%; border-radius: var(--radio-full); background: var(--verde); }
+.barra-ocupacion[data-nivel="alerta"] > span { background: #c77700; }
+.barra-ocupacion[data-nivel="lleno"] > span { background: var(--error-texto); }
+.celda-ocupacion { display: grid; gap: 4px; min-width: 120px; }
+.celda-ocupacion small { font-size: 12.5px; color: var(--tinta-suave); }
+.aviso-centro { margin: 0 0 var(--esp-4); padding: var(--esp-3) var(--esp-4); border-radius: var(--radio-1); border: 1px solid #e8c887; background: var(--alerta-fondo); color: var(--alerta-texto); font-weight: 600; }
+.aviso-centro[data-nivel="lleno"] { border-color: #e9a7a2; background: var(--error-fondo); color: var(--error-texto); }
+.tabla-corta th, .tabla-corta td { white-space: nowrap; }
+.tabla-lineas input[type="number"] { min-height: 40px; }
+.tabla-lineas td { vertical-align: middle; }
+.diferencia-mas { color: var(--ok-texto); font-weight: 600; }
+.diferencia-menos { color: var(--error-texto); font-weight: 600; }
+.movimiento-corregido { opacity: .65; }
+.movimiento-corregido td:first-child::after { content: " (corregido)"; font-size: 12px; }
+.bloque-formulario { margin-top: var(--esp-5); padding-top: var(--esp-4); border-top: 1px solid var(--borde); }
+.lista-historial { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--esp-3); max-height: 50vh; overflow: auto; }
+.lista-historial li { border-left: 3px solid var(--borde); padding-left: var(--esp-3); }
+.columnas-detalle.columnas-anchas { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.tabla-lineas input[type="number"] { width: 100%; min-width: 90px; max-width: 150px; }
+.tabla-lineas th, .tabla-lineas td { padding-left: var(--esp-2); padding-right: var(--esp-2); }
+@media (max-width: 900px) { .columnas-detalle.columnas-anchas { grid-template-columns: minmax(0, 1fr); } }

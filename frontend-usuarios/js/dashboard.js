@@ -251,16 +251,53 @@ async function cargarReclamos() {
   }
 }
 
+async function cargarMiCentro() {
+  const metricas = ["metrica-pendientes", "metrica-ocupacion", "metrica-mantenimiento"];
+  metricas.forEach(cargandoMetrica);
+  try {
+    const d = (await apiGet(API.gestion + "/estadisticas/centro")).datos;
+    document.getElementById("nombre-mi-centro").textContent = d.centro;
+    const enlace = "centro.html?id=" + $entero(d.id_centro);
+    document.getElementById("enlace-mi-centro").href = enlace;
+    document.getElementById("tarjeta-ocupacion").href = enlace;
+    pintarMetrica("metrica-pendientes", d.recepciones_pendientes, d.recepciones_pendientes === 1 ? "1 recolección para recibir" : d.recepciones_pendientes + " recolecciones para recibir");
+    pintarMetrica("metrica-mantenimiento", d.maquinas_en_mantenimiento);
+    if (d.ocupacion_pct === null) {
+      pintarMetrica("metrica-ocupacion", "—");
+      document.getElementById("detalle-ocupacion").textContent = "Sin capacidad cargada";
+    } else {
+      pintarMetrica("metrica-ocupacion", Number(d.ocupacion_pct).toLocaleString("es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %");
+      document.getElementById("detalle-ocupacion").textContent = Number(d.stock_kg).toLocaleString("es-UY") + " de " + Number(d.capacidad).toLocaleString("es-UY") + " kg";
+    }
+    const aviso = document.getElementById("aviso-mi-centro");
+    if (d.nivel === "alerta" || d.nivel === "lleno") {
+      aviso.dataset.nivel = d.nivel;
+      aviso.textContent = d.nivel === "lleno" ? "El centro llegó a su capacidad: hay que retirar material." : "El centro pasó del 80 % de su capacidad: conviene planificar un retiro.";
+      aviso.classList.remove("oculto");
+    } else {
+      aviso.classList.add("oculto");
+    }
+  } catch (error) {
+    metricas.forEach(function (id) { pintarMetrica(id, "—", mensajeDeFallo(error)); });
+    const aviso = document.getElementById("aviso-mi-centro");
+    aviso.textContent = mensajeDeFallo(error);
+    aviso.removeAttribute("data-nivel");
+    aviso.classList.remove("oculto");
+  }
+}
+
 function cargarPanel() {
   if (Sesion.obtener().rol === "Vecino") {
     document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
     cargarReclamos();
     return;
   }
-  const esAdministrador = Sesion.esAdministrador();
   if (Sesion.obtener().rol === "Operario") {
-    document.querySelectorAll("a.metrica").forEach(function (tarjeta) { tarjeta.removeAttribute("href"); });
+    document.getElementById("bajada-panel").textContent = "Lo que pasa hoy en tu centro de acopio.";
+    cargarMiCentro();
+    return;
   }
+  const esAdministrador = Sesion.esAdministrador();
   const metricas = ["metrica-contenedores", "metrica-llenos"];
   if (esAdministrador) {
     metricas.push("metrica-camiones", "metrica-usuarios", "metrica-incidencias", "metrica-criticas");

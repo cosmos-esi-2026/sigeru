@@ -21,6 +21,11 @@ async function apiGet(url) {
   if (!respuesta.ok) {
     const error = new Error("Error al obtener datos (" + respuesta.status + ")");
     error.estado = respuesta.status;
+    try {
+      error.mensaje = (await respuesta.json()).mensaje;
+    } catch (e) {
+      error.mensaje = undefined;
+    }
     throw error;
   }
   return await respuesta.json();

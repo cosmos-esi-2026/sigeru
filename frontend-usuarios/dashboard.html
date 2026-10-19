@@ -48,8 +48,47 @@
         <div id="zona-reclamos" aria-live="polite"></div>
       </section>
 
-      <h2 class="solo-lectores no-vecino">Indicadores del sistema</h2>
-      <div class="metricas-grupos no-vecino">
+      <section class="panel solo-operario" aria-labelledby="titulo-mi-centro">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-mi-centro">Mi centro de acopio</h2>
+          <a class="boton boton-secundario boton-chico" id="enlace-mi-centro" href="centros.html">Ver el stock del centro</a>
+        </div>
+        <p class="texto-tenue" id="nombre-mi-centro" aria-live="polite"></p>
+        <div class="metricas" id="metricas-centro">
+          <a class="metrica" data-color="atencion" href="recepciones.html">
+            <p class="metrica-etiqueta">
+              <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>
+              </svg>
+              Recepciones pendientes
+            </p>
+            <strong class="metrica-valor" id="metrica-pendientes"></strong>
+          </a>
+          <a class="metrica" data-color="flota" id="tarjeta-ocupacion" href="centros.html">
+            <p class="metrica-etiqueta">
+              <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 10.5 12 5l9 5.5V20H3z"/><path d="M8 20v-6h8v6"/>
+              </svg>
+              Ocupación del centro
+            </p>
+            <strong class="metrica-valor" id="metrica-ocupacion"></strong>
+            <span class="texto-tenue" id="detalle-ocupacion"></span>
+          </a>
+          <a class="metrica" data-color="alerta" href="maquinaria.html">
+            <p class="metrica-etiqueta">
+              <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21"/>
+              </svg>
+              Máquinas en mantenimiento
+            </p>
+            <strong class="metrica-valor" id="metrica-mantenimiento"></strong>
+          </a>
+        </div>
+        <p class="aviso-centro oculto" id="aviso-mi-centro" role="status"></p>
+      </section>
+
+      <h2 class="solo-lectores no-vecino no-operario">Indicadores del sistema</h2>
+      <div class="metricas-grupos no-vecino no-operario">
 
         <section class="grupo-metricas" aria-labelledby="grupo-accion">
           <h3 class="grupo-metricas-titulo" id="grupo-accion">Requiere acción</h3>
@@ -149,7 +188,7 @@
         <p class="texto-tenue" id="nota-urgencias"></p>
       </section>
 
-      <section class="panel no-vecino" aria-labelledby="titulo-llenos">
+      <section class="panel no-vecino no-operario" aria-labelledby="titulo-llenos">
         <div class="barra-herramientas">
           <h2 class="titulo" id="titulo-llenos">Contenedores llenos</h2>
           <a class="boton boton-secundario boton-chico" href="contenedores.html" data-pagina="contenedores.html">

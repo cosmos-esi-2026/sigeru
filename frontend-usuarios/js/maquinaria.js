@@ -54,11 +54,24 @@ function dibujarTabla(maquinas) {
       celda("Marca y modelo", marcaModelo) +
       celda("Centro de acopio", m.centro) +
       celdaEstado("Estado", m.estado, colorEstado(m.estado)) +
-      celdaAcciones(m.id_maquinaria, "Editar " + m.codigo, "Dar de baja " + m.codigo) +
+      celdaAccionesMaquina(m) +
       "</tr>";
   }).join("");
 
   actualizarContador();
+}
+
+function celdaAccionesMaquina(m) {
+  const id = $entero(m.id_maquinaria);
+  const admin = celdaAcciones(m.id_maquinaria, "Editar " + m.codigo, "Dar de baja " + m.codigo)
+    .replace(/^<td[^>]*>/, "").replace(/<\/td>$/, "");
+  return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila">' +
+    '<button type="button" class="boton boton-secundario boton-chico js-estado" data-id="' + id + '" data-estado="' + escaparHtml(m.estado) + '">' +
+    'Estado<span class="solo-lectores"> de ' + escaparHtml(m.codigo) + "</span></button>" +
+    '<button type="button" class="boton boton-secundario boton-chico js-historial" data-id="' + id + '">' +
+    'Historial<span class="solo-lectores"> de ' + escaparHtml(m.codigo) + "</span></button>" +
+    '<span class="solo-admin acciones-fila">' + admin.replace(/^<div class="acciones-fila">/, "").replace(/<\/div>$/, "") + "</span>" +
+    "</div></td>";
 }
 
 async function cargarCentros() {
@@ -143,9 +156,43 @@ formMaquinaria.addEventListener("submit", async function (evento) {
   }
 });
 
+const formEstado = document.getElementById("form-estado");
+let idEstado = null;
+
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {
     cargarMaquinaria();
+    return;
+  }
+
+  const botonEstado = evento.target.closest(".js-estado");
+  if (botonEstado) {
+    idEstado = botonEstado.dataset.id;
+    const codigo = botonEstado.closest("tr").cells[0].textContent;
+    document.getElementById("titulo-modal-estado").textContent = "Cambiar el estado de " + codigo;
+    document.getElementById("texto-estado").textContent = "Hoy está " + textoEstado(botonEstado.dataset.estado).toLowerCase() + ". El cambio queda en el historial de la máquina, con tu nombre y la nota.";
+    formEstado.reset();
+    formEstado.estado.value = botonEstado.dataset.estado === "operativa" ? "mantenimiento" : "operativa";
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-estado")).show();
+    return;
+  }
+
+  const botonHistorial = evento.target.closest(".js-historial");
+  if (botonHistorial) {
+    const codigo = botonHistorial.closest("tr").cells[0].textContent;
+    document.getElementById("titulo-modal-historial").textContent = "Historial de " + codigo;
+    const zona = document.getElementById("zona-historial");
+    zona.innerHTML = '<span class="esqueleto"></span>';
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-historial")).show();
+    try {
+      const respuesta = await apiGet(API.gestion + "/maquinaria/" + botonHistorial.dataset.id + "/historial");
+      zona.innerHTML = '<ul class="lista-historial">' + (respuesta.datos || []).map(function (h) {
+        return "<li><strong>" + escaparHtml(textoEstado(h.estado)) + '</strong> <span class="texto-tenue">' + escaparHtml(fechaDelHistorial(h.fecha_hora)) +
+               " · " + escaparHtml(h.usuario + " (" + h.rol + ")") + "</span><br>" + escaparHtml(h.observacion || "Sin nota") + "</li>";
+      }).join("") + "</ul>";
+    } catch (error) {
+      zona.innerHTML = "<p>" + escaparHtml(mensajeDeFallo(error)) + "</p>";
+    }
     return;
   }
 
@@ -182,6 +229,37 @@ cuerpoTabla.addEventListener("click", async function (evento) {
   }
 });
 
+function fechaDelHistorial(valor) {
+  const partes = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(valor || "");
+  return partes ? partes[3] + "/" + partes[2] + "/" + partes[1] + " " + partes[4] + ":" + partes[5] : "-";
+}
+
+formEstado.addEventListener("submit", async function (evento) {
+  evento.preventDefault();
+  const nota = formEstado.observacion;
+  if (nota.value.trim() === "") {
+    marcarError(nota, "Contá qué se hizo o por qué cambia.");
+    nota.focus();
+    return;
+  }
+  const boton = bloquearEnvio(formEstado, "Guardando...");
+  try {
+    const { ok, resultado } = await apiPost(API.gestion + "/maquinaria/" + idEstado + "/estado",
+                                            { estado: formEstado.estado.value, observacion: nota.value.trim() });
+    if (ok) {
+      cerrarModal("modal-estado");
+      avisoPagina("Estado de la máquina actualizado.");
+      cargarMaquinaria();
+    } else {
+      marcarError(nota, resultado.mensaje || "No se pudo cambiar el estado.");
+    }
+  } catch (e) {
+    marcarError(nota, "No se pudo conectar con el servidor.");
+  } finally {
+    liberarEnvio(boton);
+  }
+});
+
 function mostrar(texto, tipo) {
   mensaje.textContent = texto;
   mensaje.className = texto ? "mensaje " + tipo : "mensaje";
@@ -192,6 +270,7 @@ document.getElementById("btn-nuevo").addEventListener("click", prepararAlta);
 
 activarValidacion(formMaquinaria);
 prepararModal("modal-maquinaria", formMaquinaria);
+prepararModal("modal-estado", formEstado);
 activarOrden("tabla-maquinaria");
 cargarCentros();
 cargarMaquinaria();

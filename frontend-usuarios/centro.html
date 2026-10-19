@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centro de acopio - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1 id="titulo-pagina">Centro de acopio</h1>
+        <p class="bajada" id="bajada-pagina">Stock por tipo de residuo, ocupación y movimientos.</p>
+      </div>
+      <a class="boton boton-secundario" href="centros.html">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6"/>
+        </svg>
+        Volver a los centros
+      </a>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+
+      <p id="mensaje-pagina" class="mensaje mensaje-pagina" role="status" aria-live="polite"></p>
+
+      <div id="detalle">
+        <div class="columnas-detalle">
+          <div class="columna-principal">
+            <section class="panel" aria-labelledby="titulo-ocupacion">
+              <h2 class="titulo-panel" id="titulo-ocupacion">Ocupación</h2>
+              <div id="zona-ocupacion"><span class="esqueleto"></span><span class="esqueleto esqueleto-corto"></span></div>
+            </section>
+
+            <section class="panel" aria-labelledby="titulo-stock">
+              <h2 class="titulo-panel" id="titulo-stock">Stock por tipo de residuo</h2>
+              <div class="tabla-scroll">
+                <table class="tabla" role="table">
+                  <thead role="rowgroup">
+                    <tr role="row">
+                      <th role="columnheader">Tipo de residuo</th>
+                      <th role="columnheader">Reciclable</th>
+                      <th role="columnheader">Stock</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cuerpo-stock" role="rowgroup"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel columna-lateral" aria-labelledby="titulo-retiro">
+            <h2 class="titulo-panel" id="titulo-retiro">Registrar un retiro</h2>
+            <form class="formulario" id="form-retiro" novalidate>
+              <p class="ayuda">Lo que sale del centro: una venta, un traslado a otro lugar o una disposición final. No se puede sacar más de lo que hay.</p>
+              <label>Tipo de residuo
+                <select name="id_tipo_residuo" required></select>
+              </label>
+              <div class="formulario-columnas">
+                <label>Peso (kg)
+                  <input type="number" name="kg" required min="0.01" max="1000000" step="0.01" inputmode="decimal">
+                </label>
+                <label>Motivo
+                  <select name="motivo" required>
+                    <option value="venta">Venta</option>
+                    <option value="traslado">Traslado</option>
+                    <option value="disposicion">Disposición final</option>
+                  </select>
+                </label>
+              </div>
+              <label>Observación
+                <input type="text" name="observacion" maxlength="200" placeholder="Opcional: a quién se vendió, adónde va">
+              </label>
+              <button type="submit" class="boton boton-primario">Registrar el retiro</button>
+            </form>
+          </section>
+        </div>
+
+        <section class="panel" aria-labelledby="titulo-movimientos">
+          <div class="barra-herramientas">
+            <h2 class="titulo" id="titulo-movimientos">Movimientos</h2>
+            <form class="filtros" id="form-filtros" aria-label="Filtrar movimientos">
+              <label>Mostrar
+                <select name="sentido" id="filtro-sentido">
+                  <option value="">Entradas y salidas</option>
+                  <option value="entrada">Solo entradas</option>
+                  <option value="salida">Solo salidas</option>
+                </select>
+              </label>
+            </form>
+          </div>
+          <p class="texto-tenue">El historial es de solo agregado: un error se corrige con un movimiento inverso, no se borra.</p>
+          <div class="tabla-scroll">
+            <table class="tabla" role="table">
+              <thead role="rowgroup">
+                <tr role="row">
+                  <th role="columnheader">Fecha</th>
+                  <th role="columnheader">Movimiento</th>
+                  <th role="columnheader">Tipo</th>
+                  <th role="columnheader">Peso</th>
+                  <th role="columnheader">Detalle</th>
+                  <th role="columnheader">Registró</th>
+                  <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+                </tr>
+              </thead>
+              <tbody id="cuerpo-movimientos" role="rowgroup"></tbody>
+            </table>
+          </div>
+          <nav class="paginacion" id="paginacion" aria-label="Paginación de movimientos"></nav>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-correccion" tabindex="-1" aria-labelledby="titulo-modal-correccion" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-correccion">Corregir un movimiento</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-correccion" class="formulario" novalidate>
+          <p class="ayuda" id="texto-correccion"></p>
+          <label>Motivo de la corrección
+            <input type="text" name="observacion" required maxlength="200" placeholder="Por ejemplo: se pesó mal">
+          </label>
+          <button type="submit" class="boton boton-primario">Registrar la corrección</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/incidencias-comun.js"></script>
+<script src="js/lista.js"></script>
+<script src="js/centro-detalle.js"></script>
+</body>
+</html>

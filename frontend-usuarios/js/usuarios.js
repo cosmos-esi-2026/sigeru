@@ -72,7 +72,7 @@ function dibujarTabla(usuarios) {
       celda("Nombre", u.nombre) +
       celda("Apellido", u.apellido) +
       celda("Email", u.email) +
-      celda("Rol", u.rol) +
+      celda("Rol", u.rol + (u.centro ? " · " + u.centro : "")) +
       celdaEstado("Estado", u.estado, color) +
       celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre)
         .replace("</div></td>", (u.estado === "inactivo" ? "" :
@@ -82,11 +82,31 @@ function dibujarTabla(usuarios) {
   }).join("");
 }
 
+const campoCentro = document.getElementById("campo-centro");
+
+function actualizarCampoCentro() {
+  campoCentro.classList.toggle("oculto", formUsuario.rol.value !== "Operario");
+}
+
+async function cargarCentrosParaOperarios() {
+  try {
+    const respuesta = await apiGet(API.gestion + "/centros");
+    formUsuario.id_centro.innerHTML = '<option value="">Sin asignar todavía</option>' + (respuesta.datos || []).map(function (c) {
+      return '<option value="' + $entero(c.id_centro) + '">' + escaparHtml(c.nombre + (c.estado === "inactivo" ? " (inactivo)" : "")) + "</option>";
+    }).join("");
+  } catch (error) {
+    campoCentro.insertAdjacentHTML("beforeend", '<span class="ayuda-campo">No se pudieron traer los centros.</span>');
+  }
+}
+
+formUsuario.rol.addEventListener("change", actualizarCampoCentro);
+
 function prepararAlta() {
   idEditando = null;
   document.getElementById("titulo-modal-usuario").textContent = "Nuevo usuario";
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar usuario";
-
+  formUsuario.id_centro.value = "";
+  actualizarCampoCentro();
 }
 
 function prepararEdicion(usuario) {
@@ -98,6 +118,8 @@ function prepararEdicion(usuario) {
   formUsuario.apellido.value = usuario.apellido || "";
   formUsuario.email.value = usuario.email || "";
   formUsuario.rol.value = usuario.rol || "Vecino";
+  formUsuario.id_centro.value = usuario.id_centro ? String(usuario.id_centro) : "";
+  actualizarCampoCentro();
 }
 
 formUsuario.addEventListener("submit", async function (evento) {
@@ -115,6 +137,9 @@ formUsuario.addEventListener("submit", async function (evento) {
     email:    formUsuario.email.value,
     rol:      formUsuario.rol.value,
   };
+  if (formUsuario.rol.value === "Operario") {
+    datos.id_centro = formUsuario.id_centro.value === "" ? null : parseInt(formUsuario.id_centro.value, 10);
+  }
 
   try {
     const { ok, resultado } = idEditando === null
@@ -213,3 +238,4 @@ activarValidacion(formUsuario);
 prepararModal("modal-usuario", formUsuario);
 activarOrden("tabla-usuarios");
 cargarUsuarios();
+cargarCentrosParaOperarios();
