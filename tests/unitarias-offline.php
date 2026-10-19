@@ -70,3 +70,5 @@ afirmar("La cola solo admite vaciado y avance, de la Cuadrilla, y manda la clave
 ]);
 afirmar("La cola no guarda contrasenas ni la sesion (nada de password ni de localStorage de la sesion)", false, (bool) preg_match('/password|contrasena|localStorage/i', $cola));
 afirmar("Existe la pagina de pruebas de la cola para el navegador", true, file_exists(__DIR__ . "/js/cola-offline.html"));
+
+afirmar("El service worker deja pasar los pedidos a las APIs desde el manejador de fetch (no solo define la funcion)", true, str_contains($sw, "|| esDeLaApi(url)"));

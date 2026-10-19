@@ -108,3 +108,12 @@ afirmar("Un cuadrado de 2,22 km de lado: el recorrido abierto optimo son 3 lados
 
 afirmar("Las constantes son las declaradas en pantalla: tope 25, 20 km/h, 5 min por parada, horizontes de 24 y 48 h", [25, 20.0, 5, [24, 48]],
     [RutaSugerida::TOPE, RutaSugerida::VELOCIDAD_KMH, RutaSugerida::MINUTOS_POR_PARADA, RutaSugerida::HORIZONTES]);
+
+// Hallado con pruebas de mutacion (parte 23): faltaba el caso justo en el borde del horizonte.
+$borde = [["codigo" => "B1", "estado" => "disponible", "horas_hasta_90" => 24.0, "latitud" => 1, "longitud" => 1], ["codigo" => "B2", "estado" => "disponible", "horas_hasta_90" => 24.01, "latitud" => 1, "longitud" => 1]];
+afirmar("En el borde del horizonte: el que llega al 90 % justo a las 24 h entra y el que tarda 24,01 h no", ["B1"], array_column(RutaSugerida::seleccionar($borde, 24)["elegidos"], "codigo"));
+$permisos = [];
+foreach (["contenedores/ruta-sugerida", "reportes/pdf", "reportes"] as $recurso) {
+    $permisos[$recurso] = Permisos::rolesPermitidos($recurso, "GET");
+}
+afirmar("Solo el Administrador puede pedir la ruta sugerida y el reporte en PDF (la tabla de permisos)", ["contenedores/ruta-sugerida" => ["Administrador"], "reportes/pdf" => ["Administrador"], "reportes" => ["Administrador"]], $permisos);

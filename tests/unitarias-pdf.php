@@ -137,3 +137,12 @@ $textoVacio = pdfTodoElTexto(ReportePdf::armar($vacio));
 afirmar("Un periodo sin incidencias ni calificaciones no rompe el reporte", [true, true, true], [
     str_contains($textoVacio, "No hubo incidencias en el período"), str_contains($textoVacio, "Sin calificaciones en el período"), str_contains($textoVacio, "Página 1 de"),
 ]);
+
+// Hallado con pruebas de mutacion (parte 23): un parentesis sin pareja rompe el texto de PDF si no se escapa.
+$q2 = new PdfSimple("a", "b");
+$q2->paginaNueva();
+$q2->parrafo("Abre ( sin cierre, cierra ) sin apertura y una barra \ al final");
+afirmar("Un parentesis suelto (sin pareja) y una barra invertida se escriben escapados y se leen iguales", true, str_contains(pdfTodoElTexto($q2->salida()), "Abre ( sin cierre, cierra ) sin apertura y una barra \ al final"));
+preg_match_all('/stream\n(.*?)\nendstream/s', $q2->salida(), $flujosQ);
+$crudoQ = implode("", array_map(fn($f) => (string) @gzuncompress($f), $flujosQ[1]));
+afirmar("En el contenido crudo del PDF el parentesis de apertura va escapado (\( ) para no romper el texto", true, str_contains($crudoQ, "Abre \( sin cierre"));
