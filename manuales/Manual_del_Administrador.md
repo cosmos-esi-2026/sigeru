@@ -85,6 +85,12 @@ Operación (POST, PUT, DELETE), Desde, Hasta.
 «Se llenan en las próximas 48 horas») muestran lo mismo. **No es inteligencia artificial**: se calcula con el ritmo de vaciado del contenedor (la caja **¿Cómo se calcula?** lo explica). Con menos de 3 vaciados dice
 «Sin datos suficientes»; es una guía para planificar rutas, no una certeza.
 
+## Ruta sugerida
+
+Menú **«Ruta sugerida»** (o el botón «Sugerir ruta» de Recolecciones). Elegí zona, horizonte (24 o 48 horas), centro de destino y camión, y tocá **«Sugerir ruta»**. Entran los contenedores ya llenos y los que, según la predicción de llenado, llegan al 90 % dentro del horizonte (hasta 25, los más urgentes).
+Ves el recorrido en el mapa (círculos numerados; rojo si ya está lleno), la tabla con el mismo orden, la distancia y el tiempo estimados. **Son estimaciones:** distancia en línea recta (no por calles), 20 km/h y 5 minutos por parada, y el orden es una propuesta (vecino más cercano mejorado), no el recorrido óptimo.
+**«Crear recolección con esta ruta» no crea nada:** abre el alta de Recolecciones con el camión, el centro y el orden de los contenedores (en las observaciones) ya cargados; elegís la ruta, la fecha y la cuadrilla y confirmás con «Planificar». Hace falta historial de vaciados (3 o más por contenedor) para que aparezcan los que están por llenarse.
+
 ## Calidad del servicio (reportes)
 
 En **Reportes**, la sección **Calidad del servicio** muestra por zona y por cuadrilla: incidencias, resueltas, cuántas calificaciones dejaron los vecinos, la **satisfacción promedio** (de 1 a 5)

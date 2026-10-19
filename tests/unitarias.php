@@ -204,7 +204,7 @@ foreach (archivosDelFront($raiz) as $ruta) {
         $conMosaicos[] = substr($ruta, strlen($raiz) + 1);
     }
 }
-afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno y en el publico", ["frontend-usuarios/js/mapa.js", "landing/js/publico.js"],
+afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en la ruta sugerida y en el publico", ["frontend-usuarios/js/mapa.js", "frontend-usuarios/js/ruta-sugerida.js", "landing/js/publico.js"],
     array_map(fn ($r) => str_replace("\\", "/", $r), $conMosaicos));
 $leaflet = $front . "/vendor/leaflet/";
 afirmar("Leaflet esta dentro del repo, con su licencia, y es la version verificada", [true, true, true], [
@@ -274,7 +274,7 @@ foreach (glob("$front/*.html") as $pagina) {
         $sinBase[] = $nombre;
     }
 }
-afirmar("Las paginas con menu lateral son las 23 de gestion", 23, count($conMenu));
+afirmar("Las paginas con menu lateral son las 24 de gestion", 24, count($conMenu));
 afirmar("Todas cargan shell.js", [], $sinShell);
 afirmar("Ninguna tiene copiado el menu ni la hamburguesa", [], $conMenuCopiado);
 afirmar(
@@ -355,6 +355,7 @@ preg_match_all('/href:\s*"([a-z-]+)\.html",\s*texto:\s*"[^"]*",\s*roles:\s*(TODO
 $recursoDePantalla = [
     "contenedores"       => ["contenedores", "GET"],
     "mapa"               => ["contenedores", "GET"],
+    "ruta-sugerida"      => ["contenedores/ruta-sugerida", "GET"],
     "reportes"           => ["estadisticas", "GET"],
     "contenedor"         => ["contenedores/historial", "GET"],
     "camiones"           => ["camiones", "GET", "recoleccion"],
@@ -391,7 +392,7 @@ foreach ($secciones as $seccion) {
     }
 }
 afirmar("El menu no muestra pantallas cuya lectura la API le niega al rol", [], $excedidos);
-afirmar("shell.js define las 23 pantallas de gestion", 23, count($secciones));
+afirmar("shell.js define las 24 pantallas de gestion", 24, count($secciones));
 afirmar("Cada pantalla de incidencias esta atada a su permiso de la API", [], array_values(array_diff(
     ["incidencias", "mis-incidencias", "mis-reclamos", "incidencia", "informar-problema", "contenedor",
      "recolecciones", "mis-tareas", "recoleccion", "camiones", "mapa", "reportes", "rutas"],
@@ -434,6 +435,7 @@ require __DIR__ . "/unitarias-seguridad.php";
 require __DIR__ . "/unitarias-operario.php";
 require __DIR__ . "/unitarias-notificaciones.php";
 require __DIR__ . "/unitarias-guia.php";
+require __DIR__ . "/unitarias-ruta.php";
 require __DIR__ . "/unitarias-participacion.php";
 require __DIR__ . "/unitarias-pasaje.php";
 require __DIR__ . "/unitarias-prediccion.php";

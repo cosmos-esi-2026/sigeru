@@ -271,3 +271,11 @@ No expone datos de personas (solo contenedores y fechas de vaciado). Cubierto po
 | `GET /estadisticas/impacto` | Solo el Administrador | Lo mismo por mes y por período; 401 sin sesión y 403 a los demás roles |
 
 Sin sesión, lo que se puede hacer ahora es: `POST /login`, `/solicitudes`, `/registro`, `/recuperar-clave`, `/crear-clave`, `GET /publico/mapa` y `GET /publico/impacto`. Cubierto por 16 pruebas unitarias y 23 por HTTP.
+
+## 20. Actualización del 19/10/2026 (extras, parte 17: ruta sugerida)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET /api-gestion/contenedores/ruta-sugerida` | Solo Administrador | Solo lectura (no crea recolecciones); `horizonte` 24 o 48, `id_zona` e `id_centro` opcionales y validados (400). Cuadrilla, Operario y Vecino: 403; sin sesión: 401 |
+
+No expone datos de personas (solo contenedores, ubicaciones y el centro de destino). Cubierto por la clase pura `RutaSugerida` (unitarias) y por `correr-tests-ruta.php` (HTTP).
