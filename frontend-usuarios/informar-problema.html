@@ -48,7 +48,7 @@
             <ul class="cercanos oculto" id="lista-cercanos"></ul>
             <label>O escribí el código del contenedor
               <input type="text" name="codigo_contenedor" list="lista-contenedores" required
-                     autocomplete="off" spellcheck="false" maxlength="20" placeholder="CNT-004"
+                     autocomplete="off" spellcheck="false" maxlength="20" placeholder="MVD-172712"
                      aria-describedby="ayuda-contenedor">
             </label>
             <datalist id="lista-contenedores"></datalist>
@@ -137,12 +137,13 @@
             <summary>Más opciones</summary>
             <label>Prioridad que le darías
               <select name="prioridad">
+                <option value="" selected>Según el problema (recomendado)</option>
                 <option value="alta">Alta</option>
-                <option value="media" selected>Media</option>
+                <option value="media">Media</option>
                 <option value="baja">Baja</option>
               </select>
             </label>
-            <p class="ayuda-campo">Es una sugerencia: si no la cambiás queda en «Media» y la administración puede ajustarla.</p>
+            <p class="ayuda-campo">Si no la cambiás, la pone el sistema según el problema (desbordado: alta; lleno o roto: media; residuo no permitido: baja). La administración puede ajustarla.</p>
           </details>
 
           <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
@@ -156,7 +157,7 @@
 
       <section class="panel panel-angosto oculto" id="panel-confirmacion" aria-labelledby="titulo-confirmacion" tabindex="-1">
         <h2 class="titulo-panel" id="titulo-confirmacion">Reporte registrado</h2>
-        <p class="ayuda">Guardá el número para consultarlo. El administrador lo va a revisar y asignar a una cuadrilla.</p>
+        <p class="ayuda" id="ayuda-confirmacion">Guardá el número para consultarlo. El administrador lo va a revisar y asignar a una cuadrilla.</p>
         <dl class="ficha" id="ficha-confirmacion"></dl>
         <div class="acciones-formulario">
           <a class="boton boton-primario" id="enlace-reclamo" href="mis-reclamos.html">Ver el reclamo</a>

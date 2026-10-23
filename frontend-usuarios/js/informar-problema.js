@@ -265,6 +265,10 @@ function mostrarConfirmacion(incidencia, textoFoto) {
     "<dt>Foto</dt><dd>" + escaparHtml(textoFoto || "Sin foto") + "</dd>" +
     "<dt>Responsable</dt><dd>Sin asignar todavía</dd>";
   document.getElementById("enlace-reclamo").href = "incidencia.html?id=" + $entero(incidencia.id_incidencia);
+  // A la cuadrilla no le sirve «se va a asignar a una cuadrilla»: el aviso queda para el administrador (hallazgo del 23/10/2026).
+  if (Sesion.rol() === "Cuadrilla") {
+    document.getElementById("ayuda-confirmacion").textContent = "Guardá el número para seguirlo en «Mis incidencias». El administrador ya lo ve y decide quién lo atiende.";
+  }
 
   panelFormulario.classList.add("oculto");
   panelConfirmacion.classList.remove("oculto");
@@ -284,7 +288,9 @@ formIncidencia.addEventListener("submit", async function (evento) {
     codigo_contenedor: formIncidencia.codigo_contenedor.value.trim().toUpperCase(),
     tipo_problema:     formIncidencia.tipo_problema.value,
     descripcion:       formIncidencia.descripcion.value.trim(),
-    prioridad:         formIncidencia.prioridad.value,
+    // Vacio = «Según el problema»: no se manda y el servidor aplica FlujoIncidencia::PRIORIDAD_POR_TIPO.
+    // Antes siempre viajaba «media» y la regla por tipo nunca corria desde esta pantalla (hallazgo del 23/10/2026).
+    prioridad:         formIncidencia.prioridad.value || undefined,
   };
 
   try {
