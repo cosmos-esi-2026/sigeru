@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armar ruta - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#115440">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/tema.js"></script>
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Armar ruta</h1>
+        <p class="bajada" id="bajada-ruta">Elegí los contenedores, ordenalos y guardá: el recorrido se traza por las calles.</p>
+      </div>
+      <a class="boton boton-secundario" href="rutas.html">Volver a Rutas</a>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+
+      <section class="panel oculto" id="panel-armar" aria-labelledby="titulo-ruta">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-ruta">Ruta</h2>
+          <div class="acciones-armar">
+            <button type="button" class="boton boton-secundario" id="btn-ordenar">Ordenar por cercanía</button>
+            <button type="button" class="boton boton-secundario" id="btn-descartar" disabled>Descartar cambios</button>
+            <button type="button" class="boton boton-secundario oculto" id="btn-reintentar">Reintentar el trazado</button>
+            <button type="button" class="boton boton-primario" id="btn-guardar" disabled>Guardar y trazar</button>
+          </div>
+        </div>
+
+        <dl class="cifras-ruta" id="cifras-armar"></dl>
+        <p class="mensaje aviso oculto" id="estado-trazado" role="status" aria-live="polite"></p>
+        <p class="mensaje aviso oculto" id="aviso-sin-red" role="status">Sin conexión a internet: no se pudo cargar el fondo con las calles. Los contenedores y la ruta se dibujan igual, sobre fondo liso.</p>
+
+        <div class="armar-ruta">
+          <div class="armar-mapa">
+            <div class="mapa" id="mapa-armar" role="region" aria-label="Mapa de la ruta. Tocá un contenedor para agregarlo o quitarlo. Lo mismo se puede hacer con las listas de al lado."></div>
+            <ul class="leyenda-mapa" aria-label="Leyenda del mapa">
+              <li><span class="leyenda-punto leyenda-en-ruta" aria-hidden="true">1</span> En esta ruta (con su orden)</li>
+              <li><span class="leyenda-punto leyenda-libre" aria-hidden="true"></span> Libre: se puede agregar</li>
+              <li><span class="leyenda-punto leyenda-otra" aria-hidden="true"></span> Está en otra ruta: se mueve al guardar</li>
+              <li><span class="leyenda-punto leyenda-lleno" aria-hidden="true">▲</span> Lleno</li>
+              <li><span class="leyenda-punto leyenda-mant" aria-hidden="true">M</span> En mantenimiento: no se recolecta</li>
+            </ul>
+            <p class="ayuda" id="atribucion-trazado"></p>
+          </div>
+
+          <div class="armar-listas">
+            <h3 class="titulo-panel" id="titulo-paradas">Paradas, en orden de visita</h3>
+            <p class="ayuda" id="contador-paradas" aria-live="polite"></p>
+            <ol class="lista-paradas" id="lista-paradas" aria-labelledby="titulo-paradas"></ol>
+
+            <h3 class="titulo-panel" id="titulo-candidatos">Agregar contenedores de la zona</h3>
+            <label class="solo-lectores" for="buscar-candidato">Buscar contenedores de la zona por código o dirección</label>
+            <input type="search" class="buscador buscador-armar" id="buscar-candidato" placeholder="Código o dirección">
+            <ul class="lista-candidatos" id="lista-candidatos" aria-labelledby="titulo-candidatos"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/ruta-armar.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>

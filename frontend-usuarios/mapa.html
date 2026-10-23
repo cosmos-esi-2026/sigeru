@@ -61,6 +61,7 @@
             <legend>Capas</legend>
             <label class="casilla oculto" id="capa-centros"><input type="checkbox" name="centros" checked> Centros de acopio</label>
             <label class="casilla oculto" id="capa-incidencias"><input type="checkbox" name="incidencias" checked> Incidencias abiertas</label>
+            <label class="casilla oculto" id="capa-rutas"><input type="checkbox" name="rutas"> Rutas de la zona</label>
           </fieldset>
         </form>
 
@@ -77,6 +78,10 @@
           <li class="oculto" id="leyenda-centros"><span class="marca-centro" aria-hidden="true"></span>Centro de acopio</li>
           <li class="oculto" id="leyenda-incidencias"><span class="marca-incidencia" aria-hidden="true">!</span>Incidencia abierta</li>
         </ul>
+
+        <p class="ayuda oculto" id="ayuda-rutas" role="status" aria-live="polite"></p>
+        <ul class="leyenda leyenda-rutas oculto" id="lista-rutas-mapa" aria-label="Rutas dibujadas en el mapa"></ul>
+        <p class="ayuda oculto" id="atribucion-rutas">Recorridos calculados con servicios de rutas de FOSSGIS sobre datos de OpenStreetMap (ODbL). <a href="https://www.openstreetmap.org/fixthemap">Reportar un error del mapa</a>.</p>
       </section>
 
       <section class="panel" aria-labelledby="titulo-tabla-mapa">

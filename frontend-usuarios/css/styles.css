@@ -1297,3 +1297,38 @@ body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal
 .sin-conexion h1 { margin: var(--esp-4) 0; }
 @media (max-width: 767px) { .barra-pendientes { margin: 0 var(--esp-3) var(--esp-3); } }
 .ilustracion-vacia { display: block; width: 112px; height: auto; margin: 0 auto var(--esp-3); color: var(--tinta-suave); }
+
+/* ---- Armar ruta (plan de rutas para la defensa, bloque 2) ---- */
+.acciones-armar { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.armar-ruta { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr); gap: var(--esp-5); align-items: start; }
+.armar-mapa .mapa { height: clamp(360px, 68vh, 680px); }
+.armar-listas { display: flex; flex-direction: column; gap: var(--esp-2); min-width: 0; }
+.armar-listas .titulo-panel { margin: var(--esp-3) 0 0; }
+.buscador-armar { width: 100%; }
+.leyenda-mapa { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-4); list-style: none; margin: 0 0 var(--esp-2); padding: 0; font-size: 13px; color: var(--tinta-suave); }
+.leyenda-punto { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 700; border: 1.5px solid #fff; box-shadow: 0 0 0 1px var(--borde-fuerte); vertical-align: middle; }
+.leyenda-en-ruta { background: var(--accion); }
+.leyenda-libre { background: #1b6fa8; }
+.leyenda-otra { background: #7a8a82; }
+.leyenda-lleno { background: #b3261e; }
+.leyenda-mant { background: #8a5000; }
+.lista-paradas, .lista-candidatos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--esp-2); max-height: 340px; overflow-y: auto; }
+.parada, .candidato { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) var(--esp-3); padding: var(--esp-2) var(--esp-3); background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio-1); }
+.parada-orden { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accion); color: var(--blanco); font-weight: 700; font-size: 12.5px; font-family: var(--fuente-dato); }
+.parada-texto { flex: 1 1 150px; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.parada-texto strong { font-family: var(--fuente-dato); font-size: 13.5px; }
+.parada-texto span { overflow-wrap: anywhere; color: var(--tinta-suave); }
+.parada-acciones { flex: none; display: flex; gap: var(--esp-1); margin-left: auto; }
+.etiqueta { display: inline-block; width: fit-content; padding: 1px 8px; border-radius: var(--radio-full); font-size: 12px; font-weight: 600; background: var(--borde); color: var(--tinta); }
+.etiqueta-lleno { background: #b3261e; color: #fff; }
+.etiqueta-mant { background: #8a5000; color: #fff; }
+.etiqueta-mueve { background: var(--alerta-fondo); color: var(--alerta-texto); }
+.nota-candidato { font-weight: 600; color: var(--alerta-texto) !important; }
+.vacio-lista { padding: var(--esp-3); font-size: 13.5px; color: var(--tinta-suave); }
+.marca-orden.mant { background: #8a5000; }
+.marca-pequena { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; border: 1.5px solid #fff; box-shadow: 0 1px 2px rgba(14, 36, 28, .5); }
+.marca-mant { background: #8a5000; }
+@media (max-width: 1300px) { .armar-ruta { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .lista-paradas, .lista-candidatos { max-height: 280px; } }
+.leyenda-rutas li { gap: var(--esp-2); }
+.leyenda-linea { display: inline-block; width: 22px; height: 5px; border-radius: 3px; flex: none; }

@@ -17,7 +17,9 @@ const PUEDE = {
   incidencias: ["Administrador", "Cuadrilla", "Vecino"].indexOf(rol) !== -1,
   ficha:       ["Administrador", "Cuadrilla"].indexOf(rol) !== -1,
   informar:    rol === "Vecino",
+  rutas:       rol === "Administrador",
 };
+const PALETA_RUTAS = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#D55E00", "#56B4E9", "#7a5195", "#5c6f66"];
 
 let contenedores = [];
 let centros = [];
@@ -28,6 +30,10 @@ const mapa = L.map("mapa", { scrollWheelZoom: false }).setView(CENTRO_MONTEVIDEO
 const capaContenedores = L.layerGroup().addTo(mapa);
 const capaCentros = L.layerGroup();
 const capaIncidencias = L.layerGroup();
+const capaRutas = L.layerGroup();
+const rutasPorZona = {};
+mapa.createPane("rutas");
+mapa.getPane("rutas").style.zIndex = 380;   // las lineas de las rutas quedan por debajo de los contenedores
 
 function mostrarSinRed(sinRed) {
   avisoSinRed.classList.toggle("oculto", !sinRed);
@@ -84,12 +90,25 @@ function visibles() {
   });
 }
 
+// Con las rutas de una zona a la vista, los contenedores se dibujan chicos para no taparlas (el estado se distingue por color; la tabla de abajo lo dice con texto).
+function enModoRutas() {
+  return PUEDE.rutas && formFiltros.elements.rutas.checked && formFiltros.elements.zona.value !== "";
+}
+
 function dibujarContenedores(lista) {
   capaContenedores.clearLayers();
   Object.keys(marcadores).forEach(function (id) { delete marcadores[id]; });
+  const compactos = enModoRutas();
 
   lista.filter(tieneUbicacion).forEach(function (c) {
     const titulo = c.codigo + ": " + textoEstado(c.estado);
+    if (compactos) {
+      const punto = L.circleMarker(posicion(c), { radius: 5, color: "#ffffff", weight: 1.5, fillColor: COLORES[c.estado] || COLORES.retirado, fillOpacity: 1 })
+        .bindPopup(popupContenedor(c)).bindTooltip(titulo, { direction: "top" });
+      punto.addTo(capaContenedores);
+      marcadores[c.id_contenedor] = punto;
+      return;
+    }
     const marcador = L.marker(posicion(c), {
       icon: L.divIcon({
         className: "marca-contenedor estado-" + (COLORES[c.estado] ? c.estado : "retirado"),
@@ -199,6 +218,66 @@ function llenarSelector(nombre, opciones) {
   }).join(""));
 }
 
+// Las rutas de UNA zona (todas juntas son demasiado para un mapa): cada una con su color, su nombre y, en la lista de abajo, un enlace para armarla.
+async function dibujarRutas() {
+  const activa = PUEDE.rutas && formFiltros.elements.rutas && formFiltros.elements.rutas.checked;
+  const ayuda = document.getElementById("ayuda-rutas");
+  const lista = document.getElementById("lista-rutas-mapa");
+  capaRutas.clearLayers();
+  lista.innerHTML = "";
+  lista.classList.toggle("oculto", !activa);
+  document.getElementById("atribucion-rutas").classList.toggle("oculto", !activa);
+  if (!activa) {
+    ayuda.classList.add("oculto");
+    mapa.removeLayer(capaRutas);
+    return;
+  }
+  const zona = formFiltros.elements.zona.value;
+  if (zona === "") {
+    ayuda.textContent = "Elegí una zona (municipio) en el filtro para ver sus rutas.";
+    ayuda.classList.remove("oculto");
+    return;
+  }
+  ayuda.textContent = "Cargando las rutas…";
+  ayuda.classList.remove("oculto");
+  try {
+    if (!rutasPorZona[zona]) {
+      rutasPorZona[zona] = (await apiGet(API.recoleccion + "/rutas/mapa?id_zona=" + encodeURIComponent(zona))).datos || [];
+    }
+  } catch (error) {
+    ayuda.textContent = "No se pudieron cargar las rutas. " + mensajeDeFallo(error);
+    return;
+  }
+  if (formFiltros.elements.zona.value !== zona || !formFiltros.elements.rutas.checked) {
+    return;  // cambió el filtro mientras se cargaba
+  }
+  const rutas = rutasPorZona[zona];
+  const limites = [];
+  rutas.forEach(function (r, i) {
+    const color = PALETA_RUTAS[i % PALETA_RUTAS.length];
+    const km = r.distancia_m ? " · " + (r.distancia_m / 1000).toLocaleString("es-UY", { maximumFractionDigits: 1 }) + " km" : "";
+    let linea = null;
+    if (r.geojson) {
+      linea = L.geoJSON(r.geojson, { style: { color: color, weight: 4, opacity: 0.85 }, pane: "rutas" });
+    } else if (r.paradas && r.paradas.length > 1) {
+      linea = L.polyline(r.paradas, { color: color, weight: 3, opacity: 0.75, dashArray: "6 8", pane: "rutas" });
+    }
+    if (linea) {
+      linea.bindTooltip(r.nombre + km, { sticky: true }).bindPopup('<div class="popup-mapa"><strong>' + escaparHtml(r.nombre) + "</strong><span>" +
+        escaparHtml(r.dia_semana + " " + r.hora_inicio + " · " + r.cantidad + " contenedores" + km) + '</span><span class="popup-accion"><a href="ruta-armar.html?id=' + $entero(r.id_ruta) + '">Armar esta ruta</a></span></div>').addTo(capaRutas);
+      limites.push(linea.getBounds());
+    }
+    lista.insertAdjacentHTML("beforeend", '<li><span class="leyenda-linea" style="background:' + color + '" aria-hidden="true"></span><a href="ruta-armar.html?id=' + $entero(r.id_ruta) + '">' +
+      escaparHtml(r.nombre) + "</a> (" + r.cantidad + " contenedores" + km + (r.geojson ? "" : ", sin trazar: línea recta") + ")</li>");
+  });
+  capaRutas.addTo(mapa);
+  ayuda.classList.toggle("oculto", rutas.length > 0);
+  ayuda.textContent = rutas.length ? "" : "Esa zona todavía no tiene rutas activas.";
+  if (limites.length) {
+    mapa.fitBounds(limites.reduce(function (acum, b) { return acum.extend(b); }, L.latLngBounds(limites[0])), { padding: [30, 30], maxZoom: 15 });
+  }
+}
+
 function alternarCapa(capa, activa) {
   if (activa) {
     capa.addTo(mapa);
@@ -243,6 +322,9 @@ async function cargar() {
       avisoPaginaError("No se pudieron cargar los centros de acopio. " + mensajeDeFallo(respCentros.reason));
     }
   }
+  if (PUEDE.rutas) {
+    document.getElementById("capa-rutas").classList.remove("oculto");
+  }
   if (PUEDE.incidencias) {
     document.getElementById("capa-incidencias").classList.remove("oculto");
     document.getElementById("leyenda-incidencias").classList.remove("oculto");
@@ -264,8 +346,14 @@ formFiltros.addEventListener("change", function (evento) {
     alternarCapa(capaCentros, evento.target.checked);
   } else if (evento.target.name === "incidencias") {
     alternarCapa(capaIncidencias, evento.target.checked);
+  } else if (evento.target.name === "rutas") {
+    redibujar(false);
+    dibujarRutas();
   } else {
     redibujar(true);
+    if (evento.target.name === "zona") {
+      dibujarRutas();
+    }
   }
 });
 

@@ -79,6 +79,7 @@
       href: "rutas.html",
       texto: "Rutas",
       roles: ["Administrador"],
+      incluye: ["ruta-armar.html"],
       trazos: '<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M6 15.8V9a3 3 0 0 1 3-3h6.8"/>',
     },
     {
@@ -162,6 +163,12 @@
       href: "contenedor.html",
       texto: "Ficha del contenedor",
       roles: ["Administrador", "Cuadrilla"],
+      oculta: true,
+    },
+    {
+      href: "ruta-armar.html",
+      texto: "Armar ruta",
+      roles: ["Administrador"],
       oculta: true,
     },
   ];

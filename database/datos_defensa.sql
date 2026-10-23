@@ -2003,7 +2003,7 @@ UPDATE ruta SET trazado = '{"type":"LineString","coordinates":[[-56.230402,-34.8
 INSERT INTO recoleccion (id_recoleccion, fecha_hora_inicio, fecha_hora_fin, estado, observaciones, id_ruta, id_camion, id_cuadrilla, id_centro) VALUES
 (1, '2026-09-07 06:00:00', '2026-09-07 09:40:00', 'finalizada', 'Sin novedades', 1, 1, 1, 3),
 (2, '2026-09-07 06:30:00', '2026-09-07 10:15:00', 'finalizada', 'Demora por corte en 18 de Julio', 2, 4, 1, 3),
-(3, '2026-09-09 14:00:00', NULL, 'en_curso', NULL, 6, 2, 2, 1),
+(3, '2026-09-09 14:00:00', NULL, 'en_curso', NULL, 10, 2, 2, 1),
 (4, '2026-09-11 06:15:00', NULL, 'planificada', NULL, 3, 1, 1, 1),
 (5, '2026-09-04 22:00:00', NULL, 'cancelada', 'Camion fuera de servicio', 11, 5, 3, 2),
 (6, '2026-11-16 06:00:00', NULL, 'planificada', 'Planificada de demostracion', 1, 1, 1, 3),
@@ -2025,8 +2025,8 @@ INSERT INTO vaciado (id_recoleccion, id_contenedor, fecha_hora, peso_kg, volumen
 (1, 12, '2026-09-07 07:05:00', 180.00, 520.00),
 (2, 31, '2026-09-07 07:10:00', 340.75, 1080.00),
 (2, 32, '2026-09-07 08:20:00', 295.20, 950.00),
-(3, 3, '2026-09-09 14:35:00', 150.00, 480.00),
-(3, 111, '2026-09-09 15:10:00', 132.40, 410.00);
+(3, 187, '2026-09-09 14:35:00', 150.00, 480.00),
+(3, 188, '2026-09-09 15:10:00', 132.40, 410.00);
 
 
 -- --- 14 bis) Recepcion y stock de los centros (extras, parte 12) ---------------

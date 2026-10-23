@@ -65,7 +65,21 @@ switch ($recurso) {
         $controlador = new RutaController();
         Permisos::exigir("rutas", $metodo);
 
-        if ($metodo === "GET" && $id !== null) {
+        if (($partes[1] ?? "") === "mapa") {
+            if ($metodo === "GET" && $subrecurso === null) {
+                $controlador->mapa();
+            } else {
+                Response::error("Método no permitido", 405);
+            }
+        } elseif ($subrecurso === "contenedores" && $metodo === "PUT" && $id !== null) {
+            $controlador->reemplazarContenedores($id);
+        } elseif ($subrecurso === "candidatos" && $metodo === "GET" && $id !== null) {
+            $controlador->candidatos($id);
+        } elseif ($subrecurso === "trazado" && $metodo === "POST" && $id !== null) {
+            $controlador->trazar($id);
+        } elseif ($subrecurso !== null) {
+            Response::error("Método no permitido", 405);
+        } elseif ($metodo === "GET" && $id !== null) {
             $controlador->obtener($id);
         } elseif ($metodo === "GET") {
             $controlador->listar();
@@ -130,10 +144,11 @@ switch ($recurso) {
         Response::json([
             "ok"      => true,
             "mensaje" => "API de recolección SiGeRU funcionando",
+            "trazado" => Trazado::modo(),
             "endpoints" => [
                 "/camiones", "/camiones/{id}",
                 "/cuadrillas", "/cuadrillas/{id}",
-                "/rutas", "/rutas/{id}",
+                "/rutas", "/rutas/{id}", "/rutas/mapa", "/rutas/{id}/contenedores", "/rutas/{id}/candidatos", "/rutas/{id}/trazado",
                 "/recolecciones", "/recolecciones/{id}", "/recolecciones/{id}/inicio",
                 "/recolecciones/{id}/vaciados", "/recolecciones/{id}/fin", "/recolecciones/{id}/cancelacion",
                 "/estadisticas/recoleccion", "/proximo-pasaje",

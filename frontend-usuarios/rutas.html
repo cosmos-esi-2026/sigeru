@@ -25,7 +25,7 @@
     <header class="topbar">
       <div class="topbar-titulo">
         <h1>Rutas</h1>
-        <p class="bajada">Recorridos de recolección: día, hora y zona. Se planifican desde «Recolecciones».</p>
+        <p class="bajada">Recorridos de recolección: sus contenedores, día, hora y zona. Armá cada ruta sobre el mapa; se planifican desde «Recolecciones».</p>
       </div>
       <button class="boton boton-primario" id="btn-nuevo" data-bs-toggle="modal" data-bs-target="#modal-ruta">
         <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -68,6 +68,8 @@
                 <th role="columnheader" data-orden>Día</th>
                 <th role="columnheader" data-orden>Hora</th>
                 <th role="columnheader" data-orden>Zona</th>
+                <th role="columnheader" data-orden>Contenedores</th>
+                <th role="columnheader" data-orden>Trazado</th>
                 <th role="columnheader" data-orden>Estado</th>
                 <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
               </tr>
@@ -75,6 +77,8 @@
             <tbody id="cuerpo-tabla" role="rowgroup">
               <tr class="fila-esqueleto" aria-hidden="true">
                 <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
