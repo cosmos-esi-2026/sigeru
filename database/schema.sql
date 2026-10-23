@@ -412,7 +412,7 @@ CREATE TABLE vaciado (
 CREATE TABLE incidencia (
     id_incidencia    INT AUTO_INCREMENT PRIMARY KEY,
     descripcion      VARCHAR(500) NOT NULL,
-    tipo_problema    ENUM('desbordado','roto','residuo_no_permitido',
+    tipo_problema    ENUM('desbordado','lleno','roto','residuo_no_permitido',
                           'ausente_o_mal_ubicado','otro')
                          NOT NULL DEFAULT 'otro',
     fecha_reporte    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -423,6 +423,8 @@ CREATE TABLE incidencia (
     id_usuario       INT NOT NULL,
     id_contenedor    INT NOT NULL,
     id_cuadrilla     INT NULL,
+    derivada_en      DATETIME NULL,
+    derivada_nota    VARCHAR(200) NULL,
     CONSTRAINT fk_incidencia_usuario
         FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
     CONSTRAINT fk_incidencia_contenedor
@@ -521,7 +523,8 @@ INSERT INTO migracion (nombre) VALUES
     ('014-zona-del-vecino.sql'),
     ('015-factor-ambiental.sql'),
     ('016-clave-idempotencia.sql'),
-    ('017-rutas-con-contenedores.sql');
+    ('017-rutas-con-contenedores.sql'),
+    ('018-incidencias-lleno-y-mantenimiento.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.

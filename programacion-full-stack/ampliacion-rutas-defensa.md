@@ -82,3 +82,20 @@ simuladas (incluidos todos los fallos), la forma del pedido de paradas, y por HT
 - Cargar la defensa: `herramientas/xampp/restaurar-base-defensa.cmd` (hace una copia de la base en `respaldo-bd/` antes). Para las pruebas automáticas, `restaurar-base-demo.cmd` (el seed chico).
 - En `sigeru-srv`: aplicar la migración 017 (`php database/migrar.php`) y cargar el seed de defensa si se quiere; el trazado necesita que el servidor salga a internet (si no, cae a línea recta, y los 40 trazados del seed ya están guardados).
 - **No verificado:** el comportamiento con muchos administradores guardando rutas a la vez contra los servicios públicos (el límite es un pedido por segundo por servidor); el trazado desde el servidor `sigeru-srv`.
+
+
+## 9. Asignación de rutas a cuadrillas (bloque 6, 23/10/2026)
+
+El administrador asigna rutas a cuadrillas desde **Asignación** (`asignacion.html`): elige el día y ve las rutas ordenadas por prioridad (la prioridad de una ruta sale de sus contenedores: desbordado = alta,
+lleno = media, y los rotos o en mantenimiento no cuentan porque no se recolectan), con una **sugerencia** de cuadrilla y camión (clase pura `Asignacion::sugerir`, solo lee). Confirmar crea las recolecciones **todas
+o ninguna** (`POST /recolecciones/lote`). Una cuadrilla o un camión no puede tener dos recolecciones el mismo día. La cuadrilla ve **solo sus rutas** en el mapa («Mis rutas») y en el detalle de su recolección
+(`recorrido`), y en el servidor solo ve los contenedores de esas rutas (`DE_LA_CUADRILLA`); desde ahí registra el vaciado con un botón por parada. El vaciado solo acepta contenedores de la ruta de la recolección.
+Matriz de permisos: sección 23 de `ciberseguridad/ampliacion-matriz-de-permisos-3ra.md`.
+
+## 10. Incidencias con prioridad y mantenimiento (bloque 7, 23/10/2026; migración 018)
+
+- Tipo nuevo **«lleno»** (el contenedor está lleno pero todavía no desborda). Prioridad por defecto según el tipo (`FlujoIncidencia::PRIORIDAD_POR_TIPO`): desbordado alta, lleno media, roto media, el resto baja. **SIN Fornos:** los valores salen de lo que dijo el profe (desbordado más urgente que lleno); el administrador la puede cambiar.
+- **Lo roto no se recolecta:** no se asigna a una cuadrilla; el administrador lo **deriva a mantenimiento** (`POST /incidencias/{id}/derivacion`, con una nota de a quién se llamó). El contenedor queda en «mantenimiento» y sale de las rutas; al resolverse vuelve a «disponible». La derivación se guarda en `incidencia.derivada_en`/`derivada_nota` y en el historial de solo agregado. Los administradores reciben un aviso cuando se informa uno roto.
+- La **cuadrilla también informa** en terreno, solo sobre los contenedores de sus rutas.
+- Pantallas: «Informar un problema» con la tarjeta «Contenedor lleno» (y el menú también para la Cuadrilla) y, en el detalle de la incidencia, el formulario «Derivar a mantenimiento» para el administrador.
+- Datos de demostración (`datos_defensa.sql`): INC-0001 desbordado alta, INC-0004 lleno media, INC-0003 roto ya derivada (CNT-005 en mantenimiento). Pruebas: `unitarias-incidencias.php` y `correr-tests-incidencias-mant.php`.

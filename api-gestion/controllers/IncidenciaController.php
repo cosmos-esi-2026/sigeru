@@ -42,6 +42,10 @@ class IncidenciaController
 
         $this->ejecutar(function () use ($datos, $usuario) {
             $nueva = Incidencia::crear($datos, $usuario);
+            if (FlujoIncidencia::esDeMantenimiento($nueva["tipo_problema"])) {
+                [$titulo, $mensaje] = Notificador::contenedorRoto($nueva["numero"], (string) ($nueva["direccion"] ?? ""));
+                Notificador::avisarA(Notificador::administradores(), "contenedor_roto", $titulo, $mensaje, "incidencia.html?id=" . (int) $nueva["id_incidencia"]);
+            }
             if (($nueva["prioridad"] ?? "") === "alta") {
                 [$titulo, $mensaje] = Notificador::incidenciaCritica($nueva["numero"], (string) ($nueva["direccion"] ?? ""));
                 Notificador::avisarA(Notificador::administradores(), "incidencia_critica", $titulo, $mensaje, "incidencia.html?id=" . (int) $nueva["id_incidencia"]);
@@ -77,6 +81,24 @@ class IncidenciaController
                 $this->avisarAlVecino($id, (int) $antes["id_usuario"], "en_curso");
             }
             Response::json(["ok" => true, "mensaje" => "Incidencia asignada", "datos" => $incidencia]);
+        });
+    }
+
+    // POST /incidencias/{id}/derivacion {"nota": "..."}: un contenedor roto o dañado pasa a mantenimiento. Solo el administrador.
+    public function derivar(int $id, array $usuario): void
+    {
+        $datos = Response::leerJson();
+        $nota = FlujoIncidencia::limpiar($datos["nota"] ?? null);
+        if (mb_strlen($nota) > 200) {
+            Response::error("La nota no puede pasar de 200 caracteres", 400);
+        }
+        $this->ejecutar(function () use ($id, $nota, $usuario) {
+            $antes = Incidencia::obtener($id);
+            $incidencia = Incidencia::derivar($id, $nota, $usuario);
+            if ($antes !== null) {
+                $this->avisarAlVecino($id, (int) $antes["id_usuario"], "derivada");
+            }
+            Response::json(["ok" => true, "mensaje" => "Derivada a mantenimiento", "datos" => $incidencia]);
         });
     }
 

@@ -58,7 +58,7 @@
     {
       href: "informar-problema.html",
       texto: "Informar un problema",
-      roles: ["Vecino"],
+      roles: ["Vecino", "Cuadrilla"],
       trazos: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
     },
     {

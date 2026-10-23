@@ -34,6 +34,7 @@ $subrecursos = [
     "/api-gestion/incidencias/99999/avance"     => [["observacion" => "x"], ["Cuadrilla"]],
     "/api-gestion/incidencias/99999/resolucion" => [["observacion" => "x"], ["Administrador", "Cuadrilla"]],
     "/api-gestion/incidencias/99999/descarte"   => [["observacion" => "x"], ["Administrador"]],
+    "/api-gestion/incidencias/99999/derivacion" => [["nota" => "x"], ["Administrador"]],
 ];
 foreach ($subrecursos as $ruta => [$cuerpoPeticion, $rolesConAcceso]) {
     $esperados = [];
@@ -48,10 +49,10 @@ foreach ($subrecursos as $ruta => [$cuerpoPeticion, $rolesConAcceso]) {
 $esperados = [];
 $obtenidos = [];
 foreach ($sesiones as $rol => $cookies) {
-    $esperados[$rol] = $cookies === null ? 401 : ($rol === "Vecino" ? 400 : 403);
+    $esperados[$rol] = $cookies === null ? 401 : (in_array($rol, ["Vecino", "Cuadrilla"], true) ? 400 : 403);
     [$obtenidos[$rol]] = peticion("POST", "/api-gestion/incidencias", ["nada" => 1], $cookies);
 }
-afirmar("POST /incidencias solo lo puede hacer un vecino (con un cuerpo vacio llega a la validacion: 400)", $esperados, $obtenidos);
+afirmar("POST /incidencias lo pueden hacer un vecino y una cuadrilla en terreno (con un cuerpo vacio llega a la validacion: 400)", $esperados, $obtenidos);
 
 $esperados = [];
 $obtenidos = [];
@@ -114,7 +115,7 @@ $idInc = $inc["id_incidencia"] ?? 0;
 $numero = sprintf("INC-%04d", $idInc);
 afirmar("Se le informa el numero de incidencia (RF-220)", $numero, $inc["numero"] ?? null);
 afirmar("El mensaje tambien lo dice", "Incidencia $numero registrada", $cuerpo["mensaje"] ?? null);
-afirmar("Nace abierta, con prioridad media y el tipo informado (RF-219)", ["abierta", "media", "desbordado"],
+afirmar("Nace abierta, con prioridad alta (el desborde es lo mas urgente) y el tipo informado (RF-219)", ["abierta", "alta", "desbordado"],
     [$inc["estado"] ?? null, $inc["prioridad"] ?? null, $inc["tipo_problema"] ?? null]);
 afirmar("Nace con su primer asiento, hecho por el vecino (RNF-017)", [["abierta", "Vecino"]],
     array_map(fn ($a) => [$a["estado"], $a["rol"]], $inc["historial"] ?? []));
@@ -193,11 +194,11 @@ afirmar("El administrador no registra avances, es trabajo de la cuadrilla: 403",
 
 [$codigo] = peticion("PUT", "/api-gestion/incidencias/$idInc", ["prioridad" => "urgente"], $admin);
 afirmar("Una prioridad inventada: 400", 400, $codigo);
-[$codigo, $cuerpo] = peticion("PUT", "/api-gestion/incidencias/$idInc", ["prioridad" => "alta"], $admin);
-afirmar("El administrador cambia la prioridad (RF-225)", ["alta", "abierta"], [$cuerpo["datos"]["prioridad"] ?? null, $cuerpo["datos"]["estado"] ?? null]);
+[$codigo, $cuerpo] = peticion("PUT", "/api-gestion/incidencias/$idInc", ["prioridad" => "media"], $admin);
+afirmar("El administrador cambia la prioridad (RF-225)", ["media", "abierta"], [$cuerpo["datos"]["prioridad"] ?? null, $cuerpo["datos"]["estado"] ?? null]);
 $antes = count(asientos("/api-gestion/incidencias/$idInc", $admin));
-afirmar("Y el cambio queda en el historial", "Prioridad de media a alta", ultimoAsiento($cuerpo)["observacion"] ?? null);
-peticion("PUT", "/api-gestion/incidencias/$idInc", ["prioridad" => "alta"], $admin);
+afirmar("Y el cambio queda en el historial", "Prioridad de alta a media", ultimoAsiento($cuerpo)["observacion"] ?? null);
+peticion("PUT", "/api-gestion/incidencias/$idInc", ["prioridad" => "media"], $admin);
 afirmar("Pedir la misma prioridad no agrega otro asiento", $antes, count(asientos("/api-gestion/incidencias/$idInc", $admin)));
 
 [$codigo] = peticion("POST", "/api-gestion/incidencias/$idInc/asignacion", [], $admin);
@@ -229,7 +230,7 @@ afirmar("Y se distingue la ocupada (en una recoleccion) de la inactiva", [1 => f
 afirmar("Asignar a una cuadrilla disponible: 200", 200, $codigo);
 afirmar("La incidencia pasa a en curso, con esa cuadrilla (RF-226, RF-227)", ["en_curso", 1, "Cuadrilla Norte"],
     [$cuerpo["datos"]["estado"] ?? null, $cuerpo["datos"]["id_cuadrilla"] ?? null, $cuerpo["datos"]["cuadrilla"] ?? null]);
-afirmar("Y la prioridad que ya tenia se conserva", "alta", $cuerpo["datos"]["prioridad"] ?? null);
+afirmar("Y la prioridad que ya tenia se conserva", "media", $cuerpo["datos"]["prioridad"] ?? null);
 afirmar("El asiento dice a quien se asigno y quien lo hizo", ["Asignada a la Cuadrilla Norte", "Administrador"],
     [ultimoAsiento($cuerpo)["observacion"] ?? null, ultimoAsiento($cuerpo)["rol"] ?? null]);
 [$codigo] = peticion("POST", "/api-gestion/incidencias/$idInc/asignacion", ["id_cuadrilla" => 1], $admin);
@@ -238,7 +239,7 @@ afirmar("Asignarla otra vez a la misma cuadrilla: 409", 409, $codigo);
 [$codigo, $cuerpo] = peticion("POST", "/api-gestion/incidencias/$idInc/asignacion", ["id_cuadrilla" => 3, "prioridad" => "baja"], $admin);
 afirmar("Reasignar a otra cuadrilla disponible, cambiando la prioridad: 200", 200, $codigo);
 afirmar("El asiento cuenta de donde a donde y el cambio de prioridad",
-    "Reasignada de la Cuadrilla Norte a la Cuadrilla Centro. Prioridad de alta a baja", ultimoAsiento($cuerpo)["observacion"] ?? null);
+    "Reasignada de la Cuadrilla Norte a la Cuadrilla Centro. Prioridad de media a baja", ultimoAsiento($cuerpo)["observacion"] ?? null);
 [$codigo, $cuerpo] = peticion("POST", "/api-gestion/incidencias/$idInc/asignacion", ["id_cuadrilla" => 1, "prioridad" => "alta"], $admin);
 afirmar("Y vuelve a la Norte para seguir con el recorrido", [200, "alta", 1], [$codigo, $cuerpo["datos"]["prioridad"] ?? null, $cuerpo["datos"]["id_cuadrilla"] ?? null]);
 

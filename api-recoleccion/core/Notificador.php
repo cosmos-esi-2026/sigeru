@@ -21,6 +21,7 @@ class Notificador
             "en_curso"   => ["Tu reclamo $numero está en curso", "Una cuadrilla ya está atendiendo tu reclamo $numero."],
             "resuelta"   => ["Tu reclamo $numero fue resuelto", "Tu reclamo $numero se resolvió. Gracias por avisar: si el problema sigue, informalo de nuevo."],
             "descartada" => ["Tu reclamo $numero fue descartado", "Revisamos tu reclamo $numero y se descartó (por ejemplo, porque estaba repetido). El detalle está en «Mis reclamos»."],
+            "derivada"   => ["Tu reclamo $numero pasó a mantenimiento", "El contenedor de tu reclamo $numero está roto o dañado: no lo recolecta el camión, lo atiende mantenimiento. Te avisamos cuando se resuelva."],
             default      => ["Tu reclamo $numero cambió", "Tu reclamo $numero cambió de estado."],
         };
     }
@@ -38,6 +39,11 @@ class Notificador
     public static function incidenciaCritica(string $numero, string $direccion): array
     {
         return ["Incidencia crítica: $numero", "Entró una incidencia de prioridad alta ($numero) en " . $direccion . "."];
+    }
+
+    public static function contenedorRoto(string $numero, string $direccion): array
+    {
+        return ["Contenedor dañado: $numero", "Se informó un contenedor roto o dañado ($numero) en " . $direccion . ". No lo recolecta el camión: derivalo a mantenimiento."];
     }
 
     public static function centroLleno(string $nombre, float $ocupacion, string $nivel): array

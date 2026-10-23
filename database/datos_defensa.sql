@@ -2077,10 +2077,12 @@ INSERT INTO historial_maquinaria (id_maquinaria, fecha_hora, estado, observacion
 INSERT INTO incidencia (descripcion, tipo_problema, fecha_reporte, fecha_resolucion, estado, prioridad, id_usuario, id_contenedor, id_cuadrilla) VALUES
 ('El contenedor esta desbordado y hay bolsas en la vereda', 'desbordado', '2026-09-08 19:30:00', NULL,                  'abierta',    'alta',  3, 2,  NULL),
 ('La tapa no cierra y entran perros',                       'roto',       '2026-08-30 10:05:00', '2026-09-01 11:00:00', 'resuelta',   'media', 3, 5,  1),
-('Contenedor quemado durante la noche',                     'roto',       '2026-09-06 08:15:00', NULL,                  'en_curso',   'alta',  6, 7,  2),
-('Olor muy fuerte, parece que no se levanta hace dias',     'otro',       '2026-09-09 09:40:00', NULL,                  'abierta',    'media', 3, 7,  NULL),
+('Contenedor quemado durante la noche',                     'roto',       '2026-09-06 08:15:00', NULL,                  'abierta',    'media', 6, 5,  NULL),
+('Esta lleno hace dias, parece que no se levanta',          'lleno',      '2026-09-09 09:40:00', NULL,                  'abierta',    'media', 3, 7,  NULL),
 ('Reporte duplicado del mismo vecino',                      'otro',       '2026-09-02 12:00:00', '2026-09-02 12:30:00', 'descartada', 'baja',  6, 1,  NULL);
 
+
+UPDATE incidencia SET derivada_en = '2026-09-06 12:00:00', derivada_nota = 'Se llamo a Mantenimiento de la Intendencia (dato de demostracion)' WHERE id_incidencia = 3;
 
 -- --- 15 ter) Calificacion y puntos (extras, parte 14) ----------------------------
 -- DATOS DE DEMOSTRACION: la unica incidencia resuelta del seed (INC-0002) ya esta calificada, y de ahi salen
@@ -2101,7 +2103,7 @@ INSERT INTO historial_incidencia (id_incidencia, fecha_hora, estado, observacion
 (2, '2026-08-31 15:00:00', 'en_curso',   'Se pidio una tapa de repuesto al deposito',          2),
 (2, '2026-09-01 11:00:00', 'resuelta',   'Tapa reemplazada',                                   2),
 (3, '2026-09-06 08:15:00', 'abierta',    'Incidencia registrada',                              6),
-(3, '2026-09-06 09:00:00', 'en_curso',   'Asignada a Cuadrilla Municipio B',                           1),
+(3, '2026-09-06 12:00:00', 'abierta',    'Derivada a mantenimiento: Se llamo a Mantenimiento de la Intendencia (dato de demostracion)', 1),
 (4, '2026-09-09 09:40:00', 'abierta',    'Incidencia registrada',                              3),
 (5, '2026-09-02 12:00:00', 'abierta',    'Incidencia registrada',                              6),
 (5, '2026-09-02 12:30:00', 'descartada', 'Reporte duplicado del mismo vecino',                 1);

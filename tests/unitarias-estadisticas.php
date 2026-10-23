@@ -63,7 +63,7 @@ afirmar(
 afirmar("Por prioridad", ["baja" => 2, "media" => 2, "alta" => 2], $informe["por_prioridad"]);
 afirmar(
     "Por tipo, de mayor a menor",
-    [["desbordado", 3], ["otro", 2], ["roto", 1], ["residuo_no_permitido", 0], ["ausente_o_mal_ubicado", 0]],
+    [["desbordado", 3], ["otro", 2], ["roto", 1], ["lleno", 0], ["residuo_no_permitido", 0], ["ausente_o_mal_ubicado", 0]],
     array_map(fn ($t) => [$t["tipo_problema"], $t["total"]], $informe["por_tipo"])
 );
 afirmar(

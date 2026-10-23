@@ -30,6 +30,7 @@ const ETIQUETAS_INCIDENCIA = {
   },
   tipo: {
     desbordado:            "Contenedor desbordado",
+    lleno:                 "Contenedor lleno",
     roto:                  "Contenedor roto o dañado",
     residuo_no_permitido:  "Residuo no permitido",
     ausente_o_mal_ubicado: "Contenedor ausente o mal ubicado",

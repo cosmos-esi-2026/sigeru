@@ -12,7 +12,7 @@ class Incidencia
 {
     private const CAMPOS = "i.id_incidencia, i.descripcion, i.tipo_problema, i.estado, i.prioridad,
                             i.fecha_reporte, i.fecha_resolucion, i.id_usuario, i.id_contenedor,
-                            i.id_cuadrilla, c.codigo AS contenedor, c.direccion,
+                            i.id_cuadrilla, i.derivada_en, i.derivada_nota, c.codigo AS contenedor, c.direccion,
                             c.estado AS estado_contenedor, c.id_zona, z.nombre AS zona,
                             q.nombre AS cuadrilla, CONCAT(u.nombre, ' ', u.apellido) AS reportada_por";
 
@@ -38,8 +38,9 @@ class Incidencia
         $valores = [];
 
         if ($usuario["rol"] === "Cuadrilla") {
-            $donde[] = "i.id_cuadrilla = :alcance";
+            $donde[] = "(i.id_cuadrilla = :alcance OR i.id_usuario = :propias)";
             $valores[":alcance"] = $usuario["id_cuadrilla"] ?? 0;
+            $valores[":propias"] = $usuario["id_usuario"];
         } elseif ($usuario["rol"] === "Vecino") {
             $donde[] = "i.id_usuario = :alcance";
             $valores[":alcance"] = $usuario["id_usuario"];
@@ -129,6 +130,8 @@ class Incidencia
         }
         $fila["id_cuadrilla"] = $fila["id_cuadrilla"] === null ? null : (int) $fila["id_cuadrilla"];
         $fila["numero"] = FlujoIncidencia::numero($fila["id_incidencia"]);
+        $fila["derivada"] = $fila["derivada_en"] !== null;
+        $fila["de_mantenimiento"] = FlujoIncidencia::esDeMantenimiento($fila["tipo_problema"]);
 
         if ($usuario["rol"] !== "Administrador") {
             unset($fila["reportada_por"], $fila["id_usuario"]);
@@ -185,6 +188,10 @@ class Incidencia
             if ($contenedor["estado"] === "retirado") {
                 throw new ErrorDeNegocio("El contenedor " . $contenedor["codigo"] . " está retirado y ya no admite reportes", 409);
             }
+            // Una cuadrilla informa sobre los contenedores que ve (los de sus rutas asignadas), no sobre cualquiera.
+            if (($usuario["rol"] ?? "") === "Cuadrilla" && Contenedor::obtener((int) $contenedor["id_contenedor"], (int) ($usuario["id_cuadrilla"] ?? 0)) === null) {
+                throw new ErrorDeNegocio("El contenedor indicado no existe", 404);
+            }
 
             $repetida = $conexion->prepare(
                 "SELECT id_incidencia FROM incidencia
@@ -210,7 +217,7 @@ class Incidencia
             $alta->execute([
                 ":descripcion" => FlujoIncidencia::limpiar($datos["descripcion"]),
                 ":tipo"        => $datos["tipo_problema"],
-                ":prioridad"   => $datos["prioridad"] ?? "media",
+                ":prioridad"   => $datos["prioridad"] ?? FlujoIncidencia::prioridadDeTipo($datos["tipo_problema"]),
                 ":usuario"     => $usuario["id_usuario"],
                 ":contenedor"  => $contenedor["id_contenedor"],
             ]);
@@ -236,6 +243,9 @@ class Incidencia
     {
         Database::transaccion(function (PDO $conexion) use ($id, $idCuadrilla, $prioridad, $usuario) {
             $incidencia = self::preparar($conexion, $id, $usuario, "asignar");
+            if (FlujoIncidencia::esDeMantenimiento($incidencia["tipo_problema"])) {
+                throw new ErrorDeNegocio("Un contenedor roto o dañado no lo recolecta una cuadrilla: derivalo a mantenimiento", 409);
+            }
 
             $cuadrilla = Cuadrilla::obtener($idCuadrilla);
             if ($cuadrilla === null) {
@@ -266,6 +276,29 @@ class Incidencia
             $cambio->execute([":cuadrilla" => $idCuadrilla, ":prioridad" => $nuevaPrioridad, ":id" => $id]);
 
             self::asentar($conexion, $id, "en_curso", $observacion, $usuario);
+        });
+
+        return self::detalle($id, $usuario);
+    }
+
+    // El administrador pasa un contenedor roto o danado a mantenimiento (llama a «otra gente»): queda anotado cuando y a quien se llamo, el contenedor pasa a
+    // «mantenimiento» (sale de las rutas como «no se recolecta») y al resolver la incidencia vuelve a «disponible».
+    public static function derivar(int $id, string $nota, array $usuario): array
+    {
+        Database::transaccion(function (PDO $conexion) use ($id, $nota, $usuario) {
+            $incidencia = self::preparar($conexion, $id, $usuario, "derivar");
+            if (!FlujoIncidencia::esDeMantenimiento($incidencia["tipo_problema"])) {
+                throw new ErrorDeNegocio("Solo se derivan a mantenimiento los contenedores rotos o dañados", 409);
+            }
+            if ($incidencia["derivada_en"] !== null) {
+                throw new ErrorDeNegocio("La incidencia ya fue derivada a mantenimiento", 409);
+            }
+            $conexion->prepare("UPDATE incidencia SET derivada_en = NOW(), derivada_nota = :nota WHERE id_incidencia = :id")
+                ->execute([":nota" => $nota === "" ? null : $nota, ":id" => $id]);
+            self::asentar($conexion, $id, $incidencia["estado"], "Derivada a mantenimiento" . ($nota !== "" ? ": " . $nota : ""), $usuario);
+            if (!in_array($incidencia["estado_contenedor"], ["mantenimiento", "retirado"], true)) {
+                Contenedor::cambiarEstado((int) $incidencia["id_contenedor"], "mantenimiento", FlujoIncidencia::numero($id) . " derivada a mantenimiento");
+            }
         });
 
         return self::detalle($id, $usuario);

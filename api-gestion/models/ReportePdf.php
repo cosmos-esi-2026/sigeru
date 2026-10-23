@@ -11,7 +11,7 @@ class ReportePdf
 
     private const ESTADO = ["abierta" => "Abierta", "en_curso" => "En curso", "resuelta" => "Resuelta", "descartada" => "Descartada"];
     private const PRIORIDAD = ["alta" => "Alta", "media" => "Media", "baja" => "Baja"];
-    private const TIPO = ["desbordado" => "Contenedor desbordado", "roto" => "Contenedor roto o dañado", "residuo_no_permitido" => "Residuo no permitido",
+    private const TIPO = ["desbordado" => "Contenedor desbordado", "lleno" => "Contenedor lleno", "roto" => "Contenedor roto o dañado", "residuo_no_permitido" => "Residuo no permitido",
                           "ausente_o_mal_ubicado" => "Contenedor ausente o mal ubicado", "otro" => "Otro"];
 
     // Como Intl.NumberFormat("es-UY"): punto de miles y coma decimal, sin ceros de mas.

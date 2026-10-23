@@ -4,7 +4,25 @@ class FlujoIncidencia
 {
     public const ESTADOS = ["abierta", "en_curso", "resuelta", "descartada"];
     public const PRIORIDADES = ["baja", "media", "alta"];
-    public const TIPOS = ["desbordado", "roto", "residuo_no_permitido", "ausente_o_mal_ubicado", "otro"];
+    public const TIPOS = ["desbordado", "lleno", "roto", "residuo_no_permitido", "ausente_o_mal_ubicado", "otro"];
+
+    // Prioridad con la que entra cada tipo si quien reporta no la elige (decision SIN Fornos, a partir de lo que dijo el profe: «lleno» es media y «desbordado» es mas
+    // urgente; un contenedor roto lo atiende mantenimiento). El administrador la puede cambiar despues.
+    public const PRIORIDAD_POR_TIPO = [
+        "desbordado" => "alta", "lleno" => "media", "roto" => "media",
+        "ausente_o_mal_ubicado" => "media", "residuo_no_permitido" => "baja", "otro" => "baja",
+    ];
+
+    public static function prioridadDeTipo(string $tipo): string
+    {
+        return self::PRIORIDAD_POR_TIPO[$tipo] ?? "media";
+    }
+
+    // Un contenedor roto o danado no lo recolecta el camion: no se asigna a una cuadrilla, lo deriva el administrador a mantenimiento.
+    public static function esDeMantenimiento(string $tipo): bool
+    {
+        return $tipo === "roto";
+    }
 
     private const ESTADOS_ABIERTOS = ["abierta", "en_curso"];
 
@@ -14,6 +32,7 @@ class FlujoIncidencia
         "avance"    => ["en_curso"],
         "resolver"  => ["abierta", "en_curso"],
         "descartar" => ["abierta", "en_curso"],
+        "derivar"   => ["abierta", "en_curso"],
     ];
 
     private const ESTADO_RESULTANTE = [
@@ -56,8 +75,10 @@ class FlujoIncidencia
     {
         return match ($usuario["rol"] ?? "") {
             "Administrador" => true,
-            "Cuadrilla"     => ($usuario["id_cuadrilla"] ?? null) !== null
-                               && (int) $usuario["id_cuadrilla"] === (int) ($incidencia["id_cuadrilla"] ?? 0),
+            // La cuadrilla ve las que se le asignaron y las que ella misma informo (todos pueden reportar: vecinos y cuadrillas).
+            "Cuadrilla"     => (($usuario["id_cuadrilla"] ?? null) !== null
+                               && (int) $usuario["id_cuadrilla"] === (int) ($incidencia["id_cuadrilla"] ?? 0))
+                               || (int) ($usuario["id_usuario"] ?? 0) === (int) ($incidencia["id_usuario"] ?? -1),
             "Vecino"        => (int) ($usuario["id_usuario"] ?? 0) === (int) ($incidencia["id_usuario"] ?? -1),
             default         => false,
         };
@@ -82,7 +103,7 @@ class FlujoIncidencia
 
     public static function estadoContenedorTrasReporte(string $tipo, string $estadoContenedor): ?string
     {
-        return $tipo === "desbordado" && $estadoContenedor === "disponible" ? "lleno" : null;
+        return in_array($tipo, ["desbordado", "lleno"], true) && $estadoContenedor === "disponible" ? "lleno" : null;
     }
 
     public static function estadoContenedorTrasCierre(string $estadoContenedor, int $otrasAbiertas): ?string

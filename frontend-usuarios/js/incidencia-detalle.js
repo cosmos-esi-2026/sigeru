@@ -44,7 +44,10 @@ function dibujarDatos(i) {
     filaFicha("Registrada", escaparHtml(fechaLegible(i.fecha_reporte))) +
     (i.fecha_resolucion ? filaFicha("Cerrada", escaparHtml(fechaLegible(i.fecha_resolucion))) : "") +
     (i.reportada_por ? filaFicha("Informada por", escaparHtml(i.reportada_por)) : "") +
+    (i.derivada ? filaFicha("Mantenimiento", escaparHtml("Derivada el " + fechaLegible(i.derivada_en) + (i.derivada_nota ? ": " + i.derivada_nota : ""))) : "") +
     "</dl>" +
+    (i.de_mantenimiento && !i.derivada && (i.estado === "abierta" || i.estado === "en_curso")
+      ? '<p class="ayuda">Un contenedor roto o dañado no lo recolecta el camión: el administrador tiene que derivarlo a mantenimiento.</p>' : "") +
     '<h3 class="subtitulo-panel">Descripción</h3>' +
     '<p class="texto-largo">' + escaparHtml(i.descripcion) + "</p>" +
     (i.tiene_foto
@@ -79,6 +82,23 @@ function opcionesPrioridad(actual) {
 
 function accionesDelAdministrador(i) {
   const conCuadrilla = Boolean(i.id_cuadrilla);
+  // Roto o dañado: no se asigna a una cuadrilla, se deriva a mantenimiento (otra gente) y se cierra cuando lo arreglan.
+  if (i.de_mantenimiento) {
+    const derivar = i.derivada
+      ? '<p class="ayuda">Derivada a mantenimiento el ' + escaparHtml(fechaLegible(i.derivada_en)) + (i.derivada_nota ? ": " + escaparHtml(i.derivada_nota) : "") +
+        ". Cuando lo arreglen, cerrala como resuelta: el contenedor vuelve a estar disponible.</p>"
+      : formAccion("derivacion", "Derivar a mantenimiento",
+          '<p class="ayuda-campo">Un contenedor roto o dañado no lo recolecta el camión: avisá a mantenimiento y anotá a quién llamaste.</p>' +
+          campoObservacion("observacion", "A quién se llamó (opcional)", false, "Por ejemplo: Mantenimiento de la Intendencia, reclamo 1234"),
+          "Derivar a mantenimiento", "boton-primario", true);
+    const prioridadM = formAccion("prioridad", "Cambiar la prioridad",
+      '<label>Nueva prioridad<select name="prioridad">' + opcionesPrioridad(i.prioridad) + "</select></label>", "Cambiar la prioridad", "boton-secundario", false);
+    const resolverM = formAccion("resolucion", "Cerrar como resuelta", campoObservacion("observacion", "Qué se hizo", false, "Opcional"),
+      "Marcar como resuelta", i.derivada ? "boton-primario" : "boton-secundario", Boolean(i.derivada));
+    const descartarM = formAccion("descarte", "Descartar", campoObservacion("observacion", "Motivo", true, "Por ejemplo: reporte duplicado o problema inexistente"),
+      "Descartar la incidencia", "boton-peligro", false);
+    return derivar + resolverM + prioridadM + descartarM;
+  }
   const asignar = formAccion("asignacion", conCuadrilla ? "Reasignar la cuadrilla" : "Asignar una cuadrilla",
     '<label>Cuadrilla disponible *<select name="id_cuadrilla" required disabled>' +
     '<option value="">Cargando cuadrillas...</option></select></label>' +
@@ -127,7 +147,7 @@ function dibujarAcciones(i) {
   zonaAcciones.innerHTML = html;
   zonaAcciones.querySelectorAll("form").forEach(activarValidacion);
 
-  if (abierta && rol === "Administrador") {
+  if (abierta && rol === "Administrador" && document.getElementById("form-asignacion")) {
     cargarCuadrillas(i);
   }
 }
@@ -235,6 +255,12 @@ async function cargarIncidencia() {
 }
 
 const CONFIRMACIONES = {
+  derivacion: {
+    titulo: "Derivar a mantenimiento",
+    mensaje: "El contenedor pasa a «en mantenimiento» y sale de las rutas como «no se recolecta». Cuando resuelvas la incidencia vuelve a estar disponible. Se le avisa a quien la informó.",
+    textoBoton: "Derivar",
+    peligro: false,
+  },
   resolucion: {
     titulo: "Marcar como resuelta",
     mensaje: "La incidencia se cierra y ya no admite cambios. Si el contenedor estaba lleno o en mantenimiento por esto, vuelve a disponible.",
@@ -254,6 +280,9 @@ function pedidoDe(accion, form) {
   }
   if (accion === "asignacion") {
     return { enviar: apiPost, url: base + "/asignacion", datos: { id_cuadrilla: parseInt(form.elements.id_cuadrilla.value, 10) } };
+  }
+  if (accion === "derivacion") {
+    return { enviar: apiPost, url: base + "/derivacion", datos: { nota: form.elements.observacion.value.trim() } };
   }
   return { enviar: apiPost, url: base + "/" + accion, datos: { observacion: form.elements.observacion.value.trim() } };
 }

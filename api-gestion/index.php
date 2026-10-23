@@ -166,6 +166,8 @@ switch ($recurso) {
             $controlador->cambiarPrioridad($id, $usuario);
         } elseif ($subrecurso === "asignacion" && $metodo === "POST" && $id !== null) {
             $controlador->asignar($id, $usuario);
+        } elseif ($subrecurso === "derivacion" && $metodo === "POST" && $id !== null) {
+            $controlador->derivar($id, $usuario);
         } elseif ($subrecurso === "avance" && $metodo === "POST" && $id !== null) {
             $controlador->registrarAvance($id, $usuario);
         } elseif ($subrecurso === "resolucion" && $metodo === "POST" && $id !== null) {

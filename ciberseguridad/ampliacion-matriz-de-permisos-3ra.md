@@ -313,3 +313,15 @@ La tabla `clave_idempotencia` es de soporte (como `auditoria`): no entra en la h
 
 Cubierto por `unitarias-rutas.php`, `unitarias-paradas.php`, `unitarias-trazado.php`, `unitarias-asignacion.php` y las HTTP `correr-tests-rutas*.php` y `correr-tests-asignacion.php`.
 El servicio externo de rutas (Valhalla/OSRM de FOSSGIS) **no recibe datos de personas**: solo coordenadas de contenedores, con un User-Agent que identifica a la aplicación y sin correos.
+
+### 24. Incidencias: tipo «lleno», derivación a mantenimiento y cuadrilla que informa (plan de rutas para la defensa, bloque 7, 23/10/2026)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `POST /api-gestion/incidencias` | **Vecino y Cuadrilla** (antes solo Vecino) | Una cuadrilla informa sobre los contenedores que ve (los de sus rutas asignadas): otro devuelve 404. La prioridad por defecto sale del tipo: desbordado **alta**, lleno **media**, roto media, residuo no permitido y otro baja. Quien informa puede elegirla |
+| `GET /api-gestion/incidencias`, `/{id}` | sin cambios | La cuadrilla ve también **las que ella misma informó** (además de las que se le asignaron); otra cuadrilla recibe 403/404 |
+| `POST /api-gestion/incidencias/{id}/asignacion` | Solo Administrador | Una incidencia de contenedor **roto no se asigna a una cuadrilla** (409: la atiende mantenimiento) |
+| `POST /api-gestion/incidencias/{id}/derivacion` | **Solo Administrador** (nuevo) | `{"nota": "..."}` hasta 200 caracteres. Solo de tipo «roto», abierta o en curso, una sola vez (409 si no). El contenedor pasa a «mantenimiento» (sale de las rutas como «no se recolecta»), queda un asiento en el historial de solo agregado y se avisa al vecino. Al resolver la incidencia el contenedor vuelve a «disponible» |
+
+Al informarse un contenedor roto se avisa a los administradores. Cubierto por `unitarias-incidencias.php` y `correr-tests-incidencias-mant.php`.
+La foto de la incidencia sigue siendo solo del Vecino (decisión SIN Fornos: la cuadrilla informa con texto).

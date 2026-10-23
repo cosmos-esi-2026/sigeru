@@ -134,7 +134,7 @@ afirmar("Sin contenedor se pide el codigo", "Indicá el contenedor por su códig
 afirmar("Un id de contenedor que no es positivo tampoco sirve", "Indicá el contenedor por su código",
     FlujoIncidencia::errorDeNueva(["id_contenedor" => 0, "tipo_problema" => "roto", "descripcion" => "La tapa esta rota"]));
 afirmar("Un tipo desconocido se rechaza y lista los validos", true,
-    str_starts_with((string) FlujoIncidencia::errorDeNueva(["tipo_problema" => "inventado"] + $nueva), "Tipo de problema inválido. Valores admitidos: desbordado, roto"));
+    str_starts_with((string) FlujoIncidencia::errorDeNueva(["tipo_problema" => "inventado"] + $nueva), "Tipo de problema inválido. Valores admitidos: desbordado, lleno, roto"));
 afirmar("Una descripcion de menos de 5 letras se rechaza", "Contá el problema en al menos 5 caracteres",
     FlujoIncidencia::errorDeNueva(["descripcion" => "Roto"] + $nueva));
 afirmar("Y una hecha de espacios cuenta como vacia", "Contá el problema en al menos 5 caracteres",
@@ -188,7 +188,7 @@ titulo("14. Incidencias: permisos y consistencia con la base");
 
 afirmar("Ver incidencias: administrador, cuadrilla y vecino", ["Administrador", "Cuadrilla", "Vecino"],
     Permisos::rolesPermitidos("incidencias", "GET"));
-afirmar("Informar una incidencia es solo del vecino", ["Vecino"], Permisos::rolesPermitidos("incidencias", "POST"));
+afirmar("Informar una incidencia es del vecino y de la cuadrilla (en terreno)", ["Vecino", "Cuadrilla"], Permisos::rolesPermitidos("incidencias", "POST"));
 afirmar("Cambiar la prioridad es solo del administrador", ["Administrador"], Permisos::rolesPermitidos("incidencias", "PUT"));
 afirmar("Nadie borra una incidencia", [], Permisos::rolesPermitidos("incidencias", "DELETE"));
 afirmar("Asignar y descartar: administrador", [["Administrador"], ["Administrador"]], [
@@ -241,3 +241,22 @@ afirmar("schema.sql crea la tabla del historial y los cuatro triggers de solo ag
     preg_match('/CREATE TABLE historial_incidencia\s*\(/', $schema),
     preg_match_all('/CREATE TRIGGER trg_(?:histinc|estadocont)_sin_(?:update|delete)/', $schema),
 ]);
+
+
+// ---- Plan de rutas para la defensa, bloque 7: prioridad por tipo y derivacion a mantenimiento ----
+afirmar("Prioridad por tipo: desbordado alta, lleno media, roto media, residuo no permitido y otro baja",
+    ["alta", "media", "media", "baja", "baja"],
+    array_map([FlujoIncidencia::class, "prioridadDeTipo"], ["desbordado", "lleno", "roto", "residuo_no_permitido", "otro"]));
+afirmar("Todos los tipos tienen prioridad por defecto, y es una prioridad valida", [],
+    array_values(array_filter(FlujoIncidencia::TIPOS, fn($t) => !in_array(FlujoIncidencia::prioridadDeTipo($t), FlujoIncidencia::PRIORIDADES, true))));
+afirmar("Solo lo roto o danado es de mantenimiento", [false, false, true, false],
+    array_map([FlujoIncidencia::class, "esDeMantenimiento"], ["desbordado", "lleno", "roto", "otro"]));
+afirmar("Derivar solo se puede con la incidencia abierta o en curso", [true, true, false, false],
+    [FlujoIncidencia::puede("derivar", "abierta"), FlujoIncidencia::puede("derivar", "en_curso"), FlujoIncidencia::puede("derivar", "resuelta"), FlujoIncidencia::puede("derivar", "descartada")]);
+afirmar("Un lleno (aun sin desbordar) deja el contenedor en estado lleno si estaba disponible; si ya estaba en mantenimiento no lo toca",
+    ["lleno", null], [FlujoIncidencia::estadoContenedorTrasReporte("lleno", "disponible"), FlujoIncidencia::estadoContenedorTrasReporte("lleno", "mantenimiento")]);
+afirmar("Derivar no cambia el estado de la incidencia (sigue abierta o en curso)", ["abierta", "en_curso"],
+    [FlujoIncidencia::estadoTras("derivar", "abierta"), FlujoIncidencia::estadoTras("derivar", "en_curso")]);
+afirmar("La cuadrilla alcanza lo que ella misma informo, aunque no sea suyo", [true, false],
+    [FlujoIncidencia::alcanza(["rol" => "Cuadrilla", "id_usuario" => 7, "id_cuadrilla" => 1], ["id_usuario" => 7, "id_cuadrilla" => null]),
+     FlujoIncidencia::alcanza(["rol" => "Cuadrilla", "id_usuario" => 8, "id_cuadrilla" => 1], ["id_usuario" => 7, "id_cuadrilla" => 2])]);
