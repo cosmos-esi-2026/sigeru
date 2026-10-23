@@ -260,7 +260,7 @@
 
     if (respuesta.status === 401 || respuesta.status === 403) {
       Sesion.cerrar();
-      window.location.replace("login.html");
+      Sesion.irAlLogin();
       return;
     }
     if (respuesta.ok) {
@@ -495,7 +495,7 @@
 
   const usuarioLocal = Sesion.obtener();
   if (!usuarioLocal) {
-    window.location.replace("login.html");
+    Sesion.irAlLogin();
     return;
   }
 

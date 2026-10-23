@@ -68,10 +68,29 @@ const Sesion = {
   cerrar() {
     localStorage.removeItem("sigeru_usuario");
   },
+  // Sin sesion, va al login con la pagina actual en ?volver= (el QR pegado en un contenedor abre
+  // informar-problema.html?contenedor=..., y sin esto el contenedor se perdia al iniciar sesion).
   exigir() {
     if (!this.obtener()) {
-      window.location.href = "login.html";
+      this.irAlLogin();
     }
+  },
+  // Unico camino al login cuando falta la sesion (lo usan exigir() y shell.js).
+  irAlLogin() {
+    const aca = window.location.pathname.split("/").pop() + window.location.search;
+    const volver = this.destinoSeguro(aca);
+    window.location.replace("login.html" + (volver ? "?volver=" + encodeURIComponent(volver) : ""));
+  },
+  // Contra la redireccion abierta (OWASP A01): solo una pagina .html de esta misma carpeta, con un query
+  // simple. Nada de "//", esquemas, barras, "..", "#" ni el propio login. Devuelve el destino o null.
+  destinoSeguro(texto) {
+    if (typeof texto !== "string" || texto.length === 0 || texto.length > 300) {
+      return null;
+    }
+    if (!/^[a-z0-9-]+\.html(\?[A-Za-z0-9_=&%.\-]*)?$/.test(texto) || /^(login|registro|crear-clave|recuperar-clave)\.html/.test(texto)) {
+      return null;
+    }
+    return texto;
   },
   async cerrarEnServidor() {
     try {

@@ -16,7 +16,7 @@ formLogin.addEventListener("submit", async function (evento) {
     });
     if (ok) {
       Sesion.guardar(resultado.datos);
-      window.location.href = "dashboard.html";
+      window.location.href = Sesion.destinoSeguro(new URLSearchParams(window.location.search).get("volver")) || "dashboard.html";
       return;
     }
     const texto = resultado.mensaje || "No pudimos iniciar sesión. Revisá tus datos.";
