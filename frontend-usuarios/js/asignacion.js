@@ -89,7 +89,8 @@ function dibujarCifras() {
     cifra("Camiones libres", datos.camiones.filter(function (c) { return c.libre; }).length);
 }
 
-function opciones(lista, clave, texto, elegido) {
+// No llamarla «opciones»: api.js ya tiene una global con ese nombre (arma cada fetch) y esta la pisaba, asi que fallaba todo pedido de la pantalla.
+function opcionesSelect(lista, clave, texto, elegido) {
   return lista.map(function (x) {
     return '<option value="' + $entero(x[clave]) + '"' + (x[clave] === elegido ? " selected" : "") + (x.libre ? "" : " class=\"opcion-ocupada\"") + ">" + escaparHtml(texto(x)) + (x.libre ? "" : " (ocupada ese día)") + "</option>";
   }).join("");
@@ -113,8 +114,8 @@ function dibujarSugerencia() {
     return '<tr role="row" data-i="' + i + '">' +
       '<td role="cell" data-etiqueta="Ruta">' + escaparHtml(r.nombre) + "</td>" +
       '<td role="cell" data-etiqueta="Prioridad">' + etiquetaNivel(r.prioridad) + "</td>" +
-      '<td role="cell" data-etiqueta="Cuadrilla"><label class="solo-lectores" for="sug-cuadrilla-' + i + '">Cuadrilla para ' + escaparHtml(r.nombre) + '</label><select id="sug-cuadrilla-' + i + '" class="js-sug-cuadrilla">' + opciones(datos.cuadrillas, "id_cuadrilla", nombreCuadrilla, f.id_cuadrilla) + "</select></td>" +
-      '<td role="cell" data-etiqueta="Camión"><label class="solo-lectores" for="sug-camion-' + i + '">Camión para ' + escaparHtml(r.nombre) + '</label><select id="sug-camion-' + i + '" class="js-sug-camion">' + opciones(datos.camiones, "id_camion", nombreCamion, f.id_camion) + "</select></td>" +
+      '<td role="cell" data-etiqueta="Cuadrilla"><label class="solo-lectores" for="sug-cuadrilla-' + i + '">Cuadrilla para ' + escaparHtml(r.nombre) + '</label><select id="sug-cuadrilla-' + i + '" class="js-sug-cuadrilla">' + opcionesSelect(datos.cuadrillas, "id_cuadrilla", nombreCuadrilla, f.id_cuadrilla) + "</select></td>" +
+      '<td role="cell" data-etiqueta="Camión"><label class="solo-lectores" for="sug-camion-' + i + '">Camión para ' + escaparHtml(r.nombre) + '</label><select id="sug-camion-' + i + '" class="js-sug-camion">' + opcionesSelect(datos.camiones, "id_camion", nombreCamion, f.id_camion) + "</select></td>" +
       '<td role="cell" data-etiqueta="Hora"><label class="solo-lectores" for="sug-hora-' + i + '">Hora de inicio de ' + escaparHtml(r.nombre) + '</label><input type="time" id="sug-hora-' + i + '" class="js-sug-hora" value="' + escaparHtml(f.hora) + '"></td>' +
       '<td role="cell" data-etiqueta="Quitar"><button type="button" class="boton boton-secundario js-sug-quitar" data-i="' + i + '" aria-label="Quitar ' + escaparHtml(r.nombre) + ' de la sugerencia">Quitar</button></td>' +
       "</tr>";
@@ -211,8 +212,8 @@ function abrirModal(idRuta) {
   const libre = function (l) { return l.libre ? 0 : 1; };
   const cuadrillas = datos.cuadrillas.slice().sort(function (a, b) { return libre(a) - libre(b); });
   const camiones = datos.camiones.slice().sort(function (a, b) { return libre(a) - libre(b); });
-  formAsignar.id_cuadrilla.innerHTML = opciones(cuadrillas, "id_cuadrilla", nombreCuadrilla, cuadrillas[0] && cuadrillas[0].id_cuadrilla);
-  formAsignar.id_camion.innerHTML = opciones(camiones, "id_camion", nombreCamion, camiones[0] && camiones[0].id_camion);
+  formAsignar.id_cuadrilla.innerHTML = opcionesSelect(cuadrillas, "id_cuadrilla", nombreCuadrilla, cuadrillas[0] && cuadrillas[0].id_cuadrilla);
+  formAsignar.id_camion.innerHTML = opcionesSelect(camiones, "id_camion", nombreCamion, camiones[0] && camiones[0].id_camion);
   formAsignar.fecha_hora_inicio.value = formDia.elements.fecha.value + "T" + rutaEnModal.hora_inicio;
   document.getElementById("mensaje").textContent = "";
   document.getElementById("mensaje").className = "mensaje";
