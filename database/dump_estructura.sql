@@ -54,6 +54,8 @@
 --  tablas fisicas y las del modelo siguen siendo 22.
 --
 -- Actualizado el 22/10/2026 (plan de rutas para la defensa): tabla ruta_contenedor y el trazado de la ruta (migracion 017); 23 tablas del modelo.
+--
+Actualizado el 23/10/2026 (plan de rutas para la defensa, migraciones 017 a 019): tabla ruta_contenedor, trazado de la ruta, tipo de problema 'lleno', derivacion a mantenimiento y tipo de cuenta de las solicitudes.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -396,7 +398,7 @@ DROP TABLE IF EXISTS `incidencia`;
 CREATE TABLE `incidencia` (
   `id_incidencia` int(11) NOT NULL AUTO_INCREMENT,
   `descripcion` varchar(500) NOT NULL,
-  `tipo_problema` enum('desbordado','roto','residuo_no_permitido','ausente_o_mal_ubicado','otro') NOT NULL DEFAULT 'otro',
+  `tipo_problema` enum('desbordado','lleno','roto','residuo_no_permitido','ausente_o_mal_ubicado','otro') NOT NULL DEFAULT 'otro',
   `fecha_reporte` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_resolucion` datetime DEFAULT NULL,
   `estado` enum('abierta','en_curso','resuelta','descartada') NOT NULL DEFAULT 'abierta',
@@ -404,6 +406,8 @@ CREATE TABLE `incidencia` (
   `id_usuario` int(11) NOT NULL,
   `id_contenedor` int(11) NOT NULL,
   `id_cuadrilla` int(11) DEFAULT NULL,
+  `derivada_en` datetime DEFAULT NULL,
+  `derivada_nota` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_incidencia`),
   KEY `fk_incidencia_usuario` (`id_usuario`),
   KEY `fk_incidencia_contenedor` (`id_contenedor`),
@@ -698,6 +702,8 @@ CREATE TABLE `solicitud_registro` (
   `direccion` varchar(200) DEFAULT NULL,
   `estado` enum('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
   `fecha_solicitud` datetime NOT NULL DEFAULT current_timestamp(),
+  `tipo_cuenta` enum('vecino','cuadrilla') NOT NULL DEFAULT 'vecino',
+  `cuadrilla_indicada` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id_solicitud`),
   KEY `idx_solicitud_estado` (`estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

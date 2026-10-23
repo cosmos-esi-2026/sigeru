@@ -72,8 +72,8 @@ afirmar("Nadie puede borrar una incidencia, ni el administrador", $esperados, $o
 
 [$codigo] = peticion("POST", "/api-gestion/incidencias/1/inventado", ["x" => 1], $admin);
 afirmar("Un subrecurso que no existe no lo usa nadie: 403", 403, $codigo);
-[$codigo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "x"], $admin);
-afirmar("Las cuadrillas son de solo lectura: 403 al intentar crear una", 403, $codigo);
+[$codigo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "x"], $cuadrilla);
+afirmar("Las cuadrillas no las crea una cuadrilla (solo el administrador): 403", 403, $codigo);
 
 
 titulo("12. Incidencias: registrar y validar");
