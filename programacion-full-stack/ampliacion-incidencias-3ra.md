@@ -118,11 +118,11 @@ el asiento de la incidencia y, si corresponde, el del contenedor.
 
 ## 7. Pruebas
 
-- **Unitarias ({{UNIT}}, sin base ni servidor):** el flujo de estados (qué se puede hacer en cada uno),
+- **Unitarias (68 agregadas en la parte 3, el 12/10/2026; sin base ni servidor):** el flujo de estados (qué se puede hacer en cada uno),
   quién alcanza cada incidencia, las dos reglas sobre el contenedor, la validación de lo que llega, los
   filtros, los permisos, que el router y las reglas coincidan, y que los ENUM de `schema.sql` y las
   constantes del código no se desfasen.
-- **Por HTTP ({{HTTP}}):** la matriz de permisos con los cuatro roles y sin sesión, el recorrido completo
+- **Por HTTP (123 agregadas en la parte 3, el 12/10/2026):** la matriz de permisos con los cuatro roles y sin sesión, el recorrido completo
   (informar, repetido, filtros, prioridad, asignar y reasignar, cuadrilla ajena, avance, resolver, cerrada,
   descarte), el estado del contenedor en cada paso, que la base rechace modificar o borrar un asiento, la
   transacción que revierte y la limpieza en cascada.
