@@ -25,6 +25,7 @@ function celdaAccionesRuta(r) {
   };
   return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila">' +
     '<a class="boton boton-secundario" href="ruta-armar.html?id=' + $entero(r.id_ruta) + '" aria-label="Armar ' + escaparHtml(r.nombre) + ' en el mapa">Armar</a>' +
+    (r.estado === "activa" && r.cantidad > 0 ? '<a class="boton boton-secundario" href="asignacion.html?ruta=' + $entero(r.id_ruta) + '" aria-label="Asignar ' + escaparHtml(r.nombre) + ' a una cuadrilla">Asignar</a>' : "") +
     '<button type="button" class="boton boton-icono js-editar" data-id="' + $entero(r.id_ruta) + '" aria-label="Editar ' + escaparHtml(r.nombre) + '" title="Editar ' + escaparHtml(r.nombre) + '">' +
     icono('<path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>') + "</button>" +
     (r.estado === "activa" ? '<button type="button" class="boton boton-icono js-baja" data-id="' + $entero(r.id_ruta) + '" aria-label="Dar de baja ' + escaparHtml(r.nombre) + '" title="Dar de baja ' + escaparHtml(r.nombre) + '">' +

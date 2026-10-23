@@ -12,7 +12,13 @@ require_once __DIR__ . "/../core/Response.php";
 class ContenedorController
 {
     // Sin "pagina" devuelve todo (lo usan el mapa y los formularios). Con "pagina" devuelve un tramo y "meta".
-    public function listar(): void
+    // Una Cuadrilla solo ve los contenedores de sus rutas asignadas (y los de sus incidencias): se le agrega ese alcance a los filtros.
+    private static function alcanceDe(array $usuario): ?int
+    {
+        return ($usuario["rol"] ?? "") === "Cuadrilla" ? (int) ($usuario["id_cuadrilla"] ?? 0) : null;
+    }
+
+    public function listar(array $usuario = []): void
     {
         $consulta = ValidacionContenedor::filtrosDe($_GET);
         if ($consulta["error"] !== null) {
@@ -21,6 +27,10 @@ class ContenedorController
         $pagina = Paginacion::de($_GET);
         if ($pagina["error"] !== null) {
             Response::error($pagina["error"], 400);
+        }
+        $alcance = self::alcanceDe($usuario);
+        if ($alcance !== null) {
+            $consulta["filtros"]["alcance_cuadrilla"] = $alcance;
         }
 
         if (!$pagina["paginar"]) {
@@ -35,7 +45,7 @@ class ContenedorController
     }
 
     // GET /contenedores/prediccion?dentro_de=48: cuando se llena cada contenedor (estimacion estadistica, no IA). Administrador y Cuadrilla.
-    public function prediccion(): void
+    public function prediccion(array $usuario = []): void
     {
         $dentro = null;
         if (isset($_GET["dentro_de"])) {
@@ -48,7 +58,8 @@ class ContenedorController
         $ahora = (string) Database::conexion()->query("SELECT NOW()")->fetchColumn();
         $vaciados = Contenedor::fechasDeVaciados();
         $filas = [];
-        foreach (Contenedor::listar([]) as $c) {
+        $alcance = self::alcanceDe($usuario);
+        foreach (Contenedor::listar($alcance === null ? [] : ["alcance_cuadrilla" => $alcance]) as $c) {
             if ($c["estado"] === "retirado") {
                 continue;
             }
@@ -134,18 +145,18 @@ class ContenedorController
         return null;
     }
 
-    public function obtener(int $id): void
+    public function obtener(int $id, array $usuario = []): void
     {
-        $contenedor = Contenedor::obtener($id);
+        $contenedor = Contenedor::obtener($id, self::alcanceDe($usuario));
         if ($contenedor === null) {
             Response::error("Contenedor no encontrado", 404);
         }
         Response::json(["ok" => true, "datos" => $contenedor]);
     }
 
-    public function historial(int $id): void
+    public function historial(int $id, array $usuario = []): void
     {
-        if (Contenedor::obtener($id) === null) {
+        if (Contenedor::obtener($id, self::alcanceDe($usuario)) === null) {
             Response::error("Contenedor no encontrado", 404);
         }
         Response::json(["ok" => true, "datos" => Contenedor::historial($id)]);

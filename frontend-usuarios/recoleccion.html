@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/tema.js"></script>
@@ -48,6 +49,22 @@
             </div>
           </section>
 
+          <section class="panel oculto" id="panel-recorrido" aria-labelledby="titulo-recorrido">
+            <h2 class="titulo-panel" id="titulo-recorrido">Recorrido</h2>
+            <p class="ayuda" id="resumen-recorrido" aria-live="polite"></p>
+            <p class="mensaje aviso oculto" id="aviso-sin-red" role="status">Sin conexión a internet: no se pudo cargar el fondo con las calles. El recorrido se dibuja igual, sobre fondo liso.</p>
+            <div class="mapa" id="mapa-recorrido" role="region" aria-label="Mapa del recorrido. Las paradas están numeradas; la misma lista está debajo."></div>
+            <ul class="leyenda-mapa" aria-label="Leyenda del mapa">
+              <li><span class="leyenda-punto leyenda-en-ruta" aria-hidden="true">1</span> Parada pendiente</li>
+              <li><span class="leyenda-punto leyenda-hecha" aria-hidden="true">✓</span> Ya vaciada</li>
+              <li><span class="leyenda-punto leyenda-lleno" aria-hidden="true">!</span> Urgente (desbordado)</li>
+              <li><span class="leyenda-punto leyenda-media" aria-hidden="true">▲</span> Lleno</li>
+              <li><span class="leyenda-punto leyenda-mant" aria-hidden="true">M</span> No se recolecta</li>
+            </ul>
+            <p class="ayuda" id="atribucion-recorrido"></p>
+            <ol class="lista-paradas lista-recorrido" id="lista-recorrido" aria-label="Paradas de la ruta, en orden de visita"></ol>
+          </section>
+
           <section class="panel" aria-labelledby="titulo-vaciados">
             <h2 class="titulo-panel" id="titulo-vaciados">Vaciados</h2>
             <div class="tabla-scroll">
@@ -79,6 +96,7 @@
 
 <datalist id="lista-contenedores"></datalist>
 
+<script src="vendor/leaflet/leaflet.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
 <script src="js/formularios.js"></script>

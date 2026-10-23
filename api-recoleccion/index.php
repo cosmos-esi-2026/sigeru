@@ -10,6 +10,7 @@ require_once __DIR__ . "/controllers/RutaController.php";
 require_once __DIR__ . "/controllers/RecoleccionController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
 require_once __DIR__ . "/controllers/PasajeController.php";
+require_once __DIR__ . "/controllers/AsignacionController.php";
 
 Response::manejarErrores();
 Response::cors();
@@ -98,7 +99,13 @@ switch ($recurso) {
         $controlador = new RecoleccionController();
         $usuario = Permisos::exigir($subrecurso === null ? "recolecciones" : "recolecciones/$subrecurso", $metodo);
 
-        if ($subrecurso === null && $metodo === "GET" && $id !== null) {
+        if (($partes[1] ?? "") === "lote") {
+            if ($metodo === "POST" && $subrecurso === null) {
+                $controlador->lote();
+            } else {
+                Response::error("Método no permitido", 405);
+            }
+        } elseif ($subrecurso === null && $metodo === "GET" && $id !== null) {
             $controlador->obtener($id, $usuario);
         } elseif ($subrecurso === null && $metodo === "GET") {
             $controlador->listar($usuario);
@@ -112,6 +119,24 @@ switch ($recurso) {
             $controlador->finalizar($id, $usuario);
         } elseif ($subrecurso === "cancelacion" && $metodo === "POST" && $id !== null) {
             $controlador->cancelar($id, $usuario);
+        } else {
+            Response::error("Método no permitido", 405);
+        }
+        break;
+
+    case "asignacion":
+        Permisos::exigir("asignacion", $metodo);
+        if ($metodo === "GET" && !isset($partes[1])) {
+            (new AsignacionController())->dia();
+        } else {
+            Response::error("Método no permitido", 405);
+        }
+        break;
+
+    case "mis-rutas":
+        $usuario = Permisos::exigir("mis-rutas", $metodo);
+        if ($metodo === "GET" && !isset($partes[1])) {
+            (new AsignacionController())->misRutas($usuario);
         } else {
             Response::error("Método no permitido", 405);
         }
@@ -149,9 +174,9 @@ switch ($recurso) {
                 "/camiones", "/camiones/{id}",
                 "/cuadrillas", "/cuadrillas/{id}",
                 "/rutas", "/rutas/{id}", "/rutas/mapa", "/rutas/{id}/contenedores", "/rutas/{id}/candidatos", "/rutas/{id}/trazado",
-                "/recolecciones", "/recolecciones/{id}", "/recolecciones/{id}/inicio",
+                "/recolecciones", "/recolecciones/lote", "/recolecciones/{id}", "/recolecciones/{id}/inicio",
                 "/recolecciones/{id}/vaciados", "/recolecciones/{id}/fin", "/recolecciones/{id}/cancelacion",
-                "/estadisticas/recoleccion", "/proximo-pasaje",
+                "/estadisticas/recoleccion", "/proximo-pasaje", "/asignacion", "/mis-rutas",
             ],
         ]);
         break;

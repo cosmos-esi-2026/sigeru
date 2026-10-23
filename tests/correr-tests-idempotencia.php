@@ -28,6 +28,7 @@ $idRutaD = (int) ($cuerpo["datos"]["id_ruta"] ?? 0);
 foreach (["A", "B", "C", "D", "E", "F"] as $letra) {
     peticion("POST", "/api-gestion/contenedores", ["codigo" => "TIDEM-$letra$sufijo", "direccion" => "Contenedor de prueba de idempotencia", "capacidad" => 1100, "tipo_residuo" => "Mixto", "id_zona" => 2], $admin);
 }
+ponerEnRuta($pdo, $idRutaD, array_map(fn($l) => "TIDEM-$l$sufijo", ["A", "B", "C", "D", "E", "F"]));
 [, $cuerpo] = peticion("POST", "/api-recoleccion/recolecciones", ["id_ruta" => $idRutaD, "id_camion" => $idCamionD, "id_cuadrilla" => 1, "fecha_hora_inicio" => "2026-10-22T06:30", "id_centro" => 1], $admin);
 $idRecD = (int) ($cuerpo["datos"]["id_recoleccion"] ?? 0);
 // La incidencia se asigna antes: una cuadrilla en una recoleccion en curso no se puede asignar (RF-228).

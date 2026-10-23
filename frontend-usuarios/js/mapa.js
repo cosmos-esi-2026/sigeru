@@ -18,6 +18,7 @@ const PUEDE = {
   ficha:       ["Administrador", "Cuadrilla"].indexOf(rol) !== -1,
   informar:    rol === "Vecino",
   rutas:       rol === "Administrador",
+  misRutas:    rol === "Cuadrilla",
 };
 const PALETA_RUTAS = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#D55E00", "#56B4E9", "#7a5195", "#5c6f66"];
 
@@ -218,8 +219,68 @@ function llenarSelector(nombre, opciones) {
   }).join(""));
 }
 
+// La Cuadrilla ve en el mapa SOLO sus rutas (las de sus recolecciones planificadas o en curso): el servidor no le da otras.
+let misRutasCargadas = null;
+async function dibujarMisRutas() {
+  const activa = formFiltros.elements.rutas && formFiltros.elements.rutas.checked;
+  const ayuda = document.getElementById("ayuda-rutas");
+  const lista = document.getElementById("lista-rutas-mapa");
+  capaRutas.clearLayers();
+  lista.innerHTML = "";
+  lista.classList.toggle("oculto", !activa);
+  document.getElementById("atribucion-rutas").classList.toggle("oculto", !activa);
+  if (!activa) {
+    ayuda.classList.add("oculto");
+    mapa.removeLayer(capaRutas);
+    return;
+  }
+  try {
+    if (!misRutasCargadas) {
+      misRutasCargadas = await apiGet(API.recoleccion + "/mis-rutas");
+    }
+  } catch (error) {
+    ayuda.textContent = "No se pudieron cargar tus rutas. " + mensajeDeFallo(error);
+    ayuda.classList.remove("oculto");
+    return;
+  }
+  const filas = (misRutasCargadas.datos || []).filter(function (r) { return r.recorrido; });
+  if (misRutasCargadas.sin_cuadrilla) {
+    ayuda.textContent = "Tu usuario todavía no está en una cuadrilla: pedile al administrador que te asigne a una.";
+  } else if (filas.length === 0) {
+    ayuda.textContent = "Todavía no tenés rutas asignadas.";
+  } else {
+    ayuda.textContent = "";
+  }
+  ayuda.classList.toggle("oculto", !ayuda.textContent);
+  const limites = [];
+  filas.forEach(function (f, i) {
+    const rec = f.recorrido;
+    const color = PALETA_RUTAS[i % PALETA_RUTAS.length];
+    let linea = null;
+    if (rec.trazado && rec.trazado.vigente && rec.trazado.geojson) {
+      linea = L.geoJSON(rec.trazado.geojson, { style: { color: color, weight: 4, opacity: 0.85 }, pane: "rutas" });
+    } else if (rec.paradas.length > 1) {
+      linea = L.polyline(rec.paradas.map(function (p) { return [p.latitud, p.longitud]; }), { color: color, weight: 3, opacity: 0.75, dashArray: "6 8", pane: "rutas" });
+    }
+    if (linea) {
+      linea.bindTooltip(rec.nombre, { sticky: true }).bindPopup('<div class="popup-mapa"><strong>' + escaparHtml(rec.nombre) + "</strong><span>" + escaparHtml(f.numero + " · " + textoEstado(f.estado)) +
+        '</span><span class="popup-accion"><a href="recoleccion.html?id=' + $entero(f.id_recoleccion) + '">Abrir la recolección</a></span></div>').addTo(capaRutas);
+      limites.push(linea.getBounds());
+    }
+    lista.insertAdjacentHTML("beforeend", '<li><span class="leyenda-linea" style="background:' + color + '" aria-hidden="true"></span><a href="recoleccion.html?id=' + $entero(f.id_recoleccion) + '">' +
+      escaparHtml(rec.nombre) + "</a> (" + rec.visitadas + " de " + rec.paradas.length + " contenedores vaciados · " + escaparHtml(textoEstado(f.estado)) + ")</li>");
+  });
+  capaRutas.addTo(mapa);
+  if (limites.length) {
+    mapa.fitBounds(limites.reduce(function (acum, b) { return acum.extend(b); }, L.latLngBounds(limites[0])), { padding: [30, 30], maxZoom: 15 });
+  }
+}
+
 // Las rutas de UNA zona (todas juntas son demasiado para un mapa): cada una con su color, su nombre y, en la lista de abajo, un enlace para armarla.
 async function dibujarRutas() {
+  if (PUEDE.misRutas) {
+    return dibujarMisRutas();
+  }
   const activa = PUEDE.rutas && formFiltros.elements.rutas && formFiltros.elements.rutas.checked;
   const ayuda = document.getElementById("ayuda-rutas");
   const lista = document.getElementById("lista-rutas-mapa");
@@ -325,6 +386,12 @@ async function cargar() {
   if (PUEDE.rutas) {
     document.getElementById("capa-rutas").classList.remove("oculto");
   }
+  if (PUEDE.misRutas) {
+    const etiqueta = document.getElementById("capa-rutas");
+    etiqueta.classList.remove("oculto");
+    etiqueta.lastChild.textContent = " Mis rutas";
+    formFiltros.elements.rutas.checked = true;
+  }
   if (PUEDE.incidencias) {
     document.getElementById("capa-incidencias").classList.remove("oculto");
     document.getElementById("leyenda-incidencias").classList.remove("oculto");
@@ -339,6 +406,9 @@ async function cargar() {
   }
 
   redibujar(true);
+  if (PUEDE.misRutas) {
+    dibujarMisRutas();
+  }
 }
 
 formFiltros.addEventListener("change", function (evento) {

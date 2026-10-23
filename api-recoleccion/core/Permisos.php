@@ -18,6 +18,8 @@ class Permisos
         "recolecciones/cancelacion"  => ["POST" => self::ADMINISTRADOR],
         "estadisticas"               => ["GET" => self::ADMINISTRADOR],
         "proximo-pasaje"             => ["GET" => ["Vecino"]],
+        "asignacion"                 => ["GET" => self::ADMINISTRADOR],
+        "mis-rutas"                  => ["GET" => ["Cuadrilla"]],
     ];
 
     public static function recursos(): array

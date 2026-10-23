@@ -83,6 +83,12 @@
       trazos: '<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M6 15.8V9a3 3 0 0 1 3-3h6.8"/>',
     },
     {
+      href: "asignacion.html",
+      texto: "Asignación",
+      roles: ["Administrador"],
+      trazos: '<path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="m16 15 2 2 4-4"/>',
+    },
+    {
       href: "ruta-sugerida.html",
       texto: "Ruta sugerida",
       roles: ["Administrador"],

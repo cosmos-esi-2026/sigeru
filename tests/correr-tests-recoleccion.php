@@ -85,10 +85,13 @@ $contenedoresDePrueba = [];
 foreach (["A", "B"] as $letra) {
     [, $cuerpo] = peticion("POST", "/api-gestion/contenedores", [
         "codigo" => "TREC-$letra$sufijo", "direccion" => "Contenedor de prueba de recoleccion",
-        "capacidad" => 1100, "tipo_residuo" => "Mixto", "id_zona" => 2,
+        "capacidad" => 1100, "tipo_residuo" => "Mixto", "id_zona" => 2, "latitud" => -34.9, "longitud" => -56.2,
     ], $admin);
     $contenedoresDePrueba[$letra] = (int) ($cuerpo["datos"]["id_contenedor"] ?? 0);
 }
+// Desde el plan de rutas para la defensa solo se vacian contenedores de la ruta de la recoleccion: los dos de prueba van en la ruta.
+[$codigo] = peticion("PUT", "/api-recoleccion/rutas/$idRuta/contenedores", ["contenedores" => array_values($contenedoresDePrueba)], $admin);
+afirmar("Los contenedores de prueba se ponen en la ruta de prueba", 200, $codigo);
 
 $plan = ["id_ruta" => $idRuta, "id_camion" => $idCamion, "id_cuadrilla" => 1, "fecha_hora_inicio" => "2026-10-20T06:30", "id_centro" => 1];
 [$codigo] = peticion("POST", "/api-recoleccion/recolecciones", array_merge($plan, ["fecha_hora_inicio" => "mañana"]), $admin);

@@ -56,6 +56,7 @@ $idRutaI = (int) ($cuerpo["datos"]["id_ruta"] ?? 0);
 foreach (["V" => "Vidrio", "M" => "Mixto"] as $letra => $tipo) {
     peticion("POST", "/api-gestion/contenedores", ["codigo" => "TIMP-$letra$sufijo", "direccion" => "Contenedor de prueba de impacto", "capacidad" => 1100, "tipo_residuo" => $tipo, "id_zona" => 2], $admin);
 }
+ponerEnRuta($pdo, $idRutaI, ["TIMP-V$sufijo", "TIMP-M$sufijo"]);
 [, $cuerpo] = peticion("POST", "/api-recoleccion/recolecciones", ["id_ruta" => $idRutaI, "id_camion" => $idCamionI, "id_cuadrilla" => 1, "fecha_hora_inicio" => "2026-10-21T06:30", "id_centro" => 1], $admin);
 $idRecI = (int) ($cuerpo["datos"]["id_recoleccion"] ?? 0);
 peticion("POST", "/api-recoleccion/recolecciones/$idRecI/inicio", [], $cuadrilla);

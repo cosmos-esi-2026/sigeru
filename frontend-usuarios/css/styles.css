@@ -1332,3 +1332,15 @@ body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal
 @media (max-width: 900px) { .lista-paradas, .lista-candidatos { max-height: 280px; } }
 .leyenda-rutas li { gap: var(--esp-2); }
 .leyenda-linea { display: inline-block; width: 22px; height: 5px; border-radius: 3px; flex: none; }
+/* ---- Recorrido de la cuadrilla (bloque 6) ---- */
+.marca-orden.alta { background: #b3261e; }
+.marca-orden.media { background: #b7791f; }
+.marca-orden.hecha { background: #5c6f66; }
+.leyenda-hecha { background: #5c6f66; }
+.leyenda-media { background: #b7791f; }
+.parada-orden.parada-alta { background: #b3261e; }
+.parada-orden.parada-media { background: #b7791f; }
+.parada-orden.parada-hecha { background: #5c6f66; }
+.parada-orden.parada-mant { background: #8a5000; }
+.parada-hecha .parada-texto strong { text-decoration: line-through; text-decoration-thickness: 1px; }
+.lista-recorrido { max-height: 420px; margin-top: var(--esp-3); }

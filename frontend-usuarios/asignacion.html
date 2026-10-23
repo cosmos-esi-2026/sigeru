@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asignación de rutas - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#115440">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/tema.js"></script>
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Asignación de rutas</h1>
+        <p class="bajada">Las rutas del día, de la más urgente a la menos urgente, y las cuadrillas y camiones libres. El sistema sugiere; vos confirmás.</p>
+      </div>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+
+      <section class="panel" aria-labelledby="titulo-dia">
+        <h2 class="titulo-panel" id="titulo-dia">¿Para qué día?</h2>
+        <form class="filtros" id="form-dia" aria-label="Elegir el día de la asignación">
+          <label>Día
+            <input type="date" name="fecha" required>
+          </label>
+          <label class="casilla"><input type="checkbox" name="otros_dias"> Mostrar también las rutas de otros días de la semana</label>
+          <label class="casilla"><input type="checkbox" name="solo_sin_asignar"> Solo las que no tienen cuadrilla</label>
+          <button type="submit" class="boton boton-secundario">Actualizar</button>
+        </form>
+        <dl class="cifras-ruta" id="cifras-dia"></dl>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-sugerencia">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-sugerencia">Sugerencia de asignación</h2>
+          <div class="acciones-armar">
+            <button type="button" class="boton boton-primario" id="btn-sugerir">Sugerir asignación</button>
+            <button type="button" class="boton boton-secundario oculto" id="btn-descartar-sugerencia">Descartar la sugerencia</button>
+            <button type="button" class="boton boton-primario oculto" id="btn-asignar-todas">Asignar todas</button>
+          </div>
+        </div>
+        <p class="ayuda" id="ayuda-sugerencia">Empareja, en orden, las rutas sin cuadrilla (primero las más urgentes) con las cuadrillas y los camiones libres ese día. <strong>No se crea nada hasta que toques «Asignar todas».</strong> Podés cambiar la cuadrilla, el camión o la hora de cada una.</p>
+        <div class="tabla-scroll oculto" id="tabla-sugerencia-caja">
+          <table class="tabla" data-sin-clic-fila id="tabla-sugerencia" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Ruta</th>
+                <th role="columnheader">Prioridad</th>
+                <th role="columnheader">Cuadrilla</th>
+                <th role="columnheader">Camión</th>
+                <th role="columnheader">Hora</th>
+                <th role="columnheader"><span class="solo-lectores">Quitar de la sugerencia</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-sugerencia" role="rowgroup"></tbody>
+          </table>
+        </div>
+        <p class="ayuda" id="notas-sugerencia" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="titulo-rutas-dia">
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-rutas-dia">Rutas por prioridad</h2>
+        </div>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="rutas" aria-live="polite"></p>
+        <div class="tabla-scroll">
+          <table class="tabla" data-sin-clic-fila id="tabla-asignacion" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader">Prioridad</th>
+                <th role="columnheader">Ruta</th>
+                <th role="columnheader">Zona</th>
+                <th role="columnheader">Hora</th>
+                <th role="columnheader">Qué hay</th>
+                <th role="columnheader">Asignación</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-asignar" tabindex="-1" aria-labelledby="titulo-modal-asignar" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-asignar">Asignar la ruta a una cuadrilla</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-asignar" class="formulario">
+          <p class="ayuda" id="texto-asignar"></p>
+          <label>Cuadrilla
+            <select name="id_cuadrilla" required></select>
+          </label>
+          <label>Camión
+            <select name="id_camion" required></select>
+          </label>
+          <label>Fecha y hora de inicio
+            <input type="datetime-local" name="fecha_hora_inicio" required>
+          </label>
+          <button type="submit" class="boton boton-primario">Asignar</button>
+        </form>
+        <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/asignacion.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>

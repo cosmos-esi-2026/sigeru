@@ -204,7 +204,7 @@ foreach (archivosDelFront($raiz) as $ruta) {
         $conMosaicos[] = substr($ruta, strlen($raiz) + 1);
     }
 }
-afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en armar ruta, en la ruta sugerida y en el publico", ["frontend-usuarios/js/mapa.js", "frontend-usuarios/js/ruta-armar.js", "frontend-usuarios/js/ruta-sugerida.js", "landing/js/publico.js"],
+afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en el recorrido de la recoleccion, en armar ruta, en la ruta sugerida y en el publico", ["frontend-usuarios/js/mapa.js", "frontend-usuarios/js/recoleccion-detalle.js", "frontend-usuarios/js/ruta-armar.js", "frontend-usuarios/js/ruta-sugerida.js", "landing/js/publico.js"],
     array_map(fn ($r) => str_replace("\\", "/", $r), $conMosaicos));
 $leaflet = $front . "/vendor/leaflet/";
 afirmar("Leaflet esta dentro del repo, con su licencia, y es la version verificada", [true, true, true], [
@@ -274,7 +274,7 @@ foreach (glob("$front/*.html") as $pagina) {
         $sinBase[] = $nombre;
     }
 }
-afirmar("Las paginas con menu lateral son las 25 de gestion (24 mas armar ruta)", 25, count($conMenu));
+afirmar("Las paginas con menu lateral son las 26 de gestion (24 mas armar ruta y asignacion)", 26, count($conMenu));
 afirmar("Todas cargan shell.js", [], $sinShell);
 afirmar("Ninguna tiene copiado el menu ni la hamburguesa", [], $conMenuCopiado);
 afirmar(
@@ -362,6 +362,7 @@ $recursoDePantalla = [
     "recolecciones"      => ["recolecciones", "GET", "recoleccion"],
     "rutas"              => ["rutas", "GET", "recoleccion"],
     "ruta-armar"         => ["rutas", "GET", "recoleccion"],
+    "asignacion"         => ["asignacion", "GET", "recoleccion"],
     "mis-tareas"         => ["recolecciones", "GET", "recoleccion"],
     "recoleccion"        => ["recolecciones", "GET", "recoleccion"],
     "centros"            => ["centros", "GET"],
@@ -393,7 +394,7 @@ foreach ($secciones as $seccion) {
     }
 }
 afirmar("El menu no muestra pantallas cuya lectura la API le niega al rol", [], $excedidos);
-afirmar("shell.js define las 25 pantallas de gestion", 25, count($secciones));
+afirmar("shell.js define las 26 pantallas de gestion", 26, count($secciones));
 afirmar("Cada pantalla de incidencias esta atada a su permiso de la API", [], array_values(array_diff(
     ["incidencias", "mis-incidencias", "mis-reclamos", "incidencia", "informar-problema", "contenedor",
      "recolecciones", "mis-tareas", "recoleccion", "camiones", "mapa", "reportes", "rutas"],

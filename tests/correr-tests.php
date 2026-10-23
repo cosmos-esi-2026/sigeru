@@ -104,6 +104,24 @@ require_once __DIR__ . "/../api-gestion/config/database.php";
 $pdo = Database::conexion();
 $inicioDeLaCorrida = $pdo->query("SELECT NOW()")->fetchColumn();
 
+// Desde el plan de rutas para la defensa solo se vacian contenedores de la ruta de la recoleccion: las pruebas que cargan vaciados
+// ponen sus contenedores de prueba (por codigo) en la ruta, con coordenadas, directo en la base.
+function ponerEnRuta(PDO $pdo, int $idRuta, array $codigos): void
+{
+    $orden = (int) $pdo->query("SELECT COALESCE(MAX(orden), 0) FROM ruta_contenedor WHERE id_ruta = " . $idRuta)->fetchColumn();
+    $buscar = $pdo->prepare("SELECT id_contenedor FROM contenedor WHERE codigo = ?");
+    $poner = $pdo->prepare("INSERT INTO ruta_contenedor (id_ruta, id_contenedor, orden) VALUES (?, ?, ?)");
+    $coord = $pdo->prepare("UPDATE contenedor SET latitud = COALESCE(latitud, -34.9), longitud = COALESCE(longitud, -56.2) WHERE id_contenedor = ?");
+    foreach ($codigos as $codigo) {
+        $buscar->execute([$codigo]);
+        $id = (int) $buscar->fetchColumn();
+        if ($id > 0) {
+            $coord->execute([$id]);
+            $poner->execute([$idRuta, $id, ++$orden]);
+        }
+    }
+}
+
 // Las pruebas de enlaces por correo necesitan que Apache arranque con SIGERU_MAIL_MODE=archivo
 // (el mensaje queda en tmp/correo). Con SMTP real o sin correo se omiten, y el resumen lo dice.
 $omitidas = 0;
@@ -685,6 +703,7 @@ require __DIR__ . "/correr-tests-ruta.php";
 require __DIR__ . "/correr-tests-rutas.php";
 require __DIR__ . "/correr-tests-rutas-paradas.php";
 require __DIR__ . "/correr-tests-rutas-mapa.php";
+require __DIR__ . "/correr-tests-asignacion.php";
 require __DIR__ . "/correr-tests-pdf.php";
 require __DIR__ . "/correr-tests-idempotencia.php";
 require __DIR__ . "/correr-tests-errores.php";

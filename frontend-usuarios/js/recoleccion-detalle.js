@@ -13,6 +13,9 @@ const LISTA_POR_ROL = {
 
 let recoleccionActual = null;
 let sugerenciasCargadas = false;
+let mapaRecorrido = null;
+let capaRecorrido = null;
+const NOMBRE_SERVICIO = { "valhalla-truck": "Valhalla (perfil de camión)", "osrm-fossgis-auto": "OSRM (FOSSGIS)", "osrm-demo-auto": "OSRM (servidor de demostración)" };
 
 function rolActual() {
   return document.body.dataset.rol || Sesion.rol() || "";
@@ -44,6 +47,102 @@ function dibujarDatos(r) {
     (r.observaciones
       ? '<h3 class="subtitulo-panel">Observaciones</h3><p class="texto-largo">' + escaparHtml(r.observaciones) + "</p>"
       : "");
+}
+
+// ---- El recorrido: la ruta de ESTA recoleccion (el servidor solo se la da a la cuadrilla asignada y al administrador) ----
+
+function iniciarMapaRecorrido() {
+  if (mapaRecorrido) {
+    return;
+  }
+  mapaRecorrido = L.map("mapa-recorrido", { scrollWheelZoom: false }).setView([-34.885, -56.165], 12);
+  capaRecorrido = L.layerGroup().addTo(mapaRecorrido);
+  const fondo = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    referrerPolicy: "origin",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL) · <a href="https://www.openstreetmap.org/fixthemap">Reportar un error del mapa</a>',
+  });
+  const aviso = document.getElementById("aviso-sin-red");
+  const sinRed = function (valor) {
+    aviso.classList.toggle("oculto", !valor);
+    document.getElementById("mapa-recorrido").classList.toggle("sin-fondo", valor);
+  };
+  fondo.on("tileerror", function () { sinRed(true); });
+  fondo.on("tileload", function () { sinRed(false); });
+  fondo.addTo(mapaRecorrido);
+  if (navigator.onLine === false) {
+    sinRed(true);
+  }
+}
+
+function claseDeParada(p) {
+  if (p.visitada) {
+    return "hecha";
+  }
+  if (!p.recolectable) {
+    return "mant";
+  }
+  return p.prioridad === "alta" ? "alta" : (p.prioridad === "media" ? "media" : "");
+}
+
+function simboloDeParada(p) {
+  return p.visitada ? "✓" : (!p.recolectable ? "M" : (p.prioridad === "alta" ? "!" : String(p.orden)));
+}
+
+function textoDeParada(p) {
+  return p.visitada ? "ya vaciada" : (!p.recolectable ? "no se recolecta (en mantenimiento o roto)" : (p.prioridad === "alta" ? "urgente: desbordado" : (p.prioridad === "media" ? "lleno" : "")));
+}
+
+function dibujarRecorrido(r) {
+  const rec = r.recorrido;
+  const panel = document.getElementById("panel-recorrido");
+  if (!rec || !rec.paradas || rec.paradas.length === 0) {
+    panel.classList.add("oculto");
+    return;
+  }
+  panel.classList.remove("oculto");
+  const pendientes = rec.paradas.filter(function (p) { return !p.visitada && p.recolectable; }).length;
+  document.getElementById("resumen-recorrido").textContent = rec.nombre + " · " + rec.visitadas + " de " + rec.paradas.length + " contenedores vaciados" +
+    (pendientes ? " · faltan " + pendientes : "") + ".";
+
+  const enCurso = r.estado === "en_curso";
+  document.getElementById("lista-recorrido").innerHTML = rec.paradas.map(function (p) {
+    const nota = textoDeParada(p);
+    return '<li class="parada' + (p.visitada ? " parada-hecha" : "") + '" data-codigo="' + escaparHtml(p.codigo) + '">' +
+      '<span class="parada-orden parada-' + claseDeParada(p) + '" aria-hidden="true">' + escaparHtml(simboloDeParada(p)) + "</span>" +
+      '<div class="parada-texto"><strong>' + p.orden + ". " + escaparHtml(p.codigo) + "</strong><span>" + escaparHtml(p.direccion) + "</span>" +
+      (nota ? '<span class="etiqueta ' + (p.prioridad === "alta" && !p.visitada ? "etiqueta-lleno" : (p.recolectable ? "" : "etiqueta-mant")) + '">' + escaparHtml(nota) + "</span>" : "") + "</div>" +
+      (enCurso && !p.visitada && p.recolectable
+        ? '<div class="parada-acciones"><button type="button" class="boton boton-secundario js-vaciar" data-codigo="' + escaparHtml(p.codigo) + '" aria-label="Registrar el vaciado de ' + escaparHtml(p.codigo) + '">Registrar vaciado</button></div>'
+        : "") + "</li>";
+  }).join("");
+
+  iniciarMapaRecorrido();
+  capaRecorrido.clearLayers();
+  const puntos = [];
+  const t = rec.trazado;
+  if (t && t.vigente && t.geojson) {
+    L.geoJSON(t.geojson, { style: { color: "#15654a", weight: 4, opacity: 0.85 } }).addTo(capaRecorrido);
+    document.getElementById("atribucion-recorrido").innerHTML = "Recorrido calculado con " + escaparHtml(NOMBRE_SERVICIO[t.servicio] || t.servicio || "un servicio de rutas") +
+      " (FOSSGIS) sobre datos de OpenStreetMap (ODbL). <a href=\"https://www.openstreetmap.org/fixthemap\">Reportar un error del mapa</a>.";
+  } else {
+    document.getElementById("atribucion-recorrido").textContent = "El recorrido se dibuja en línea recta entre las paradas: todavía no se trazó por las calles.";
+  }
+  rec.paradas.forEach(function (p) {
+    puntos.push([p.latitud, p.longitud]);
+    const titulo = p.orden + ". " + p.codigo + (textoDeParada(p) ? " (" + textoDeParada(p) + ")" : "");
+    L.marker([p.latitud, p.longitud], {
+      icon: L.divIcon({ className: "marca-orden " + claseDeParada(p), html: simboloDeParada(p), iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14] }),
+      title: titulo, alt: titulo,
+    }).bindPopup('<div class="popup-mapa"><strong>' + escaparHtml(p.orden + ". " + p.codigo) + "</strong><span>" + escaparHtml(p.direccion) + "</span><span>" + escaparHtml(textoDeParada(p) || "Pendiente") + "</span></div>").addTo(capaRecorrido);
+  });
+  if (!(t && t.vigente && t.geojson) && puntos.length > 1) {
+    L.polyline(puntos, { color: "#15654a", weight: 3, opacity: 0.7, dashArray: "6 8" }).addTo(capaRecorrido);
+  }
+  setTimeout(function () {
+    mapaRecorrido.invalidateSize();
+    mapaRecorrido.fitBounds(L.latLngBounds(puntos), { padding: [30, 30], maxZoom: 16 });
+  }, 50);
 }
 
 function dibujarVaciados(vaciados) {
@@ -109,23 +208,20 @@ function dibujarAcciones(r) {
   panelAcciones.classList.remove("oculto");
   zonaAcciones.innerHTML = html;
   zonaAcciones.querySelectorAll("form").forEach(activarValidacion);
-  if (r.estado === "en_curso" && !sugerenciasCargadas) {
+  if (r.estado === "en_curso") {
     cargarSugerencias();
   }
 }
 
+// Las sugerencias del campo «Contenedor» son las paradas de ESTA ruta que faltan vaciar (no todos los contenedores del sistema).
 async function cargarSugerencias() {
-  try {
-    const respuesta = await apiGet(API.gestion + "/contenedores");
-    document.getElementById("lista-contenedores").innerHTML = (respuesta.datos || [])
-      .filter(function (c) { return c.estado !== "retirado"; })
-      .map(function (c) {
-        return '<option value="' + escaparHtml(c.codigo) + '">' + escaparHtml(c.direccion + (c.zona ? " · " + c.zona : "")) + "</option>";
-      }).join("");
-    sugerenciasCargadas = true;
-  } catch (error) {
-    sugerenciasCargadas = false;
-  }
+  const rec = recoleccionActual && recoleccionActual.recorrido;
+  document.getElementById("lista-contenedores").innerHTML = ((rec && rec.paradas) || [])
+    .filter(function (p) { return !p.visitada && p.recolectable; })
+    .map(function (p) {
+      return '<option value="' + escaparHtml(p.codigo) + '">' + escaparHtml(p.orden + ". " + p.direccion) + "</option>";
+    }).join("");
+  sugerenciasCargadas = true;
 }
 
 function dibujar(r) {
@@ -134,6 +230,7 @@ function dibujar(r) {
   document.getElementById("titulo-pagina").textContent = "Recolección " + r.numero;
   document.getElementById("bajada-pagina").textContent = r.ruta + " · " + r.zona + " · " + fechaLegible(r.fecha_hora_inicio);
   dibujarDatos(r);
+  dibujarRecorrido(r);
   dibujarVaciados(r.detalle_vaciados);
   dibujarAcciones(r);
 }
@@ -260,4 +357,18 @@ document.getElementById("detalle").addEventListener("click", function (evento) {
 
 document.getElementById("mensaje-pagina").tabIndex = -1;
 document.getElementById("enlace-volver").href = LISTA_POR_ROL[rolActual()] || "dashboard.html";
+document.getElementById("lista-recorrido").addEventListener("click", function (evento) {
+  const boton = evento.target.closest(".js-vaciar");
+  const campo = document.querySelector('#form-vaciados [name="codigo_contenedor"]');
+  if (boton && campo) {
+    campo.value = boton.dataset.codigo;
+    campo.dispatchEvent(new Event("input", { bubbles: true }));
+    const peso = document.querySelector('#form-vaciados [name="peso_kg"]');
+    document.getElementById("form-vaciados").scrollIntoView({ block: "center" });
+    if (peso) {
+      peso.focus();
+    }
+  }
+});
+
 cargarRecoleccion();

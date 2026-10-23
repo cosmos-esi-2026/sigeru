@@ -6,6 +6,7 @@ require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Notificador.php";
 require_once __DIR__ . "/../core/Idempotencia.php";
+require_once __DIR__ . "/../models/Asignacion.php";
 
 class RecoleccionController
 {
@@ -47,6 +48,31 @@ class RecoleccionController
                 "ok"      => true,
                 "mensaje" => "Recolección " . $nueva["numero"] . " planificada",
                 "datos"   => $nueva,
+            ], 201);
+        });
+    }
+
+    // POST /recolecciones/lote  {"asignaciones": [{id_ruta, id_cuadrilla, id_camion, fecha_hora_inicio}, ...]}: la «Asignacion del dia», todas o ninguna.
+    public function lote(): void
+    {
+        $datos = Response::leerJson();
+        $error = Asignacion::errorDeLote($datos);
+        if ($error !== null) {
+            Response::error($error, 400);
+        }
+        $this->ejecutar(function () use ($datos) {
+            $creadas = Recoleccion::planificarLote($datos["asignaciones"]);
+            foreach ($creadas as $nueva) {
+                [$titulo, $mensaje] = Notificador::recoleccionAsignada(
+                    $nueva["numero"], (string) $nueva["ruta"], Notificador::fechaLegible((string) $nueva["fecha_hora_inicio"])
+                );
+                Notificador::avisarA(Notificador::deCuadrilla((int) $nueva["id_cuadrilla"]), "recoleccion_asignada", $titulo, $mensaje,
+                                     "recoleccion.html?id=" . (int) $nueva["id_recoleccion"]);
+            }
+            Response::json([
+                "ok"      => true,
+                "mensaje" => count($creadas) . (count($creadas) === 1 ? " ruta asignada" : " rutas asignadas"),
+                "datos"   => $creadas,
             ], 201);
         });
     }

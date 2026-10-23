@@ -38,20 +38,20 @@ switch ($recurso) {
         $controlador = new ContenedorController();
         $esPrediccion = ($partes[1] ?? "") === "prediccion";
         $esRuta = ($partes[1] ?? "") === "ruta-sugerida";
-        Permisos::exigir($esRuta ? "contenedores/ruta-sugerida" : ($esPrediccion ? "contenedores/prediccion" : ($subrecurso === "historial" ? "contenedores/historial" : "contenedores")), $metodo);
+        $usuario = Permisos::exigir($esRuta ? "contenedores/ruta-sugerida" : ($esPrediccion ? "contenedores/prediccion" : ($subrecurso === "historial" ? "contenedores/historial" : "contenedores")), $metodo);
 
         if ($esRuta && $metodo === "GET") {
             $controlador->rutaSugerida();
         } elseif ($esPrediccion && $metodo === "GET") {
-            $controlador->prediccion();
+            $controlador->prediccion($usuario);
         } elseif ($esPrediccion || $esRuta) {
             Response::error("Método no permitido", 405);
         } elseif ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
-            $controlador->historial($id);
+            $controlador->historial($id, $usuario);
         } elseif ($metodo === "GET" && $id !== null) {
-            $controlador->obtener($id);
+            $controlador->obtener($id, $usuario);
         } elseif ($metodo === "GET") {
-            $controlador->listar();
+            $controlador->listar($usuario);
         } elseif ($metodo === "POST") {
             $controlador->crear();
         } elseif ($metodo === "PUT" && $id !== null) {

@@ -296,3 +296,20 @@ El PDF trae personas solo como nombres de cuadrillas (no de vecinos ni de usuari
 | `POST /api-gestion/incidencias/{id}/avance` | sin cambios | Igual |
 
 La tabla `clave_idempotencia` es de soporte (como `auditoria`): no entra en la huella de la base, solo la usan estas dos operaciones y guarda la respuesta de la primera vez hasta 30 días. El service worker **no guarda respuestas de ninguna API**. Cubierto por `unitarias-offline.php`, `correr-tests-idempotencia.php`, `tests/js/cola-offline.html` y `tests/js/sw.html`.
+
+## 23. Actualización del 23/10/2026 (plan de rutas para la defensa: rutas con contenedores, asignación y alcance de la Cuadrilla)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET /api-recoleccion/rutas`, `GET /rutas/{id}`, `GET /rutas/mapa`, `GET /rutas/{id}/candidatos` | Solo Administrador | Sin sesión 401; Vecino, Operario y Cuadrilla 403 (la cuadrilla **no lee rutas ajenas ni las suyas por esta vía**: ve su ruta por `mis-rutas` y por el detalle de su recolección) |
+| `PUT /rutas/{id}/contenedores`, `POST /rutas/{id}/trazado`, `POST/PUT/DELETE /rutas` | Solo Administrador | Armar, trazar, crear, editar y borrar rutas. **Una cuadrilla no puede crear ni editar rutas (403)**, como pidió el profe. Todo queda en la auditoría |
+| `GET /api-recoleccion/asignacion?fecha=` | Solo Administrador | Las rutas del día por prioridad, cuadrillas y camiones libres, y la sugerencia. Solo lee: no crea nada |
+| `POST /api-recoleccion/recolecciones/lote` | Solo Administrador | Asigna varias rutas de una vez, **todas o ninguna** (transacción). Una cuadrilla o un camión no puede tener dos recolecciones el mismo día. Avisa a cada cuadrilla |
+| `GET /api-recoleccion/mis-rutas` | Solo Cuadrilla | Sus recolecciones planificadas o en curso con la ruta (paradas, trazado, prioridad). Un usuario Cuadrilla sin cuadrilla recibe `sin_cuadrilla: true` y una lista vacía. Administrador, Operario y Vecino: 403 |
+| `GET /api-recoleccion/recolecciones/{id}` | sin cambios | Ahora trae `recorrido` (la ruta de esa recolección) solo a quien la puede ver: la cuadrilla asignada y el administrador; una cuadrilla ajena sigue recibiendo 404 |
+| `GET /api-gestion/contenedores`, `/{id}`, `/{id}/historial`, `/prediccion` | sin cambios para los demás roles | **Para la Cuadrilla el alcance se aplica en el servidor**: solo los contenedores de las rutas de sus recolecciones planificadas o en curso y los de las incidencias que se le asignaron. Uno ajeno devuelve 404 en la ficha y en el historial, y no figura en la lista ni en su total |
+| `POST /api-recoleccion/recolecciones/{id}/vaciados` | sin cambios | Ahora **solo acepta contenedores de la ruta de esa recolección** (409 si no está en ella) y que se recolecten (409 si está en mantenimiento) |
+| `POST /api-gestion/contenedores`, `PUT /contenedores/{id}` | sin cambios | Tope de 100 contenedores en servicio por zona (municipio): 409 al pasarse, al mover un contenedor a una zona llena o al sacarlo de «retirado» en una zona llena |
+
+Cubierto por `unitarias-rutas.php`, `unitarias-paradas.php`, `unitarias-trazado.php`, `unitarias-asignacion.php` y las HTTP `correr-tests-rutas*.php` y `correr-tests-asignacion.php`.
+El servicio externo de rutas (Valhalla/OSRM de FOSSGIS) **no recibe datos de personas**: solo coordenadas de contenedores, con un User-Agent que identifica a la aplicación y sin correos.

@@ -18,10 +18,22 @@ class Contenedor
                            JOIN zona z ON z.id_zona = c.id_zona
                            JOIN tipo_residuo t ON t.id_tipo_residuo = c.id_tipo_residuo";
 
+    // Lo que ve una Cuadrilla (plan de rutas para la defensa, punto 8 de la nota del profe): los contenedores de las rutas de sus recolecciones planificadas o en curso,
+    // y los de las incidencias que se le asignaron. Se aplica en el SERVIDOR: la pantalla no puede saltearlo.
+    private const DE_LA_CUADRILLA = "c.id_contenedor IN (
+            SELECT rc.id_contenedor FROM ruta_contenedor rc JOIN recoleccion r ON r.id_ruta = rc.id_ruta
+            WHERE r.id_cuadrilla = :cua1 AND r.estado IN ('planificada', 'en_curso')
+            UNION
+            SELECT i.id_contenedor FROM incidencia i WHERE i.id_cuadrilla = :cua2 AND i.estado = 'en_curso')";
+
     private static function condiciones(array $filtros): array
     {
         $donde = [];
         $valores = [];
+        if (isset($filtros["alcance_cuadrilla"])) {
+            $donde[] = self::DE_LA_CUADRILLA;
+            $valores[":cua1"] = $valores[":cua2"] = (int) $filtros["alcance_cuadrilla"];
+        }
         if (isset($filtros["q"])) {
             $like = Paginacion::paraLike($filtros["q"]);
             $donde[] = "(c.codigo LIKE :q1 OR c.direccion LIKE :q2 OR z.nombre LIKE :q3 OR t.nombre LIKE :q4)";
@@ -102,11 +114,12 @@ class Contenedor
         return self::idDeTipo($nombre) !== null;
     }
 
-    public static function obtener(int $id): ?array
+    // $alcanceCuadrilla: si viene, solo se devuelve el contenedor si esta dentro de lo que ve esa cuadrilla.
+    public static function obtener(int $id, ?int $alcanceCuadrilla = null): ?array
     {
-        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . " WHERE c.id_contenedor = :id";
+        $sql = "SELECT " . self::CAMPOS . " " . self::DESDE . " WHERE c.id_contenedor = :id" . ($alcanceCuadrilla === null ? "" : " AND " . self::DE_LA_CUADRILLA);
         $consulta = Database::conexion()->prepare($sql);
-        $consulta->execute([":id" => $id]);
+        $consulta->execute($alcanceCuadrilla === null ? [":id" => $id] : [":id" => $id, ":cua1" => $alcanceCuadrilla, ":cua2" => $alcanceCuadrilla]);
 
         $contenedor = $consulta->fetch();
         return $contenedor === false ? null : $contenedor;

@@ -26,6 +26,8 @@ $porCodigo = array_column($filas, null, "codigo");
 afirmar("La cuadrilla tambien la ve: 200, con el metodo explicado y sin los retirados", [200, true, false], [$codigo, str_contains($cuerpo["metodo"] ?? "", "no es inteligencia artificial"), isset($porCodigo["CNT-010"])]);
 afirmar("Cada fila trae su prediccion con estado, horas, nivel, intervalo, vaciados, confianza y texto", true, count(array_filter($filas, fn($f) => isset($f["prediccion"]["estado"]) && array_key_exists("horas_hasta_90", $f["prediccion"])
     && array_key_exists("confianza", $f["prediccion"]) && isset($f["prediccion"]["texto"]))) === count($filas));
+[, $cuerpoAdmin] = peticion("GET", "/api-gestion/contenedores/prediccion", null, $admin);
+$porCodigo = array_column($cuerpoAdmin["datos"] ?? [], null, "codigo");   // la cuadrilla solo ve lo de sus rutas; el seed completo lo ve el administrador
 afirmar("Un contenedor lleno del seed figura como lleno", ["lleno", 0], [$porCodigo["CNT-002"]["prediccion"]["estado"] ?? null, (int) ($porCodigo["CNT-002"]["prediccion"]["horas_hasta_90"] ?? -1)]);
 afirmar("Uno con un solo vaciado (seed) figura sin datos suficientes, no con un numero inventado", ["sin_datos", null, "Sin datos suficientes" === "Sin datos suficientes"], [
     $porCodigo["CNT-001"]["prediccion"]["estado"] ?? null, array_key_exists("horas_hasta_90", $porCodigo["CNT-001"]["prediccion"] ?? []) ? $porCodigo["CNT-001"]["prediccion"]["horas_hasta_90"] : "falta", true]);

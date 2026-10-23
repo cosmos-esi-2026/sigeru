@@ -103,6 +103,7 @@ foreach (["A" => "Mixto", "B" => "Vidrio"] as $letra => $tipo) {
     peticion("POST", "/api-gestion/contenedores", ["codigo" => "TOPE-$letra$sufijo", "direccion" => "Contenedor de prueba de recepcion",
         "capacidad" => 1100, "tipo_residuo" => $tipo, "id_zona" => 2], $admin);
 }
+ponerEnRuta($pdo, $idRuta, ["TOPE-A$sufijo", "TOPE-B$sufijo"]);
 $plan = ["id_ruta" => $idRuta, "id_camion" => $idCamion, "id_cuadrilla" => 1, "fecha_hora_inicio" => "2026-10-21T06:30", "id_centro" => $idCentro];
 [, $cuerpo] = peticion("POST", "/api-recoleccion/recolecciones", $plan, $admin);
 $idRec = (int) ($cuerpo["datos"]["id_recoleccion"] ?? 0);

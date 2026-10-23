@@ -3,6 +3,7 @@
 require_once __DIR__ . "/../config/database.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/FlujoRecoleccion.php";
+require_once __DIR__ . "/RecorridoRuta.php";
 
 class Recoleccion
 {
@@ -94,6 +95,7 @@ class Recoleccion
         );
         $consulta->execute([":id" => $id]);
 
+        $recoleccion["recorrido"] = RecorridoRuta::de($recoleccion["id_ruta"], $recoleccion["id_recoleccion"]);
         $recoleccion["detalle_vaciados"] = array_map(function (array $fila) {
             foreach (["id_vaciado", "id_contenedor"] as $campo) {
                 $fila[$campo] = (int) $fila[$campo];
@@ -204,6 +206,36 @@ class Recoleccion
         return self::detalle($id);
     }
 
+    // Planifica varias recolecciones de una vez (la «Asignacion del dia»): todas o ninguna. Una cuadrilla o un camion solo puede tener UNA recoleccion
+    // planificada o en curso por dia; si una asignacion falla, el mensaje dice cual (la numero N) y no se crea ninguna.
+    public static function planificarLote(array $asignaciones): array
+    {
+        return Database::transaccion(function (PDO $conexion) use ($asignaciones): array {
+            $creadas = [];
+            foreach ($asignaciones as $i => $datos) {
+                try {
+                    $dia = substr((string) FlujoRecoleccion::fechaHora($datos["fecha_hora_inicio"]), 0, 10);
+                    self::exigirLibreEseDia($conexion, "id_cuadrilla", (int) FlujoRecoleccion::entero($datos["id_cuadrilla"]), $dia, "La cuadrilla");
+                    self::exigirLibreEseDia($conexion, "id_camion", (int) FlujoRecoleccion::entero($datos["id_camion"]), $dia, "El camión");
+                    $creadas[] = self::planificar($datos);
+                } catch (ErrorDeNegocio $e) {
+                    throw new ErrorDeNegocio("Asignación " . ($i + 1) . ": " . $e->getMessage(), $e->estadoHttp(), $e->datos());
+                }
+            }
+            return $creadas;
+        });
+    }
+
+    private static function exigirLibreEseDia(PDO $conexion, string $campo, int $id, string $dia, string $quien): void
+    {
+        $consulta = $conexion->prepare("SELECT id_recoleccion FROM recoleccion WHERE $campo = :id AND DATE(fecha_hora_inicio) = :dia AND estado IN ('planificada', 'en_curso') LIMIT 1");
+        $consulta->execute([":id" => $id, ":dia" => $dia]);
+        $otra = $consulta->fetchColumn();
+        if ($otra !== false) {
+            throw new ErrorDeNegocio("$quien ya tiene la recolección " . FlujoRecoleccion::numero((int) $otra) . " ese día", 409);
+        }
+    }
+
     public static function iniciar(int $id, array $usuario): array
     {
         Database::transaccion(function (PDO $conexion) use ($id, $usuario) {
@@ -245,7 +277,7 @@ class Recoleccion
     public static function registrarVaciado(int $id, array $datos, array $usuario): array
     {
         Database::transaccion(function (PDO $conexion) use ($id, $datos, $usuario) {
-            self::preparar($conexion, $id, $usuario, "vaciado");
+            $recoleccion = self::preparar($conexion, $id, $usuario, "vaciado");
 
             $idContenedor = FlujoRecoleccion::entero($datos["id_contenedor"] ?? null);
             $consulta = $conexion->prepare(
@@ -260,6 +292,15 @@ class Recoleccion
             }
             if ($contenedor["estado"] === "retirado") {
                 throw new ErrorDeNegocio("El contenedor " . $contenedor["codigo"] . " está retirado", 409);
+            }
+            // Solo se vacian contenedores de la ruta de ESTA recoleccion, y los que se recolectan: uno en mantenimiento lo atiende mantenimiento, no el camion.
+            $enRuta = $conexion->prepare("SELECT 1 FROM ruta_contenedor WHERE id_ruta = :ruta AND id_contenedor = :contenedor");
+            $enRuta->execute([":ruta" => (int) $recoleccion["id_ruta"], ":contenedor" => (int) $contenedor["id_contenedor"]]);
+            if ($enRuta->fetchColumn() === false) {
+                throw new ErrorDeNegocio("El contenedor " . $contenedor["codigo"] . " no está en la ruta de esta recolección", 409);
+            }
+            if ($contenedor["estado"] === "mantenimiento") {
+                throw new ErrorDeNegocio("El contenedor " . $contenedor["codigo"] . " está en mantenimiento: no se recolecta", 409);
             }
             $error = FlujoRecoleccion::errorDeVaciado($datos, $contenedor["capacidad"] === null ? null : (int) $contenedor["capacidad"]);
             if ($error !== null) {
