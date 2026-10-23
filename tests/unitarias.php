@@ -436,6 +436,8 @@ require __DIR__ . "/unitarias-operario.php";
 require __DIR__ . "/unitarias-notificaciones.php";
 require __DIR__ . "/unitarias-guia.php";
 require __DIR__ . "/unitarias-ruta.php";
+require __DIR__ . "/unitarias-rutas.php";
+require __DIR__ . "/unitarias-trazado.php";
 require __DIR__ . "/unitarias-pdf.php";
 require __DIR__ . "/unitarias-offline.php";
 require __DIR__ . "/unitarias-tema.php";

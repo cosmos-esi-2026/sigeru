@@ -52,6 +52,8 @@
 --  Actualizado el 19/10/2026 (extras, parte 21): suma clave_idempotencia (migracion 016: reenvios
 --  sin duplicar de la Cuadrilla sin conexion). Es una tabla de soporte, no del modelo: pasa de 28 a 29
 --  tablas fisicas y las del modelo siguen siendo 22.
+--
+-- Actualizado el 22/10/2026 (plan de rutas para la defensa): tabla ruta_contenedor y el trazado de la ruta (migracion 017); 23 tablas del modelo.
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -658,9 +660,30 @@ CREATE TABLE `ruta` (
   `hora_inicio` time NOT NULL,
   `estado` enum('activa','inactiva') NOT NULL DEFAULT 'activa',
   `id_zona` int(11) NOT NULL,
+  `trazado` longtext DEFAULT NULL,
+  `trazado_tipo` enum('calles','recta') DEFAULT NULL,
+  `trazado_firma` char(64) DEFAULT NULL,
+  `trazado_servicio` varchar(40) DEFAULT NULL,
+  `trazado_distancia_m` int(11) DEFAULT NULL,
+  `trazado_duracion_s` int(11) DEFAULT NULL,
+  `trazado_en` datetime DEFAULT NULL,
   PRIMARY KEY (`id_ruta`),
   KEY `fk_ruta_zona` (`id_zona`),
   CONSTRAINT `fk_ruta_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ruta_contenedor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ruta_contenedor` (
+  `id_ruta` int(11) NOT NULL,
+  `id_contenedor` int(11) NOT NULL,
+  `orden` int(11) NOT NULL,
+  PRIMARY KEY (`id_ruta`,`id_contenedor`),
+  UNIQUE KEY `uq_ruta_orden` (`id_ruta`,`orden`),
+  KEY `idx_rutacont_contenedor` (`id_contenedor`),
+  CONSTRAINT `fk_rutacont_contenedor` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`) ON DELETE CASCADE,
+  CONSTRAINT `fk_rutacont_ruta` FOREIGN KEY (`id_ruta`) REFERENCES `ruta` (`id_ruta`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `solicitud_registro`;

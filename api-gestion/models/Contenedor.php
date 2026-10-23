@@ -1,7 +1,9 @@
 <?php
 
 require_once __DIR__ . "/../config/database.php";
+require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/Paginacion.php";
+require_once __DIR__ . "/Limites.php";
 
 class Contenedor
 {
@@ -141,6 +143,29 @@ class Contenedor
         return empty($datos["zona"]) ? null : self::idDeZonaPorNombre($datos["zona"]);
     }
 
+    // Contenedores en servicio (no retirados) de una zona: son los que cuentan para el tope de Limites::MAX_CONTENEDORES_POR_ZONA.
+    public static function enServicioEnZona(int $idZona): int
+    {
+        $consulta = Database::conexion()->prepare("SELECT COUNT(*) FROM contenedor WHERE id_zona = :zona AND estado <> 'retirado'");
+        $consulta->execute([":zona" => $idZona]);
+        return (int) $consulta->fetchColumn();
+    }
+
+    // Hay que llamarla dentro de una transaccion y ANTES de agregar el contenedor a la zona. Bloquea la fila de la zona para que dos altas
+    // simultaneas no se pasen del tope entre las dos.
+    private static function exigirCupoEnZona(PDO $conexion, int $idZona): void
+    {
+        $zona = $conexion->prepare("SELECT nombre FROM zona WHERE id_zona = :zona FOR UPDATE");
+        $zona->execute([":zona" => $idZona]);
+        $nombre = $zona->fetchColumn();
+        if ($nombre === false) {
+            return; // la existencia de la zona ya la valido el controlador
+        }
+        if (self::enServicioEnZona($idZona) >= Limites::MAX_CONTENEDORES_POR_ZONA) {
+            throw new ErrorDeNegocio(Limites::mensajeZonaLlena((string) $nombre), 409);
+        }
+    }
+
     public static function crear(array $datos): array
     {
         $estado = in_array($datos["estado"] ?? "", self::ESTADOS, true)
@@ -151,6 +176,11 @@ class Contenedor
         $conexion->beginTransaction();
 
         try {
+            $idZona = self::resolverZona($datos);
+            if ($idZona !== null && $estado !== "retirado") {
+                self::exigirCupoEnZona($conexion, $idZona);
+            }
+
             $sql = "INSERT INTO contenedor
                        (codigo, direccion, latitud, longitud, capacidad, estado,
                         id_zona, id_tipo_residuo)
@@ -166,7 +196,7 @@ class Contenedor
                 ":longitud"  => $datos["longitud"]  ?? null,
                 ":capacidad" => ($datos["capacidad"] ?? "") === "" ? null : (int) $datos["capacidad"],
                 ":estado"    => $estado,
-                ":id_zona"   => self::resolverZona($datos),
+                ":id_zona"   => $idZona,
                 ":id_tipo"   => self::idDeTipo($datos["tipo_residuo"] ?? null),
             ]);
 
@@ -175,8 +205,10 @@ class Contenedor
 
             $conexion->commit();
             return self::obtener($id);
-        } catch (PDOException $e) {
-            $conexion->rollBack();
+        } catch (Throwable $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
             throw $e;
         }
     }
@@ -188,8 +220,16 @@ class Contenedor
 
     private static function aplicarCambios(int $id, array $datos): ?array
     {
-        if (self::obtener($id) === null) {
+        $antes = self::obtener($id);
+        if ($antes === null) {
             return null;
+        }
+
+        // Mover un contenedor a otra zona, o sacarlo de "retirado", lo suma al cupo de la zona de destino: no puede pasarse del tope.
+        $zonaDestino = !empty($datos["id_zona"]) ? (int) $datos["id_zona"] : (int) $antes["id_zona"];
+        $estadoDestino = isset($datos["estado"]) && in_array($datos["estado"], self::ESTADOS, true) ? $datos["estado"] : $antes["estado"];
+        if ($estadoDestino !== "retirado" && ($zonaDestino !== (int) $antes["id_zona"] || $antes["estado"] === "retirado")) {
+            self::exigirCupoEnZona(Database::conexion(), $zonaDestino);
         }
 
         $partes = [];

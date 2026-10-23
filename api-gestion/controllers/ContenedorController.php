@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../models/Contenedor.php";
 require_once __DIR__ . "/../models/ValidacionContenedor.php";
 require_once __DIR__ . "/../models/Paginacion.php";
@@ -164,7 +165,11 @@ class ContenedorController
             Response::error("Ya existe un contenedor con ese código", 409);
         }
 
-        $nuevo = Contenedor::crear($datos);
+        try {
+            $nuevo = Contenedor::crear($datos);
+        } catch (ErrorDeNegocio $e) {
+            Response::error($e->getMessage(), $e->estadoHttp());
+        }
         Response::json(["ok" => true, "mensaje" => "Contenedor creado", "datos" => $nuevo], 201);
     }
 
@@ -191,7 +196,11 @@ class ContenedorController
             Response::error("Ya existe un contenedor con ese código", 409);
         }
 
-        $actualizado = Contenedor::actualizar($id, $datos);
+        try {
+            $actualizado = Contenedor::actualizar($id, $datos);
+        } catch (ErrorDeNegocio $e) {
+            Response::error($e->getMessage(), $e->estadoHttp());
+        }
         Response::json(["ok" => true, "mensaje" => "Contenedor actualizado", "datos" => $actualizado]);
     }
 

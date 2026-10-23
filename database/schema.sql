@@ -65,6 +65,7 @@ DROP TABLE IF EXISTS historial_incidencia;
 DROP TABLE IF EXISTS incidencia;
 DROP TABLE IF EXISTS vaciado;
 DROP TABLE IF EXISTS recoleccion;
+DROP TABLE IF EXISTS ruta_contenedor;
 DROP TABLE IF EXISTS ruta;
 DROP TABLE IF EXISTS maquinaria;
 DROP TABLE IF EXISTS camion;
@@ -319,8 +320,36 @@ CREATE TABLE ruta (
     hora_inicio TIME NOT NULL,
     estado      ENUM('activa','inactiva') NOT NULL DEFAULT 'activa',
     id_zona     INT NOT NULL,
+    trazado             LONGTEXT NULL,
+    trazado_tipo        ENUM('calles','recta') NULL,
+    trazado_firma       CHAR(64) NULL,
+    trazado_servicio    VARCHAR(40) NULL,
+    trazado_distancia_m INT NULL,
+    trazado_duracion_s  INT NULL,
+    trazado_en          DATETIME NULL,
     CONSTRAINT fk_ruta_zona
         FOREIGN KEY (id_zona) REFERENCES zona(id_zona)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Desde la migracion 017 la ruta guarda su trazado por calles (GeoJSON), el servicio que lo calculo y la firma de la
+-- lista de paradas con la que se calculo; y sus contenedores van en ruta_contenedor.
+
+
+-- ----------------------------------------------------------------------------
+-- 12 bis) ruta_contenedor
+-- Los contenedores de una ruta y su orden de visita (migracion 017). Un contenedor pertenece a una sola ruta
+-- ACTIVA: lo valida la API. Si se borra la ruta o el contenedor, el vinculo se va con el.
+-- ----------------------------------------------------------------------------
+CREATE TABLE ruta_contenedor (
+    id_ruta       INT NOT NULL,
+    id_contenedor INT NOT NULL,
+    orden         INT NOT NULL,
+    PRIMARY KEY (id_ruta, id_contenedor),
+    UNIQUE KEY uq_ruta_orden (id_ruta, orden),
+    INDEX idx_rutacont_contenedor (id_contenedor),
+    CONSTRAINT fk_rutacont_ruta
+        FOREIGN KEY (id_ruta) REFERENCES ruta(id_ruta) ON DELETE CASCADE,
+    CONSTRAINT fk_rutacont_contenedor
+        FOREIGN KEY (id_contenedor) REFERENCES contenedor(id_contenedor) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -491,7 +520,8 @@ INSERT INTO migracion (nombre) VALUES
     ('013-participacion-solo-agregado.sql'),
     ('014-zona-del-vecino.sql'),
     ('015-factor-ambiental.sql'),
-    ('016-clave-idempotencia.sql');
+    ('016-clave-idempotencia.sql'),
+    ('017-rutas-con-contenedores.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -710,7 +740,7 @@ FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'Los puntos son de solo agregado';
 
 -- ============================================================================
---  Fin del schema. 22 tablas del modelo de clases (15 + historial_incidencia + recepcion,
---  movimiento_stock, historial_maquinaria, notificacion, calificacion y movimiento_punto, de las extras)
+--  Fin del schema. 23 tablas del modelo de clases (15 + historial_incidencia + recepcion,
+--  movimiento_stock, historial_maquinaria, notificacion, calificacion, movimiento_punto y ruta_contenedor, de las extras)
 --  mas las tecnicas migracion e intento_login.
 -- ============================================================================

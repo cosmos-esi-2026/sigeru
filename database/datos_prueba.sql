@@ -30,6 +30,7 @@ TRUNCATE TABLE movimiento_stock;
 TRUNCATE TABLE recepcion;
 TRUNCATE TABLE vaciado;
 TRUNCATE TABLE recoleccion;
+TRUNCATE TABLE ruta_contenedor;
 TRUNCATE TABLE ruta;
 TRUNCATE TABLE maquinaria;
 TRUNCATE TABLE camion;
@@ -188,6 +189,15 @@ INSERT INTO ruta (id_ruta, nombre, dia_semana, hora_inicio, estado, id_zona) VAL
 (3, 'Ruta Pocitos Tarde',       'miercoles', '14:00:00', 'activa',   3),
 (4, 'Ruta Cordon Manana',       'viernes',   '06:15:00', 'activa',   4),
 (5, 'Ruta Aires Puros Noche',   'jueves',    '22:00:00', 'inactiva', 5);
+
+-- Los contenedores de cada ruta y su orden de visita (migracion 017). El CNT-005 esta en mantenimiento: sigue en su ruta, que lo
+-- muestra como "no se recolecta". El CNT-010 esta retirado y no va en ninguna ruta.
+INSERT INTO ruta_contenedor (id_ruta, id_contenedor, orden) VALUES
+(1, 4, 1), (1, 5, 2),
+(2, 2, 1),
+(3, 6, 1), (3, 7, 2), (3, 8, 3),
+(4, 1, 1), (4, 3, 2),
+(5, 9, 1);
 
 
 -- --- 13) Recolecciones ------------------------------------------------------
