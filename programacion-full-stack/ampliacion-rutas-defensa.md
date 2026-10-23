@@ -107,3 +107,25 @@ Matriz de permisos: sección 23 de `ciberseguridad/ampliacion-matriz-de-permisos
 - **Pantalla «Cuadrillas»** (`cuadrillas.html`, menú del Administrador) y `POST/PUT/DELETE /api-recoleccion/cuadrillas`: crear, renombrar, cambiar el turno, ver integrantes y recolecciones abiertas, dar de baja (bloqueada si tiene trabajo abierto). `models/Cuadrilla.php` es copia idéntica en `api-gestion` (una prueba lo exige).
 - **Nadie se hace cuadrilla solo:** el registro público sigue creando solo vecinos (prueba que ignora `rol` e `id_cuadrilla`). En el login, «¿Sos de una cuadrilla de recolección? Pedí acceso» lleva a `acceso-cuadrilla.html`, que deja una solicitud `tipo_cuenta = 'cuadrilla'` con lo que la persona dice (`cuadrilla_indicada`). En «Solicitudes» el administrador la ve marcada («Pide ser: Cuadrilla («...»)»), **elige la cuadrilla real** y aprueba (o rechaza). **SIN Fornos:** no se pidió contraseña en el formulario; la persona la crea con el enlace que le llega por correo al aprobar, igual que un usuario dado de alta por el administrador.
 - Pruebas: `correr-tests-cuadrillas.php` (60 comprobaciones) y las unitarias de menú y permisos.
+
+
+## 12. Escala y fluidez (bloque 4, 23/10/2026): medido con el seed de defensa (800 contenedores, 40 rutas con trazado)
+
+Medido en esta PC (Apache y MariaDB portables, `curl` con `Accept-Encoding: gzip` y el navegador integrado). **No se midió en la PC más floja de Fornos** (queda para él: abrir `mapa.html` y la portada ahí).
+
+| Qué | Antes | Después |
+|---|---|---|
+| `GET /publico/mapa` (portada, 800 puntos) | 158.604 B | **17.708 B** comprimido |
+| `GET /contenedores` (todos) | 216.562 B | **19.879 B** |
+| `GET /contenedores/prediccion` | 305.932 B | **13.331 B** |
+| `GET /rutas/mapa` (40 trazados) | 289.975 B, 0,4 a 0,5 s | **68.866 B, 0,04 s** |
+| Portada completa en el navegador | — | carga en 286 ms, 803 marcadores, 227 KB en total |
+| Mapa del sistema (Administrador) | — | 800 marcadores, 20 KB de datos; redibujar los 800 al cambiar un filtro: 0,37 s |
+
+- **4.1 Compresión:** `mod_deflate` y `mod_filter` prendidos en `herramientas/xampp/apache/conf/httpd.conf`, y la regla `AddOutputFilterByType DEFLATE` (JSON, CSS, JS, HTML, SVG) en `herramientas/plantillas/sigeru.conf.plantilla` (que `iniciar-xampp.cmd` copia a `sigeru.conf`). **En el servidor `sigeru-srv` hay que hacer lo mismo:** `sudo a2enmod deflate` y reiniciar Apache (el tipo `application/json` entra en la configuración por defecto de Ubuntu, `/etc/apache2/mods-available/deflate.conf`; verificar con `curl -H 'Accept-Encoding: gzip' -I`). El archivo `novedades-3ra-para-el-servidor.md` ya no está en la carpeta (Fornos rehizo la de S.O.): esta nota es la que queda.
+- **Una consulta lenta encontrada y arreglada:** `GET /rutas/mapa` ordenaba las filas con la columna `trazado` (LONGTEXT) adentro y MariaDB las ordena en disco: 0,4 s. Ahora el orden se hace sin ese texto y los trazados se piden aparte (`Ruta::paraMapa`): 0,007 s.
+- **4.3 Inicio:** el panel del Administrador ya no baja todos los contenedores ni todos los usuarios: pide `?por_pagina=1` y usa `meta.total`, y la tabla de llenos trae los primeros 10 (`?estado=lleno&por_pagina=10`) con la nota «Se muestran los primeros N de T».
+- **4.4 «Informar un problema»:** las sugerencias del código salen de una búsqueda de a 10 mientras se escribe (`/contenedores?q=&por_pagina=10`); los «cercanos» usan los puntos públicos del mapa, que se piden recién al tocar «Usar mi ubicación». **La posición sigue sin salir del teléfono** (la distancia se calcula en el navegador), así que el texto de privacidad no cambia.
+- **4.5 Detalle de recolección:** las sugerencias del vaciado son las paradas de esa ruta (bloque 6).
+- **No hizo falta (medido):** parámetro `?municipio=` en `/publico/mapa` (17 KB y 286 ms alcanzan), dibujo en canvas o racimos (800 marcadores, bajo el tope de 2.000), paginar la tabla del mapa (0,37 s al redibujar). Si algún día se cargaran los ~11.700 contenedores, esas tres cosas pasan a ser necesarias: está dicho en `plan-rutas-defensa.md`.
+- **4.7 Índices:** `contenedor` ya tiene índices por `estado`, `id_zona` y `codigo`; `incidencia` por `estado`; las consultas medidas (predicción, ruta sugerida, asignación) responden en menos de 0,06 s con 800 contenedores. No se agregó ninguno (no hay consultas por latitud/longitud en SQL).

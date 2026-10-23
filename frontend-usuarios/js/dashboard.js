@@ -2,6 +2,7 @@ Sesion.exigir();
 
 const cuerpoLlenos = document.getElementById("cuerpo-llenos");
 const COLUMNAS_LLENOS = 4;
+const MAXIMO_LLENOS = 10;
 
 function pintarMetrica(id, valor, detalle) {
   const elemento = document.getElementById(id);
@@ -19,16 +20,14 @@ function cargandoMetrica(id) {
 
 async function cargarContenedores() {
   try {
-    const respuesta = await apiGet(API.gestion + "/contenedores");
-    const contenedores = respuesta.datos || [];
-
-    pintarMetrica("metrica-contenedores", contenedores.length);
-
-    const llenos = contenedores.filter(function (c) {
-      return c.estado === "lleno";
-    });
-    pintarMetrica("metrica-llenos", llenos.length);
-    dibujarLlenos(llenos);
+    // Con cientos de contenedores no se bajan todos para contar: el servidor cuenta (meta.total) y la tabla trae solo los primeros llenos.
+    const [todos, llenos] = await Promise.all([
+      apiGet(API.gestion + "/contenedores?por_pagina=1"),
+      apiGet(API.gestion + "/contenedores?estado=lleno&por_pagina=" + MAXIMO_LLENOS),
+    ]);
+    pintarMetrica("metrica-contenedores", todos.meta.total);
+    pintarMetrica("metrica-llenos", llenos.meta.total);
+    dibujarLlenos(llenos.datos || [], llenos.meta.total);
   } catch (error) {
     pintarMetrica("metrica-contenedores", "—", mensajeDeFallo(error));
     pintarMetrica("metrica-llenos", "—", mensajeDeFallo(error));
@@ -52,14 +51,14 @@ async function cargarCamiones() {
 
 async function cargarUsuarios() {
   try {
-    const respuesta = await apiGet(API.usuarios + "/usuarios");
-    pintarMetrica("metrica-usuarios", (respuesta.datos || []).length);
+    const respuesta = await apiGet(API.usuarios + "/usuarios?por_pagina=1");
+    pintarMetrica("metrica-usuarios", respuesta.meta.total);
   } catch (error) {
     pintarMetrica("metrica-usuarios", "—", mensajeDeFallo(error));
   }
 }
 
-function dibujarLlenos(llenos) {
+function dibujarLlenos(llenos, total) {
   if (llenos.length === 0) {
     cuerpoLlenos.innerHTML = filaVacia(
       COLUMNAS_LLENOS,
@@ -76,7 +75,9 @@ function dibujarLlenos(llenos) {
       celda("Capacidad", c.capacidad ? c.capacidad + " L" : null) +
       celdaEstado("Estado", c.estado, "rojo") +
       "</tr>";
-  }).join("");
+  }).join("") + (total > llenos.length
+    ? '<tr class="fila-estado"><td colspan="' + COLUMNAS_LLENOS + '">Se muestran los primeros ' + llenos.length + " de " + total + ". El resto está en «Ver todos los contenedores».</td></tr>"
+    : "");
 }
 
 const NIVELES_URGENCIA = {

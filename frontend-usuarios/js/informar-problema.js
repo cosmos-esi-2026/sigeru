@@ -11,21 +11,46 @@ function mostrar(html, tipo) {
   mensaje.className = html ? "mensaje " + tipo : "mensaje";
 }
 
+// Con cientos de contenedores no se baja la lista entera: las sugerencias salen de una busqueda de a 10 mientras se escribe,
+// y los cercanos usan los puntos publicos del mapa (comprimidos, ~20 KB) que se piden recien al tocar «Usar mi ubicacion».
+// La posicion sigue sin salir del telefono: la distancia se calcula aca.
 let contenedoresCargados = [];
-let promesaContenedores = Promise.resolve();
+let promesaContenedores = null;
 
-async function cargarSugerencias() {
+function cargarPuntosCercanos() {
+  if (promesaContenedores === null) {
+    promesaContenedores = apiGet(API.gestion + "/publico/mapa").then(function (respuesta) {
+      contenedoresCargados = (respuesta.datos.contenedores || []).filter(function (c) { return c.estado !== "retirado"; });
+    }).catch(function () {
+      promesaContenedores = null;
+      contenedoresCargados = [];
+    });
+  }
+  return promesaContenedores;
+}
+
+let ultimaBusqueda = 0;
+async function sugerirContenedores() {
+  const texto = formIncidencia.codigo_contenedor.value.trim();
+  const numero = ++ultimaBusqueda;
+  if (texto.length < 2) {
+    document.getElementById("lista-contenedores").innerHTML = "";
+    return;
+  }
   try {
-    const respuesta = await apiGet(API.gestion + "/contenedores");
-    contenedoresCargados = (respuesta.datos || []).filter(function (c) { return c.estado !== "retirado"; });
-    document.getElementById("lista-contenedores").innerHTML = contenedoresCargados
+    const respuesta = await apiGet(API.gestion + "/contenedores?q=" + encodeURIComponent(texto) + "&por_pagina=10");
+    if (numero !== ultimaBusqueda) {
+      return;
+    }
+    document.getElementById("lista-contenedores").innerHTML = (respuesta.datos || [])
+      .filter(function (c) { return c.estado !== "retirado"; })
       .map(function (c) {
         return '<option value="' + escaparHtml(c.codigo) + '">' +
                escaparHtml(c.direccion + (c.zona ? " · " + c.zona : "")) + "</option>";
       }).join("");
   } catch (error) {
     document.getElementById("ayuda-contenedor").textContent =
-      "No se pudo traer la lista de sugerencias: escribí el código tal como figura en el contenedor.";
+      "No se pudieron traer sugerencias: escribí el código tal como figura en el contenedor.";
   }
 }
 
@@ -114,7 +139,7 @@ async function buscarCercanos() {
   estadoUbicacion.textContent = "Buscando tu ubicación...";
   try {
     const posicion = await pedirPosicion();
-    await promesaContenedores;
+    await cargarPuntosCercanos();
     mostrarCercanos(posicion);
   } catch (error) {
     estadoUbicacion.textContent = error && error.code === 1
@@ -327,4 +352,12 @@ if (codigoInicial && /^[A-Za-z0-9-]{1,20}$/.test(codigoInicial)) {
 }
 
 activarValidacion(formIncidencia);
-promesaContenedores = cargarSugerencias();
+formIncidencia.codigo_contenedor.addEventListener("input", retrasarBusqueda(sugerirContenedores, 300));
+
+function retrasarBusqueda(funcion, milisegundos) {
+  let espera = null;
+  return function () {
+    clearTimeout(espera);
+    espera = setTimeout(funcion, milisegundos);
+  };
+}
