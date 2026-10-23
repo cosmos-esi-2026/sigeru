@@ -167,7 +167,9 @@ CREATE TABLE solicitud_registro (
     telefono        VARCHAR(30)  NULL,
     direccion       VARCHAR(200) NULL,
     estado          ENUM('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
-    fecha_solicitud DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+    fecha_solicitud DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    tipo_cuenta     ENUM('vecino','cuadrilla') NOT NULL DEFAULT 'vecino',
+    cuadrilla_indicada VARCHAR(80) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -524,7 +526,8 @@ INSERT INTO migracion (nombre) VALUES
     ('015-factor-ambiental.sql'),
     ('016-clave-idempotencia.sql'),
     ('017-rutas-con-contenedores.sql'),
-    ('018-incidencias-lleno-y-mantenimiento.sql');
+    ('018-incidencias-lleno-y-mantenimiento.sql'),
+    ('019-solicitud-tipo-cuenta.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.

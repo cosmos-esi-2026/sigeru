@@ -61,6 +61,35 @@ class UsuarioController
         return $rolFinal === "Operario" ? null : "Solo un Operario se asocia a un centro de acopio";
     }
 
+    // La cuadrilla es solo para el rol Cuadrilla, y ese rol la necesita: sin cuadrilla el usuario no veria ninguna ruta.
+    // $actual es el usuario que se edita (null al crear): si no se manda id_cuadrilla se conserva la que ya tenia.
+    private function errorDeCuadrilla(array $datos, string $rolFinal, ?array $actual): ?string
+    {
+        $manda = array_key_exists("id_cuadrilla", $datos);
+        $cuadrilla = $datos["id_cuadrilla"] ?? null;
+        $vacia = $cuadrilla === null || $cuadrilla === "";
+
+        if ($rolFinal !== "Cuadrilla") {
+            return $manda && !$vacia ? "Solo un usuario con rol Cuadrilla se asocia a una cuadrilla" : null;
+        }
+        if (!$manda) {
+            return ($actual !== null && $actual["rol"] === "Cuadrilla" && !empty($actual["id_cuadrilla"]))
+                ? null : "Elegí la cuadrilla a la que pertenece: sin ella no ve ninguna ruta";
+        }
+        if ($vacia) {
+            return "Elegí la cuadrilla a la que pertenece: sin ella no ve ninguna ruta";
+        }
+        $esEntero = is_int($cuadrilla) || (is_string($cuadrilla) && ctype_digit($cuadrilla));
+        if (!$esEntero || (int) $cuadrilla < 1 || !Usuario::existeCuadrilla((int) $cuadrilla)) {
+            return "La cuadrilla indicada no existe";
+        }
+        $igualALaActual = $actual !== null && (int) ($actual["id_cuadrilla"] ?? 0) === (int) $cuadrilla;
+        if (!$igualALaActual && !Usuario::cuadrillaActiva((int) $cuadrilla)) {
+            return "La cuadrilla indicada está dada de baja";
+        }
+        return null;
+    }
+
     public function crear(): void
     {
         Auth::exigirRol("Administrador");
@@ -84,6 +113,10 @@ class UsuarioController
         $errorCentro = $this->errorDeCentro($datos, $rol);
         if ($errorCentro !== null) {
             Response::error($errorCentro, 400);
+        }
+        $errorCuadrilla = $this->errorDeCuadrilla($datos, $rol, null);
+        if ($errorCuadrilla !== null) {
+            Response::error($errorCuadrilla, 400);
         }
 
         try {
@@ -139,6 +172,10 @@ class UsuarioController
         $errorCentro = $this->errorDeCentro($datos, $rol ?? $actual["rol"]);
         if ($errorCentro !== null) {
             Response::error($errorCentro, 400);
+        }
+        $errorCuadrilla = $this->errorDeCuadrilla($datos, $rol ?? $actual["rol"], $actual);
+        if ($errorCuadrilla !== null) {
+            Response::error($errorCuadrilla, 400);
         }
 
         if (array_key_exists("password", $datos)) {
@@ -399,6 +436,19 @@ class UsuarioController
             Response::error("Ya existe un usuario con ese email", 409);
         }
 
+        $tipo = $datos["tipo_cuenta"] ?? "vecino";
+        if (!in_array($tipo, ["vecino", "cuadrilla"], true)) {
+            Response::error("Tipo de cuenta inválido. Valores admitidos: vecino, cuadrilla", 400);
+        }
+        $indicada = $datos["cuadrilla_indicada"] ?? null;
+        if ($indicada !== null && (!is_string($indicada) || mb_strlen(trim($indicada)) > 80)) {
+            Response::error("La cuadrilla en la que trabajás no puede pasar de 80 caracteres", 400);
+        }
+        if ($tipo === "cuadrilla" && (!is_string($indicada) || trim($indicada) === "")) {
+            Response::error("Contanos en qué cuadrilla trabajás", 400);
+        }
+        $datos["tipo_cuenta"] = $tipo;
+        $datos["cuadrilla_indicada"] = is_string($indicada) && trim($indicada) !== "" ? trim($indicada) : null;
         $nueva = Usuario::crearSolicitud($datos);
         Response::json([
             "ok"      => true,
@@ -432,11 +482,21 @@ class UsuarioController
             Response::error("La solicitud ya estaba " . $solicitud["estado"], 409);
         }
 
-        $rol = $datos["rol"] ?? "Vecino";
+        // Quien pidio acceso como cuadrilla solo puede quedar como Cuadrilla, y el administrador elige la cuadrilla real.
+        $rol = $solicitud["tipo_cuenta"] === "cuadrilla" ? "Cuadrilla" : ($datos["rol"] ?? "Vecino");
         if (!in_array($rol, Usuario::ROLES, true)) {
             Response::error("Rol inválido. Valores admitidos: " . implode(", ", Usuario::ROLES), 400);
         }
+        if ($solicitud["tipo_cuenta"] === "cuadrilla" && isset($datos["rol"]) && $datos["rol"] !== "Cuadrilla") {
+            Response::error("Esta solicitud es de una cuadrilla: solo se puede aprobar con el rol Cuadrilla", 400);
+        }
+        $idCuadrilla = null;
         if ($decision === "aprobada") {
+            $errorCuadrilla = $this->errorDeCuadrilla($datos, $rol, null);
+            if ($errorCuadrilla !== null) {
+                Response::error($errorCuadrilla, 400);
+            }
+            $idCuadrilla = $rol === "Cuadrilla" ? (int) $datos["id_cuadrilla"] : null;
             try {
                 Correo::verificarConfiguracion();
             } catch (CorreoException $e) {
@@ -450,7 +510,8 @@ class UsuarioController
                 function (array $nuevo): void {
                     $token = EnlaceClave::crear((int) $nuevo["id_usuario"]);
                     Correo::enviarEnlace($nuevo["email"], $nuevo["nombre"], $token);
-                }
+                },
+                $idCuadrilla
             );
         } catch (CorreoException $e) {
             Response::error("No se pudo enviar el correo. La solicitud sigue pendiente.", 503);

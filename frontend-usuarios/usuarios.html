@@ -70,6 +70,11 @@
               <option value="Vecino">Vecino</option>
             </select>
           </label>
+          <label>Cuadrilla
+            <select name="cuadrilla" id="filtro-cuadrilla">
+              <option value="">Todas</option>
+            </select>
+          </label>
           <label>Estado
             <select name="estado">
               <option value="">Todos</option>
@@ -151,6 +156,12 @@
               <option>Cuadrilla</option>
               <option>Administrador</option>
             </select>
+          </label>
+          <label id="campo-cuadrilla" class="oculto">Cuadrilla *
+            <select name="id_cuadrilla">
+              <option value="">Elegí una cuadrilla</option>
+            </select>
+            <span class="ayuda-campo">La cuadrilla ve en el mapa y en «Mis tareas» solo las rutas que se le asignan. Sin cuadrilla no vería nada.</span>
           </label>
           <label id="campo-centro" class="oculto">Centro de acopio
             <select name="id_centro">

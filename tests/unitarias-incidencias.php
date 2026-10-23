@@ -209,7 +209,7 @@ foreach (Permisos::recursos() as $recurso) {
     }
 }
 afirmar("El operario no toca nada de incidencias ni de cuadrillas", [], $delOperario);
-afirmar("Las cuadrillas (ahora en api-recoleccion) se leen solo siendo administrador", [["Administrador"], []], [
+afirmar("Las cuadrillas (en api-recoleccion) se leen y se administran solo siendo administrador", [["Administrador"], ["Administrador"]], [
     $permisosRecoleccion["cuadrillas"]["GET"] ?? null, $permisosRecoleccion["cuadrillas"]["POST"] ?? null,
 ]);
 

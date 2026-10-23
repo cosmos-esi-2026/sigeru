@@ -11,7 +11,9 @@ class Usuario
 
     private const CAMPOS = "u.id_usuario, u.nombre, u.apellido, u.email,
                             u.telefono, u.direccion, r.nombre AS rol, u.estado,
-                            u.id_cuadrilla, u.id_centro,
+                            u.id_cuadrilla,
+                            (SELECT q.nombre FROM cuadrilla q WHERE q.id_cuadrilla = u.id_cuadrilla) AS cuadrilla,
+                            u.id_centro,
                             (SELECT ce.nombre FROM centro_acopio ce WHERE ce.id_centro = u.id_centro) AS centro,
                             u.fecha_registro";
 
@@ -49,6 +51,10 @@ class Usuario
         if (isset($filtros["estado"])) {
             $donde[] = "u.estado = :estado";
             $valores[":estado"] = $filtros["estado"];
+        }
+        if (isset($filtros["cuadrilla"])) {
+            $donde[] = "u.id_cuadrilla = :cuadrilla";
+            $valores[":cuadrilla"] = $filtros["cuadrilla"];
         }
         return [$donde === [] ? "" : " WHERE " . implode(" AND ", $donde), $valores];
     }
@@ -131,6 +137,21 @@ class Usuario
         return $consulta->fetchColumn() !== false;
     }
 
+    // Una cuadrilla a la que se puede asociar a alguien: existe y esta activa (una dada de baja no recibe gente nueva).
+    public static function cuadrillaActiva(int $id): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM cuadrilla WHERE id_cuadrilla = :id AND estado = 'activa'");
+        $consulta->execute([":id" => $id]);
+        return $consulta->fetchColumn() !== false;
+    }
+
+    public static function existeCuadrilla(int $id): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM cuadrilla WHERE id_cuadrilla = :id");
+        $consulta->execute([":id" => $id]);
+        return $consulta->fetchColumn() !== false;
+    }
+
     public static function existeEmail(string $email): bool
     {
         return self::porEmail($email) !== null;
@@ -147,10 +168,10 @@ class Usuario
 
         $sql = "INSERT INTO usuario
                    (nombre, apellido, email, password_hash, telefono, direccion,
-                    id_rol, id_centro, id_solicitud, estado)
+                    id_rol, id_centro, id_cuadrilla, id_solicitud, estado)
                 VALUES
                    (:nombre, :apellido, :email, :hash, :telefono, :direccion,
-                    :id_rol, :id_centro, :id_solicitud, :estado)";
+                    :id_rol, :id_centro, :id_cuadrilla, :id_solicitud, :estado)";
 
         $conexion = Database::conexion();
         $consulta = $conexion->prepare($sql);
@@ -163,6 +184,7 @@ class Usuario
             ":direccion"    => $datos["direccion"] ?? null,
             ":id_rol"       => $idRol,
             ":id_centro"    => $rol === "Operario" && !empty($datos["id_centro"]) ? (int) $datos["id_centro"] : null,
+            ":id_cuadrilla" => $rol === "Cuadrilla" && !empty($datos["id_cuadrilla"]) ? (int) $datos["id_cuadrilla"] : null,
             ":id_solicitud" => $datos["id_solicitud"] ?? null,
             ":estado"       => $estado,
         ]);
@@ -185,6 +207,12 @@ class Usuario
         if (array_key_exists("id_centro", $datos) || ($rol !== null && $rol !== "Operario")) {
             $partes[] = "id_centro = :id_centro";
             $valores[":id_centro"] = ($rol !== null && $rol !== "Operario") || empty($datos["id_centro"]) ? null : (int) $datos["id_centro"];
+        }
+
+        // Igual que el centro: la cuadrilla es solo del rol Cuadrilla y se limpia si el rol pasa a ser otro.
+        if (array_key_exists("id_cuadrilla", $datos) || ($rol !== null && $rol !== "Cuadrilla")) {
+            $partes[] = "id_cuadrilla = :id_cuadrilla";
+            $valores[":id_cuadrilla"] = ($rol !== null && $rol !== "Cuadrilla") || empty($datos["id_cuadrilla"]) ? null : (int) $datos["id_cuadrilla"];
         }
 
         if (array_key_exists("password", $datos)) {
@@ -269,9 +297,9 @@ class Usuario
     public static function crearSolicitud(array $datos): array
     {
         $sql = "INSERT INTO solicitud_registro
-                   (nombre, apellido, email, telefono, direccion, estado)
+                   (nombre, apellido, email, telefono, direccion, tipo_cuenta, cuadrilla_indicada, estado)
                 VALUES
-                   (:nombre, :apellido, :email, :telefono, :direccion, 'pendiente')";
+                   (:nombre, :apellido, :email, :telefono, :direccion, :tipo, :indicada, 'pendiente')";
 
         $conexion = Database::conexion();
         $consulta = $conexion->prepare($sql);
@@ -281,12 +309,14 @@ class Usuario
             ":email"     => $datos["email"]     ?? "",
             ":telefono"  => $datos["telefono"]  ?? null,
             ":direccion" => $datos["direccion"] ?? null,
+            ":tipo"      => ($datos["tipo_cuenta"] ?? "vecino") === "cuadrilla" ? "cuadrilla" : "vecino",
+            ":indicada"  => $datos["cuadrilla_indicada"] ?? null,
         ]);
 
         return self::obtenerSolicitud((int) $conexion->lastInsertId());
     }
 
-    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?callable $notificar = null): ?array
+    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?callable $notificar = null, ?int $idCuadrilla = null): ?array
     {
         $solicitud = self::obtenerSolicitud($id);
         if ($solicitud === null) {
@@ -310,6 +340,7 @@ class Usuario
                     "telefono"     => $solicitud["telefono"],
                     "direccion"    => $solicitud["direccion"],
                     "id_solicitud" => $id,
+                    "id_cuadrilla" => $idCuadrilla,
                     "password"     => bin2hex(random_bytes(32)),
                 ], $rol, "pendiente");
                 if ($notificar !== null) {

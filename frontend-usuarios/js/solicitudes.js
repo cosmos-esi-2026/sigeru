@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 6;
+const COLUMNAS = 7;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const filtroEstado = document.getElementById("filtro-estado");
 const formAprobar = document.getElementById("form-aprobar");
@@ -8,6 +8,7 @@ const mensaje = document.getElementById("mensaje");
 const modalAprobar = document.getElementById("modal-aprobar");
 
 let solicitudElegida = null;
+let solicitudesPorId = {};
 
 function colorEstado(estado) {
   if (estado === "aprobada") return "verde";
@@ -38,7 +39,13 @@ async function cargarSolicitudes() {
   }
 }
 
+function textoTipo(s) {
+  return s.tipo_cuenta === "cuadrilla" ? "Cuadrilla" + (s.cuadrilla_indicada ? " («" + s.cuadrilla_indicada + "»)" : "") : "Vecino";
+}
+
 function dibujarTabla(solicitudes) {
+  solicitudesPorId = {};
+  (solicitudes || []).forEach(function (s) { solicitudesPorId[s.id_solicitud] = s; });
   if (!solicitudes || solicitudes.length === 0) {
     const filtrando = filtroEstado.value === "pendiente";
     cuerpoTabla.innerHTML = filaVacia(
@@ -58,6 +65,7 @@ function dibujarTabla(solicitudes) {
       celda("Nombre", s.nombre + " " + s.apellido) +
       celda("Email", s.email) +
       celda("Teléfono", s.telefono) +
+      celda("Pide ser", textoTipo(s)) +
       celdaEstado("Estado", s.estado, colorEstado(s.estado)) +
       acciones(s) +
       "</tr>";
@@ -93,7 +101,9 @@ cuerpoTabla.addEventListener("click", async function (evento) {
       id: botonAprobar.dataset.id,
       nombre: fila.cells[1].textContent,
       email: fila.cells[2].textContent,
+      esDeCuadrilla: (solicitudesPorId[botonAprobar.dataset.id] || {}).tipo_cuenta === "cuadrilla",
     };
+    prepararCampoCuadrilla(solicitudElegida.esDeCuadrilla);
 
     document.getElementById("detalle-solicitud").textContent =
       "Se va a crear la cuenta de " + solicitudElegida.nombre +
@@ -132,6 +142,26 @@ cuerpoTabla.addEventListener("click", async function (evento) {
   }
 });
 
+// Quien pidio acceso como cuadrilla no elige rol: solo puede ser Cuadrilla, y el administrador elige la cuadrilla real.
+async function prepararCampoCuadrilla(esDeCuadrilla) {
+  document.getElementById("campo-rol").classList.toggle("oculto", esDeCuadrilla);
+  document.getElementById("campo-cuadrilla").classList.toggle("oculto", !esDeCuadrilla);
+  formAprobar.id_cuadrilla.required = esDeCuadrilla;
+  formAprobar.rol.value = esDeCuadrilla ? "Cuadrilla" : "Vecino";
+  if (!esDeCuadrilla) {
+    return;
+  }
+  try {
+    const respuesta = await apiGet(API.recoleccion + "/cuadrillas");
+    formAprobar.id_cuadrilla.innerHTML = '<option value="">Elegí una cuadrilla</option>' +
+      (respuesta.datos || []).filter(function (c) { return c.estado === "activa"; }).map(function (c) {
+        return '<option value="' + $entero(c.id_cuadrilla) + '">' + escaparHtml(c.nombre + " (" + c.integrantes + " integrante" + (c.integrantes === 1 ? "" : "s") + ")") + "</option>";
+      }).join("");
+  } catch (error) {
+    mostrar("No se pudo traer la lista de cuadrillas. Cerrá y probá de nuevo.", "error");
+  }
+}
+
 formAprobar.addEventListener("submit", async function (evento) {
   evento.preventDefault();
   mostrar("", "");
@@ -145,7 +175,9 @@ formAprobar.addEventListener("submit", async function (evento) {
   try {
     const { ok, resultado } = await apiPut(
       API.usuarios + "/solicitudes/" + solicitudElegida.id,
-      { decision: "aprobada", rol: formAprobar.rol.value }
+      solicitudElegida.esDeCuadrilla
+        ? { decision: "aprobada", rol: "Cuadrilla", id_cuadrilla: parseInt(formAprobar.id_cuadrilla.value, 10) }
+        : { decision: "aprobada", rol: formAprobar.rol.value }
     );
 
     if (ok) {

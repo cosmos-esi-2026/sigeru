@@ -99,3 +99,11 @@ Matriz de permisos: sección 23 de `ciberseguridad/ampliacion-matriz-de-permisos
 - La **cuadrilla también informa** en terreno, solo sobre los contenedores de sus rutas.
 - Pantallas: «Informar un problema» con la tarjeta «Contenedor lleno» (y el menú también para la Cuadrilla) y, en el detalle de la incidencia, el formulario «Derivar a mantenimiento» para el administrador.
 - Datos de demostración (`datos_defensa.sql`): INC-0001 desbordado alta, INC-0004 lleno media, INC-0003 roto ya derivada (CNT-005 en mantenimiento). Pruebas: `unitarias-incidencias.php` y `correr-tests-incidencias-mant.php`.
+
+
+## 11. Usuarios y cuadrillas (bloque 8, 23/10/2026; migración 019)
+
+- **El bug del punto 9:** `api-usuarios` nunca guardaba `usuario.id_cuadrilla` (solo `id_centro`): un usuario Cuadrilla creado desde la pantalla no veía ninguna ruta. Ahora `usuarios.html` muestra el campo **«Cuadrilla»** (obligatorio) al elegir el rol Cuadrilla, la API lo valida (existe y está activa) y lo limpia si el rol cambia; la lista muestra y filtra por cuadrilla y el CSV la incluye.
+- **Pantalla «Cuadrillas»** (`cuadrillas.html`, menú del Administrador) y `POST/PUT/DELETE /api-recoleccion/cuadrillas`: crear, renombrar, cambiar el turno, ver integrantes y recolecciones abiertas, dar de baja (bloqueada si tiene trabajo abierto). `models/Cuadrilla.php` es copia idéntica en `api-gestion` (una prueba lo exige).
+- **Nadie se hace cuadrilla solo:** el registro público sigue creando solo vecinos (prueba que ignora `rol` e `id_cuadrilla`). En el login, «¿Sos de una cuadrilla de recolección? Pedí acceso» lleva a `acceso-cuadrilla.html`, que deja una solicitud `tipo_cuenta = 'cuadrilla'` con lo que la persona dice (`cuadrilla_indicada`). En «Solicitudes» el administrador la ve marcada («Pide ser: Cuadrilla («...»)»), **elige la cuadrilla real** y aprueba (o rechaza). **SIN Fornos:** no se pidió contraseña en el formulario; la persona la crea con el enlace que le llega por correo al aprobar, igual que un usuario dado de alta por el administrador.
+- Pruebas: `correr-tests-cuadrillas.php` (60 comprobaciones) y las unitarias de menú y permisos.

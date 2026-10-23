@@ -76,6 +76,13 @@
               '<circle cx="7" cy="18.3" r="1.9"/><circle cx="17" cy="18.3" r="1.9"/>',
     },
     {
+      href: "cuadrillas.html",
+      texto: "Cuadrillas",
+      roles: ["Administrador"],
+      trazos: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>' +
+              '<circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.3 4.5 2.5 4.5 5.3"/>',
+    },
+    {
       href: "rutas.html",
       texto: "Rutas",
       roles: ["Administrador"],

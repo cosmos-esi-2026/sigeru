@@ -57,6 +57,12 @@ switch ($recurso) {
             $controlador->obtener($id);
         } elseif ($metodo === "GET") {
             $controlador->listar();
+        } elseif ($metodo === "POST" && $id === null) {
+            $controlador->crear();
+        } elseif ($metodo === "PUT" && $id !== null) {
+            $controlador->actualizar($id);
+        } elseif ($metodo === "DELETE" && $id !== null) {
+            $controlador->darDeBaja($id);
         } else {
             Response::error("Método no permitido", 405);
         }

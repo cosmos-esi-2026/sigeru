@@ -325,3 +325,16 @@ El servicio externo de rutas (Valhalla/OSRM de FOSSGIS) **no recibe datos de per
 
 Al informarse un contenedor roto se avisa a los administradores. Cubierto por `unitarias-incidencias.php` y `correr-tests-incidencias-mant.php`.
 La foto de la incidencia sigue siendo solo del Vecino (decisión SIN Fornos: la cuadrilla informa con texto).
+
+### 25. Cuadrillas y usuarios con cuadrilla (plan de rutas para la defensa, bloque 8, 23/10/2026; migración 019)
+
+| Ruta | Quién puede | Notas |
+|---|---|---|
+| `GET/POST/PUT/DELETE /api-recoleccion/cuadrillas` | Solo Administrador (antes solo `GET`) | Alta y edición de nombre y turno; «DELETE» da de baja (`inactiva`), no borra. **No se da de baja una cuadrilla con recolecciones planificadas o en curso, ni con incidencias en curso (409).** El detalle trae sus integrantes (nombre, apellido y estado: sin correo ni teléfono) |
+| `POST /api-usuarios/usuarios`, `PUT /usuarios/{id}` | Solo Administrador | Acepta `id_cuadrilla`. **Obligatoria para el rol Cuadrilla** (si no, el usuario no vería ninguna ruta), tiene que existir y estar activa (400), se limpia si el rol pasa a ser otro y un rol que no es Cuadrilla no puede traerla (400). Un Operario recibe 403 |
+| `GET /api-usuarios/usuarios?cuadrilla=` | Solo Administrador | Filtro por cuadrilla (entero, si no 400); la lista trae `cuadrilla` con el nombre |
+| `POST /api-usuarios/registro` | Público (con freno por IP) | **Solo crea vecinos**: ignora `rol` e `id_cuadrilla` si vienen |
+| `POST /api-usuarios/solicitudes` | Público (con freno por IP, 10 por hora) | Acepta `tipo_cuenta` (`vecino`, `cuadrilla`; cualquier otro valor: 400, no se puede pedir ser administrador) y `cuadrilla_indicada` (obligatoria para `cuadrilla`, hasta 80 caracteres, **texto libre que escribe la persona: es solo una pista y se escapa al mostrarla**). No crea ninguna cuenta ni sesión |
+| `PUT /api-usuarios/solicitudes/{id}` | Solo Administrador | Una solicitud de cuadrilla solo se aprueba como Cuadrilla y con una **`id_cuadrilla` real elegida por el administrador** (400 si falta, no existe o está dada de baja); la solicitud sigue pendiente si falla. Al aprobar se crea el usuario `pendiente` y se envía el enlace para crear la contraseña (flujo existente) |
+
+Cubierto por `correr-tests-cuadrillas.php`. Cambios en la auditoría: etiquetas para crear, modificar y dar de baja una cuadrilla.

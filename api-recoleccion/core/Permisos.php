@@ -9,7 +9,7 @@ class Permisos
 
     private const REGLAS = [
         "camiones"                   => ["*" => self::ADMINISTRADOR],
-        "cuadrillas"                 => ["GET" => self::ADMINISTRADOR],
+        "cuadrillas"                 => ["*" => self::ADMINISTRADOR],
         "rutas"                      => ["*" => self::ADMINISTRADOR],
         "recolecciones"              => ["GET" => self::QUIEN_RECOLECTA, "POST" => self::ADMINISTRADOR],
         "recolecciones/inicio"       => ["POST" => self::QUIEN_RECOLECTA],

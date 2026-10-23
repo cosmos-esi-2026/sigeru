@@ -274,7 +274,7 @@ foreach (glob("$front/*.html") as $pagina) {
         $sinBase[] = $nombre;
     }
 }
-afirmar("Las paginas con menu lateral son las 26 de gestion (24 mas armar ruta y asignacion)", 26, count($conMenu));
+afirmar("Las paginas con menu lateral son las 27 de gestion (24 mas armar ruta, asignacion y cuadrillas)", 27, count($conMenu));
 afirmar("Todas cargan shell.js", [], $sinShell);
 afirmar("Ninguna tiene copiado el menu ni la hamburguesa", [], $conMenuCopiado);
 afirmar(
@@ -394,7 +394,7 @@ foreach ($secciones as $seccion) {
     }
 }
 afirmar("El menu no muestra pantallas cuya lectura la API le niega al rol", [], $excedidos);
-afirmar("shell.js define las 26 pantallas de gestion", 26, count($secciones));
+afirmar("shell.js define las 27 pantallas de gestion", 27, count($secciones));
 afirmar("Cada pantalla de incidencias esta atada a su permiso de la API", [], array_values(array_diff(
     ["incidencias", "mis-incidencias", "mis-reclamos", "incidencia", "informar-problema", "contenedor",
      "recolecciones", "mis-tareas", "recoleccion", "camiones", "mapa", "reportes", "rutas"],

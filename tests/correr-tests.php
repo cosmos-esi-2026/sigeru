@@ -705,6 +705,7 @@ require __DIR__ . "/correr-tests-rutas-paradas.php";
 require __DIR__ . "/correr-tests-rutas-mapa.php";
 require __DIR__ . "/correr-tests-asignacion.php";
 require __DIR__ . "/correr-tests-incidencias-mant.php";
+require __DIR__ . "/correr-tests-cuadrillas.php";
 require __DIR__ . "/correr-tests-pdf.php";
 require __DIR__ . "/correr-tests-idempotencia.php";
 require __DIR__ . "/correr-tests-errores.php";

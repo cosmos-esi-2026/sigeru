@@ -31,6 +31,14 @@ class FiltrosUsuario
             $filtros[$clave] = $valor;
         }
 
+        $cuadrilla = $consulta["cuadrilla"] ?? "";
+        if ($cuadrilla !== "") {
+            if (!is_string($cuadrilla) || !ctype_digit($cuadrilla) || (int) $cuadrilla < 1) {
+                return ["filtros" => [], "error" => "Filtro 'cuadrilla' inválido: tiene que ser el número de la cuadrilla"];
+            }
+            $filtros["cuadrilla"] = (int) $cuadrilla;
+        }
+
         return ["filtros" => $filtros, "error" => null];
     }
 }

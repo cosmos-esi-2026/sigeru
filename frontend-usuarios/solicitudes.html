@@ -72,6 +72,7 @@
                 <th role="columnheader" data-orden>Nombre</th>
                 <th role="columnheader" data-orden>Email</th>
                 <th role="columnheader" data-orden>Teléfono</th>
+                <th role="columnheader" data-orden>Pide ser</th>
                 <th role="columnheader" data-orden>Estado</th>
                 <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
               </tr>
@@ -79,6 +80,7 @@
             <tbody id="cuerpo-tabla" role="rowgroup">
               <tr class="fila-esqueleto" aria-hidden="true">
                 <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
@@ -107,13 +109,19 @@
         <p class="ayuda" id="detalle-solicitud"></p>
 
         <form id="form-aprobar" class="formulario">
-          <label>Rol con el que entra
+          <label id="campo-rol">Rol con el que entra
             <select name="rol">
               <option value="Vecino">Vecino</option>
               <option value="Operario">Operario</option>
               <option value="Cuadrilla">Cuadrilla</option>
               <option value="Administrador">Administrador</option>
             </select>
+          </label>
+          <label id="campo-cuadrilla" class="oculto">Cuadrilla real
+            <select name="id_cuadrilla">
+              <option value="">Elegí una cuadrilla</option>
+            </select>
+            <span class="ayuda-campo">Quien pidió acceso como cuadrilla solo puede entrar como Cuadrilla. Elegí la cuadrilla a la que pertenece de verdad: lo que escribió la persona es solo una pista.</span>
           </label>
           <button type="submit" class="boton boton-primario">Aprobar y crear la cuenta</button>
         </form>

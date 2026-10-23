@@ -15,7 +15,7 @@ let hayFiltros = false;
 
 function consultaDeLaLista(extra) {
   const q = campoBusqueda.value.trim();
-  const base = consultaDeFormulario(formFiltros, ["rol", "estado"], extra);
+  const base = consultaDeFormulario(formFiltros, ["rol", "estado", "cuadrilla"], extra);
   if (q === "") return base;
   return (base === "" ? "?" : base + "&") + "q=" + encodeURIComponent(q);
 }
@@ -42,9 +42,9 @@ async function cargarUsuarios() {
 async function exportarUsuarios() {
   try {
     const datos = await apiGet(API.usuarios + "/usuarios" + consultaDeLaLista({}));
-    const filas = [["ID", "Nombre", "Apellido", "Correo", "Teléfono", "Rol", "Estado", "Fecha de registro"]];
+    const filas = [["ID", "Nombre", "Apellido", "Correo", "Teléfono", "Rol", "Cuadrilla", "Estado", "Fecha de registro"]];
     datos.datos.forEach(function (u) {
-      filas.push([u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.rol, textoEstado(u.estado), u.fecha_registro]);
+      filas.push([u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.rol, u.cuadrilla, textoEstado(u.estado), u.fecha_registro]);
     });
     descargarCsv("usuarios_" + fechaParaArchivo() + ".csv", filas);
     avisoPagina("Se exportaron " + datos.datos.length + " usuarios (con los filtros activos). El archivo no incluye contraseñas.");
@@ -72,7 +72,7 @@ function dibujarTabla(usuarios) {
       celda("Nombre", u.nombre) +
       celda("Apellido", u.apellido) +
       celda("Email", u.email) +
-      celda("Rol", u.rol + (u.centro ? " · " + u.centro : "")) +
+      celda("Rol", u.rol + (u.centro ? " · " + u.centro : "") + (u.rol === "Cuadrilla" ? " · " + (u.cuadrilla || "sin cuadrilla") : "")) +
       celdaEstado("Estado", u.estado, color) +
       celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre)
         .replace("</div></td>", (u.estado === "inactivo" ? "" :
@@ -83,9 +83,28 @@ function dibujarTabla(usuarios) {
 }
 
 const campoCentro = document.getElementById("campo-centro");
+const campoCuadrilla = document.getElementById("campo-cuadrilla");
 
 function actualizarCampoCentro() {
   campoCentro.classList.toggle("oculto", formUsuario.rol.value !== "Operario");
+  campoCuadrilla.classList.toggle("oculto", formUsuario.rol.value !== "Cuadrilla");
+  formUsuario.id_cuadrilla.required = formUsuario.rol.value === "Cuadrilla";
+}
+
+// Las cuadrillas se traen una vez: sirven para el campo del formulario y para el filtro de la lista.
+async function cargarCuadrillasParaUsuarios() {
+  try {
+    const respuesta = await apiGet(API.recoleccion + "/cuadrillas");
+    const cuadrillas = respuesta.datos || [];
+    formUsuario.id_cuadrilla.innerHTML = '<option value="">Elegí una cuadrilla</option>' + cuadrillas.map(function (c) {
+      return '<option value="' + $entero(c.id_cuadrilla) + '"' + (c.estado === "inactiva" ? " disabled" : "") + ">" + escaparHtml(c.nombre + (c.estado === "inactiva" ? " (dada de baja)" : "")) + "</option>";
+    }).join("");
+    document.getElementById("filtro-cuadrilla").innerHTML = '<option value="">Todas</option>' + cuadrillas.map(function (c) {
+      return '<option value="' + $entero(c.id_cuadrilla) + '">' + escaparHtml(c.nombre) + "</option>";
+    }).join("");
+  } catch (error) {
+    campoCuadrilla.insertAdjacentHTML("beforeend", '<span class="ayuda-campo">No se pudieron traer las cuadrillas.</span>');
+  }
 }
 
 async function cargarCentrosParaOperarios() {
@@ -106,6 +125,7 @@ function prepararAlta() {
   document.getElementById("titulo-modal-usuario").textContent = "Nuevo usuario";
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar usuario";
   formUsuario.id_centro.value = "";
+  formUsuario.id_cuadrilla.value = "";
   actualizarCampoCentro();
 }
 
@@ -119,6 +139,7 @@ function prepararEdicion(usuario) {
   formUsuario.email.value = usuario.email || "";
   formUsuario.rol.value = usuario.rol || "Vecino";
   formUsuario.id_centro.value = usuario.id_centro ? String(usuario.id_centro) : "";
+  formUsuario.id_cuadrilla.value = usuario.id_cuadrilla ? String(usuario.id_cuadrilla) : "";
   actualizarCampoCentro();
 }
 
@@ -139,6 +160,9 @@ formUsuario.addEventListener("submit", async function (evento) {
   };
   if (formUsuario.rol.value === "Operario") {
     datos.id_centro = formUsuario.id_centro.value === "" ? null : parseInt(formUsuario.id_centro.value, 10);
+  }
+  if (formUsuario.rol.value === "Cuadrilla") {
+    datos.id_cuadrilla = formUsuario.id_cuadrilla.value === "" ? null : parseInt(formUsuario.id_cuadrilla.value, 10);
   }
 
   try {
@@ -239,3 +263,4 @@ prepararModal("modal-usuario", formUsuario);
 activarOrden("tabla-usuarios");
 cargarUsuarios();
 cargarCentrosParaOperarios();
+cargarCuadrillasParaUsuarios();

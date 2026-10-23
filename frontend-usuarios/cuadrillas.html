@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuadrillas - SiGeRU</title>
+  <link rel="icon" href="img/logo.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#115440">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/tema.js"></script>
+</head>
+<body>
+
+<a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal"></aside>
+
+  <div class="principal">
+
+    <header class="topbar">
+      <div class="topbar-titulo">
+        <h1>Cuadrillas</h1>
+        <p class="bajada">Los equipos que recolectan: turno, quiénes los integran y qué tienen asignado.</p>
+      </div>
+      <button class="boton boton-primario" id="btn-nuevo" data-bs-toggle="modal" data-bs-target="#modal-cuadrilla">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nueva cuadrilla
+      </button>
+    </header>
+
+    <main class="contenido" id="contenido-principal">
+      <section class="panel" aria-labelledby="titulo-listado">
+
+        <div class="barra-herramientas">
+          <h2 class="titulo" id="titulo-listado">Listado</h2>
+
+          <div class="buscador-caja">
+            <label class="solo-lectores" for="buscador">Buscar cuadrillas</label>
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+            <input type="search" class="buscador" id="buscador" placeholder="Nombre, turno o estado">
+          </div>
+
+          <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <p id="mensaje-pagina" class="mensaje" role="status" aria-live="polite"></p>
+        <p class="contador-resultados" id="contador-resultados" data-sustantivo="cuadrillas"></p>
+
+        <div class="tabla-scroll">
+          <table class="tabla" id="tabla-cuadrillas" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                <th role="columnheader" data-orden>Nombre</th>
+                <th role="columnheader" data-orden>Turno</th>
+                <th role="columnheader" data-orden>Estado</th>
+                <th role="columnheader" data-orden>Integrantes</th>
+                <th role="columnheader" data-orden>Recolecciones abiertas</th>
+                <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla" role="rowgroup">
+              <tr class="fila-esqueleto" aria-hidden="true">
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto"></span></td>
+                <td><span class="esqueleto esqueleto-corto"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="ayuda">Para sumar a una persona a una cuadrilla, entrá a <a href="usuarios.html">Usuarios</a>, elegí el rol «Cuadrilla» y la cuadrilla. Quien pide acceso desde el inicio de sesión aparece en <a href="solicitudes.html">Solicitudes</a>.</p>
+
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-cuadrilla" tabindex="-1" aria-labelledby="titulo-modal-cuadrilla" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 class="modal-title" id="titulo-modal-cuadrilla">Nueva cuadrilla</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="form-cuadrilla" class="formulario">
+          <label>Nombre
+            <input type="text" name="nombre" placeholder="Cuadrilla Municipio A" maxlength="80" required>
+          </label>
+          <div class="formulario-columnas">
+            <label>Turno
+              <select name="turno">
+                <option value="matutino">Matutino</option>
+                <option value="vespertino">Vespertino</option>
+                <option value="nocturno">Nocturno</option>
+              </select>
+            </label>
+            <label>Estado
+              <select name="estado">
+                <option value="activa">Activa</option>
+                <option value="inactiva">Dada de baja</option>
+              </select>
+            </label>
+          </div>
+          <div id="integrantes" class="oculto">
+            <h3 class="subtitulo-panel">Integrantes</h3>
+            <ul class="lista-simple" id="lista-integrantes"></ul>
+          </div>
+          <button type="submit" class="boton boton-primario">Guardar cuadrilla</button>
+        </form>
+
+        <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/formularios.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tabla.js"></script>
+<script src="js/cuadrillas.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
