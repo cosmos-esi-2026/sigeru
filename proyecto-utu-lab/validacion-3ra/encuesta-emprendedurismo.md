@@ -118,4 +118,4 @@
 
 ---
 
-**Para el equipo:** Google Forms arma solo los gráficos de cada pregunta (pestaña «Respuestas»). Para el plan de comercialización se exporta la planilla y se guarda en `emprendedurismo-gestion/` con la fecha. Las respuestas no se tocan ni se completan.
+**Para el equipo:** Google Forms arma solo los gráficos de cada pregunta (pestaña «Respuestas»). Para el plan de comercialización se exporta la planilla y se guarda como `sigeru/Emprendedurismo y Gestion/encuesta-3ra/respuestas.csv` (ver el LEEME de esa carpeta). Las respuestas no se tocan ni se completan.
