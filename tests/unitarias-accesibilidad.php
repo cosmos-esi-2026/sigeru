@@ -6,7 +6,7 @@
 
 titulo("20. Accesibilidad: estructura de cada pagina");
 
-$paginas = array_merge(glob(__DIR__ . "/../frontend-usuarios/*.html"), [__DIR__ . "/../landing/index.html", __DIR__ . "/../landing/donde-tiro.html"]);
+$paginas = array_merge(glob(__DIR__ . "/../frontend-usuarios/*.html"), [__DIR__ . "/../landing/index.html"]);
 $problemas = [];
 foreach ($paginas as $ruta) {
     $nombre = basename(dirname($ruta)) . "/" . basename($ruta);

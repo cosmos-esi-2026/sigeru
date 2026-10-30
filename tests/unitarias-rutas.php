@@ -36,7 +36,7 @@ afirmar("Los dos seeds vacian ruta_contenedor antes de cargar", [true, true], [
 ]);
 
 // El conversor de las coordenadas de la Intendencia (UTM 21S -> latitud/longitud) vive en generadores/utm.py, fuera del repo: si no esta, no se prueba.
-$python = __DIR__ . "/../../herramientas/python/python.exe";
+$python = __DIR__ . "/../../../herramientas/python/python.exe";
 $conversor = __DIR__ . "/../../generadores/utm.py";
 if (is_file($python) && is_file($conversor)) {
     $salida = [];

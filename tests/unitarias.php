@@ -156,7 +156,8 @@ $landing = $raiz . "/landing";
 
 titulo("4. Front: copias compartidas entre landing y frontend-usuarios");
 
-foreach (["css/base.css", "js/formularios.js", "js/tema.js", "img/logo.svg"] as $relativa) {
+// js/formularios.js ya no se comparte: la landing no tiene formularios (el registro esta en frontend-usuarios) y su copia no la cargaba ninguna pagina (B2, parte 26).
+foreach (["css/base.css", "js/tema.js", "img/logo.svg"] as $relativa) {
     afirmar(
         "$relativa es identico en las dos aplicaciones",
         true,
@@ -204,7 +205,7 @@ foreach (archivosDelFront($raiz) as $ruta) {
         $conMosaicos[] = substr($ruta, strlen($raiz) + 1);
     }
 }
-afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en el recorrido de la recoleccion, en armar ruta, en la ruta sugerida y en el publico", ["frontend-usuarios/js/mapa.js", "frontend-usuarios/js/recoleccion-detalle.js", "frontend-usuarios/js/ruta-armar.js", "frontend-usuarios/js/ruta-sugerida.js", "landing/js/publico.js"],
+afirmar("Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en el recorrido de la recoleccion, en armar ruta y en el publico", ["frontend-usuarios/js/mapa.js", "frontend-usuarios/js/recoleccion-detalle.js", "frontend-usuarios/js/ruta-armar.js", "landing/js/publico.js"],
     array_map(fn ($r) => str_replace("\\", "/", $r), $conMosaicos));
 $leaflet = $front . "/vendor/leaflet/";
 afirmar("Leaflet esta dentro del repo, con su licencia, y es la version verificada", [true, true, true], [
@@ -274,7 +275,7 @@ foreach (glob("$front/*.html") as $pagina) {
         $sinBase[] = $nombre;
     }
 }
-afirmar("Las paginas con menu lateral son las 27 de gestion (24 mas armar ruta, asignacion y cuadrillas)", 27, count($conMenu));
+afirmar("Las paginas con menu lateral son las 26 de gestion (23 mas armar ruta, asignacion y cuadrillas)", 26, count($conMenu));
 afirmar("Todas cargan shell.js", [], $sinShell);
 afirmar("Ninguna tiene copiado el menu ni la hamburguesa", [], $conMenuCopiado);
 afirmar(
@@ -355,7 +356,6 @@ preg_match_all('/href:\s*"([a-z-]+)\.html",\s*texto:\s*"[^"]*",\s*roles:\s*(TODO
 $recursoDePantalla = [
     "contenedores"       => ["contenedores", "GET"],
     "mapa"               => ["contenedores", "GET"],
-    "ruta-sugerida"      => ["contenedores/ruta-sugerida", "GET"],
     "reportes"           => ["estadisticas", "GET"],
     "contenedor"         => ["contenedores/historial", "GET"],
     "camiones"           => ["camiones", "GET", "recoleccion"],
@@ -394,7 +394,7 @@ foreach ($secciones as $seccion) {
     }
 }
 afirmar("El menu no muestra pantallas cuya lectura la API le niega al rol", [], $excedidos);
-afirmar("shell.js define las 27 pantallas de gestion", 27, count($secciones));
+afirmar("shell.js define las 26 pantallas de gestion", 26, count($secciones));
 afirmar("Cada pantalla de incidencias esta atada a su permiso de la API", [], array_values(array_diff(
     ["incidencias", "mis-incidencias", "mis-reclamos", "incidencia", "informar-problema", "contenedor",
      "recolecciones", "mis-tareas", "recoleccion", "camiones", "mapa", "reportes", "rutas"],
@@ -428,7 +428,6 @@ afirmar("La lista blanca del .htaccess son exactamente las aplicaciones", $aplic
 
 require __DIR__ . "/unitarias-incidencias.php";
 require __DIR__ . "/unitarias-recoleccion.php";
-require __DIR__ . "/unitarias-correo.php";
 require __DIR__ . "/unitarias-estadisticas.php";
 require __DIR__ . "/unitarias-listas.php";
 require __DIR__ . "/unitarias-accesibilidad.php";
@@ -436,21 +435,16 @@ require __DIR__ . "/unitarias-foto.php";
 require __DIR__ . "/unitarias-seguridad.php";
 require __DIR__ . "/unitarias-operario.php";
 require __DIR__ . "/unitarias-notificaciones.php";
-require __DIR__ . "/unitarias-guia.php";
-require __DIR__ . "/unitarias-ruta.php";
 require __DIR__ . "/unitarias-rutas.php";
 require __DIR__ . "/unitarias-trazado.php";
 require __DIR__ . "/unitarias-paradas.php";
 require __DIR__ . "/unitarias-asignacion.php";
-require __DIR__ . "/unitarias-pdf.php";
-require __DIR__ . "/unitarias-offline.php";
+require __DIR__ . "/unitarias-asignacion-municipio.php";
 require __DIR__ . "/unitarias-tema.php";
 require __DIR__ . "/unitarias-pulido.php";
-require __DIR__ . "/unitarias-participacion.php";
 require __DIR__ . "/unitarias-pasaje.php";
-require __DIR__ . "/unitarias-prediccion.php";
-require __DIR__ . "/unitarias-impacto.php";
 require __DIR__ . "/unitarias-utulab.php";
+require __DIR__ . "/unitarias-compatibilidad.php";
 
 echo "\n" . str_repeat("=", 50) . "\n";
 echo "Pasaron: $pasaron   Fallaron: $fallaron\n";

@@ -97,6 +97,10 @@ afirmar("Una descripcion de menos de 5 caracteres: 400", 400, $codigo);
 afirmar("Una prioridad que no existe: 400", 400, $codigo);
 [$codigo] = peticion("POST", "/api-gestion/incidencias", array_diff_key($reporte, ["codigo_contenedor" => 1]), $vecino);
 afirmar("Sin indicar el contenedor: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-gestion/incidencias", ["tipo_problema" => "otro", "descripcion" => "   "] + $reporte, $vecino);
+afirmar("Un problema de tipo «otro» con la descripcion en blanco: 400 (es el unico tipo que la exige)", 400, $codigo);
+[$codigo] = peticion("POST", "/api-gestion/incidencias", ["tipo_problema" => "otro"] + array_diff_key($reporte, ["descripcion" => 1]), $vecino);
+afirmar("Un problema de tipo «otro» sin descripcion: 400", 400, $codigo);
 [$codigo, $cuerpo] = peticion("GET", "/api-gestion/incidencias?contenedor=$idContInc", null, $admin);
 afirmar("Ninguna de las anteriores dejo una incidencia a medias", 0, count($cuerpo["datos"] ?? []));
 
@@ -107,6 +111,14 @@ afirmar("Un id de contenedor que no existe: 404", 404, $codigo);
 [$codigo, $cuerpo] = peticion("POST", "/api-gestion/incidencias", ["codigo_contenedor" => "TEST-$sufijo"] + $reporte, $vecino);
 afirmar("Un contenedor retirado no admite reportes: 409", 409, $codigo);
 afirmar("Y el mensaje dice por que", true, str_contains($cuerpo["mensaje"] ?? "", "está retirado"));
+
+// H-06 (parte 26): la descripcion es opcional, salvo en «otro». Un aviso rapido desde el QR no se frena por no escribir nada.
+[, $cuerpo] = peticion("POST", "/api-gestion/contenedores", ["codigo" => "TINC-$sufijo-D", "direccion" => "Calle de prueba de la descripcion opcional 1", "capacidad" => 800, "tipo_residuo" => "Mixto", "id_zona" => 4], $admin);
+[$codigo, $cuerpo] = peticion("POST", "/api-gestion/incidencias", ["codigo_contenedor" => "TINC-$sufijo-D", "tipo_problema" => "lleno"], $vecino);
+afirmar("Sin descripcion en un tipo que no es «otro»: 201, con prioridad media y el rotulo del tipo como descripcion", [201, "media", "Contenedor lleno"],
+    [$codigo, $cuerpo["datos"]["prioridad"] ?? null, $cuerpo["datos"]["descripcion"] ?? null]);
+$pdo->exec("DELETE FROM incidencia WHERE id_contenedor IN (SELECT id_contenedor FROM contenedor WHERE codigo = 'TINC-$sufijo-D')");
+$pdo->exec("DELETE FROM contenedor WHERE codigo = 'TINC-$sufijo-D'");
 
 [$codigo, $cuerpo] = peticion("POST", "/api-gestion/incidencias", $reporte, $vecino);
 afirmar("Un vecino registra un desborde: 201", 201, $codigo);

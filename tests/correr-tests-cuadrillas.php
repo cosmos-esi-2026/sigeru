@@ -11,7 +11,6 @@ $limpiarCua = function () use ($pdo): void {
     $pdo->exec("DELETE FROM camion WHERE matricula LIKE 'TCUA-%'");
     $pdo->exec("DELETE FROM ruta WHERE nombre LIKE 'TCUA %'");
     $pdo->exec("DELETE FROM notificacion WHERE id_usuario IN (SELECT id_usuario FROM usuario WHERE email LIKE 'tcua-%@test.uy')");
-    $pdo->exec("DELETE FROM enlace_clave WHERE id_usuario IN (SELECT id_usuario FROM usuario WHERE email LIKE 'tcua-%@test.uy')");
     $pdo->exec("DELETE FROM usuario WHERE email LIKE 'tcua-%@test.uy'");
     $pdo->exec("DELETE FROM solicitud_registro WHERE email LIKE 'tcua-%@test.uy'");
     $pdo->exec("DELETE FROM cuadrilla WHERE nombre LIKE 'TCUA %'");
@@ -64,6 +63,31 @@ afirmar("Sin turno entra como matutino", "matutino", $cuerpo["datos"]["turno"] ?
 afirmar("Se renombra y cambia de turno", [200, "TCUA Dos renombrada $sufijo", "nocturno"], [$codigo, $cuerpo["datos"]["nombre"] ?? null, $cuerpo["datos"]["turno"] ?? null]);
 [$codigo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCua2", ["nombre" => "TCUA Uno $sufijo"], $admin);
 afirmar("Renombrarla con el nombre de otra: 409", 409, $codigo);
+
+// Municipio de la cuadrilla (parte 26, migracion 020)
+afirmar("Una cuadrilla creada sin municipio lo devuelve en null (puede cubrir cualquiera)", [null, null], [array_key_exists("id_zona", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["id_zona"] : "falta", array_key_exists("zona", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["zona"] : "falta"]);
+[$codigo, $cuerpo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "TCUA Zona $sufijo", "id_zona" => 2], $admin);
+$idCuaZ = (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0);
+afirmar("Crear con municipio: 201 y devuelve su id y su nombre", [201, 2, true], [$codigo, $cuerpo["datos"]["id_zona"] ?? null, is_string($cuerpo["datos"]["zona"] ?? null) && $cuerpo["datos"]["zona"] !== ""]);
+foreach (["Un municipio que no existe" => 99999, "Un municipio con texto" => "abc", "Un municipio en cero" => 0, "Un municipio negativo" => -1] as $caso => $malo) {
+    [$codigo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "TCUA Zona mala $sufijo", "id_zona" => $malo], $admin);
+    afirmar("Crear con datos malos ($caso): 400", 400, $codigo);
+}
+[$codigo, $cuerpo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCuaZ", ["id_zona" => 3], $admin);
+afirmar("Se le cambia el municipio", [200, 3], [$codigo, $cuerpo["datos"]["id_zona"] ?? null]);
+[$codigo, $cuerpo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCuaZ", ["turno" => "nocturno"], $admin);
+afirmar("Editar otro dato no le saca el municipio", [200, 3], [$codigo, $cuerpo["datos"]["id_zona"] ?? null]);
+[$codigo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCuaZ", ["id_zona" => 99999], $admin);
+afirmar("Cambiarlo a un municipio que no existe: 400", 400, $codigo);
+[, $cuerpo] = peticion("GET", "/api-recoleccion/cuadrillas", null, $admin);
+$deLaLista = current(array_filter($cuerpo["datos"] ?? [], fn($c) => (int) $c["id_cuadrilla"] === $idCuaZ)) ?: [];
+afirmar("La lista trae el municipio de cada cuadrilla", [3, true], [$deLaLista["id_zona"] ?? null, is_string($deLaLista["zona"] ?? null)]);
+[$codigo, $cuerpo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCuaZ", ["id_zona" => ""], $admin);
+afirmar("Mandar el municipio vacio se lo quita", [200, null, null], [$codigo, array_key_exists("id_zona", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["id_zona"] : "falta", array_key_exists("zona", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["zona"] : "falta"]);
+foreach (["vecino" => $vecino, "operario" => $operario, "cuadrilla" => $cuadrilla] as $quien => $cookies) {
+    [$codigo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCuaZ", ["id_zona" => 2], $cookies);
+    afirmar("El municipio de una cuadrilla no lo cambia $quien: 403", 403, $codigo);
+}
 [$codigo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCua2", ["estado" => "rota"], $admin);
 afirmar("Un estado inventado: 400", 400, $codigo);
 [$codigo, $cuerpo] = peticion("GET", "/api-recoleccion/cuadrillas/$idCua1", null, $admin);
@@ -77,6 +101,19 @@ $idRutaC = (int) ($cuerpo["datos"]["id_ruta"] ?? 0);
 [$codigo, $cuerpo] = peticion("POST", "/api-recoleccion/recolecciones", ["id_ruta" => $idRutaC, "id_camion" => $idCamionC, "id_cuadrilla" => $idCua1, "fecha_hora_inicio" => "2026-12-11T06:30", "id_centro" => 1], $admin);
 $idRecC = (int) ($cuerpo["datos"]["id_recoleccion"] ?? 0);
 afirmar("Se planifica una recoleccion de prueba para la cuadrilla nueva", 201, $codigo);
+
+// H-07 (parte 26): una planificada cuya fecha ya paso sin que nadie la iniciara sale marcada «vencida» (la calcula el servidor con su reloj).
+$vencida = function (string $momento) use ($pdo, $idRecC, $admin): array {
+    $pdo->exec("UPDATE recoleccion SET fecha_hora_inicio = $momento WHERE id_recoleccion = $idRecC");
+    [, $detalle] = peticion("GET", "/api-recoleccion/recolecciones/$idRecC", null, $admin);
+    [, $lista] = peticion("GET", "/api-recoleccion/recolecciones?estado=planificada", null, $admin);
+    $enLista = current(array_filter($lista["datos"] ?? [], fn($r) => (int) $r["id_recoleccion"] === $idRecC)) ?: [];
+    return [$detalle["datos"]["vencida"] ?? "falta", $enLista["vencida"] ?? "falta"];
+};
+afirmar("Planificada para manana: no esta vencida (ni en el detalle ni en la lista)", [false, false], $vencida("NOW() + INTERVAL 1 DAY"));
+afirmar("Planificada para ayer y sin iniciar: vencida, en el detalle y en la lista", [true, true], $vencida("NOW() - INTERVAL 1 DAY"));
+afirmar("Planificada para dentro de un minuto: todavia no", [false, false], $vencida("NOW() + INTERVAL 1 MINUTE"));
+$pdo->exec("UPDATE recoleccion SET fecha_hora_inicio = '2026-12-11 06:30:00' WHERE id_recoleccion = $idRecC");
 [$codigo, $cuerpo] = peticion("DELETE", "/api-recoleccion/cuadrillas/$idCua1", null, $admin);
 afirmar("Con una recoleccion planificada no se puede dar de baja: 409 y dice por que", [409, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "recolecci")]);
 [$codigo] = peticion("PUT", "/api-recoleccion/cuadrillas/$idCua1", ["estado" => "inactiva"], $admin);
@@ -92,49 +129,45 @@ afirmar("Se puede reactivar", [200, "activa"], [$codigo, $cuerpo["datos"]["estad
 
 titulo("48. Usuarios: la cuadrilla de un usuario con rol Cuadrilla");
 
-$usuario = fn(string $quien, array $extra = []) => ["nombre" => "Tcua", "apellido" => $quien, "email" => "tcua-$quien-$sufijo@test.uy"] + $extra;
+$usuario = fn(string $quien, array $extra = []) => ["nombre" => "Tcua", "apellido" => $quien, "email" => "tcua-$quien-$sufijo@test.uy", "password" => "ClavePrueba-1"] + $extra;
 [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla"]), $admin);
-if ($codigo === 503) {
-    omitir("Usuarios con cuadrilla: el correo no esta en modo archivo (arrancar Apache con SIGERU_MAIL_MODE=archivo)");
-} else {
-    afirmar("Un usuario Cuadrilla sin cuadrilla: 400 (sin ella no veria ninguna ruta)", 400, $codigo);
-    [$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => null]), $admin);
-    afirmar("Con id_cuadrilla null tampoco: 400", 400, $codigo);
-    [$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => 99999]), $admin);
-    afirmar("Una cuadrilla que no existe: 400", 400, $codigo);
-    [$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => "abc"]), $admin);
-    afirmar("Una cuadrilla con texto: 400", 400, $codigo);
-    peticion("DELETE", "/api-recoleccion/cuadrillas/$idCua2", null, $admin);
-    [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua2]), $admin);
-    afirmar("Una cuadrilla dada de baja no recibe gente nueva: 400", [400, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "baja")]);
-    [$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("v", ["rol" => "Vecino", "id_cuadrilla" => $idCua1]), $admin);
-    afirmar("Un Vecino no se asocia a una cuadrilla: 400", 400, $codigo);
-    [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1]), $admin);
-    $idUsuC = (int) ($cuerpo["datos"]["id_usuario"] ?? 0);
-    afirmar("Con una cuadrilla activa se crea: 201 y queda asociado", [201, $idCua1, "TCUA Uno $sufijo"], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["cuadrilla"] ?? null]);
+afirmar("Un usuario Cuadrilla sin cuadrilla: 400 (sin ella no veria ninguna ruta)", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => null]), $admin);
+afirmar("Con id_cuadrilla null tampoco: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => 99999]), $admin);
+afirmar("Una cuadrilla que no existe: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => "abc"]), $admin);
+afirmar("Una cuadrilla con texto: 400", 400, $codigo);
+peticion("DELETE", "/api-recoleccion/cuadrillas/$idCua2", null, $admin);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua2]), $admin);
+afirmar("Una cuadrilla dada de baja no recibe gente nueva: 400", [400, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "baja")]);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("v", ["rol" => "Vecino", "id_cuadrilla" => $idCua1]), $admin);
+afirmar("Un Vecino no se asocia a una cuadrilla: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1]), $admin);
+$idUsuC = (int) ($cuerpo["datos"]["id_usuario"] ?? 0);
+afirmar("Con una cuadrilla activa se crea: 201 y queda asociado", [201, $idCua1, "TCUA Uno $sufijo"], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["cuadrilla"] ?? null]);
 
-    [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["nombre" => "Otro"], $admin);
-    afirmar("Editar otro dato no le saca la cuadrilla", [200, $idCua1], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
-    [$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => null], $admin);
-    afirmar("Dejar a un Cuadrilla sin cuadrilla: 400", 400, $codigo);
-    peticion("PUT", "/api-recoleccion/cuadrillas/$idCua2", ["estado" => "activa"], $admin);
-    [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => $idCua2], $admin);
-    afirmar("Se lo cambia a otra cuadrilla", [200, $idCua2], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
-    [, $cuerpo] = peticion("GET", "/api-usuarios/usuarios?cuadrilla=$idCua2", null, $admin);
-    afirmar("La lista se filtra por cuadrilla", [$idUsuC], array_map("intval", array_column($cuerpo["datos"] ?? [], "id_usuario")));
-    [$codigo] = peticion("GET", "/api-usuarios/usuarios?cuadrilla=abc", null, $admin);
-    afirmar("Un filtro de cuadrilla invalido: 400", 400, $codigo);
-    [, $cuerpo] = peticion("GET", "/api-recoleccion/cuadrillas/$idCua2", null, $admin);
-    afirmar("La cuadrilla cuenta su integrante y lo lista por nombre", [1, "Otro a"], [$cuerpo["datos"]["integrantes"] ?? null, trim(($cuerpo["datos"]["personas"][0]["nombre"] ?? "") . " " . ($cuerpo["datos"]["personas"][0]["apellido"] ?? ""))]);
-    [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Vecino"], $admin);
-    afirmar("Al pasar a otro rol se le suelta la cuadrilla", [200, null], [$codigo, array_key_exists("id_cuadrilla", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["id_cuadrilla"] : "falta"]);
-    [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Cuadrilla"], $admin);
-    afirmar("Pasarlo a Cuadrilla sin decir la cuadrilla: 400", 400, $codigo);
-    [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1], $admin);
-    afirmar("Y diciendola, queda: 200", [200, $idCua1], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
-    [$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => $idCua1], $operario);
-    afirmar("Un Operario no cambia cuadrillas: 403", 403, $codigo);
-}
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["nombre" => "Otro"], $admin);
+afirmar("Editar otro dato no le saca la cuadrilla", [200, $idCua1], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => null], $admin);
+afirmar("Dejar a un Cuadrilla sin cuadrilla: 400", 400, $codigo);
+peticion("PUT", "/api-recoleccion/cuadrillas/$idCua2", ["estado" => "activa"], $admin);
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => $idCua2], $admin);
+afirmar("Se lo cambia a otra cuadrilla", [200, $idCua2], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
+[, $cuerpo] = peticion("GET", "/api-usuarios/usuarios?cuadrilla=$idCua2", null, $admin);
+afirmar("La lista se filtra por cuadrilla", [$idUsuC], array_map("intval", array_column($cuerpo["datos"] ?? [], "id_usuario")));
+[$codigo] = peticion("GET", "/api-usuarios/usuarios?cuadrilla=abc", null, $admin);
+afirmar("Un filtro de cuadrilla invalido: 400", 400, $codigo);
+[, $cuerpo] = peticion("GET", "/api-recoleccion/cuadrillas/$idCua2", null, $admin);
+afirmar("La cuadrilla cuenta su integrante y lo lista por nombre", [1, "Otro a"], [$cuerpo["datos"]["integrantes"] ?? null, trim(($cuerpo["datos"]["personas"][0]["nombre"] ?? "") . " " . ($cuerpo["datos"]["personas"][0]["apellido"] ?? ""))]);
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Vecino"], $admin);
+afirmar("Al pasar a otro rol se le suelta la cuadrilla", [200, null], [$codigo, array_key_exists("id_cuadrilla", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["id_cuadrilla"] : "falta"]);
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Cuadrilla"], $admin);
+afirmar("Pasarlo a Cuadrilla sin decir la cuadrilla: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1], $admin);
+afirmar("Y diciendola, queda: 200", [200, $idCua1], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["id_cuadrilla" => $idCua1], $operario);
+afirmar("Un Operario no cambia cuadrillas: 403", 403, $codigo);
 
 
 titulo("49. Registro y pedidos de acceso: nadie se hace cuadrilla solo");
@@ -176,15 +209,13 @@ afirmar("Y la solicitud sigue pendiente, sin cuenta", ["pendiente", 0], [
     $pdo->query("SELECT estado FROM solicitud_registro WHERE id_solicitud = $idSol")->fetchColumn(),
     (int) $pdo->query("SELECT COUNT(*) FROM usuario WHERE email = 'tcua-pide-$sufijo@test.uy'")->fetchColumn(),
 ]);
-[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1], $admin);
-if ($codigo === 503) {
-    omitir("Aprobar un pedido de cuadrilla: el correo no esta en modo archivo");
-} else {
-    afirmar("Aprobada con la cuadrilla real: 200, usuario Cuadrilla con su id_cuadrilla y pendiente de contrasena", [200, "Cuadrilla", $idCua1, "pendiente"],
-        [$codigo, $cuerpo["datos"]["usuario"]["rol"] ?? null, (int) ($cuerpo["datos"]["usuario"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["usuario"]["estado"] ?? null]);
-    [$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1], $admin);
-    afirmar("Aprobarla dos veces: 409", 409, $codigo);
-}
+[$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1], $admin);
+afirmar("Aprobarla sin definir la contrasena inicial: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1, "password" => "ClavePrueba-1"], $admin);
+afirmar("Aprobada con la cuadrilla real: 200, usuario Cuadrilla con su id_cuadrilla y activo", [200, "Cuadrilla", $idCua1, "activo"],
+    [$codigo, $cuerpo["datos"]["usuario"]["rol"] ?? null, (int) ($cuerpo["datos"]["usuario"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["usuario"]["estado"] ?? null]);
+[$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1, "password" => "ClavePrueba-1"], $admin);
+afirmar("Aprobarla dos veces: 409", 409, $codigo);
 $pedido2 = ["email" => "tcua-pide2-$sufijo@test.uy"] + $pedido;
 [, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", $pedido2, null);
 $idSol2 = (int) ($cuerpo["datos"]["id_solicitud"] ?? 0);

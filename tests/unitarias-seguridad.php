@@ -64,9 +64,9 @@ afirmar("El freno salta al llegar al maximo, no antes", [false, false, true, tru
 afirmar("La clave junta la accion y la IP y entra en la columna", ["registro:203.0.113.5", 80], [
     $limite('LimitePeticion::clave("registro", "203.0.113.5")'), $limite('strlen(LimitePeticion::clave(str_repeat("a", 100), "1.2.3.4"))'),
 ]);
-afirmar("Cada accion publica pide el freno", [true, true, true, true], array_map(
+afirmar("Cada accion publica pide el freno", [true, true], array_map(
     fn ($metodo) => (bool) preg_match('/function ' . $metodo . '\(\): void\s*\{\s*LimitePeticion::exigir\(/', (string) file_get_contents(__DIR__ . "/../api-usuarios/controllers/UsuarioController.php")),
-    ["registrarVecino", "crearSolicitud", "recuperarClave", "crearClave"]
+    ["registrarVecino", "crearSolicitud"]
 ));
 
 afirmar("Una sesion sin actividad por mas de 2 horas esta vencida; con actividad reciente no; sin dato, no se juzga", [false, false, true, false], [

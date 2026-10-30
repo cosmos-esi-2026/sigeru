@@ -11,6 +11,7 @@ $limpiarTasg = function () use ($pdo): void {
     $pdo->exec("DELETE FROM ruta WHERE nombre LIKE 'TASG Ruta%'");
     $pdo->exec("DELETE FROM contenedor WHERE codigo LIKE 'TASG-%'");
     $pdo->exec("DELETE FROM camion WHERE matricula LIKE 'TASG-%'");
+    $pdo->exec("DELETE FROM cuadrilla WHERE nombre LIKE 'TASG Cuadrilla%'");
     $pdo->exec("DELETE FROM zona WHERE nombre LIKE 'TASG Zona%'");
 };
 $limpiarTasg();
@@ -100,6 +101,35 @@ afirmar("La sugerencia pone la ruta urgente antes que la de prioridad media, con
 ]);
 $cuentaRec = (int) $pdo->query("SELECT COUNT(*) FROM recoleccion")->fetchColumn();
 afirmar("Pedir la asignacion del dia no crea ninguna recoleccion", $cuentaRec, (int) $pdo->query("SELECT COUNT(*) FROM recoleccion")->fetchColumn());
+
+titulo("52 bis 2. La sugerencia empareja cada ruta con la cuadrilla de su municipio (parte 26)");
+
+// Dos cuadrillas de prueba: una del municipio de las rutas TASG y otra de un municipio ajeno (la zona 2 del seed). Se borran apenas termina esta seccion.
+[, $cuerpo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "TASG Cuadrilla Propia $sufijo", "id_zona" => $idZonaA], $admin);
+$idCuaPropia = (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0);
+[, $cuerpo] = peticion("POST", "/api-recoleccion/cuadrillas", ["nombre" => "TASG Cuadrilla Ajena $sufijo", "id_zona" => 2], $admin);
+$idCuaAjena = (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0);
+[, $cuerpo] = peticion("GET", "/api-recoleccion/asignacion?fecha=$dia", null, $admin);
+$d = $cuerpo["datos"] ?? [];
+$cuadPorId = array_column($d["cuadrillas"] ?? [], null, "id_cuadrilla");
+afirmar("La asignacion del dia trae el municipio de cada cuadrilla", [$idZonaA, "TASG Zona $sufijo", 2], [
+    $cuadPorId[$idCuaPropia]["id_zona"] ?? null, $cuadPorId[$idCuaPropia]["zona"] ?? null, $cuadPorId[$idCuaAjena]["id_zona"] ?? null,
+]);
+$propuestas = $d["sugerencia"]["propuestas"] ?? [];
+$propR2 = current(array_filter($propuestas, fn($p) => $p["id_ruta"] === $idR2)) ?: [];
+afirmar("La ruta del municipio TASG recibe la cuadrilla de su municipio, sin aviso de otro municipio", [$idCuaPropia, false], [$propR2["id_cuadrilla"] ?? null, $propR2["fuera_de_zona"] ?? "falta"]);
+$rutasPorId = array_column($d["rutas"] ?? [], null, "id_ruta");
+$incoherentes = [];
+foreach ($propuestas as $p) {
+    $zr = $rutasPorId[$p["id_ruta"]]["id_zona"] ?? null;
+    $zc = $cuadPorId[$p["id_cuadrilla"]]["id_zona"] ?? null;
+    if ($p["fuera_de_zona"] !== ($zr !== null && $zc !== null && $zr !== $zc)) {
+        $incoherentes[] = $p["id_ruta"];
+    }
+}
+afirmar("En todas las propuestas del dia, el aviso «fuera de su municipio» aparece exactamente cuando el municipio de la ruta y el de la cuadrilla son distintos", [], $incoherentes);
+afirmar("Y ninguna propuesta lleva dos veces la misma cuadrilla ni el mismo camion", [count($propuestas), count($propuestas)], [count(array_unique(array_column($propuestas, "id_cuadrilla"))), count(array_unique(array_column($propuestas, "id_camion")))]);
+$pdo->exec("DELETE FROM cuadrilla WHERE nombre LIKE 'TASG Cuadrilla%'");
 
 titulo("52 ter. Asignacion de rutas: el lote, todas o ninguna");
 

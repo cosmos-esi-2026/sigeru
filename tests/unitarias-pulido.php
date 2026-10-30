@@ -25,13 +25,13 @@ afirmar("Las tres paginas de error: titulo y codigo, sin datos internos, con rut
 $img = @getimagesize("$raiz/landing/img/compartir.png");
 afirmar("compartir.png es un PNG de 1200 x 630 (el tamano de las vistas previas)", [1200, 630, IMAGETYPE_PNG], $img ? [$img[0], $img[1], $img[2]] : null);
 $og = [];
-foreach (["landing/index.html", "landing/donde-tiro.html", "frontend-usuarios/login.html"] as $p) {
+foreach (["landing/index.html", "frontend-usuarios/login.html"] as $p) {
     $html = (string) file_get_contents("$raiz/$p");
     foreach (["og:title", "og:description", "og:image", "og:image:alt", "og:type", "twitter:card"] as $meta) {
         if (!preg_match('/(?:property|name)="' . preg_quote($meta, "/") . '"\s+content="[^"]+"/', $html)) $og[] = "$p: $meta";
     }
 }
-afirmar("Las paginas publicas (inicio, guia y login) llevan las metaetiquetas de Open Graph y Twitter con su imagen", [], $og);
+afirmar("Las paginas publicas (inicio y login) llevan las metaetiquetas de Open Graph y Twitter con su imagen", [], $og);
 
 $tabla = (string) file_get_contents("$raiz/frontend-usuarios/js/tabla.js");
 afirmar("Los estados vacios usan ilustraciones propias (contenedor y lupa), no un icono generico", [true, true, true], [

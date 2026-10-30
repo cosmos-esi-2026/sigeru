@@ -196,7 +196,7 @@ afirmar("La busqueda de la auditoria tambien es solo texto (200)", 200, $codigo)
 
 titulo("22m. Seguridad: freno a los pedidos publicos");
 
-foreach (["/api-usuarios/solicitudes" => "solicitudes de registro", "/api-usuarios/registro" => "registros", "/api-usuarios/recuperar-clave" => "pedidos de recuperacion"] as $ruta => $que) {
+foreach (["/api-usuarios/solicitudes" => "solicitudes de registro", "/api-usuarios/registro" => "registros"] as $ruta => $que) {
     $aceptados = 0;
     $detenido = false;
     $reintentar = null;

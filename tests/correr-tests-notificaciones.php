@@ -1,8 +1,8 @@
 <?php
 
 // Parte de correr-tests.php (se incluye desde alli y usa sus funciones y sus sesiones).
-// Avisos (extras, parte 13): la campanita y el correo. Todo lo que se crea lleva el prefijo TNOT y se borra al final;
-// los avisos que genera la corrida se borran por fecha (como la auditoria). Los correos van al modo archivo.
+// Avisos (extras, parte 13): la campanita. Todo lo que se crea lleva el prefijo TNOT y se borra al final;
+// los avisos que genera la corrida se borran por fecha (como la auditoria).
 
 titulo("29. Avisos: preparar los datos de prueba");
 
@@ -20,29 +20,15 @@ $avisosDe = function (string $cookies, string $consulta = "limite=50"): array {
     return $c ?? [];
 };
 $deTipo = fn(array $respuesta, string $tipo, ?string $enlace = null) => array_values(array_filter($respuesta["datos"] ?? [], fn($n) => $n["tipo"] === $tipo && ($enlace === null || $n["enlace"] === $enlace)));
-$archivoDeAviso = fn(string $email) => __DIR__ . "/../tmp/correo/" . hash("sha256", strtolower($email)) . "-aviso.txt";
 
-foreach (["GET /notificaciones", "POST /notificaciones/1/leida", "POST /notificaciones/leer-todas", "GET /preferencias", "PUT /preferencias"] as $pedido) {
+foreach (["GET /notificaciones", "POST /notificaciones/1/leida", "POST /notificaciones/leer-todas"] as $pedido) {
     [$metodo, $ruta] = explode(" ", $pedido);
-    [$codigo] = peticion($metodo, "/api-usuarios$ruta", ["avisos_por_correo" => true], null);
+    [$codigo] = peticion($metodo, "/api-usuarios$ruta", [], null);
     afirmar("$pedido sin sesion: 401", 401, $codigo);
 }
 
-titulo("29 bis. Avisos: preferencia de correo y lectura");
+titulo("29 bis. Avisos: limites de la lista");
 
-[$codigo, $cuerpo] = peticion("GET", "/api-usuarios/preferencias", null, $vecino);
-afirmar("El vecino recibe avisos por correo por defecto", [200, true], [$codigo, $cuerpo["datos"]["avisos_por_correo"] ?? null]);
-[$codigo] = peticion("PUT", "/api-usuarios/preferencias", ["avisos_por_correo" => "no"], $vecino);
-afirmar("La preferencia tiene que ser verdadero o falso: 400", 400, $codigo);
-[$codigo] = peticion("PUT", "/api-usuarios/preferencias", [], $vecino);
-afirmar("Sin el campo: 400", 400, $codigo);
-[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/preferencias", ["avisos_por_correo" => false], $vecino);
-afirmar("Desactivarla: 200", [200, false], [$codigo, $cuerpo["datos"]["avisos_por_correo"] ?? null]);
-[, $cuerpo] = peticion("GET", "/api-usuarios/preferencias", null, $vecino);
-afirmar("Queda guardada", false, $cuerpo["datos"]["avisos_por_correo"] ?? null);
-[$codigo, $cuerpo] = peticion("GET", "/api-usuarios/preferencias", null, $admin);
-afirmar("Y es de cada persona: la del administrador sigue activa", [200, true], [$codigo, $cuerpo["datos"]["avisos_por_correo"] ?? null]);
-peticion("PUT", "/api-usuarios/preferencias", ["avisos_por_correo" => true], $vecino);
 foreach (["limite=0", "limite=abc", "limite=51", "limite=-1"] as $malo) {
     [$codigo] = peticion("GET", "/api-usuarios/notificaciones?$malo", null, $vecino);
     afirmar("Un limite invalido ($malo): 400", 400, $codigo);
@@ -65,7 +51,6 @@ afirmar("El contador de no leidas del administrador subio", true, (int) ($avisos
 afirmar("El vecino no recibe el aviso de critica", [], $deTipo($avisosDe($vecino), "incidencia_critica", "incidencia.html?id=$idIncN"));
 afirmar("Ni la cuadrilla", [], $deTipo($avisosDe($cuadrilla), "incidencia_critica", "incidencia.html?id=$idIncN"));
 
-@unlink($archivoDeAviso("vecino@sigeru.uy"));
 peticion("POST", "/api-gestion/incidencias/$idIncN/asignacion", ["id_cuadrilla" => 1], $admin);
 $aLuis = $deTipo($avisosDe($cuadrilla), "incidencia_asignada", "incidencia.html?id=$idIncN");
 afirmar("Al asignarla, la cuadrilla recibe el aviso con el numero y la direccion", [true, "incidencia.html?id=$idIncN"], [
@@ -74,13 +59,6 @@ afirmar("Otra cuadrilla no recibe nada de eso", [], $deTipo($avisosDe($otraCuadr
 $enCurso = $deTipo($avisosDe($vecino), "incidencia_en_curso", "incidencia.html?id=$idIncN");
 afirmar("El vecino que informo recibe: en curso", [true, "incidencia.html?id=$idIncN"], [count($enCurso) >= 1 && str_contains($enCurso[0]["titulo"], "en curso"), $enCurso[0]["enlace"] ?? null]);
 afirmar("Y el mensaje no trae el nombre de la cuadrilla ni del personal", false, (bool) preg_match('/Cuadrilla (Norte|Sur)|Luis|Carla|Ana/', ($enCurso[0]["titulo"] ?? "") . " " . ($enCurso[0]["mensaje"] ?? "")));
-if ($correoDePrueba) {
-    $correo = is_file($archivoDeAviso("vecino@sigeru.uy")) ? file_get_contents($archivoDeAviso("vecino@sigeru.uy")) : "";
-    afirmar("Ademas le llega un correo (modo archivo) con el enlace a la incidencia", [true, true], [
-        str_contains($correo, "en curso"), str_contains($correo, "frontend-usuarios/incidencia.html?id=$idIncN")]);
-} else {
-    omitir("el correo del aviso (Apache sin SIGERU_MAIL_MODE=archivo)");
-}
 [$codigo] = peticion("POST", "/api-gestion/incidencias/$idIncN/asignacion", ["id_cuadrilla" => 1], $admin);
 afirmar("Pedir la misma asignacion otra vez (409) no genera avisos de mas", [409, 1, 1], [$codigo, count($deTipo($avisosDe($vecino), "incidencia_en_curso", "incidencia.html?id=$idIncN")), count($deTipo($avisosDe($cuadrilla), "incidencia_asignada", "incidencia.html?id=$idIncN"))]);
 
@@ -113,41 +91,26 @@ $adminAntes = (int) ($avisosDe($admin)["no_leidas"] ?? 0);
 afirmar("El vecino marca todas como leidas: 200 y su contador en 0", [200, 0, 0], [$codigo, $cuerpo["no_leidas"] ?? null, $avisosDe($vecino)["no_leidas"] ?? null]);
 afirmar("Y no toca los avisos de los demas", $adminAntes, (int) ($avisosDe($admin)["no_leidas"] ?? 0));
 
-titulo("29 quinquies. Avisos: resolver, descartar y el correo que nunca rompe la operacion");
+titulo("29 quinquies. Avisos: resolver, descartar y textos largos");
 
-@unlink($archivoDeAviso("vecino@sigeru.uy"));
 [$codigo] = peticion("POST", "/api-gestion/incidencias/$idIncN/resolucion", ["observacion" => "Se levanto todo"], $cuadrilla);
 $resuelta = $deTipo($avisosDe($vecino), "incidencia_resuelta", "incidencia.html?id=$idIncN");
 afirmar("La cuadrilla resuelve: el vecino recibe el aviso de resuelta", [200, true, false], [$codigo, count($resuelta) === 1 && str_contains($resuelta[0]["titulo"], "resuelto"), $resuelta[0]["leida"] ?? null]);
-if ($correoDePrueba) {
-    $correo = is_file($archivoDeAviso("vecino@sigeru.uy")) ? file_get_contents($archivoDeAviso("vecino@sigeru.uy")) : "";
-    afirmar("Y le llega el correo", true, str_contains($correo, "se resolvió"));
-}
 
 [, $cuerpo] = peticion("POST", "/api-gestion/incidencias", ["codigo_contenedor" => "TNOT-A$sufijo", "tipo_problema" => "roto", "descripcion" => "La tapa esta rota"], $vecino);
 $idIncN2 = (int) ($cuerpo["datos"]["id_incidencia"] ?? 0);
-peticion("PUT", "/api-usuarios/preferencias", ["avisos_por_correo" => false], $vecino);
-@unlink($archivoDeAviso("vecino@sigeru.uy"));
 [$codigo] = peticion("POST", "/api-gestion/incidencias/$idIncN2/descarte", ["observacion" => "Duplicado de otro reclamo"], $admin);
 afirmar("El administrador descarta: 200 y el vecino recibe el aviso en la campanita", [200, 1], [$codigo, count($deTipo($avisosDe($vecino), "incidencia_descartada", "incidencia.html?id=$idIncN2"))]);
-afirmar("Con los avisos por correo apagados no sale ningun correo", false, is_file($archivoDeAviso("vecino@sigeru.uy")));
-peticion("PUT", "/api-usuarios/preferencias", ["avisos_por_correo" => true], $vecino);
 
 $hash = password_hash(CLAVE_DE_PRUEBA, PASSWORD_DEFAULT);
 $pdo->prepare("INSERT INTO usuario (nombre, apellido, email, password_hash, id_rol, estado) VALUES ('Sin', 'Correo', ?, ?, (SELECT id_rol FROM rol WHERE nombre = 'Vecino'), 'activo')")
     ->execute(["sin-correo-valido-$sufijo", $hash]);
 $idSinCorreo = (int) $pdo->lastInsertId();
-$sinCorreo = sys_get_temp_dir() . "/sigeru_test_sincorreo.txt";
-iniciarSesion("sin-correo-valido-$sufijo", $sinCorreo);
-[, $cuerpo] = peticion("POST", "/api-gestion/incidencias", ["codigo_contenedor" => "TNOT-A$sufijo", "tipo_problema" => "ausente_o_mal_ubicado", "descripcion" => "El contenedor no esta"], $sinCorreo);
-$idIncN3 = (int) ($cuerpo["datos"]["id_incidencia"] ?? 0);
-[$codigo] = peticion("POST", "/api-gestion/incidencias/$idIncN3/descarte", ["observacion" => "Prueba de correo invalido"], $admin);
-afirmar("Si el correo no se puede mandar (direccion invalida) la operacion igual sale bien (200) y queda la campanita", [200, 1], [$codigo, count($deTipo($avisosDe($sinCorreo), "incidencia_descartada", "incidencia.html?id=$idIncN3"))]);
 require_once __DIR__ . "/../api-gestion/core/Notificador.php";
 $fallo = false;
 try {
-    Notificador::avisar(99999999, "incidencia_resuelta", "Titulo", "Mensaje", null, true);
-    Notificador::avisar($idSinCorreo, "x", str_repeat("a", 500), str_repeat("b", 900), "incidencia.html?id=1", true);
+    Notificador::avisar(99999999, "incidencia_resuelta", "Titulo", "Mensaje", null);
+    Notificador::avisar($idSinCorreo, "x", str_repeat("a", 500), str_repeat("b", 900), "incidencia.html?id=1");
 } catch (Throwable $e) {
     $fallo = true;
 }
@@ -220,16 +183,14 @@ $pdo->exec("UPDATE usuario SET id_centro = NULL WHERE email LIKE 'tnot-%@test.uy
 $pdo->exec("DELETE FROM centro_acopio WHERE nombre LIKE 'TNOT %'");
 $pdo->exec("DELETE FROM usuario WHERE email LIKE 'tnot-%@test.uy' OR email = 'sin-correo-valido-$sufijo'");
 $pdo->prepare("DELETE FROM notificacion WHERE fecha_hora >= ?")->execute([$inicioDeLaCorrida]);
-foreach ([$sinCorreo, $opN] as $archivo) {
+foreach ([$opN] as $archivo) {
     if (file_exists($archivo)) {
         unlink($archivo);
     }
 }
-@unlink($archivoDeAviso("vecino@sigeru.uy"));
 afirmar("No quedan avisos de la corrida ni datos de prueba", [0, 0, 0, 0], [
     (int) $pdo->query("SELECT COUNT(*) FROM notificacion")->fetchColumn(),
     (int) $pdo->query("SELECT COUNT(*) FROM usuario WHERE email LIKE 'tnot-%@test.uy' OR email LIKE 'sin-correo-valido-%'")->fetchColumn(),
     (int) $pdo->query("SELECT COUNT(*) FROM contenedor WHERE codigo LIKE 'TNOT-%'")->fetchColumn(),
     (int) $pdo->query("SELECT COUNT(*) FROM centro_acopio WHERE nombre LIKE 'TNOT %'")->fetchColumn(),
 ]);
-afirmar("La preferencia del vecino volvio a la de siempre (activa)", 1, (int) $pdo->query("SELECT avisos_por_correo FROM usuario WHERE email = 'vecino@sigeru.uy'")->fetchColumn());

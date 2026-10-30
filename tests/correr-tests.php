@@ -3,7 +3,7 @@
 //  SiGeRU 2026 - Tests de las APIs
 //
 //  Como se corre:
-//      herramientas\php\php.exe sigeru\tests\correr-tests.php
+//      ..\herramientas\php\php.exe sigeru\tests\correr-tests.php
 //  o directamente:
 //      sigeru\tests\correr-tests.cmd
 //
@@ -122,8 +122,7 @@ function ponerEnRuta(PDO $pdo, int $idRuta, array $codigos): void
     }
 }
 
-// Las pruebas de enlaces por correo necesitan que Apache arranque con SIGERU_MAIL_MODE=archivo
-// (el mensaje queda en tmp/correo). Con SMTP real o sin correo se omiten, y el resumen lo dice.
+// Las pruebas que dependen del entorno (GD, mod_headers, trazado) se omiten y el resumen lo dice.
 $omitidas = 0;
 function omitir(string $descripcion): void
 {
@@ -131,8 +130,6 @@ function omitir(string $descripcion): void
     $omitidas++;
     echo "  - OMITIDA: $descripcion\n";
 }
-[, $raizUsuarios] = peticion("GET", "/api-usuarios/");
-$correoDePrueba = ($raizUsuarios["correo"] ?? null) === "archivo";
 
 
 // --- 0. El servidor responde ------------------------------------------------
@@ -252,8 +249,7 @@ afirmar("Un rol inexistente: 400", 400, $codigo);
     ["nombre" => "Prueba", "email" => "no-es-un-email", "rol" => "Vecino"], $admin);
 afirmar("Un email sin formato valido: 400", 400, $codigo);
 
-// La contrasena ya no la fija el administrador: llega por enlace de correo. Su
-// validacion (minimo 8 caracteres) se prueba en la seccion 7b, sobre /crear-clave.
+// La contrasena la define el administrador al crear la cuenta: es obligatoria y de 8 caracteres o mas (seccion 7b).
 
 [$codigo] = peticion("PUT", "/api-usuarios/usuarios/1", ["email" => "otro-invalido"], $admin);
 afirmar("Modificar con un email invalido: 400", 400, $codigo);
@@ -356,131 +352,80 @@ afirmar("Y queda PENDIENTE, no crea un usuario activo",
         "pendiente", $cuerpo["datos"]["estado"] ?? null);
 $idSolicitud = $cuerpo["datos"]["id_solicitud"] ?? null;
 
-$idUsuarioCreado = null;
-if ($correoDePrueba) {
-[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSolicitud",
+[$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSolicitud",
     ["decision" => "aprobada", "rol" => "Vecino"], $admin);
+afirmar("Aprobar sin definir la contrasena inicial: 400", 400, $codigo);
+[$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSolicitud",
+    ["decision" => "aprobada", "rol" => "Vecino", "password" => "corta"], $admin);
+afirmar("Aprobar con una contrasena de menos de 8 caracteres: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("GET", "/api-usuarios/solicitudes?estado=pendiente", null, $admin);
+afirmar("Y la solicitud sigue pendiente", true, in_array($idSolicitud, array_column($cuerpo["datos"] ?? [], "id_solicitud"), true));
+
+[$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSolicitud",
+    ["decision" => "aprobada", "rol" => "Vecino", "password" => "ClaveNueva-123"], $admin);
 afirmar("Aprobar la solicitud devuelve 200", 200, $codigo);
 afirmar("Y crea el usuario", "test.$sufijo@sigeru.uy",
         $cuerpo["datos"]["usuario"]["email"] ?? null);
-afirmar("Que queda pendiente hasta que defina su contrasena", "pendiente",
+afirmar("Que queda activo, sin pasos intermedios", "activo",
         $cuerpo["datos"]["usuario"]["estado"] ?? null);
 $idUsuarioCreado = $cuerpo["datos"]["usuario"]["id_usuario"] ?? null;
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => "test.$sufijo@sigeru.uy", "password" => "ClaveNueva-123"]);
+afirmar("Y entra con la contrasena que definio el administrador", 200, $codigo);
 
 [$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSolicitud",
-    ["decision" => "aprobada"], $admin);
+    ["decision" => "aprobada", "password" => "ClaveNueva-123"], $admin);
 afirmar("Aprobarla de nuevo: 409", 409, $codigo);
-} else {
-    omitir("Aprobar una solicitud (envia un enlace por correo; arrancar Apache con SIGERU_MAIL_MODE=archivo)");
-}
 
 
-// --- 7b. Acceso por enlace de correo ----------------------------------------
-// Desde el 17/10 las cuentas nuevas nacen 'pendiente' y el usuario define su
-// contrasena con un enlace de un solo uso (1 hora). Estas pruebas necesitan que
-// Apache arranque con SIGERU_MAIL_MODE=archivo: el correo se deja en
-// sigeru/tmp/correo/ en lugar de salir por SMTP (solo vale en localhost).
-titulo("7b. Acceso por enlace de correo");
+// --- 7b. Contrasena que define el administrador -----------------------------
+// Sin correo: el administrador define la contrasena inicial al crear la cuenta y la
+// entrega en mano; si alguien la pierde, la restablece editando su usuario.
+titulo("7b. Contrasena que define el administrador");
 
-function archivoCorreo(string $email): string
-{
-    return __DIR__ . "/../tmp/correo/" . hash("sha256", strtolower($email)) . ".txt";
-}
+$correoNuevo = "alta.$sufijo@sigeru.uy";
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", ["nombre" => "Alta", "email" => $correoNuevo, "rol" => "Vecino"], $admin);
+afirmar("Crear una cuenta sin contrasena: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", ["nombre" => "Alta", "email" => $correoNuevo, "rol" => "Vecino", "password" => "corta"], $admin);
+afirmar("Crear una cuenta con menos de 8 caracteres: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", ["nombre" => "Alta", "email" => $correoNuevo, "rol" => "Vecino", "password" => "ClaveInicial-1"], $vecino);
+afirmar("Un vecino no puede crear cuentas: 403", 403, $codigo);
 
-function tokenDelCorreo(string $email): ?string
-{
-    $ruta = archivoCorreo($email);
-    if (!is_file($ruta)) {
-        return null;
-    }
-    return preg_match('/token=([a-f0-9]{64})/', file_get_contents($ruta), $m) ? $m[1] : null;
-}
-
-// La carpeta la escribe el usuario de Apache: se crea abierta para que la prueba
-// (que puede correr con otro usuario, por ejemplo en Docker) tambien la lea y limpie.
-$carpetaCorreo = __DIR__ . "/../tmp/correo";
-if (!is_dir($carpetaCorreo)) {
-    @mkdir($carpetaCorreo, 0777, true);
-    @chmod($carpetaCorreo, 0777);
-}
-
-$correoEnlace = "enlace.$sufijo@sigeru.uy";
-$correoInexistente = "nadie.$sufijo@sigeru.uy";
-@unlink(archivoCorreo($correoEnlace));
-$idUsuarioEnlace = null;
-if (!$correoDePrueba) {
-    omitir("Toda la seccion 7b: necesita que Apache arranque con SIGERU_MAIL_MODE=archivo (hoy el correo esta en modo: " . ($raizUsuarios["correo"] ?? "desconocido") . ")");
-} else {
-
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios",
-    ["nombre" => "Enlace", "email" => $correoEnlace, "rol" => "Vecino", "password" => "corta"], $admin);
-afirmar("El administrador crea la cuenta y se envia el enlace (201)", 201, $codigo);
-afirmar("La cuenta queda pendiente", "pendiente", $cuerpo["datos"]["estado"] ?? null);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", ["nombre" => "Alta", "email" => $correoNuevo, "rol" => "Vecino", "password" => "ClaveInicial-1"], $admin);
+afirmar("El administrador crea la cuenta (201)", 201, $codigo);
+afirmar("Queda activa", "activo", $cuerpo["datos"]["estado"] ?? null);
+afirmar("La respuesta no devuelve la contrasena ni su hash", false, str_contains(json_encode($cuerpo), "password"));
 $idUsuarioEnlace = $cuerpo["datos"]["id_usuario"] ?? null;
-$token = tokenDelCorreo($correoEnlace);
-afirmar("El correo trae un enlace con un token de 64 caracteres", true, $token !== null);
 
-[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoEnlace, "password" => "corta"]);
-afirmar("La contrasena que mando el administrador se ignora: no se puede entrar", 401, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoNuevo, "password" => "ClaveInicial-1"]);
+afirmar("Entra con la contrasena inicial", 200, $codigo);
 
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => $token, "password" => "corta"]);
-afirmar("Una contrasena de menos de 8 caracteres: 400", 400, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => str_repeat("a", 64), "password" => "ClaveNueva-123"]);
-afirmar("Un token que no existe: 400", 400, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => "no-es-un-token", "password" => "ClaveNueva-123"]);
-afirmar("Un token con formato invalido: 400", 400, $codigo);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuarioEnlace", ["password" => "corta"], $admin);
+afirmar("Restablecer con menos de 8 caracteres: 400", 400, $codigo);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuarioEnlace", ["password" => "ClaveNueva-456"], $vecino);
+afirmar("Un vecino no puede restablecer la de otro: 403", 403, $codigo);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuarioEnlace", ["password" => "ClaveNueva-456"], $admin);
+afirmar("El administrador restablece la contrasena (200)", 200, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoNuevo, "password" => "ClaveInicial-1"]);
+afirmar("La contrasena vieja ya no sirve: 401", 401, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoNuevo, "password" => "ClaveNueva-456"]);
+afirmar("La nueva si", 200, $codigo);
 
-$pdo->prepare("UPDATE enlace_clave SET vence_en = DATE_SUB(NOW(), INTERVAL 1 MINUTE) WHERE id_usuario = ?")
-    ->execute([$idUsuarioEnlace]);
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => $token, "password" => "ClaveNueva-123"]);
-afirmar("Un enlace vencido no sirve: 400", 400, $codigo);
+[$codigo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuarioEnlace", ["nombre" => "Alta Editada"], $admin);
+afirmar("Editar sin tocar la contrasena (200)", 200, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoNuevo, "password" => "ClaveNueva-456"]);
+afirmar("Y la contrasena sigue siendo la misma", 200, $codigo);
 
-[$codigo] = peticion("POST", "/api-usuarios/usuarios/$idUsuarioEnlace/enlace", [], $vecino);
-afirmar("Un vecino no puede reenviar enlaces: 403", 403, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios/99999/enlace", [], $admin);
-afirmar("Reenviar a un usuario que no existe: 404", 404, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios/$idUsuarioEnlace/enlace", [], $admin);
-afirmar("El administrador reenvia el enlace (200)", 200, $codigo);
-$token2 = tokenDelCorreo($correoEnlace);
-afirmar("El enlace nuevo es distinto del anterior", true, $token2 !== null && $token2 !== $token);
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => $token, "password" => "ClaveNueva-123"]);
-afirmar("Al emitir uno nuevo el anterior deja de servir: 400", 400, $codigo);
-
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => $token2, "password" => "ClaveNueva-123"]);
-afirmar("Con el enlace vigente se crea la contrasena (200)", 200, $codigo);
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/login", ["email" => $correoEnlace, "password" => "ClaveNueva-123"]);
-afirmar("Y ahora se puede entrar", 200, $codigo);
-afirmar("La cuenta paso a activa", "activo", $cuerpo["datos"]["estado"] ?? null);
-[$codigo] = peticion("POST", "/api-usuarios/crear-clave", ["token" => $token2, "password" => "OtraClave-456"]);
-afirmar("Un enlace ya usado no vuelve a servir: 400", 400, $codigo);
-
-[$codigo] = peticion("POST", "/api-usuarios/recuperar-clave", ["email" => "no-es-un-email"]);
-afirmar("Recuperar con un email invalido: 400", 400, $codigo);
-
-@unlink(archivoCorreo($correoEnlace));
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/recuperar-clave", ["email" => $correoEnlace]);
-afirmar("Recuperar la clave de un vecino activo responde 200", 200, $codigo);
-$mensajeRecuperar = $cuerpo["mensaje"] ?? null;
-afirmar("Y se envia el correo", true, tokenDelCorreo($correoEnlace) !== null);
-
-@unlink(archivoCorreo($correoEnlace));
-[$codigo] = peticion("POST", "/api-usuarios/recuperar-clave", ["email" => $correoEnlace]);
-afirmar("Pedirlo otra vez enseguida responde 200", 200, $codigo);
-afirmar("Pero no manda otro correo (freno de 5 minutos)", false, is_file(archivoCorreo($correoEnlace)));
-
-foreach ([$correoInexistente, "admin@sigeru.uy"] as $destino) {
-    @unlink(archivoCorreo($destino));
-    [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/recuperar-clave", ["email" => $destino]);
-    afirmar("Recuperar para $destino responde igual (no revela si existe)", [200, $mensajeRecuperar], [$codigo, $cuerpo["mensaje"] ?? null]);
-    afirmar("Y no se manda ningun correo", false, is_file(archivoCorreo($destino)));
+foreach (["/api-usuarios/crear-clave", "/api-usuarios/recuperar-clave"] as $ruta) {
+    [$codigo] = peticion("POST", $ruta, ["email" => $correoNuevo, "token" => str_repeat("a", 64), "password" => "ClaveNueva-123"]);
+    afirmar("$ruta ya no existe: 404", 404, $codigo);
 }
-$pdo->prepare("DELETE FROM enlace_clave WHERE id_usuario = 1")->execute();
+[$codigo] = peticion("POST", "/api-usuarios/usuarios/$idUsuarioEnlace/enlace", [], $admin);
+afirmar("Tampoco el envio de enlaces: 404", 404, $codigo);
 
 [$codigo] = peticion("DELETE", "/api-usuarios/usuarios/$idUsuarioEnlace", null, $admin);
 afirmar("Se da de baja a la cuenta de prueba", 200, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios/$idUsuarioEnlace/enlace", [], $admin);
-afirmar("Una cuenta dada de baja no recibe enlaces: 409", 409, $codigo);
-}
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => $correoNuevo, "password" => "ClaveNueva-456"]);
+afirmar("Una cuenta dada de baja no entra: 401", 401, $codigo);
 
 
 // --- 8. Matriz de permisos por rol ------------------------------------------
@@ -695,23 +640,16 @@ require __DIR__ . "/correr-tests-incidencias.php";
 require __DIR__ . "/correr-tests-recoleccion.php";
 require __DIR__ . "/correr-tests-operario.php";
 require __DIR__ . "/correr-tests-notificaciones.php";
-require __DIR__ . "/correr-tests-participacion.php";
 require __DIR__ . "/correr-tests-pasaje.php";
-require __DIR__ . "/correr-tests-prediccion.php";
-require __DIR__ . "/correr-tests-impacto.php";
-require __DIR__ . "/correr-tests-ruta.php";
 require __DIR__ . "/correr-tests-rutas.php";
 require __DIR__ . "/correr-tests-rutas-paradas.php";
 require __DIR__ . "/correr-tests-rutas-mapa.php";
 require __DIR__ . "/correr-tests-asignacion.php";
 require __DIR__ . "/correr-tests-incidencias-mant.php";
 require __DIR__ . "/correr-tests-cuadrillas.php";
-require __DIR__ . "/correr-tests-pdf.php";
-require __DIR__ . "/correr-tests-idempotencia.php";
 require __DIR__ . "/correr-tests-errores.php";
 require __DIR__ . "/correr-tests-estadisticas.php";
 require __DIR__ . "/correr-tests-publico.php";
-require __DIR__ . "/correr-tests-guia.php";
 require __DIR__ . "/correr-tests-listas.php";
 require __DIR__ . "/correr-tests-foto.php";
 require __DIR__ . "/correr-tests-seguridad.php";
@@ -730,9 +668,6 @@ $pdo->prepare("DELETE FROM maquinaria WHERE id_maquinaria = ?")->execute([$idMaq
 $pdo->prepare("DELETE FROM incidencia WHERE id_contenedor = ?")->execute([$idContInc]);
 $pdo->prepare("DELETE FROM contenedor WHERE id_contenedor IN (?, ?)")->execute([$idContenedor, $idContInc]);
 $pdo->prepare("DELETE FROM usuario WHERE id_usuario IN (?, ?)")->execute([$idUsuarioCreado, $idUsuarioEnlace]);
-foreach (["test.$sufijo@sigeru.uy", $correoEnlace, $correoInexistente] as $destino) {
-    @unlink(archivoCorreo($destino));
-}
 $pdo->prepare("DELETE FROM solicitud_registro WHERE id_solicitud = ?")->execute([$idSolicitud]);
 $pdo->prepare("DELETE FROM usuario WHERE id_usuario = ?")->execute([$idUsuarioTemporal]);
 $pdo->prepare("DELETE FROM auditoria WHERE fecha_hora >= ?")->execute([$inicioDeLaCorrida]);
@@ -765,7 +700,7 @@ foreach ([$admin, $vecino, $operario, $cuadrilla, $otraCuadrilla, $temporal] as 
 echo "\n" . str_repeat("=", 50) . "\n";
 echo "Pasaron: $pasaron   Fallaron: $fallaron   Omitidas: $omitidas\n";
 if ($omitidas > 0) {
-    echo "AVISO: hay pruebas omitidas; para correrlas todas, arrancar Apache con SIGERU_MAIL_MODE=archivo."  . "\n";
+    echo "AVISO: hay pruebas omitidas por el entorno; ver las lineas OMITIDA de arriba."  . "\n";
 }
 
 if ($fallaron > 0) {

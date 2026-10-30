@@ -1,6 +1,6 @@
 <?php
 
-// Avisos (extras, parte 13): textos de cada evento, aviso por correo en modo archivo y copias identicas.
+// Avisos (extras, parte 13): textos de cada evento y copias identicas.
 
 require_once __DIR__ . "/../api-gestion/core/Notificador.php";
 
@@ -27,34 +27,7 @@ afirmar("El del centro lleno pide retirar material", "Centro Norte llegó a su c
 afirmar("La fecha del aviso se escribe dia/mes/anio hora:minuto", ["21/10/2026 06:30", "21/10/2026 06:30", "sin fecha"],
     [Notificador::fechaLegible("2026-10-21 06:30:00"), Notificador::fechaLegible("2026-10-21T06:30"), Notificador::fechaLegible("sin fecha")]);
 
-titulo("28 bis. Avisos: correo en modo archivo y copias identicas");
-
-configurarCorreo(["SIGERU_MAIL_MODE" => "archivo"]);
-$destinoAviso = "aviso." . bin2hex(random_bytes(4)) . "@sigeru.uy";
-$ficheroAviso = Correo::carpetaArchivo() . "/" . hash("sha256", $destinoAviso) . "-aviso.txt";
-Correo::enviarAviso($destinoAviso, "Ana", "Tu reclamo INC-0003 fue resuelto", "Tu reclamo INC-0003 se resolvió.", "incidencia.html?id=3");
-$aviso = is_file($ficheroAviso) ? file_get_contents($ficheroAviso) : "";
-afirmar("El aviso deja su mensaje en tmp/correo con su propio nombre (no pisa el de bienvenida ni el de enlaces)", true, $aviso !== "");
-afirmar("El asunto es el titulo y el cuerpo saluda y trae el mensaje", true,
-    str_starts_with($aviso, "Tu reclamo INC-0003 fue resuelto") && str_contains($aviso, "Hola Ana") && str_contains($aviso, "se resolvió"));
-afirmar("Lleva el enlace a la pantalla y como desactivar los avisos, y ningun token", true,
-    str_contains($aviso, "http://localhost/sigeru/frontend-usuarios/incidencia.html?id=3") && str_contains($aviso, "Recibir avisos por correo") && !str_contains($aviso, "token="));
-foreach (["javascript:alert(1)", "../../login.html", "http://otro.sitio/x.html", "incidencia.html?id=3&x=<script>", "//evil.html"] as $malo) {
-    Correo::enviarAviso($destinoAviso, "Ana", "T", "M", $malo);
-    afirmar("Un enlace raro no sale en el correo ($malo): vuelve al inicio", true,
-        str_contains(file_get_contents($ficheroAviso), "frontend-usuarios/dashboard.html") && !str_contains(file_get_contents($ficheroAviso), "otro.sitio"));
-}
-Correo::enviarAviso($destinoAviso, "Ana", "T", "M", null);
-afirmar("Sin enlace lleva al inicio", true, str_contains(file_get_contents($ficheroAviso), "frontend-usuarios/dashboard.html"));
-$rechazado = false;
-try {
-    Correo::enviarAviso("a@sigeru.uy" . chr(13) . chr(10) . "Bcc: otro@sigeru.uy", "Ana", "T", "M");
-} catch (CorreoException $e) {
-    $rechazado = true;
-}
-afirmar("Un destino con salto de linea tambien se rechaza en los avisos", true, $rechazado);
-@unlink($ficheroAviso);
-configurarCorreo([]);
+titulo("28 bis. Avisos: copias identicas");
 
 afirmar("core/Notificador.php es identico en api-gestion y api-recoleccion", true,
     file_get_contents(__DIR__ . "/../api-gestion/core/Notificador.php") === file_get_contents(__DIR__ . "/../api-recoleccion/core/Notificador.php"));

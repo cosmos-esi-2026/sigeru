@@ -137,10 +137,30 @@ afirmar("Un tipo desconocido se rechaza y lista los validos", true,
     str_starts_with((string) FlujoIncidencia::errorDeNueva(["tipo_problema" => "inventado"] + $nueva), "Tipo de problema inválido. Valores admitidos: desbordado, lleno, roto"));
 afirmar("Una descripcion de menos de 5 letras se rechaza", "Contá el problema en al menos 5 caracteres",
     FlujoIncidencia::errorDeNueva(["descripcion" => "Roto"] + $nueva));
-afirmar("Y una hecha de espacios cuenta como vacia", "Contá el problema en al menos 5 caracteres",
-    FlujoIncidencia::errorDeNueva(["descripcion" => "         "] + $nueva));
-afirmar("Una descripcion que no es texto tambien", "Contá el problema en al menos 5 caracteres",
-    FlujoIncidencia::errorDeNueva(["descripcion" => ["x"]] + $nueva));
+// Desde la parte 26 (H-06) la descripcion es opcional: solo el tipo «otro» la exige. Lo que se escriba tiene que tener 5 caracteres o mas.
+afirmar("Una hecha de espacios cuenta como vacia: en «otro» se rechaza", "Contá el problema en al menos 5 caracteres",
+    FlujoIncidencia::errorDeNueva(["tipo_problema" => "otro", "descripcion" => "         "] + $nueva));
+afirmar("Una descripcion que no es texto cuenta como vacia: en «otro» tambien se rechaza", "Contá el problema en al menos 5 caracteres",
+    FlujoIncidencia::errorDeNueva(["tipo_problema" => "otro", "descripcion" => ["x"]] + $nueva));
+afirmar("En «otro» sin la clave «descripcion» tambien", "Contá el problema en al menos 5 caracteres",
+    FlujoIncidencia::errorDeNueva(["codigo_contenedor" => "CNT-001", "tipo_problema" => "otro"]));
+afirmar("En cualquier otro tipo, vacia, en blanco o ausente esta bien", [null, null, null], [
+    FlujoIncidencia::errorDeNueva(["descripcion" => ""] + $nueva), FlujoIncidencia::errorDeNueva(["descripcion" => "         "] + $nueva),
+    FlujoIncidencia::errorDeNueva(["codigo_contenedor" => "CNT-001", "tipo_problema" => "lleno"]),
+]);
+afirmar("Pero si se escribe algo en cualquier tipo, tiene que tener 5 caracteres o mas", [true, true, true], [
+    FlujoIncidencia::errorDeNueva(["tipo_problema" => "lleno", "descripcion" => "abc"] + $nueva) !== null,
+    FlujoIncidencia::errorDeNueva(["tipo_problema" => "desbordado", "descripcion" => "  ab  "] + $nueva) !== null,
+    FlujoIncidencia::errorDeNueva(["tipo_problema" => "otro", "descripcion" => "abcd"] + $nueva) !== null,
+]);
+afirmar("Sin texto se guarda el rotulo del tipo; con texto, el texto sin espacios de los bordes", ["Contenedor lleno", "Contenedor roto o dañado", "Otro", "La tapa esta rota"], [
+    FlujoIncidencia::descripcionDe(["tipo_problema" => "lleno"]), FlujoIncidencia::descripcionDe(["tipo_problema" => "roto", "descripcion" => "   "]),
+    FlujoIncidencia::descripcionDe(["tipo_problema" => "otro", "descripcion" => null]), FlujoIncidencia::descripcionDe(["tipo_problema" => "roto", "descripcion" => "  La tapa esta rota "]),
+]);
+afirmar("Cada tipo valido tiene su rotulo (y el mismo que usa la pantalla)", [[], []], [
+    array_values(array_diff(FlujoIncidencia::TIPOS, array_keys(FlujoIncidencia::TEXTO_TIPO))),
+    array_values(array_filter(FlujoIncidencia::TEXTO_TIPO, static fn(string $rotulo) => !str_contains((string) file_get_contents(__DIR__ . "/../frontend-usuarios/js/incidencias-comun.js"), '"' . $rotulo . '"'))),
+]);
 afirmar("Pasarse de 500 caracteres se rechaza", "La descripción no puede pasar de 500 caracteres",
     FlujoIncidencia::errorDeNueva(["descripcion" => str_repeat("a", 501)] + $nueva));
 afirmar("500 justos entran", null, FlujoIncidencia::errorDeNueva(["descripcion" => str_repeat("a", 500)] + $nueva));
