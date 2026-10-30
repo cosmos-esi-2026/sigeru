@@ -6,6 +6,11 @@ fecha: 2026-10-19
 
 # Ampliación: las extras de la página (partes 12 a 22)
 
+> **Actualización del 25/10/2026: este documento describe el sistema ANTES de simplificarlo.** El equipo decidió sacar lo que no iba a defender:
+> predicción de llenado, ruta sugerida, reporte en PDF, aplicación instalable y cola sin señal, participación del vecino (calificar, puntos, insignias, ranking),
+> impacto ambiental, guía «¿Dónde tiro esto?», calidad del servicio en Reportes y el correo de avisos. **Lo que vale hoy está en `ampliacion-simplificacion-3ra.md`**;
+> las filas tachadas de la tabla de abajo ya no existen en el código y sus documentos pasaron a `retiradas/`. Las cifras de la sección 2 (22 tablas, 737 unitarias, 965 HTTP) son las del 19/10, no las de hoy.
+
 Este documento **reúne en un solo lugar** lo que se agregó en las partes 12 a 22 del plan de extras (`plan-extras-pagina.md`). Cada parte tiene su propia ampliación con el detalle, las decisiones y lo que no se pudo verificar; acá está el mapa. Todo se hizo en una sesión autónoma
 (Fornos pidió seguir sin responder el 19/10/2026): **las decisiones de producto están marcadas «SIN Fornos» en cada ampliación y el equipo puede confirmarlas o revertirlas.** Nada se subió a GitHub (el push lo decide Fornos).
 
@@ -15,14 +20,14 @@ Este documento **reúne en un solo lugar** lo que se agregó en las partes 12 a 
 |---|---|---|---|
 | 12 | Operario con trabajo real: recepciones, stock del centro (movimientos de solo agregado), estado de máquinas con historial | 009, 010 | `ampliacion-operario-3ra.md` |
 | 13 | Notificaciones: campanita en todas las pantallas, avisos por rol y correo opcional al vecino | 011 | `ampliacion-notificaciones-3ra.md` |
-| 14 | Participación del vecino: calificar la atención, puntos de solo agregado, insignias, ranking por zona; calidad del servicio en Reportes | 012, 013 | `ampliacion-participacion-3ra.md` |
+| 14 | ~~Participación del vecino: calificar la atención, puntos de solo agregado, insignias, ranking por zona; calidad del servicio en Reportes~~ **RETIRADA 25/10** | 012, 013 | `retiradas/ampliacion-participacion-3ra.md` |
 | 15 | «¿Cuándo pasa el camión por mi zona?» | 014 | `ampliacion-pasaje-3ra.md` |
-| 16 | Predicción de llenado de contenedores (estadística, no IA) | — | `ampliacion-prediccion-3ra.md` |
-| 17 | Ruta sugerida para el camión (vecino más cercano + 2-opt), con alta de recolección precargada | — | `ampliacion-ruta-3ra.md` |
-| 18 | Impacto ambiental con factores de la EPA (WARM v16) verificados | 015 | `ampliacion-impacto-3ra.md` |
-| 19 | Guía pública «¿Dónde tiro esto?» (Manual de la Intendencia de Montevideo) | — | `ampliacion-guia-3ra.md` |
-| 20 | Reporte de gestión en PDF con generador propio | — | `ampliacion-reporte-pdf-3ra.md` |
-| 21 | Aplicación instalable y Cuadrilla sin señal (cola y claves de operación) | 016 | `ampliacion-offline-3ra.md` |
+| 16 | ~~Predicción de llenado de contenedores (estadística, no IA)~~ **RETIRADA 25/10** | — | `retiradas/ampliacion-prediccion-3ra.md` |
+| 17 | ~~Ruta sugerida para el camión (vecino más cercano + 2-opt), con alta de recolección precargada~~ **RETIRADA 25/10** | — | `retiradas/ampliacion-ruta-3ra.md` |
+| 18 | ~~Impacto ambiental con factores de la EPA (WARM v16) verificados~~ **RETIRADA 25/10** | 015 | `retiradas/ampliacion-impacto-3ra.md` |
+| 19 | ~~Guía pública «¿Dónde tiro esto?» (Manual de la Intendencia de Montevideo)~~ **RETIRADA 25/10** | — | `retiradas/ampliacion-guia-3ra.md` |
+| 20 | ~~Reporte de gestión en PDF con generador propio~~ **RETIRADA 25/10** | — | `retiradas/ampliacion-reporte-pdf-3ra.md` |
+| 21 | ~~Aplicación instalable y Cuadrilla sin señal (cola y claves de operación)~~ **RETIRADA 25/10** | 016 | `retiradas/ampliacion-offline-3ra.md` |
 | 22 | Pulido: modo oscuro, páginas de error, estados vacíos, imagen para compartir | — | `ampliacion-pulido-3ra.md` |
 
 (La parte 11 fue de preparación, sin funciones nuevas, y la 23 es este cierre.)

@@ -4,6 +4,10 @@ entrega: 3ra (ampliación: activación de cuentas y recuperación de contraseña
 fecha: 2026-10-17
 ---
 
+> **RETIRADA el 30/10/2026.** El correo y «Olvidé mi contraseña» se sacaron del sistema antes del congelamiento (ver `../../programacion-full-stack/ampliacion-sin-correo-3ra.md`). El documento se conserva solo como registro de lo que se hizo; **nada de lo que describe existe ya en el código ni se va a defender.** Hoy el administrador define la contraseña al crear la cuenta y la restablece editando el usuario.
+
+---
+
 # Ampliación: acceso por enlace de correo
 
 Se construyó entre la noche del 16/10 y la madrugada del 17/10/2026 (fuera de las partes P0-P10 del plan) y se

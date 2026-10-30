@@ -4,6 +4,8 @@ entrega: 3ra (extras, parte 22: pulido)
 fecha: 2026-10-19
 ---
 
+> **Actualización del 25/10/2026:** el service worker, el manifiesto y la guía «¿Dónde tiro esto?» que se mencionan abajo se sacaron del sistema (ver `ampliacion-simplificacion-3ra.md`). **El modo oscuro, las páginas de error, los estados vacíos y la imagen para compartir siguen.**
+
 # Ampliación: pulido (modo oscuro, errores amables, estados vacíos, imagen para compartir)
 
 Parte 22 del plan de extras. Objetivo: el acabado que hace que se vea como un producto. Sesión autónoma (Fornos pidió seguir sin responder): las decisiones marcadas «SIN Fornos» se pueden corregir. **Sin migración ni tablas nuevas** (la huella de la base no cambia).

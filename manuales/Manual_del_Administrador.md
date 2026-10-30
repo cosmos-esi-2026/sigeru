@@ -21,10 +21,10 @@ calculadas al momento. Tras 2 horas sin actividad la sesión se cierra.
 ## 2. Usuarios
 
 **Usuarios** lista las cuentas. Podés buscar y filtrar por **Rol** (Administrador, Operario, Cuadrilla, Vecino) y **Estado** (Activo,
-Pendiente sin contraseña, Dado de baja); **Limpiar** borra los filtros y **Exportar CSV** baja el listado.
+Dado de baja); **Limpiar** borra los filtros y **Exportar CSV** baja el listado.
 
-- **Alta:** botón de nuevo usuario, completar Nombre, Apellido, Email y rol, **Guardar usuario**. La cuenta queda *pendiente*.
-- **Enviar acceso:** manda al correo un enlace para crear la contraseña (vence en una hora, un solo uso).
+- **Alta:** botón de nuevo usuario, completar Nombre, Apellido, Email, **Contraseña** (8 caracteres o más) y rol, **Guardar usuario**. La cuenta queda activa y le entregás la contraseña a la persona en mano: el sistema no manda correo.
+- **Contraseña perdida:** **Editar** el usuario y escribir una **Contraseña** nueva (vacía no se cambia). No hay «Olvidé mi contraseña»: la restablece la administración.
 - **Centro del Operario:** al elegir el rol Operario aparece **Centro de acopio**. Un Operario solo ve y mueve el centro que le asignes; sin
   centro no puede operar (la lista muestra «Operario · nombre del centro»).
 - **Editar:** lápiz de la fila, **Guardar cambios**. **Dar de baja:** pide confirmación.
@@ -72,44 +72,10 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 **Reportes:** período (Últimos 30 días, Este mes, Todo el historial o Desde/Hasta) y Zona; **Generar informe**, **Imprimir**,
 **Exportar (CSV)** y **Exportar detalle (CSV)**.
 
-## Reporte en PDF
-
-![Reportes: período, «Descargar PDF», «Imprimir» y exportación](img/admin-reportes.png)
-*Reportes: período, «Descargar PDF», «Imprimir» y exportación*
-
-En **Reportes**, elegí el período (y la zona si querés) y tocá **«Descargar PDF»**. El archivo (`sigeru-reporte-AAAA-MM-DD.pdf`) trae portada con el período, resumen, urgencias, incidencias por zona y tipo, satisfacción, impacto ambiental (marcado como estimación, con sus fuentes) y el detalle de las incidencias.
-Las cifras son las mismas de la pantalla. Para que no sea interminable muestra hasta 100 incidencias y 25 contenedores llenos, y lo avisa; para ver todas usá «Exportar (CSV)». **Cada descarga queda anotada en Auditoría.**
-
-## Impacto ambiental
-
-En **Reportes**, la sección **Impacto ambiental** muestra por mes los kilos recolectados, cuántos son de tipos reciclables, el porcentaje y el **CO2 evitado estimado**, con **Exportar (CSV)**. **Es una estimación**: kilos de cada tipo reciclable por un factor de la
-EPA de Estados Unidos (modelo WARM v16), con la fuente a la vista; orgánico y mixto no tienen factor verificado y se informan solo en kilos. La landing pública muestra las cifras agregadas del total, también rotuladas como estimación.
-
 ## 9. Auditoría
 
 **Auditoría** registra cada operación de escritura, hecha o negada por permisos. Filtros: Resultado (Hecho, Negado por permisos),
 Operación (POST, PUT, DELETE), Desde, Hasta.
-
-## Cuándo se llena cada contenedor
-
-**Contenedores** tiene la columna **Se llena en** (por ejemplo «en 1 día y 13 h (confianza media)») y el filtro **Se llena pronto** (24 h, 48 h o 7 días). La **ficha** de cada contenedor y tu **Inicio** (panel
-«Se llenan en las próximas 48 horas») muestran lo mismo. **No es inteligencia artificial**: se calcula con el ritmo de vaciado del contenedor (la caja **¿Cómo se calcula?** lo explica). Con menos de 3 vaciados dice
-«Sin datos suficientes»; es una guía para planificar rutas, no una certeza.
-
-## Ruta sugerida
-
-![Ruta sugerida: cifras, supuestos y recorrido en el mapa](img/admin-ruta-sugerida.png)
-*Ruta sugerida: cifras, supuestos y recorrido en el mapa*
-
-Menú **«Ruta sugerida»** (o el botón «Sugerir ruta» de Recolecciones). Elegí zona, horizonte (24 o 48 horas), centro de destino y camión, y tocá **«Sugerir ruta»**. Entran los contenedores ya llenos y los que, según la predicción de llenado, llegan al 90 % dentro del horizonte (hasta 25, los más urgentes).
-Ves el recorrido en el mapa (círculos numerados; rojo si ya está lleno), la tabla con el mismo orden, la distancia y el tiempo estimados. **Son estimaciones:** distancia en línea recta (no por calles), 20 km/h y 5 minutos por parada, y el orden es una propuesta (vecino más cercano mejorado), no el recorrido óptimo.
-**«Crear recolección con esta ruta» no crea nada:** abre el alta de Recolecciones con el camión, el centro y el orden de los contenedores (en las observaciones) ya cargados; elegís la ruta, la fecha y la cuadrilla y confirmás con «Planificar». Hace falta historial de vaciados (3 o más por contenedor) para que aparezcan los que están por llenarse.
-
-## Calidad del servicio (reportes)
-
-En **Reportes**, la sección **Calidad del servicio** muestra por zona y por cuadrilla: incidencias, resueltas, cuántas calificaciones dejaron los vecinos, la **satisfacción promedio** (de 1 a 5)
-y el **tiempo medio de resolución**, del período y la zona que elijas. **Exportar (CSV)** baja las dos tablas. Una zona o cuadrilla sin calificaciones muestra «Sin calificaciones» (no un cero).
-Los vecinos califican solo un reclamo resuelto, una vez y dentro de los 30 días; el detalle de la incidencia muestra la calificación.
 
 ## Avisos (la campanita)
 

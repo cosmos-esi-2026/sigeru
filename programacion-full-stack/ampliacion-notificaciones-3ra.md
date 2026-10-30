@@ -4,6 +4,8 @@ entrega: 3ra (extras, parte 13: avisos dentro del sistema y por correo)
 fecha: 2026-10-19
 ---
 
+> **Actualización del 25/10/2026:** se sacó el **correo de aviso al vecino** y su preferencia (`GET/PUT /preferencias`, la casilla del Inicio, la columna `usuario.avisos_por_correo` y `Correo::enviarAviso`). **Queda la campanita** con todos los avisos de este documento. Lo que abajo dice del correo ya no existe (ver `ampliacion-simplificacion-3ra.md`).
+
 # Ampliación: notificaciones
 
 Parte 13 del plan de extras. Objetivo: que cada persona se entere de lo que le importa **sin tener que entrar a mirar**. Hecha en sesión

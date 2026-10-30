@@ -338,3 +338,34 @@ La foto de la incidencia sigue siendo solo del Vecino (decisión SIN Fornos: la 
 | `PUT /api-usuarios/solicitudes/{id}` | Solo Administrador | Una solicitud de cuadrilla solo se aprueba como Cuadrilla y con una **`id_cuadrilla` real elegida por el administrador** (400 si falta, no existe o está dada de baja); la solicitud sigue pendiente si falla. Al aprobar se crea el usuario `pendiente` y se envía el enlace para crear la contraseña (flujo existente) |
 
 Cubierto por `correr-tests-cuadrillas.php`. Cambios en la auditoría: etiquetas para crear, modificar y dar de baja una cuadrilla.
+
+## 24. Actualización del 25/10/2026 (simplificación: rutas que ya no existen)
+
+Se sacaron estas rutas junto con sus funciones (ver `programacion-full-stack/ampliacion-simplificacion-3ra.md`). Pedirlas ahora devuelve **404**, no 403:
+
+| Ruta | Antes | Sección que la describía |
+|---|---|---|
+| `POST /api-gestion/incidencias/{id}/calificacion`, `GET /api-gestion/participacion/progreso`, `GET /api-gestion/participacion/ranking`, `GET /api-gestion/estadisticas/satisfaccion` | Vecino, cualquier rol con sesión y Administrador | 16 |
+| `GET /api-gestion/contenedores/prediccion` | Administrador y Cuadrilla | 18 |
+| `GET /api-gestion/publico/impacto`, `GET /api-gestion/estadisticas/impacto` | Público (con freno por IP) y Administrador | 19 |
+| `GET /api-gestion/contenedores/ruta-sugerida` | Administrador | 20 |
+| `GET /api-gestion/reportes/pdf` | Administrador | 21 |
+| `GET /api-gestion/estadisticas/resolucion` | Administrador | (parte 14, ya sin calificaciones) |
+| `GET /api-usuarios/preferencias`, `PUT /api-usuarios/preferencias` | Cualquier rol con sesión | 15 |
+| El encabezado `Idempotency-Key` en los vaciados y avances | Cuadrilla | 22 |
+
+Las secciones 15, 16 y 18 a 22 quedan como **registro histórico**. Desde el 30/10 tampoco existen `/recuperar-clave`, `/crear-clave` ni `/usuarios/{id}/enlace` (sección 26). Lo que sigue vigente de la parte 13 es la campanita (`GET /notificaciones`, `POST /notificaciones/{id}/leida`, `POST /notificaciones/leer-todas`),
+solo para quien tiene la sesión y solo sobre sus propios avisos. Sin sesión, lo público es: `POST /login`, `/solicitudes`, `/registro` y `GET /publico/mapa`.
+
+## 26. Actualización del 30/10/2026: se saca el correo
+
+Se borran `POST /recuperar-clave`, `POST /crear-clave` y `POST /usuarios/{id}/enlace` (ahora responden 404) y la tabla `enlace_clave`. Cambia quién puede definir una contraseña:
+
+| Acción | Quién puede | Validación |
+|---|---|---|
+| `POST /usuarios` (alta) | Solo el Administrador | `password` obligatoria, 8 caracteres o más; la cuenta nace `activo` |
+| `PUT /usuarios/{id}` con `password` (restablecer) | Solo el Administrador | 8 caracteres o más; sin el campo no se cambia |
+| `PUT /solicitudes/{id}` con `decision: aprobada` | Solo el Administrador | `password` obligatoria al aprobar; al rechazar no se pide |
+| `POST /registro` | Cualquiera, sin sesión (10 por hora por IP) | La contraseña la elige el vecino |
+
+Sin sesión, lo público es: `POST /login`, `/solicitudes`, `/registro` y `GET /publico/mapa`. La auditoría sigue sin guardar nada del cuerpo de los pedidos (lo comprueba una prueba por HTTP). Probado: 654 unitarias y 995 HTTP, sección 7b de `correr-tests.php`.

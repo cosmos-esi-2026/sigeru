@@ -13,8 +13,7 @@ El **administrador** es quien te asigna el centro (en «Usuarios»); si todavía
 
 ## 1. Entrar
 
-**Ingresar** con tu correo y contraseña. Si no tenés, la administración te manda un enlace de acceso (una hora, un solo uso): escribí la
-**Nueva contraseña** dos veces y **Guardar contraseña**. Menú: **Inicio**, **Mapa**, **Centros de acopio**, **Recepciones** y **Maquinaria**.
+**Ingresar** con tu correo y contraseña. Si no la tenés o la perdiste, la administración te la define (no hay «Olvidé mi contraseña»). Menú: **Inicio**, **Mapa**, **Centros de acopio**, **Recepciones** y **Maquinaria**.
 
 ## 2. Inicio
 

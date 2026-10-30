@@ -17,10 +17,10 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 |---|---|
 | Nadie, ni el administrador, conoce la contraseña de otra persona | Las cuentas nuevas nacen `pendiente` y la persona crea su contraseña con un enlace de un solo uso (1 hora); la que envíe el administrador se ignora. Pruebas HTTP 7b |
 | Largo mínimo de 8 caracteres | `Validacion::contrasena`; la clave de prueba del seed ahora cumple (prueba unitaria) |
-| Contraseñas guardadas con hash, sin recuperación posible | bcrypt con sal propia; recuperar = crear una nueva por enlace |
-| Recuperación solo para vecinos | Administrador, operario y cuadrilla las renueva un administrador (evita tomar una cuenta privilegiada con solo el correo) |
-| El sistema no revela si una cuenta existe al recuperar o iniciar sesión | Misma respuesta en ambos casos; el registro público sí avisa si el correo ya existe (limitación aceptada) |
-| Una cuenta dada de baja no entra ni recibe enlaces | `estado = inactivo` se comprueba en **cada** pedido; pruebas de la sección 9 |
+| Contraseñas guardadas con hash, sin recuperación posible | bcrypt con sal propia; «recuperar» = que el administrador defina una nueva (no hay correo ni «Olvidé mi contraseña») |
+| Sin recuperación automática | Toda contraseña perdida la restablece un administrador (nadie toma una cuenta con solo conocer su correo) |
+| El sistema no revela si una cuenta existe al iniciar sesión | Misma respuesta con correo inexistente o contraseña mala; el registro público sí avisa si el correo ya existe (limitación aceptada) |
+| Una cuenta dada de baja no entra | `estado = inactivo` se comprueba en **cada** pedido; pruebas de la sección 9 |
 
 ## 2. Sesiones
 
@@ -38,7 +38,6 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 |---|---|
 | 5 intentos fallidos de entrar en 15 minutos bloquean ese correo | `IntentosLogin`; 429 con `Retry-After`; el conteo no distingue mayúsculas y se reinicia con un acceso correcto |
 | Los pedidos públicos (registro, solicitud, recuperar, crear contraseña) tienen tope por IP: 10 por hora (30 el último) | `LimitePeticion`; 429; pruebas 22m |
-| Un enlace de acceso: 1 hora, un solo uso, y emitir otro invalida el anterior; no más de uno cada 5 minutos por cuenta | `EnlaceClave` |
 
 ## 4. Mínimo privilegio
 
@@ -67,7 +66,7 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 |---|---|
 | Administrador del sistema | Crear cuentas con el rol justo, dar de baja a quien se va, revisar la auditoría, no compartir su sesión |
 | Equipo desarrollador | Parches, pruebas, el repositorio sin secretos (`.env`, claves y contraseñas fuera de Git), el estado de los respaldos |
-| Cada persona usuaria | Cuidar su correo (el acceso depende de él), cerrar sesión en equipos compartidos, avisar de cualquier uso raro |
+| Cada persona usuaria | Cuidar su contraseña, cerrar sesión en equipos compartidos, avisar de cualquier uso raro |
 
 ## 7. Incidentes: qué se hace
 

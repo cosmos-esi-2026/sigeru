@@ -2,7 +2,7 @@
 documento: Adenda de alcance — tercera entrega
 sistema: SiGeRU
 fecha: 2026-10-17
-estado: BORRADOR para revisión del equipo (secciones 1 a 5: sesión autónoma del 17/10; secciones 6 a 10: sesión autónoma del 19/10, partes 12 a 22; no hay PDF todavía)
+estado: BORRADOR para revisión del equipo (el 25/10 se agregó la simplificación, secciones 11 a 14; secciones 1 a 5: sesión autónoma del 17/10; secciones 6 a 10: sesión autónoma del 19/10, partes 12 a 22; no hay PDF todavía)
 ---
 
 # Adenda de alcance — 3ra entrega
@@ -194,3 +194,65 @@ Vale la misma advertencia de arriba: a 10 h/PF serían unas 1.430 h, y **no es p
 2. Si los cuatro ILF nuevos están bien elegidos (el stock del centro como ILF propio o como RET de `CentroAcopio`).
 3. Si las exportaciones a CSV se cuentan como EO (aquí sí, igual que arriba).
 4. La decisión de las notificaciones (sección 8).
+
+---
+
+# Actualización del 25/10/2026 — simplificación antes del congelamiento
+
+**Estado: PENDIENTE DE REVISIÓN DEL EQUIPO.** Antes del congelamiento se sacó del sistema lo que no se iba a defender (detalle y motivos en `programacion-full-stack/ampliacion-simplificacion-3ra.md`).
+**Las secciones 6 a 10 de arriba describen el sistema del 19/10 y quedan como registro**: lo que sigue corrige sus cifras. Mismo método (IFPUG, factor de ajuste 1,10, pesos EI 3/4/6, EO 4/5/7, EQ 3/4/6, ILF 7/10/15).
+
+## 11. Qué quedó de las partes 12 a 22
+
+| Parte | Estado |
+|---|---|
+| 12 Operario con trabajo real | **Sigue** |
+| 13 Notificaciones | **Sigue la campanita**; se sacó el correo al vecino y su preferencia |
+| 14 Participación del vecino | **Sacada** (calificar, puntos, insignias, ranking) y también la calidad del servicio de Reportes |
+| 15 ¿Cuándo pasa el camión por mi zona? | **Sigue** |
+| 16 Predicción de llenado | **Sacada** |
+| 17 Ruta sugerida | **Sacada** |
+| 18 Impacto ambiental | **Sacado** (landing y Reportes) |
+| 19 Guía «¿Dónde tiro esto?» | **Sacada** |
+| 20 Reporte en PDF | **Sacado** |
+| 21 Aplicación instalable y cola sin señal | **Sacada** |
+| 22 Pulido | **Sigue** (modo oscuro, errores, estados vacíos, imagen para compartir) |
+
+## 12. Medición corregida
+
+Se quitan de la tabla de la sección 7 los procesos de las funciones sacadas:
+
+- **EI:** «Elegir si quiero avisos por correo» (3) y «Calificar la atención de un reclamo» (4). Quedan 7 EI: **23**.
+- **EQ:** «Ver mi progreso», «Ver el ranking de zonas» y «Buscar en la guía» (4 + 3 + 3). Quedan 6 EQ: **24**.
+- **EO:** predicción, ruta sugerida, calidad del servicio, impacto público, impacto por mes, reporte en PDF y las exportaciones a CSV de calidad e impacto (46). Queda 1 EO, el panel del centro del Operario: **5**.
+- **ILF:** sale `Calificacion` (con los puntos como RET). Quedan `Recepcion`, `Notificacion` y `MovimientoStock`: 3 × 7 = **21**.
+
+| | Sin ajustar | Ajustados (× 1,10) |
+|---|---|---|
+| Lo nuevo de las partes 12 a 22 que **sigue** | **73** (23 + 24 + 5 + 21) | 80 |
+| Lo nuevo según la sección 7 (19/10) | 143 | 157 |
+| Conteo acumulado del 19/10 (sección 7) | 469 | 516 |
+| **Conteo acumulado hoy** (326 de antes + 73) | **399** | **439** |
+
+La advertencia de siempre vale igual: **no es productividad medida**. Es una estimación **pendiente de revisión del equipo** (los FTR y DET son criterio de quien la escribió).
+
+## 13. Qué más cambió respecto del 19/10
+
+- **Modelo de datos:** 21 tablas del modelo (no 22) y 27 con las técnicas (no 29): salieron `calificacion`, `movimiento_punto`, `factor_ambiental` y `clave_idempotencia`, y la columna `usuario.avisos_por_correo` (migraciones 001 a 011, 014 y 017 a 020; las 012, 013, 015 y 016 se borraron).
+- **Notificaciones:** la sección 8 decía «correo opcional al vecino»: **ya no existe**. La campanita queda para todos los roles.
+- **La adenda ya no tiene que justificar** el generador de PDF propio ni la aplicación instalable: se fueron con sus funciones (sección 9, 1.º y 2.º puntos).
+- **Diagramas de clases y DER:** siguen siendo los del modelo de 16 clases (se documenta por ampliación).
+
+## 14. Qué revisar
+
+1. Los 73 PF de la sección 12 (todos los FTR/DET se heredan de la sección 7).
+2. Si el equipo quiere volver a poner alguna de las funciones sacadas: la lista está en `ampliacion-simplificacion-3ra.md` y la copia, en `respaldo-partes/antes-de-simplificar-20261025.zip`.
+
+## 15. Actualización del 30/10/2026: se saca el correo
+
+Se sacó el correo del sistema (bienvenida, enlace de acceso y «Olvidé mi contraseña»). El administrador define la contraseña al crear la cuenta o al aprobar una solicitud, y la restablece editando el usuario (ver `ampliacion-sin-correo-3ra.md`).
+
+- **EI que salen** (de la tabla de la sección 7 de la adenda del 16/10): «Crear contraseña con enlace de correo» (3) y «Pedir enlace para recuperar contraseña» (3): **−6 PF sin ajustar**. «Alta de usuario» y «Aprobar solicitud» ya estaban contadas; solo suman un campo (DET).
+- **Conteo acumulado hoy:** 399 − 6 = **393** sin ajustar y **432** ajustados (× 1,10). Sigue siendo una estimación **pendiente de revisión del equipo**.
+- **Modelo de datos:** 21 tablas del modelo y 26 con las técnicas (sale `enlace_clave`); migraciones 001 a 003, 005 a 011, 014 y 017 a 020 (se borró la 004).
+- Las menciones al «correo de acceso» en las secciones 2 a 8 describen lo que se hizo el 16-17/10 y ya no rigen.

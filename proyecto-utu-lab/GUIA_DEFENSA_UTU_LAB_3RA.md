@@ -96,7 +96,7 @@ Plan B si la wifi no deja: abrir el mismo enlace en la PC (la etiqueta lo trae i
 **Los dos hallazgos que conviene contar** (muestran que la revisión sirvió):
 
 - **H-01, prioridad:** el formulario siempre mandaba «media», así que un contenedor desbordado nunca quedaba en alta, aunque esa regla la había pedido el docente de Programación. Las pruebas automáticas no lo veían porque probaban la API sin ese dato. Se arregló y se verificó: antes media, después alta.
-- **H-05, dirección:** la «dirección» de los contenedores reales es «circuito A_DU_RM_CL_116, id 172712». No le sirve a un vecino. Es un problema que solo apareció con datos reales, y sigue pendiente porque la fuente no trae calles.
+- **H-05, dirección:** la «dirección» de los contenedores reales era «circuito A_DU_RM_CL_116, id 172712». No le sirve a un vecino. Es un problema que solo apareció con datos reales. Lo mitigamos el 24/10 (la dirección ya no repite el id y la ficha y el reclamo tienen «Ver en el mapa») pero no tiene solución de modelo: la fuente no trae calles.
 
 **SUS en una frase:** son diez afirmaciones que la persona puntúa de 1 a 5; da un número de 0 a 100. El promedio de muchos sistemas es 68.
 
@@ -145,13 +145,13 @@ Revisar la interfaz contra principios conocidos de usabilidad (las 10 heurístic
 La hizo Claude, una IA, recorriendo la página con las cuentas de cada rol. Está declarado en el documento.
 
 **¿Qué cambió entre la versión inicial y la final?**  
-Quién informa (antes el administrador, ahora el vecino y la cuadrilla), la prioridad (antes la elegía quien informaba, ahora la pone el sistema según el tipo), los datos (inventados, ahora reales), las rutas (no existían) y el trabajo sin señal.
+Quién informa (antes el administrador, ahora el vecino y la cuadrilla), la prioridad (antes la elegía quien informaba, ahora la pone el sistema según el tipo), los datos (inventados, ahora reales), y las rutas (no existían).
 
 **¿Por qué el vecino tiene que estar registrado para avisar?**  
-Para poder avisarle cuando se resuelve, para que pueda calificar y para frenar avisos falsos.
+Para poder avisarle cuando se resuelve y para frenar avisos falsos.
 
 **¿Qué impacto tiene para la comunidad?**  
-Potencial, no medido: el vecino sabe dónde avisar y se entera del resultado; la Intendencia atiende primero lo urgente; hay cifras públicas con fuente. El CO2 evitado es una **estimación** con factores publicados, no una medición.
+Potencial, no medido: el vecino sabe dónde avisar y se entera del resultado; la Intendencia atiende primero lo urgente; hay cifras públicas del estado del sistema.
 
 **¿Qué aprendieron?**  
 Que observar sirve más que preguntar; que cada nivel de prototipo encuentra errores nuevos; que los datos reales cambian el diseño; que una API que anda no garantiza una pantalla que anda.
@@ -163,7 +163,7 @@ Con honestidad: la mayor parte del trabajo lo hizo una persona, con asistencia d
 Probar con personas en cada entrega, aunque sea con dos, y repartir tareas concretas con fecha y responsable desde el principio.
 
 **¿Por qué la dirección de los contenedores es tan rara?**  
-Porque los datos abiertos de la Intendencia traen el circuito y la ubicación, no la calle. Lo detectamos en la revisión (H-05) y lo dejamos documentado como pendiente.
+Porque los datos abiertos de la Intendencia traen el circuito y la ubicación, no la calle. Lo detectamos en la revisión (H-05) y lo mitigamos con «Ver en el mapa»; una calle inventada sería peor, y consultar un servicio público por cada uno de los 800 puntos va contra su política.
 
 ---
 
@@ -178,7 +178,7 @@ Porque los datos abiertos de la Intendencia traen el circuito y la ubicación, n
 
 ## 10. Recorrido de demostración (5 minutos)
 
-1. Portada pública: cifras reales y la guía «¿Dónde tiro esto?».
+1. Portada pública: cifras reales y el mapa de contenedores.
 2. Escanear la etiqueta como vecino y avisar (capítulo 4).
 3. Como administrador: el aviso en el panel, abrirlo, asignar una cuadrilla.
 4. Como administrador: «Armar ruta» con el recorrido por las calles.
@@ -194,5 +194,5 @@ Porque los datos abiertos de la Intendencia traen el circuito y la ubicación, n
 - **Seguridad del QR:** el login vuelve solo a pantallas propias (contra la redirección abierta).
 - **Validación:** heurística (11 problemas, 6 arreglados) + kit para sesiones de 15 minutos + SUS.
 - **Errores:** validación tarde, estándar de ESI, IA sin declarar, trabajo concentrado.
-- **Impacto:** potencial, no medido; el CO2 es una estimación.
+- **Impacto:** potencial, no medido.
 - **Si no sabés algo:** decir «no lo sé» y mostrar dónde está escrito.

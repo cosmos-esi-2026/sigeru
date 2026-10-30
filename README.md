@@ -11,13 +11,13 @@ responsables y reportes.
 
 | Carpeta | Qué es | Estado |
 | --- | --- | --- |
-| `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, impacto ambiental con su fuente, la guía «¿Dónde tiro esto?» (datos del Manual de la Intendencia de Montevideo), cómo informar un problema, enlace al registro y páginas de error propias | Funcionando |
-| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período, exportación a CSV y reporte en PDF), recepciones y stock del centro (Operario), notificaciones, participación del vecino, predicción de llenado, ruta sugerida, auditoría, modo oscuro y aplicación instalable con cola sin conexión para la Cuadrilla | Funcionando |
-| `api-usuarios/` | API de usuarios, login, sesión, solicitudes de registro, registro de vecinos, enlaces de contraseña por correo y auditoría | Funcionando, sobre MySQL |
+| `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, cómo informar un problema, enlace al registro y páginas de error propias | Funcionando |
+| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período y exportación a CSV), recepciones y stock del centro (Operario), notificaciones (la campanita), armado de rutas y asignación a cuadrillas, auditoría y modo oscuro | Funcionando |
+| `api-usuarios/` | API de usuarios, login, sesión, solicitudes de registro, registro de vecinos, contraseñas definidas por el administrador y auditoría | Funcionando, sobre MySQL |
 | `api-gestion/` | API de contenedores, centros de acopio, maquinaria, tipos de residuo, zonas e incidencias (informar, asignar, avance, resolver; historial de solo agregado) y estadísticas (informe de un período, panel por urgencias) | Funcionando, sobre MySQL |
 | `api-recoleccion/` | API de camiones, cuadrillas, rutas y recolecciones (planificar, iniciar, registrar vaciados con peso y volumen, finalizar, cancelar) y estadísticas de lo recolectado | Funcionando, sobre MySQL (desde el 14/10/2026) |
-| `database/` | Modelo físico: DDL de creación, datos de prueba, volcado de la estructura y migraciones del esquema (`migrar.php`) | 22 tablas del modelo y 29 con las de soporte (migraciones 001 a 016; huella `d6c2eadfbc82fcdb`) |
-| `tests/` | Pruebas de las tres APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 965 por HTTP + 737 unitarias (19/10/2026), más 26 pruebas de la cola y 10 del service worker que corren en el navegador (`tests/js/`) |
+| `database/` | Modelo físico: DDL de creación, datos de prueba, volcado de la estructura y migraciones del esquema (`migrar.php`) | 21 tablas del modelo y 27 con las de soporte (migraciones 001 a 011, 014 y 017 a 020; huella `232ba1b2758a7a3e` con el seed de pruebas, `2b25a0d53cf71e5d` con el de defensa) |
+| `tests/` | Pruebas de las tres APIs por HTTP (`correr-tests`) y pruebas unitarias sin base (`unitarias.php`) | 1000 por HTTP + 671 unitarias (25/10/2026) |
 
 Los datos **se persisten en MySQL** desde el 09/09/2026: las tres APIs abren su conexión
 por PDO y todas las consultas van preparadas. La sesión es de servidor (cookie `httponly`)
@@ -84,9 +84,8 @@ viene de OpenStreetMap y, sin internet, el mapa sigue funcionando sobre fondo li
 4. Entrar con `admin@sigeru.uy` / `sigeru2026`. Aparece el inicio del administrador:
    indicadores y «Requiere atención» (lo urgente primero), con el menú a todo el sistema.
 5. Para mostrar que las pruebas pasan: doble clic en **`sigeru/tests/correr-tests.cmd`**.
-   Corre las pruebas contra las APIs por HTTP y termina con `Fallaron: 0` (al 17/10/2026
-   son 590 si Apache arrancó con `SIGERU_MAIL_MODE=archivo`, ver «Correo»; con el arranque común faltan las 2 pruebas de enlaces por correo y el
-   resumen avisa de las 2 pruebas de enlaces por correo que omitió). Los registros que crea los borra solos.
+   Corre las pruebas contra las APIs por HTTP y termina con `Fallaron: 0` (al 30/10/2026
+   son 995 y 1 omitida si Apache no arranca con el trazado en modo recta; el resumen avisa de lo que omite). Los registros que crea los borra solos.
 6. Para apagar: doble clic en **`detener-xampp.cmd`**. MySQL tarda entre 10 y 15 segundos en
    terminar de escribir en el pendrive: el script espera a que termine y recién entonces dice
    `Listo. Ya se puede expulsar el pendrive.` Antes de ese mensaje **no** sacarlo. El pendrive
@@ -129,57 +128,18 @@ Franco Fornos (coordinador) · Franco Astorino (subcoordinador) · Axel Delgado 
 Francisco Goycochea
 
 
-## Correo para activar cuentas y renovar contraseñas
+## Cuentas y contraseñas (sin correo)
 
-El vecino se registra desde la landing (el botón «Crear cuenta de vecino» lleva a
-`frontend-usuarios/registro.html`) y elige su contraseña sin aprobación. Si un
-administrador crea una cuenta o aprueba una solicitud antigua, SIGERU envía al
-correo de esa persona un enlace de un solo uso, válido durante una hora. La cuenta
-nueva queda pendiente hasta que la persona crea su contraseña. En **Usuarios**,
-**Enviar acceso** permite renovar la contraseña de una cuenta existente sin
-pedir al administrador que la conozca o la comunique.
+SiGeRU **no envía correo**: se sacó el 30/10/2026 junto con «Olvidé mi contraseña» (ver
+`programacion-full-stack/ampliacion-sin-correo-3ra.md`). El vecino se registra solo desde la landing
+(`frontend-usuarios/registro.html`) y elige su contraseña. Para el resto:
 
-Configurar estas variables de entorno en el proceso de Apache/PHP antes de
-crear o aprobar cuentas; no guardar las credenciales SMTP en el repositorio:
-
-| Variable | Ejemplo / uso |
-| --- | --- |
-| `SIGERU_SMTP_URL` | Con Gmail: `smtps://smtp.gmail.com:465` (SSL) o `smtp://smtp.gmail.com:587` (STARTTLS) |
-| `SIGERU_SMTP_USER` | Usuario SMTP |
-| `SIGERU_SMTP_PASS` | Clave o contraseña de aplicación SMTP |
-| `SIGERU_MAIL_FROM` | Remitente autorizado, por ejemplo `acceso@ejemplo.org` |
-| `SIGERU_PUBLIC_URL` | URL externa de la aplicación hasta `/sigeru`, con HTTPS; en pruebas locales, `http://localhost/sigeru` o `http://localhost:8080/sigeru` |
-
-Para Gmail, usar la dirección completa en `SIGERU_SMTP_USER` y
-`SIGERU_MAIL_FROM`. Se necesita la verificación en dos pasos y una contraseña
-de aplicación de Google, no la contraseña normal de la cuenta. La configuración SMTP se valida antes de
-crear la cuenta.
-
-**Para probar sin correo real** (las pruebas automáticas lo necesitan): arrancar Apache con
-`SIGERU_MAIL_MODE=archivo`. El mensaje se escribe en `tmp/correo/` en vez de enviarse, y solo
-funciona si `SIGERU_PUBLIC_URL` es `localhost` (o está vacía). Ver
-`ciberseguridad/ampliacion-acceso-por-enlace-3ra.md`.
-
-Para la defensa con XAMPP portable:
-
-1. Detener el XAMPP anterior con `detener-xampp.cmd`.
-2. Desde la terminal de PowerShell, parado en la carpeta `SIGERU 2026`, ejecutar el lanzador:
-
-   ```powershell
-   & '.\sigeru\iniciar-xampp-con-correo.cmd'
-   ```
-
-   El lanzador permite ejecutar el script solo en ese proceso, sin cambiar
-   la política global de PowerShell.
-3. Ingresar la contraseña de aplicación de Gmail cuando el script la pida.
-   El script no la guarda en archivos. El remitente ya está configurado como
-   `sigeruesi@gmail.com`.
-4. Abrir el correo recibido en esa misma computadora. El enlace usa
-   `http://localhost/sigeru` y no funciona desde un teléfono u otra PC.
+- **Alta por el administrador:** en **Usuarios**, «Nuevo usuario» pide una **contraseña inicial** (8 caracteres o más) y la cuenta
+  queda activa; el administrador se la entrega a la persona en mano.
+- **Solicitud de acceso** (Cuadrilla): al aprobarla, el administrador define también la contraseña inicial.
+- **Contraseña perdida:** el administrador edita el usuario y escribe una nueva (campo opcional; vacío no la cambia).
+- Los avisos del sistema son la campanita de las pantallas, no correo.
 
 Una base existente se pone al día con `database/migrar.php`, que aplica solas las
-migraciones que le falten (hoy de la `001` a la `008`; el correo necesita la `004` y la
-`005`, y las fotos, la auditoría y el freno por IP, de la `006` a la `008`); una base
-nueva ya incluye todo en `database/schema.sql`. Sin SMTP configurado o si el
-envío falla, la creación o aprobación se cancela y se informa el error. Una
-cuenta dada de baja no puede reactivarse con un enlace.
+migraciones que le falten; una base
+nueva ya incluye todo en `database/schema.sql`.

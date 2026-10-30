@@ -1,3 +1,5 @@
+> **RETIRADA el 25/10/2026.** Esta funcionalidad se sacó del sistema antes del congelamiento para dejar la aplicación más simple y defendible (ver `../ampliacion-simplificacion-3ra.md`). El documento se conserva solo como registro de lo que se hizo; **nada de lo que describe existe ya en el código ni se va a defender.**
+
 ---
 materia: Programación Full Stack
 entrega: 3ra (extras, parte 21: aplicación instalable y cuadrilla sin señal)
