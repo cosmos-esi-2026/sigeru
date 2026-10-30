@@ -1,14 +1,13 @@
 -- ============================================================================
 --  SiGeRU 2026 - Sistema de Gestion de Residuos Urbanos
 --  Archivo: schema.sql
---  Que es : DDL de la base de datos. Crea la base y las 22 tablas del modelo:
+--  Que es : DDL de la base de datos. Crea la base y las 21 tablas del modelo:
 --           las 15 de la 2da entrega, historial_incidencia (15 bis, de la 3ra) y, de
 --           las extras, recepcion, movimiento_stock, historial_maquinaria (parte 12) y
---           notificacion (parte 13), calificacion y movimiento_punto (parte 14).
---           Mas siete tablas fuera del modelo de clases: migracion, intento_login,
---           limite_peticion (freno por IP a los pedidos publicos), clave_idempotencia
---           (reenvios sin duplicar, parte 21), enlace_clave
---           (activar cuentas), auditoria (quien hizo que) y
+--           notificacion (parte 13).
+--           Mas cinco tablas fuera del modelo de clases: migracion, intento_login,
+--           limite_peticion (freno por IP a los pedidos publicos),
+--           auditoria (quien hizo que) y
 --           foto_incidencia (la foto opcional de una incidencia, RF-222; es parte
 --           de Incidencia, no una clase aparte).
 --  Motor  : MySQL / MariaDB (InnoDB, utf8mb4)
@@ -50,14 +49,18 @@ CREATE DATABASE IF NOT EXISTS sigeru
 
 USE sigeru;
 
--- El orden inverso al de creacion, para poder reimportar sin errores de FK.
+-- Tablas que se retiraron (25/10/2026: calificacion y puntos del vecino, claves de operacion; 30/10/2026: enlaces de contrasena por correo): si quedan
+-- de una base anterior hay que borrarlas primero, porque algunas tienen claves foraneas hacia incidencia y usuario y bloquearian el reimportado.
 DROP TABLE IF EXISTS movimiento_punto;
 DROP TABLE IF EXISTS calificacion;
+DROP TABLE IF EXISTS clave_idempotencia;
+DROP TABLE IF EXISTS enlace_clave;
+
+-- El orden inverso al de creacion, para poder reimportar sin errores de FK.
 DROP TABLE IF EXISTS notificacion;
 DROP TABLE IF EXISTS historial_maquinaria;
 DROP TABLE IF EXISTS movimiento_stock;
 DROP TABLE IF EXISTS recepcion;
-DROP TABLE IF EXISTS clave_idempotencia;
 DROP TABLE IF EXISTS limite_peticion;
 DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS foto_incidencia;
@@ -71,7 +74,6 @@ DROP TABLE IF EXISTS maquinaria;
 DROP TABLE IF EXISTS camion;
 DROP TABLE IF EXISTS estado_contenedor;
 DROP TABLE IF EXISTS contenedor;
-DROP TABLE IF EXISTS enlace_clave;
 DROP TABLE IF EXISTS usuario;
 DROP TABLE IF EXISTS solicitud_registro;
 DROP TABLE IF EXISTS cuadrilla;
@@ -134,10 +136,7 @@ CREATE TABLE tipo_residuo (
     id_tipo_residuo INT AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(60)  NOT NULL UNIQUE,
     descripcion     VARCHAR(200) NULL,
-    reciclable      BOOLEAN      NOT NULL DEFAULT FALSE,
-    factor_co2_kg_por_kg DECIMAL(6,3) NULL COMMENT 'kg de CO2e evitados por kg reciclado (EPA WARM v16); NULL = sin fuente verificada',
-    fuente_factor   VARCHAR(255) NULL,
-    url_fuente      VARCHAR(200) NULL
+    reciclable      BOOLEAN      NOT NULL DEFAULT FALSE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -150,8 +149,12 @@ CREATE TABLE cuadrilla (
     id_cuadrilla INT AUTO_INCREMENT PRIMARY KEY,
     nombre       VARCHAR(80) NOT NULL UNIQUE,
     turno        ENUM('matutino','vespertino','nocturno') NOT NULL DEFAULT 'matutino',
-    estado       ENUM('activa','inactiva') NOT NULL DEFAULT 'activa'
+    estado       ENUM('activa','inactiva') NOT NULL DEFAULT 'activa',
+    id_zona      INT NULL,
+    CONSTRAINT fk_cuadrilla_zona
+        FOREIGN KEY (id_zona) REFERENCES zona(id_zona)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Desde la migracion 020 la cuadrilla tiene municipio (opcional): la sugerencia de asignacion empareja cada ruta con la cuadrilla de su municipio.
 
 
 -- ----------------------------------------------------------------------------
@@ -192,7 +195,6 @@ CREATE TABLE usuario (
     id_zona        INT          NULL,
     id_solicitud   INT          NULL,
     estado         ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
-    avisos_por_correo TINYINT(1) NOT NULL DEFAULT 1,
     fecha_registro DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_usuario_rol
         FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
@@ -206,17 +208,6 @@ CREATE TABLE usuario (
         FOREIGN KEY (id_solicitud) REFERENCES solicitud_registro(id_solicitud)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
--- Enlaces de un solo uso para activar cuentas y renovar contrasenas.
-CREATE TABLE enlace_clave (
-    id_enlace   INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario  INT      NOT NULL,
-    token_hash  CHAR(64) NOT NULL UNIQUE,
-    vence_en    DATETIME NOT NULL,
-    CONSTRAINT fk_enlace_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    INDEX idx_enlace_usuario (id_usuario)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
 -- 8) contenedor
@@ -512,7 +503,6 @@ INSERT INTO migracion (nombre) VALUES
     ('001-intento-login.sql'),
     ('002-incidencias-historial.sql'),
     ('003-historial-solo-agregado.sql'),
-    ('004-enlace-clave.sql'),
     ('005-estado-pendiente.sql'),
     ('006-foto-incidencia.sql'),
     ('007-auditoria.sql'),
@@ -520,14 +510,11 @@ INSERT INTO migracion (nombre) VALUES
     ('009-operario-centro-stock.sql'),
     ('010-stock-solo-agregado.sql'),
     ('011-notificaciones.sql'),
-    ('012-participacion-vecino.sql'),
-    ('013-participacion-solo-agregado.sql'),
     ('014-zona-del-vecino.sql'),
-    ('015-factor-ambiental.sql'),
-    ('016-clave-idempotencia.sql'),
     ('017-rutas-con-contenedores.sql'),
     ('018-incidencias-lleno-y-mantenimiento.sql'),
-    ('019-solicitud-tipo-cuenta.sql');
+    ('019-solicitud-tipo-cuenta.sql'),
+    ('020-cuadrilla-municipio.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -537,21 +524,6 @@ CREATE TABLE limite_peticion (
     clave      VARCHAR(80) NOT NULL,
     fecha_hora DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_limite_clave (clave, fecha_hora)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Claves de operacion: que un vaciado o un avance guardado sin conexion y reenviado no se
--- cargue dos veces (extras, parte 21). Nace con la migracion 016.
--- ----------------------------------------------------------------------------
-CREATE TABLE clave_idempotencia (
-    clave      CHAR(36)     NOT NULL PRIMARY KEY,
-    id_usuario INT          NOT NULL,
-    operacion  VARCHAR(40)  NOT NULL,
-    estado     ENUM('en_proceso','terminada') NOT NULL DEFAULT 'en_proceso',
-    codigo     SMALLINT UNSIGNED NULL,
-    respuesta  MEDIUMTEXT   NULL,
-    creada     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_clave_idempotencia_creada (creada)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -667,36 +639,6 @@ CREATE TABLE notificacion (
     INDEX idx_notificacion_usuario (id_usuario, leida, fecha_hora)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Parte 14 de las extras: calificacion del vecino y sus puntos.
-CREATE TABLE calificacion (
-    id_calificacion INT AUTO_INCREMENT PRIMARY KEY,
-    id_incidencia   INT          NOT NULL UNIQUE,
-    id_usuario      INT          NOT NULL,
-    puntaje         TINYINT      NOT NULL,
-    comentario      VARCHAR(300) NULL,
-    fecha_hora      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT chk_calificacion_puntaje CHECK (puntaje BETWEEN 1 AND 5),
-    CONSTRAINT fk_calificacion_incidencia
-        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE,
-    CONSTRAINT fk_calificacion_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE movimiento_punto (
-    id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario    INT      NOT NULL,
-    id_incidencia INT      NOT NULL,
-    motivo        ENUM('reclamo_resuelto','calificacion') NOT NULL,
-    puntos        SMALLINT NOT NULL,
-    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_punto_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    CONSTRAINT fk_punto_incidencia
-        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE,
-    UNIQUE KEY uq_punto_incidencia_motivo (id_incidencia, motivo),
-    INDEX idx_punto_usuario (id_usuario, fecha_hora)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TRIGGER trg_histinc_sin_update BEFORE UPDATE ON historial_incidencia
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una incidencia es de solo agregado';
@@ -729,24 +671,8 @@ CREATE TRIGGER trg_histmaq_sin_delete BEFORE DELETE ON historial_maquinaria
 FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado';
 
-CREATE TRIGGER trg_calificacion_sin_update BEFORE UPDATE ON calificacion
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Una calificacion no se edita';
-
-CREATE TRIGGER trg_calificacion_sin_delete BEFORE DELETE ON calificacion
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Una calificacion no se borra';
-
-CREATE TRIGGER trg_punto_sin_update BEFORE UPDATE ON movimiento_punto
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Los puntos son de solo agregado';
-
-CREATE TRIGGER trg_punto_sin_delete BEFORE DELETE ON movimiento_punto
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Los puntos son de solo agregado';
-
 -- ============================================================================
 --  Fin del schema. 23 tablas del modelo de clases (15 + historial_incidencia + recepcion,
---  movimiento_stock, historial_maquinaria, notificacion, calificacion, movimiento_punto y ruta_contenedor, de las extras)
+--  movimiento_stock, historial_maquinaria, notificacion y ruta_contenedor, de las extras)
 --  mas las tecnicas migracion e intento_login.
 -- ============================================================================

@@ -16,14 +16,11 @@ USE sigeru;
 
 -- Se vacia todo antes de cargar, para poder reimportar cuantas veces haga falta.
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE clave_idempotencia;
 TRUNCATE TABLE limite_peticion;
 TRUNCATE TABLE auditoria;
 TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
-TRUNCATE TABLE movimiento_punto;
-TRUNCATE TABLE calificacion;
 TRUNCATE TABLE notificacion;
 TRUNCATE TABLE historial_maquinaria;
 TRUNCATE TABLE movimiento_stock;
@@ -78,26 +75,6 @@ INSERT INTO tipo_residuo (id_tipo_residuo, nombre, descripcion, reciclable) VALU
 (4, 'Papel',    'Papel y carton limpios',                     TRUE),
 (5, 'Metal',    'Latas de aluminio y hojalata',               TRUE),
 (6, 'Mixto',    'Residuo domiciliario sin separar',           FALSE);
-
-
--- Factor de emision evitada por tipo (extras, parte 18): EPA WARM v16, ver migraciones/015-factor-ambiental.sql.
--- Organico y Mixto no tienen fuente verificada: quedan sin factor (el sistema muestra solo kg).
-UPDATE tipo_residuo SET factor_co2_kg_por_kg = 1.047,
-    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 5-3, Mixed Plastics: reciclar -0.93 y enterrar +0.02 MTCO2E por tonelada corta (0.95 evitadas = 1.047 kg CO2e por kg)',
-    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
-WHERE nombre = 'Plastico';
-UPDATE tipo_residuo SET factor_co2_kg_por_kg = 0.331,
-    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 1-4, Glass: reciclar -0.28 y enterrar +0.02 MTCO2E por tonelada corta (0.30 evitadas = 0.331 kg CO2e por kg)',
-    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
-WHERE nombre = 'Vidrio';
-UPDATE tipo_residuo SET factor_co2_kg_por_kg = 3.990,
-    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 3-7, Mixed Paper (general): reciclar -3.55 y enterrar +0.07 MTCO2E por tonelada corta (3.62 evitadas = 3.990 kg CO2e por kg)',
-    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
-WHERE nombre = 'Papel';
-UPDATE tipo_residuo SET factor_co2_kg_por_kg = 4.861,
-    fuente_factor = 'EPA WARM v16 (dic. 2023), Exhibit 2-7, Mixed Metals (35 % latas de aluminio y 65 % de acero): reciclar -4.39 y enterrar +0.02 MTCO2E por tonelada corta (4.41 evitadas = 4.861 kg CO2e por kg)',
-    url_fuente = 'https://www.epa.gov/system/files/documents/2023-12/warm_containers_packaging_and_non-durable_goods_materials_v16_dec.pdf'
-WHERE nombre = 'Metal';
 
 
 -- --- 5) Cuadrillas ----------------------------------------------------------
@@ -280,16 +257,6 @@ INSERT INTO incidencia (descripcion, tipo_problema, fecha_reporte, fecha_resoluc
 ('Contenedor quemado durante la noche',                     'roto',       '2026-09-06 08:15:00', NULL,                  'en_curso',   'alta',  6, 7,  2),
 ('Olor muy fuerte, parece que no se levanta hace dias',     'otro',       '2026-09-09 09:40:00', NULL,                  'abierta',    'media', 3, 7,  NULL),
 ('Reporte duplicado del mismo vecino',                      'otro',       '2026-09-02 12:00:00', '2026-09-02 12:30:00', 'descartada', 'baja',  6, 1,  NULL);
-
-
--- --- 15 ter) Calificacion y puntos (extras, parte 14) ----------------------------
--- DATOS DE DEMOSTRACION: la unica incidencia resuelta del seed (INC-0002) ya esta calificada, y de ahi salen
--- los 15 puntos de Marta (10 por el reclamo resuelto y 5 por calificar). El descartado (INC-0005) no suma.
-INSERT INTO calificacion (id_incidencia, id_usuario, puntaje, comentario, fecha_hora) VALUES
-(2, 3, 4, 'Rapido y prolijo (calificacion de demostracion)', '2026-09-01 18:00:00');
-INSERT INTO movimiento_punto (id_usuario, id_incidencia, motivo, puntos, fecha_hora) VALUES
-(3, 2, 'reclamo_resuelto', 10, '2026-09-01 11:00:00'),
-(3, 2, 'calificacion',      5, '2026-09-01 18:00:00');
 
 
 -- --- 15 bis) Historial de las incidencias -----------------------------------

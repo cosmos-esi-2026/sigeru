@@ -56,6 +56,9 @@
 -- Actualizado el 22/10/2026 (plan de rutas para la defensa): tabla ruta_contenedor y el trazado de la ruta (migracion 017); 23 tablas del modelo.
 --
 Actualizado el 23/10/2026 (plan de rutas para la defensa, migraciones 017 a 019): tabla ruta_contenedor, trazado de la ruta, tipo de problema 'lleno', derivacion a mantenimiento y tipo de cuenta de las solicitudes.
+--
+-- Actualizado el 25/10/2026 (simplificacion antes del congelamiento): 21 tablas del modelo y 6 de soporte (27). Salieron calificacion, movimiento_punto, factor_ambiental y clave_idempotencia, y la columna usuario.avisos_por_correo.
+-- Actualizado el 30/10/2026: sale enlace_clave (se saco el correo y la recuperacion de contrasena): 21 tablas del modelo y 5 de soporte (26).
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -81,58 +84,6 @@ CREATE TABLE `auditoria` (
   KEY `idx_auditoria_usuario` (`id_usuario`,`fecha_hora`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `calificacion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `calificacion` (
-  `id_calificacion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_incidencia` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `puntaje` tinyint(4) NOT NULL,
-  `comentario` varchar(300) DEFAULT NULL,
-  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_calificacion`),
-  UNIQUE KEY `id_incidencia` (`id_incidencia`),
-  KEY `fk_calificacion_usuario` (`id_usuario`),
-  CONSTRAINT `fk_calificacion_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE,
-  CONSTRAINT `fk_calificacion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE,
-  CONSTRAINT `chk_calificacion_puntaje` CHECK (`puntaje` between 1 and 5)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_calificacion_sin_update BEFORE UPDATE ON calificacion
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Una calificacion no se edita' */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_calificacion_sin_delete BEFORE DELETE ON calificacion
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Una calificacion no se borra' */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 DROP TABLE IF EXISTS `camion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -160,21 +111,6 @@ CREATE TABLE `centro_acopio` (
   `capacidad` int(11) DEFAULT NULL COMMENT 'Capacidad en kg',
   `estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
   PRIMARY KEY (`id_centro`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `clave_idempotencia`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `clave_idempotencia` (
-  `clave` char(36) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `operacion` varchar(40) NOT NULL,
-  `estado` enum('en_proceso','terminada') NOT NULL DEFAULT 'en_proceso',
-  `codigo` smallint(5) unsigned DEFAULT NULL,
-  `respuesta` mediumtext DEFAULT NULL,
-  `creada` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`clave`),
-  KEY `idx_clave_idempotencia_creada` (`creada`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `contenedor`;
@@ -207,22 +143,11 @@ CREATE TABLE `cuadrilla` (
   `nombre` varchar(80) NOT NULL,
   `turno` enum('matutino','vespertino','nocturno') NOT NULL DEFAULT 'matutino',
   `estado` enum('activa','inactiva') NOT NULL DEFAULT 'activa',
+  `id_zona` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_cuadrilla`),
-  UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `enlace_clave`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `enlace_clave` (
-  `id_enlace` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usuario` int(11) NOT NULL,
-  `token_hash` char(64) NOT NULL,
-  `vence_en` datetime NOT NULL,
-  PRIMARY KEY (`id_enlace`),
-  UNIQUE KEY `token_hash` (`token_hash`),
-  KEY `idx_enlace_usuario` (`id_usuario`),
-  CONSTRAINT `fk_enlace_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE
+  UNIQUE KEY `nombre` (`nombre`),
+  KEY `fk_cuadrilla_zona` (`id_zona`),
+  CONSTRAINT `fk_cuadrilla_zona` FOREIGN KEY (`id_zona`) REFERENCES `zona` (`id_zona`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `estado_contenedor`;
@@ -469,57 +394,6 @@ CREATE TABLE `migracion` (
   PRIMARY KEY (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `movimiento_punto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `movimiento_punto` (
-  `id_movimiento` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usuario` int(11) NOT NULL,
-  `id_incidencia` int(11) NOT NULL,
-  `motivo` enum('reclamo_resuelto','calificacion') NOT NULL,
-  `puntos` smallint(6) NOT NULL,
-  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_movimiento`),
-  UNIQUE KEY `uq_punto_incidencia_motivo` (`id_incidencia`,`motivo`),
-  KEY `idx_punto_usuario` (`id_usuario`,`fecha_hora`),
-  CONSTRAINT `fk_punto_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE,
-  CONSTRAINT `fk_punto_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_punto_sin_update BEFORE UPDATE ON movimiento_punto
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Los puntos son de solo agregado' */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER trg_punto_sin_delete BEFORE DELETE ON movimiento_punto
-FOR EACH ROW SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'Los puntos son de solo agregado' */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 DROP TABLE IF EXISTS `movimiento_stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -716,9 +590,6 @@ CREATE TABLE `tipo_residuo` (
   `nombre` varchar(60) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `reciclable` tinyint(1) NOT NULL DEFAULT 0,
-  `factor_co2_kg_por_kg` decimal(6,3) DEFAULT NULL COMMENT 'kg de CO2e evitados por kg reciclado (EPA WARM v16); NULL = sin fuente verificada',
-  `fuente_factor` varchar(255) DEFAULT NULL,
-  `url_fuente` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_tipo_residuo`),
   UNIQUE KEY `nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -740,7 +611,6 @@ CREATE TABLE `usuario` (
   `id_zona` int(11) DEFAULT NULL,
   `id_solicitud` int(11) DEFAULT NULL,
   `estado` enum('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
-  `avisos_por_correo` tinyint(1) NOT NULL DEFAULT 1,
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`),
