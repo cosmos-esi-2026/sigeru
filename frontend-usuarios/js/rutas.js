@@ -23,7 +23,7 @@ function celdaAccionesRuta(r) {
   const icono = function (trazos) {
     return '<svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + trazos + "</svg>";
   };
-  return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila">' +
+  return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila acciones-fila-ancha">' +
     '<a class="boton boton-secundario" href="ruta-armar.html?id=' + $entero(r.id_ruta) + '" aria-label="Armar ' + escaparHtml(r.nombre) + ' en el mapa">Armar</a>' +
     (r.estado === "activa" && r.cantidad > 0 ? '<a class="boton boton-secundario" href="asignacion.html?ruta=' + $entero(r.id_ruta) + '" aria-label="Asignar ' + escaparHtml(r.nombre) + ' a una cuadrilla">Asignar</a>' : "") +
     '<button type="button" class="boton boton-icono js-editar" data-id="' + $entero(r.id_ruta) + '" aria-label="Editar ' + escaparHtml(r.nombre) + '" title="Editar ' + escaparHtml(r.nombre) + '">' +

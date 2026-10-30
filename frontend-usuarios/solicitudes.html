@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitudes de acceso - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/base.css">
@@ -109,6 +108,10 @@
         <p class="ayuda" id="detalle-solicitud"></p>
 
         <form id="form-aprobar" class="formulario">
+          <label>Contraseña inicial *
+            <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+            <span class="ayuda-campo">Al menos 8 caracteres. Entregásela a la persona en mano: no se manda por correo.</span>
+          </label>
           <label id="campo-rol">Rol con el que entra
             <select name="rol">
               <option value="Vecino">Vecino</option>
@@ -139,6 +142,5 @@
 <script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/solicitudes.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

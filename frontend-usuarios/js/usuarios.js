@@ -66,7 +66,7 @@ function dibujarTabla(usuarios) {
   }
 
   cuerpoTabla.innerHTML = usuarios.map(function (u) {
-    const color = u.estado === "activo" ? "verde" : u.estado === "pendiente" ? "naranja" : "gris";
+    const color = u.estado === "activo" ? "verde" : "gris";
     return '<tr role="row">' +
       celda("ID", u.id_usuario) +
       celda("Nombre", u.nombre) +
@@ -74,10 +74,7 @@ function dibujarTabla(usuarios) {
       celda("Email", u.email) +
       celda("Rol", u.rol + (u.centro ? " · " + u.centro : "") + (u.rol === "Cuadrilla" ? " · " + (u.cuadrilla || "sin cuadrilla") : "")) +
       celdaEstado("Estado", u.estado, color) +
-      celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre)
-        .replace("</div></td>", (u.estado === "inactivo" ? "" :
-          '<button type="button" class="boton boton-secundario boton-chico js-enlace" ' +
-          'data-id="' + parseInt(u.id_usuario, 10) + '">Enviar acceso</button>') + "</div></td>") +
+      celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre) +
       "</tr>";
   }).join("");
 }
@@ -120,8 +117,18 @@ async function cargarCentrosParaOperarios() {
 
 formUsuario.rol.addEventListener("change", actualizarCampoCentro);
 
+function configurarCampoClave(esAlta) {
+  formUsuario.password.value = "";
+  formUsuario.password.required = esAlta;
+  document.getElementById("marca-clave").classList.toggle("oculto", !esAlta);
+  document.getElementById("ayuda-clave").textContent = esAlta
+    ? "Al menos 8 caracteres. Entregásela a la persona en mano."
+    : "Dejala vacía para no cambiarla. Si escribís una, reemplaza la actual (así se restablece una clave perdida).";
+}
+
 function prepararAlta() {
   idEditando = null;
+  configurarCampoClave(true);
   document.getElementById("titulo-modal-usuario").textContent = "Nuevo usuario";
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar usuario";
   formUsuario.id_centro.value = "";
@@ -131,6 +138,7 @@ function prepararAlta() {
 
 function prepararEdicion(usuario) {
   idEditando = usuario.id_usuario;
+  configurarCampoClave(false);
   document.getElementById("titulo-modal-usuario").textContent = "Editar usuario";
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar cambios";
 
@@ -158,6 +166,9 @@ formUsuario.addEventListener("submit", async function (evento) {
     email:    formUsuario.email.value,
     rol:      formUsuario.rol.value,
   };
+  if (formUsuario.password.value !== "") {
+    datos.password = formUsuario.password.value;
+  }
   if (formUsuario.rol.value === "Operario") {
     datos.id_centro = formUsuario.id_centro.value === "" ? null : parseInt(formUsuario.id_centro.value, 10);
   }
@@ -173,7 +184,7 @@ formUsuario.addEventListener("submit", async function (evento) {
     if (ok) {
       cerrarModal("modal-usuario");
       avisoPagina(idEditando === null
-        ? "Usuario creado. Se envió un enlace para que defina su contraseña."
+        ? "Usuario creado. Ya puede iniciar sesión con la contraseña que definiste."
         : "Usuario actualizado correctamente.");
       cargarUsuarios();
     } else {
@@ -192,23 +203,6 @@ formUsuario.addEventListener("submit", async function (evento) {
 cuerpoTabla.addEventListener("click", async function (evento) {
   if (evento.target.closest(".js-reintentar")) {
     cargarUsuarios();
-    return;
-  }
-
-  const botonEnlace = evento.target.closest(".js-enlace");
-  if (botonEnlace) {
-    botonEnlace.disabled = true;
-    try {
-      const { ok, resultado } = await apiPost(
-        API.usuarios + "/usuarios/" + botonEnlace.dataset.id + "/enlace", {}
-      );
-      if (ok) avisoPagina("Se envió un enlace para crear o renovar la contraseña.");
-      else avisoPaginaError(resultado.mensaje || "No se pudo enviar el correo.");
-    } catch (e) {
-      avisoPaginaError("No se pudo conectar con el servidor.");
-    } finally {
-      botonEnlace.disabled = false;
-    }
     return;
   }
 

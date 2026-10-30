@@ -16,6 +16,9 @@ const modalAsignar = document.getElementById("modal-asignar");
 const COLUMNAS = 7;
 const NIVELES = { alta: { texto: "▲ Alta", clase: "rojo" }, media: { texto: "● Media", clase: "naranja" }, normal: { texto: "Normal", clase: "gris" } };
 
+// A que hora empieza cada turno (el nocturno cruza la medianoche). Es la misma tabla que Asignacion::TURNO_DESDE en PHP: tests/unitarias-asignacion.php comprueba que coinciden.
+const TURNO_DESDE = { matutino: 5, vespertino: 13, nocturno: 21 };
+
 let datos = null;            // lo ultimo que devolvio el servidor
 let filas = [];              // la sugerencia en pantalla (editable)
 let rutaEnModal = null;
@@ -24,6 +27,50 @@ function hoyMasUno() {
   const d = new Date();
   d.setDate(d.getDate() + 1);
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+
+function turnoDeLaHora(hora) {
+  const h = parseInt(String(hora || "").slice(0, 2), 10);
+  if (isNaN(h)) {
+    return null;
+  }
+  return h >= TURNO_DESDE.nocturno || h < TURNO_DESDE.matutino ? "nocturno" : (h >= TURNO_DESDE.vespertino ? "vespertino" : "matutino");
+}
+
+// Lo que el administrador tiene que mirar antes de confirmar: la cuadrilla de otro municipio y el turno que no coincide. Solo avisa, no impide nada.
+function avisosDe(ruta, cuadrilla, hora) {
+  const avisos = [];
+  if (ruta && cuadrilla && ruta.id_zona && cuadrilla.id_zona && ruta.id_zona !== cuadrilla.id_zona) {
+    avisos.push("Fuera de su municipio (" + cuadrilla.zona + ")");
+  }
+  const turno = turnoDeLaHora(hora);
+  if (cuadrilla && turno && cuadrilla.turno !== turno) {
+    avisos.push("Turno " + cuadrilla.turno + ", la ruta sale de " + turno);
+  }
+  return avisos;
+}
+
+function dibujarAvisos(contenedor, avisos) {
+  contenedor.innerHTML = avisos.map(function (a) { return '<span class="estado naranja">' + escaparHtml(a) + "</span>"; }).join("");
+}
+
+// La cuadrilla del mismo municipio que la ruta va primero (despues las sin municipio y al final las de otro), y dentro de cada grupo las libres antes que las ocupadas.
+function ordenadasPara(ruta, cuadrillas) {
+  const grupo = function (c) {
+    if (!ruta || !ruta.id_zona || !c.id_zona) { return 1; }
+    return c.id_zona === ruta.id_zona ? 0 : 2;
+  };
+  return cuadrillas.slice().sort(function (a, b) {
+    return (a.libre ? 0 : 3) + grupo(a) - ((b.libre ? 0 : 3) + grupo(b)) || a.id_cuadrilla - b.id_cuadrilla;
+  });
+}
+
+function opcionesCuadrilla(ruta, cuadrillas, elegido) {
+  return ordenadasPara(ruta, cuadrillas).map(function (c) {
+    const otro = ruta && ruta.id_zona && c.id_zona && c.id_zona !== ruta.id_zona;
+    return '<option value="' + $entero(c.id_cuadrilla) + '"' + (c.id_cuadrilla === elegido ? " selected" : "") + (c.libre ? "" : ' class="opcion-ocupada"') + ">" +
+      escaparHtml(c.nombre) + (otro ? " (otro municipio)" : "") + (c.libre ? "" : " (ocupada ese día)") + "</option>";
+  }).join("");
 }
 
 function etiquetaNivel(p) {
@@ -114,21 +161,38 @@ function dibujarSugerencia() {
     return '<tr role="row" data-i="' + i + '">' +
       '<td role="cell" data-etiqueta="Ruta">' + escaparHtml(r.nombre) + "</td>" +
       '<td role="cell" data-etiqueta="Prioridad">' + etiquetaNivel(r.prioridad) + "</td>" +
-      '<td role="cell" data-etiqueta="Cuadrilla"><label class="solo-lectores" for="sug-cuadrilla-' + i + '">Cuadrilla para ' + escaparHtml(r.nombre) + '</label><select id="sug-cuadrilla-' + i + '" class="js-sug-cuadrilla">' + opcionesSelect(datos.cuadrillas, "id_cuadrilla", nombreCuadrilla, f.id_cuadrilla) + "</select></td>" +
+      '<td role="cell" data-etiqueta="Cuadrilla"><label class="solo-lectores" for="sug-cuadrilla-' + i + '">Cuadrilla para ' + escaparHtml(r.nombre) + '</label><select id="sug-cuadrilla-' + i + '" class="js-sug-cuadrilla">' + opcionesCuadrilla(r, datos.cuadrillas, f.id_cuadrilla) + '</select><div class="avisos-fila js-sug-avisos" role="status" aria-live="polite"></div></td>' +
       '<td role="cell" data-etiqueta="Camión"><label class="solo-lectores" for="sug-camion-' + i + '">Camión para ' + escaparHtml(r.nombre) + '</label><select id="sug-camion-' + i + '" class="js-sug-camion">' + opcionesSelect(datos.camiones, "id_camion", nombreCamion, f.id_camion) + "</select></td>" +
       '<td role="cell" data-etiqueta="Hora"><label class="solo-lectores" for="sug-hora-' + i + '">Hora de inicio de ' + escaparHtml(r.nombre) + '</label><input type="time" id="sug-hora-' + i + '" class="js-sug-hora" value="' + escaparHtml(f.hora) + '"></td>' +
       '<td role="cell" data-etiqueta="Quitar"><button type="button" class="boton boton-secundario js-sug-quitar" data-i="' + i + '" aria-label="Quitar ' + escaparHtml(r.nombre) + ' de la sugerencia">Quitar</button></td>' +
       "</tr>";
   }).join("");
+  filas.forEach(function (f, i) { actualizarAvisos(i); });
+}
+
+// Los avisos de una fila de la sugerencia se calculan con la cuadrilla y la hora que estan elegidas ahora (el administrador puede cambiarlas).
+function actualizarAvisos(i) {
+  const fila = cuerpoSugerencia.querySelector('tr[data-i="' + i + '"]');
+  if (!fila) {
+    return;
+  }
+  const ruta = datos.rutas.find(function (x) { return x.id_ruta === filas[i].id_ruta; });
+  const id = parseInt(fila.querySelector(".js-sug-cuadrilla").value, 10);
+  const cuadrilla = datos.cuadrillas.find(function (c) { return c.id_cuadrilla === id; });
+  dibujarAvisos(fila.querySelector(".js-sug-avisos"), avisosDe(ruta, cuadrilla, fila.querySelector(".js-sug-hora").value));
 }
 
 function notasSugerencia(s) {
   const partes = [];
   if (s.rutas_sin_asignar.length) {
-    partes.push(s.rutas_sin_asignar.length + " ruta" + (s.rutas_sin_asignar.length > 1 ? "s" : "") + " quedan sin cuadrilla (no alcanzan las cuadrillas o los camiones libres), las menos urgentes.");
+    partes.push(s.rutas_sin_asignar.length + (s.rutas_sin_asignar.length > 1 ? " rutas quedan" : " ruta queda") + " sin cuadrilla (no alcanzan las cuadrillas o los camiones libres), las menos urgentes.");
   }
   if (s.cuadrillas_que_sobran.length) {
     partes.push("Sobran " + s.cuadrillas_que_sobran.length + " cuadrilla" + (s.cuadrillas_que_sobran.length > 1 ? "s" : "") + ": ya cubren todas las rutas de ese día; se pueden asignar a rutas de otros días con «Mostrar también las rutas de otros días».");
+  }
+  const fuera = s.propuestas.filter(function (p) { return p.fuera_de_zona; }).length;
+  if (fuera) {
+    partes.push(fuera + " propuesta" + (fuera > 1 ? "s usan" : " usa") + " una cuadrilla de otro municipio porque la del propio no estaba libre: está marcada, revisala antes de asignar.");
   }
   if (!partes.length && s.propuestas.length) {
     partes.push("Alcanzan las cuadrillas y los camiones para todas las rutas de ese día.");
@@ -210,15 +274,22 @@ function abrirModal(idRuta) {
   rutaEnModal = datos.rutas.find(function (r) { return r.id_ruta === idRuta; });
   document.getElementById("texto-asignar").textContent = rutaEnModal.nombre + " · prioridad " + (NIVELES[rutaEnModal.prioridad.nivel] || NIVELES.normal).texto.replace(/^\S+\s/, "").toLowerCase() + " · " + queHay(rutaEnModal);
   const libre = function (l) { return l.libre ? 0 : 1; };
-  const cuadrillas = datos.cuadrillas.slice().sort(function (a, b) { return libre(a) - libre(b); });
+  const cuadrillas = ordenadasPara(rutaEnModal, datos.cuadrillas);
   const camiones = datos.camiones.slice().sort(function (a, b) { return libre(a) - libre(b); });
-  formAsignar.id_cuadrilla.innerHTML = opcionesSelect(cuadrillas, "id_cuadrilla", nombreCuadrilla, cuadrillas[0] && cuadrillas[0].id_cuadrilla);
+  formAsignar.id_cuadrilla.innerHTML = opcionesCuadrilla(rutaEnModal, cuadrillas, cuadrillas[0] && cuadrillas[0].id_cuadrilla);
   formAsignar.id_camion.innerHTML = opcionesSelect(camiones, "id_camion", nombreCamion, camiones[0] && camiones[0].id_camion);
   formAsignar.fecha_hora_inicio.value = formDia.elements.fecha.value + "T" + rutaEnModal.hora_inicio;
   document.getElementById("mensaje").textContent = "";
   document.getElementById("mensaje").className = "mensaje";
+  avisosDelModal();
   bootstrap.Modal.getOrCreateInstance(modalAsignar).show();
 }
+
+function avisosDelModal() {
+  const id = parseInt(formAsignar.id_cuadrilla.value, 10);
+  dibujarAvisos(document.getElementById("avisos-asignar"), avisosDe(rutaEnModal, datos.cuadrillas.find(function (c) { return c.id_cuadrilla === id; }), formAsignar.fecha_hora_inicio.value.slice(11, 16)));
+}
+formAsignar.addEventListener("change", avisosDelModal);
 
 formAsignar.addEventListener("submit", async function (evento) {
   evento.preventDefault();
@@ -256,6 +327,12 @@ cuerpoTabla.addEventListener("click", function (evento) {
   const boton = evento.target.closest(".js-asignar");
   if (boton) {
     abrirModal(parseInt(boton.dataset.id, 10));
+  }
+});
+cuerpoSugerencia.addEventListener("change", function (evento) {
+  const fila = evento.target.closest("tr[data-i]");
+  if (fila && (evento.target.matches(".js-sug-cuadrilla") || evento.target.matches(".js-sug-hora"))) {
+    actualizarAvisos(parseInt(fila.dataset.i, 10));
   }
 });
 cuerpoSugerencia.addEventListener("click", function (evento) {

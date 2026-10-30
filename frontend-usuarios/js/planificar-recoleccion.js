@@ -76,62 +76,12 @@ formRecoleccion.id_ruta.addEventListener("change", function () {
   }
 });
 
-const CLAVE_PRECARGA = "sigeru.rutaSugerida";
-const avisoPrecarga = document.getElementById("aviso-precarga");
-let precargaPendiente = null;
-
-// Viene de «Ruta sugerida»: se abre el alta con lo propuesto ya cargado. No se crea nada hasta que el administrador confirme.
-// recolecciones.js reescribe la direccion al filtrar, asi que no se puede confiar en un parametro: se lee lo guardado por la otra pantalla
-// y se descarta si es viejo (10 minutos) para que una propuesta olvidada no reabra el alta mas tarde.
-function leerPrecarga() {
-  try {
-    const guardada = sessionStorage.getItem(CLAVE_PRECARGA);
-    sessionStorage.removeItem(CLAVE_PRECARGA);
-    const p = guardada ? JSON.parse(guardada) : null;
-    return p && Array.isArray(p.codigos) && p.codigos.length > 0 && Date.now() - (p.guardada_en || 0) < 600000 ? p : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-function textoDeObservaciones(p) {
-  const km = String(p.km).replace(".", ",");
-  const encabezado = "Ruta sugerida (" + p.codigos.length + " paradas, " + km + " km aprox.): ";
-  const lista = p.codigos.join(" > ");
-  const completo = encabezado + lista;
-  return completo.length <= 300 ? completo : completo.slice(0, 297) + "...";
-}
-
-function aplicarPrecarga(p) {
-  const delaZona = rutasActivas.find(function (r) { return p.id_zona !== null && r.id_zona === p.id_zona; });
-  if (delaZona) {
-    formRecoleccion.id_ruta.value = String(delaZona.id_ruta);
-    formRecoleccion.id_ruta.dispatchEvent(new Event("change"));
-  }
-  if (p.id_camion) { formRecoleccion.id_camion.value = String(p.id_camion); }
-  if (p.id_centro) { formRecoleccion.id_centro.value = String(p.id_centro); }
-  formRecoleccion.observaciones.value = textoDeObservaciones(p);
-  avisoPrecarga.textContent = "Precargado desde la ruta sugerida (" + p.codigos.length + " paradas). Revisá la ruta, la fecha, el camión y la cuadrilla: no se crea nada hasta que toques «Planificar».";
-  avisoPrecarga.classList.remove("oculto");
-}
-
 document.getElementById("modal-recoleccion").addEventListener("show.bs.modal", async function () {
   mostrarPlan("", "");
   if (!catalogosCargados) {
     await cargarCatalogos();
   }
-  if (precargaPendiente) {
-    aplicarPrecarga(precargaPendiente);
-    precargaPendiente = null;
-  } else if (!avisoPrecarga.classList.contains("oculto") && formRecoleccion.observaciones.value === "") {
-    avisoPrecarga.classList.add("oculto");
-  }
 });
-
-precargaPendiente = leerPrecarga();
-if (precargaPendiente) {
-  bootstrap.Modal.getOrCreateInstance(document.getElementById("modal-recoleccion")).show();
-}
 
 formRecoleccion.addEventListener("submit", async function (evento) {
   evento.preventDefault();

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cuadrillas - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/base.css">
@@ -64,6 +63,7 @@
             <thead role="rowgroup">
               <tr role="row">
                 <th role="columnheader" data-orden>Nombre</th>
+                <th role="columnheader" data-orden>Municipio</th>
                 <th role="columnheader" data-orden>Turno</th>
                 <th role="columnheader" data-orden>Estado</th>
                 <th role="columnheader" data-orden>Integrantes</th>
@@ -74,6 +74,7 @@
             <tbody id="cuerpo-tabla" role="rowgroup">
               <tr class="fila-esqueleto" aria-hidden="true">
                 <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
@@ -105,6 +106,12 @@
           <label>Nombre
             <input type="text" name="nombre" placeholder="Cuadrilla Municipio A" maxlength="80" required>
           </label>
+          <label>Municipio
+            <select name="id_zona">
+              <option value="">Sin municipio (cubre cualquiera)</option>
+            </select>
+          </label>
+          <p class="ayuda">La sugerencia de «Asignación» le da a cada ruta la cuadrilla de su municipio. Una cuadrilla sin municipio se usa cuando no hay otra libre.</p>
           <div class="formulario-columnas">
             <label>Turno
               <select name="turno">
@@ -140,6 +147,5 @@
 <script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/cuadrillas.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

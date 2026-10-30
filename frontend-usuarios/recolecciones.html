@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recolecciones - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/base.css">
@@ -27,7 +26,6 @@
         <h1>Recolecciones</h1>
         <p class="bajada">Planificá las salidas de los camiones y seguí cada recorrido con sus vaciados.</p>
       </div>
-      <a class="boton boton-secundario" id="btn-sugerir-ruta" href="ruta-sugerida.html">Sugerir ruta</a>
       <button class="boton boton-primario" id="btn-nueva" data-bs-toggle="modal" data-bs-target="#modal-recoleccion">
         <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <path d="M12 5v14M5 12h14"/>
@@ -106,7 +104,6 @@
       </div>
 
       <div class="modal-body">
-        <p class="precarga-aviso oculto" id="aviso-precarga" role="status"></p>
         <form id="form-recoleccion" class="formulario">
           <label>Ruta *
             <select name="id_ruta" required></select>
@@ -147,6 +144,5 @@
 <script src="js/incidencias-comun.js"></script>
 <script src="js/recolecciones.js"></script>
 <script src="js/planificar-recoleccion.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

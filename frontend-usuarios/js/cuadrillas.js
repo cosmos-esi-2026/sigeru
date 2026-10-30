@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 6;
+const COLUMNAS = 7;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const formCuadrilla = document.getElementById("form-cuadrilla");
 const mensaje = document.getElementById("mensaje");
@@ -38,6 +38,7 @@ function dibujarTabla(cuadrillas) {
   cuerpoTabla.innerHTML = cuadrillas.map(function (c) {
     return '<tr role="row">' +
       celda("Nombre", c.nombre) +
+      celda("Municipio", c.zona || "Sin municipio") +
       celda("Turno", TURNOS[c.turno] || c.turno) +
       celdaEstado("Estado", c.estado, c.estado === "activa" ? "verde" : "gris") +
       celda("Integrantes", c.integrantes, c.integrantes) +
@@ -62,6 +63,7 @@ function prepararAlta() {
   idEditando = null;
   document.getElementById("titulo-modal-cuadrilla").textContent = "Nueva cuadrilla";
   formCuadrilla.querySelector('button[type="submit"]').textContent = "Guardar cuadrilla";
+  formCuadrilla.id_zona.value = "";
   formCuadrilla.estado.value = "activa";
   formCuadrilla.estado.disabled = true;
   zonaIntegrantes.classList.add("oculto");
@@ -74,6 +76,7 @@ function prepararEdicion(c) {
 
   formCuadrilla.nombre.value = c.nombre || "";
   formCuadrilla.turno.value = c.turno || "matutino";
+  formCuadrilla.id_zona.value = c.id_zona || "";
   formCuadrilla.estado.disabled = false;
   formCuadrilla.estado.value = c.estado || "activa";
   dibujarIntegrantes(c.personas);
@@ -88,7 +91,8 @@ formCuadrilla.addEventListener("submit", async function (evento) {
   }
 
   const boton = bloquearEnvio(formCuadrilla, "Guardando...");
-  const datos = { nombre: formCuadrilla.nombre.value, turno: formCuadrilla.turno.value };
+  // id_zona vacio = sin municipio: en una edicion tiene que viajar igual, para poder quitarle el que tenia.
+  const datos = { nombre: formCuadrilla.nombre.value, turno: formCuadrilla.turno.value, id_zona: formCuadrilla.id_zona.value };
   if (idEditando !== null) {
     datos.estado = formCuadrilla.estado.value;
   }
@@ -161,7 +165,19 @@ function mostrar(texto, tipo) {
 document.getElementById("btn-recargar").addEventListener("click", cargarCuadrillas);
 document.getElementById("btn-nuevo").addEventListener("click", prepararAlta);
 
+async function cargarZonas() {
+  try {
+    const zonas = await apiGet(API.gestion + "/zonas");
+    formCuadrilla.id_zona.insertAdjacentHTML("beforeend", zonas.datos.map(function (z) {
+      return '<option value="' + $entero(z.id_zona) + '">' + escaparHtml(z.nombre) + "</option>";
+    }).join(""));
+  } catch (error) {
+    avisoPaginaError("No se pudieron cargar los municipios. " + mensajeDeFallo(error));
+  }
+}
+
 activarValidacion(formCuadrilla);
 prepararModal("modal-cuadrilla", formCuadrilla);
 activarOrden("tabla-cuadrillas");
+cargarZonas();
 cargarCuadrillas();

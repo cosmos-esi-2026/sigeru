@@ -346,6 +346,15 @@ body:not([data-rol="Administrador"]) .solo-admin { display: none !important; }
 
 .acciones-fila { display: flex; flex-wrap: wrap; gap: var(--esp-2); justify-content: flex-end; }
 .acciones-fila .boton-icono { width: 36px; height: 36px; min-height: 36px; }
+/* Cualquier fila con tres acciones o mas (Usuarios, Maquinaria...) tambien necesita su piso: sin el, la celda quedaba de 55 px y las acciones en tres renglones */
+.acciones-fila:has(> :nth-child(3)) { min-width: 8rem; }
+/* Con cinco acciones o con botones de texto (Rutas: Armar, Asignar y tres iconos; Maquinaria: Estado e Historial) (Rutas: Armar, Asignar y tres iconos) necesita un piso de ancho: sin el, a 800 px la tabla la comprimia a 55 px y cada fila medía 250 px de alto (H-09) */
+.acciones-fila.acciones-fila-ancha { min-width: 11rem; }
+/* En una tableta o un portatil chico (de 769 a 1200 px, con el menu lateral a la vista) las ocho columnas de Rutas no entran con el relleno de siempre: se achica el relleno y el piso de las acciones para que entren desde 800 px sin barra */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .tabla-compacta th, .tabla-compacta td { padding-left: 6px; padding-right: 6px; }
+  .tabla-compacta .acciones-fila.acciones-fila-ancha { min-width: 8rem; }
+}
 .acciones-fila .js-baja:hover { color: var(--error-texto); border-color: var(--error-texto); background: var(--error-fondo); }
 @media (pointer: coarse) {
   .acciones-fila .boton-icono { width: var(--alto-toque); height: var(--alto-toque); }
@@ -1219,8 +1228,7 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
 .campanita-pie .boton { min-height: 32px; padding: 4px 10px; }
 .campanita-vacio { padding: var(--esp-5) var(--esp-4); color: var(--tinta-suave); font-size: 14px; }
 @media (max-width: 767px) { .campanita { order: 0; } }
-.preferencia-avisos { display: flex; align-items: center; gap: var(--esp-3); margin: var(--esp-4) 0 0; font-size: 14px; color: var(--tinta-suave); }
-.preferencia-avisos input { width: 20px; height: 20px; }
+
 @media (max-width: 767px) {
   .campanita-panel { position: fixed; left: var(--esp-3); right: var(--esp-3); top: 72px; width: auto; max-height: calc(100vh - 88px); }
 }
@@ -1229,22 +1237,6 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
   .campanita { margin-left: auto; }
 }
 
-/* Participacion del vecino (extras, parte 14): calificar, mi progreso, insignias y ranking */
-.calificacion-valor { margin: 0 0 var(--esp-2); font-size: 18px; color: var(--tinta); }
-.calificacion-valor { letter-spacing: .04em; }
-.grupo-radios { border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); display: grid; gap: var(--esp-2); margin: 0; }
-.grupo-radios legend { font-size: 14px; font-weight: 600; padding: 0 var(--esp-2); float: none; width: auto; margin: 0; }
-.radio-puntaje { display: flex; align-items: center; gap: var(--esp-2); font-weight: 400; min-height: 32px; cursor: pointer; }
-.radio-puntaje input { width: 20px; height: 20px; }
-.progreso-cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-3) var(--esp-5); margin-bottom: var(--esp-4); }
-.progreso-puntos { font-family: var(--fuente-titulo); font-size: 40px; font-weight: 700; color: var(--verde); line-height: 1; }
-.insignias { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--esp-3); }
-.insignia { border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); background: var(--superficie); }
-.insignia strong { display: block; }
-.insignia small { color: var(--tinta-suave); }
-.insignia[data-lograda="true"] { border-color: var(--verde); background: var(--verde-agua); }
-.insignia[data-lograda="false"] { color: var(--tinta-suave); }
-.insignia .marca { font-size: 12.5px; font-weight: 700; }
 .lista-simple { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: grid; gap: var(--esp-2); }
 .lista-simple li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }
 
@@ -1252,50 +1244,9 @@ body[data-rol="Operario"] .no-operario { display: none !important; }
 .pasaje-texto { margin: 0 0 var(--esp-4); font-size: 17px; color: var(--tinta-suave); }
 .pasaje-texto.con-pasaje { color: var(--tinta); font-weight: 600; }
 
-/* Prediccion de llenado (extras, parte 16) */
+/* Elementos solo para el personal */
 body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal { display: none !important; }
-.como-se-calcula { margin-top: var(--esp-4); border: 1px solid var(--borde); border-radius: var(--radio-1); padding: var(--esp-3) var(--esp-4); background: var(--hueso); }
-.como-se-calcula summary { cursor: pointer; font-weight: 600; }
-.como-se-calcula p { margin: var(--esp-3) 0 0; font-size: 14px; color: var(--tinta-suave); }
-.tarjeta-pronto { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); font-size: 14px; }
 
-/* ---- Ruta sugerida (parte 17) ---- */
-.marca-orden {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px; height: 28px;
-  background: var(--accion);
-  color: var(--blanco);
-  font-weight: 700;
-  font-size: 13px;
-  font-family: var(--fuente-dato);
-  border: 2px solid var(--blanco);
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(14, 36, 28, .5);
-}
-.marca-orden.lleno { background: #b3261e; }
-.cifras-ruta { display: flex; flex-wrap: wrap; gap: var(--esp-4) var(--esp-6); margin: 0 0 var(--esp-3); }
-.cifras-ruta div { min-width: 110px; }
-.cifras-ruta dt { font-size: 12.5px; color: var(--tinta-suave); }
-.cifras-ruta dd { margin: 0; font-size: 22px; font-weight: 700; font-family: var(--fuente-titulo); }
-.precarga-aviso { margin: 0 0 var(--esp-3); padding: var(--esp-3) var(--esp-4); border-radius: var(--radio-1); font-size: 14px; color: var(--alerta-texto); background: var(--alerta-fondo); }
-
-/* ---- Trabajo sin conexion (parte 21) ---- */
-.barra-pendientes {
-  display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) var(--esp-4);
-  margin: 0 var(--esp-5) var(--esp-4); padding: var(--esp-3) var(--esp-4);
-  background: var(--alerta-fondo); color: var(--alerta-texto); border-radius: var(--radio-1); font-size: 14px;
-}
-.barra-pendientes.con-problema { background: var(--error-fondo); color: var(--error-texto); }
-.pend-estado { margin: 0; flex: 1 1 260px; font-weight: 600; }
-.pend-acciones { display: flex; gap: var(--esp-2); }
-.pend-lista { flex: 1 1 100%; margin: 0; padding: 0; list-style: none; display: grid; gap: var(--esp-2); }
-.pend-lista li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2); padding-top: var(--esp-2); border-top: 1px solid currentColor; }
-.pend-lista li span { flex: 1 1 220px; overflow-wrap: anywhere; }
-.sin-conexion { max-width: 560px; margin: 12vh auto 0; padding: 0 var(--esp-4); text-align: center; }
-.sin-conexion h1 { margin: var(--esp-4) 0; }
-@media (max-width: 767px) { .barra-pendientes { margin: 0 var(--esp-3) var(--esp-3); } }
 .ilustracion-vacia { display: block; width: 112px; height: auto; margin: 0 auto var(--esp-3); color: var(--tinta-suave); }
 
 /* ---- Armar ruta (plan de rutas para la defensa, bloque 2) ---- */
@@ -1344,3 +1295,7 @@ body[data-rol="Vecino"] .solo-personal, body[data-rol="Operario"] .solo-personal
 .parada-orden.parada-mant { background: #8a5000; }
 .parada-hecha .parada-texto strong { text-decoration: line-through; text-decoration-thickness: 1px; }
 .lista-recorrido { max-height: 420px; margin-top: var(--esp-3); }
+
+/* Avisos bajo la cuadrilla elegida en «Asignacion» (otro municipio, turno distinto): solo informan */
+.avisos-fila { display: flex; flex-wrap: wrap; gap: var(--esp-1); margin-top: var(--esp-1); }
+.avisos-fila:empty { display: none; }

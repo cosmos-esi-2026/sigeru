@@ -406,9 +406,27 @@ async function cargar() {
   }
 
   redibujar(true);
+  enfocarContenedorPedido();
   if (PUEDE.misRutas) {
     dibujarMisRutas();
   }
+}
+
+// «Ver en el mapa» desde la ficha o el reclamo: ?contenedor=CODIGO centra el mapa en ese contenedor y abre su ficha.
+// Es lo que reemplaza a una calle: los datos abiertos de la Intendencia traen el circuito y las coordenadas, no la direccion (H-05).
+function enfocarContenedorPedido() {
+  const codigo = new URLSearchParams(window.location.search).get("contenedor");
+  if (!codigo || !/^[A-Za-z0-9-]{1,20}$/.test(codigo)) {
+    return;
+  }
+  const c = contenedores.find(function (x) { return x.codigo.toUpperCase() === codigo.toUpperCase(); });
+  const marcador = c && marcadores[c.id_contenedor];
+  if (!marcador) {
+    avisoPaginaError("No encontramos " + codigo + " en el mapa: puede que esté retirado, no tenga ubicación o no sea de tus rutas.");
+    return;
+  }
+  mapa.setView(marcador.getLatLng(), 17);
+  marcador.openPopup();
 }
 
 formFiltros.addEventListener("change", function (evento) {

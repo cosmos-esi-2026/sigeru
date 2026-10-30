@@ -18,7 +18,6 @@
   <meta name="twitter:title" content="Ingresar - SiGeRU">
   <meta name="twitter:description" content="Entrá a SiGeRU, el sistema de gestión de residuos urbanos.">
   <meta name="twitter:image" content="/sigeru/landing/img/compartir.png">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -30,10 +29,7 @@
   <main class="acceso-layout" id="contenido">
     <section class="acceso-presentacion con-escena" aria-label="SiGeRU">
       <div class="acceso-escena" aria-hidden="true">
-        <div class="acceso-calle"></div>
-        <div class="acceso-camion">
-          <img src="img/acceso-camion.png" alt="" width="82" height="241" loading="lazy">
-        </div>
+        <img class="acceso-video" src="img/acceso-poster.jpg" alt="">
       </div>
       <a class="acceso-marca" href="../landing/index.html">SiGeRU</a>
       <div class="acceso-relato">
@@ -43,7 +39,6 @@
       <div class="acceso-abajo">
         <p class="acceso-bajada">Entrá para informar problemas y seguir lo que pasa con los residuos de tu zona.</p>
         <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
-        <button type="button" class="acceso-pausa" aria-pressed="false" hidden>Pausar la animación de fondo</button>
       </div>
     </section>
 
@@ -61,7 +56,7 @@
 
           <div class="acceso-fila">
             <label for="login-clave">Contraseña</label>
-            <a href="recuperar-clave.html">¿Olvidaste tu contraseña?</a>
+            <span class="texto-tenue">¿La perdiste? Pedísela a la administración.</span>
           </div>
           <div class="acceso-clave">
             <input id="login-clave" type="password" name="password"
@@ -86,7 +81,5 @@
   <script src="js/formularios.js"></script>
   <script src="js/acceso.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/acceso-escena.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

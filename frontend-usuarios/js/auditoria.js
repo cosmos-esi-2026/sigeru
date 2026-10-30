@@ -12,8 +12,6 @@ const FRASES = [
   ["POST", /^\/api-usuarios\/login$/, "Inició sesión"],
   ["POST", /^\/api-usuarios\/logout$/, "Cerró sesión"],
   ["POST", /^\/api-usuarios\/registro$/, "Se registró como vecino"],
-  ["POST", /^\/api-usuarios\/crear-clave$/, "Creó su contraseña con un enlace"],
-  ["POST", /^\/api-usuarios\/recuperar-clave$/, "Pidió recuperar su contraseña"],
   ["POST", /^\/api-usuarios\/usuarios$/, "Creó un usuario"],
   ["PUT", /^\/api-usuarios\/usuarios\/\d+$/, "Modificó un usuario"],
   ["DELETE", /^\/api-usuarios\/usuarios\/\d+$/, "Dio de baja a un usuario"],

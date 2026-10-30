@@ -66,12 +66,19 @@ function fechaLegible(valor) {
   return partes[4] ? dia + " " + partes[4] + ":" + partes[5] : dia;
 }
 
-function celdaMarca(etiqueta, grupo, valor, valorOrden) {
+function celdaMarca(etiqueta, grupo, valor, valorOrden, marcaExtra) {
   const orden = valorOrden !== undefined
     ? ' data-orden-valor="' + escaparHtml(valorOrden) + '"'
     : "";
   return '<td role="cell" data-etiqueta="' + escaparHtml(etiqueta) + '"' + orden + ">" +
-         marcaDeEstado(grupo, valor) + "</td>";
+         marcaDeEstado(grupo, valor) + (marcaExtra || "") + "</td>";
+}
+
+// Una recoleccion planificada cuya fecha ya paso sin que nadie la iniciara (la marca el servidor: campo «vencida»).
+function marcaVencida(recoleccion) {
+  return recoleccion.vencida
+    ? ' <span class="estado naranja" title="Estaba planificada para una fecha que ya pasó y nadie la inició">Vencida</span>'
+    : "";
 }
 
 function parametroEntero(nombre) {

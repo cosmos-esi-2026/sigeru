@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Informar un problema - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -33,7 +32,6 @@
       <section class="panel panel-angosto" id="panel-formulario" aria-labelledby="titulo-formulario">
         <h2 class="titulo-panel" id="titulo-formulario">¿Qué pasa y dónde?</h2>
         <p class="ayuda">Los campos marcados con * son obligatorios.</p>
-        <p class="ayuda">¿Dudás en qué contenedor va un residuo? Mirá la <a href="../landing/donde-tiro.html">guía «¿Dónde tiro esto?»</a>.</p>
 
         <form id="form-incidencia" class="formulario">
           <fieldset class="grupo-campo" id="grupo-contenedor">
@@ -117,11 +115,11 @@
             <span class="error-campo" id="error-form-incidencia-tipo_problema"></span>
           </fieldset>
 
-          <label>Descripción *
-            <textarea name="descripcion" rows="4" required minlength="5" maxlength="500"
-                      placeholder="Qué se observa" aria-describedby="cuenta-descripcion"></textarea>
+          <label><span id="rotulo-descripcion">Descripción (opcional)</span>
+            <textarea name="descripcion" rows="4" minlength="5" maxlength="500"
+                      placeholder="Qué se observa, si querés agregar algo" aria-describedby="cuenta-descripcion"></textarea>
           </label>
-          <p class="ayuda-campo" id="cuenta-descripcion" aria-live="polite">Entre 5 y 500 caracteres.</p>
+          <p class="ayuda-campo" id="cuenta-descripcion" aria-live="polite">Opcional: si la escribís, entre 5 y 500 caracteres.</p>
 
           <label>Foto (opcional)
             <input type="file" name="foto" accept="image/jpeg,image/png,image/webp" aria-describedby="ayuda-foto">
@@ -175,6 +173,5 @@
 <script src="js/tabla.js"></script>
 <script src="js/incidencias-comun.js"></script>
 <script src="js/informar-problema.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

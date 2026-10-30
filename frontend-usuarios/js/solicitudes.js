@@ -107,7 +107,8 @@ cuerpoTabla.addEventListener("click", async function (evento) {
 
     document.getElementById("detalle-solicitud").textContent =
       "Se va a crear la cuenta de " + solicitudElegida.nombre +
-      " (" + solicitudElegida.email + "). Le llegará un enlace por correo para crear su contraseña.";
+      " (" + solicitudElegida.email + "). Definí su contraseña inicial y entregásela en mano.";
+    formAprobar.password.value = "";
 
     bootstrap.Modal.getOrCreateInstance(modalAprobar).show();
     return;
@@ -176,13 +177,13 @@ formAprobar.addEventListener("submit", async function (evento) {
     const { ok, resultado } = await apiPut(
       API.usuarios + "/solicitudes/" + solicitudElegida.id,
       solicitudElegida.esDeCuadrilla
-        ? { decision: "aprobada", rol: "Cuadrilla", id_cuadrilla: parseInt(formAprobar.id_cuadrilla.value, 10) }
-        : { decision: "aprobada", rol: formAprobar.rol.value }
+        ? { decision: "aprobada", rol: "Cuadrilla", id_cuadrilla: parseInt(formAprobar.id_cuadrilla.value, 10), password: formAprobar.password.value }
+        : { decision: "aprobada", rol: formAprobar.rol.value, password: formAprobar.password.value }
     );
 
     if (ok) {
       cerrarModal("modal-aprobar");
-      avisoPagina("Solicitud aprobada. Se envió un enlace a " + solicitudElegida.email + ".");
+      avisoPagina("Solicitud aprobada. La cuenta de " + solicitudElegida.email + " ya está activa.");
       solicitudElegida = null;
       cargarSolicitudes();
     } else {

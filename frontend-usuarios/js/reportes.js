@@ -6,8 +6,6 @@ const NUMERO_2 = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 2 });
 const DIAS = new Intl.NumberFormat("es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 let informeIncidencias = null;
-let informeCalidad = null;
-let informeImpacto = null;
 
 function formatoNumero(valor) {
   return valor === null || valor === undefined ? "-" : NUMERO.format(valor);
@@ -163,72 +161,6 @@ function mostrarRecoleccion(datos) {
   }
 }
 
-function promedioTexto(valor) {
-  return valor === null || valor === undefined ? "Sin calificaciones" : DIAS.format(valor) + " de 5";
-}
-
-function filaCalidad(nombre, a, b, c, d, e) {
-  return '<tr role="row">' + celda("Nombre", nombre) + celda("Incidencias", a) + celda("Resueltas", b) + celda("Calificaciones", c) +
-         celda("Satisfacción promedio", promedioTexto(d)) + celda("Tiempo medio de resolución", e === null ? "-" : formatoDuracion(e)) + "</tr>";
-}
-
-function mostrarCalidad(datos) {
-  const g = datos.general;
-  document.getElementById("texto-calidad").textContent = g.calificaciones === 0
-    ? "Todavía no hay calificaciones en este período. Los vecinos califican la atención de sus reclamos resueltos, de 1 a 5."
-    : g.calificaciones + (g.calificaciones === 1 ? " calificación" : " calificaciones") + " en el período: satisfacción promedio " + DIAS.format(g.promedio) + " de 5.";
-  document.getElementById("cuerpo-calidad-zonas").innerHTML = datos.por_zona.length === 0
-    ? filaVacia(6, "Sin incidencias en este período", "")
-    : datos.por_zona.map(function (z) { return filaCalidad(z.zona, z.incidencias, z.resueltas, z.calificaciones, z.promedio, z.tiempo_medio_horas); }).join("");
-  document.getElementById("cuerpo-calidad-cuadrillas").innerHTML = datos.por_cuadrilla.length === 0
-    ? filaVacia(6, "Ninguna incidencia asignada en este período", "")
-    : datos.por_cuadrilla.map(function (c) { return filaCalidad(c.cuadrilla, c.incidencias, c.resueltas, c.calificaciones, c.promedio, c.tiempo_medio_horas); }).join("");
-}
-
-function mostrarImpacto(d) {
-  document.getElementById("texto-impacto").textContent = d.kg_total === 0
-    ? "No hay kilos recolectados en este período."
-    : NUMERO_2.format(d.kg_total) + " kg recolectados, " + (d.pct_reciclable === null ? "-" : DIAS.format(d.pct_reciclable) + " %") + " de tipos reciclables y un CO2 evitado estimado de " +
-      NUMERO.format(d.co2_evitado_kg) + " kg. " + d.nota;
-  document.getElementById("cuerpo-impacto").innerHTML = d.por_mes.length === 0
-    ? filaVacia(5, "Sin recolecciones en este período", "")
-    : d.por_mes.map(function (m) {
-        return '<tr role="row">' + celda("Mes", m.mes) + celda("Kilos recolectados", NUMERO_2.format(m.kg_total)) + celda("Kilos reciclables", NUMERO_2.format(m.kg_reciclable)) +
-               celda("% reciclable", m.pct_reciclable === null ? null : DIAS.format(m.pct_reciclable) + " %") + celda("CO2 evitado (estimación)", "≈ " + NUMERO.format(m.co2_evitado_kg) + " kg") + "</tr>";
-      }).join("");
-  document.getElementById("fuentes-impacto").innerHTML = "Fuentes de los factores: " + d.fuentes.map(function (f) {
-    return escaparHtml(f.tipos.join(", ")) + ' (<a href="' + escaparHtml(f.url) + '" rel="noopener">EPA WARM v16</a>)';
-  }).join("; ") + ". " + (d.tipos_sin_factor.length ? "Sin fuente verificada: " + escaparHtml(d.tipos_sin_factor.join(", ")) + " (solo kilos)." : "");
-}
-
-function exportarImpacto() {
-  if (!informeImpacto) {
-    avisoPaginaError("Primero generá el informe.");
-    return;
-  }
-  const filas = [["Mes", "Kilos recolectados", "Kilos reciclables", "% reciclable", "CO2 evitado estimado (kg)"]];
-  informeImpacto.por_mes.forEach(function (m) {
-    filas.push([m.mes, decimalCsv(m.kg_total), decimalCsv(m.kg_reciclable), decimalCsv(m.pct_reciclable), decimalCsv(m.co2_evitado_kg)]);
-  });
-  filas.push(["Total", decimalCsv(informeImpacto.kg_total), decimalCsv(informeImpacto.kg_reciclable), decimalCsv(informeImpacto.pct_reciclable), decimalCsv(informeImpacto.co2_evitado_kg)]);
-  descargarCsv("impacto-ambiental_" + sufijoDeArchivo() + ".csv", filas);
-}
-
-function exportarCalidad() {
-  if (!informeCalidad) {
-    avisoPaginaError("Primero generá el informe.");
-    return;
-  }
-  const filas = [["Tipo", "Nombre", "Incidencias", "Resueltas", "Calificaciones", "Satisfacción promedio (de 5)", "Tiempo medio de resolución (horas)"]];
-  informeCalidad.por_zona.forEach(function (z) {
-    filas.push(["Zona", z.zona, z.incidencias, z.resueltas, z.calificaciones, decimalCsv(z.promedio), decimalCsv(z.tiempo_medio_horas)]);
-  });
-  informeCalidad.por_cuadrilla.forEach(function (c) {
-    filas.push(["Cuadrilla", c.cuadrilla, c.incidencias, c.resueltas, c.calificaciones, decimalCsv(c.promedio), decimalCsv(c.tiempo_medio_horas)]);
-  });
-  descargarCsv("calidad-del-servicio_" + sufijoDeArchivo() + ".csv", filas);
-}
-
 function fallaDeSeccion(ids, error) {
   ids.forEach(function (id) {
     document.getElementById(id).innerHTML = '<p class="texto-tenue">' + escaparHtml(mensajeDeFallo(error)) + "</p>";
@@ -248,8 +180,6 @@ async function generar() {
   const resultados = await Promise.allSettled([
     apiGet(API.gestion + "/estadisticas/incidencias" + consulta),
     apiGet(API.recoleccion + "/estadisticas/recoleccion" + consulta),
-    apiGet(API.gestion + "/estadisticas/satisfaccion" + consulta),
-    apiGet(API.gestion + "/estadisticas/impacto" + consulta),
   ]);
 
   if (resultados[0].status === "fulfilled") {
@@ -264,20 +194,6 @@ async function generar() {
     mostrarRecoleccion(resultados[1].value.datos);
   } else {
     fallaDeSeccion(["grafico-residuos", "grafico-kg-zonas"], resultados[1].reason);
-  }
-  if (resultados[2].status === "fulfilled") {
-    informeCalidad = resultados[2].value.datos;
-    mostrarCalidad(informeCalidad);
-  } else {
-    informeCalidad = null;
-    document.getElementById("texto-calidad").textContent = mensajeDeFallo(resultados[2].reason);
-  }
-  if (resultados[3].status === "fulfilled") {
-    informeImpacto = resultados[3].value.datos;
-    mostrarImpacto(informeImpacto);
-  } else {
-    informeImpacto = null;
-    document.getElementById("texto-impacto").textContent = mensajeDeFallo(resultados[3].reason);
   }
 }
 
@@ -349,40 +265,7 @@ document.querySelectorAll("[data-rapido]").forEach(function (boton) {
 
 document.getElementById("btn-csv-detalle").addEventListener("click", exportarDetalle);
 document.getElementById("btn-csv-zonas").addEventListener("click", exportarZonas);
-document.getElementById("btn-csv-calidad").addEventListener("click", exportarCalidad);
-document.getElementById("btn-csv-impacto").addEventListener("click", exportarImpacto);
 document.getElementById("btn-imprimir").addEventListener("click", function () { window.print(); });
-
-// Reporte en PDF del periodo elegido (lo arma el servidor con los mismos datos de esta pantalla; queda en la auditoria).
-document.getElementById("btn-pdf").addEventListener("click", async function () {
-  const boton = this;
-  const texto = boton.textContent;
-  boton.disabled = true;
-  boton.textContent = "Generando PDF...";
-  try {
-    const respuesta = await fetch(API.gestion + "/reportes/pdf" + consultaDelPeriodo(), opciones("GET"));
-    if (!respuesta.ok) {
-      let mensaje = "No se pudo generar el PDF (" + respuesta.status + ").";
-      try { mensaje = (await respuesta.json()).mensaje || mensaje; } catch (e) { /* respuesta sin JSON */ }
-      avisoPaginaError(mensaje);
-      return;
-    }
-    const archivo = await respuesta.blob();
-    const enlace = document.createElement("a");
-    enlace.href = URL.createObjectURL(archivo);
-    enlace.download = "sigeru-reporte-" + fechaIso(new Date()) + ".pdf";
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-    setTimeout(function () { URL.revokeObjectURL(enlace.href); }, 10000);
-    avisoPagina("El reporte se descargó como PDF.");
-  } catch (e) {
-    avisoPaginaError("No se pudo conectar con el servidor para generar el PDF.");
-  } finally {
-    boton.disabled = false;
-    boton.textContent = texto;
-  }
-});
 
 document.querySelectorAll("#tabla-detalle th").forEach(function (th) { th.setAttribute("data-orden", ""); });
 activarOrden("tabla-detalle");

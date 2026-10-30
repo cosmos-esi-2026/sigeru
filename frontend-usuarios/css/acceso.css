@@ -149,10 +149,8 @@ body.pagina-acceso { background: var(--hueso); }
 /* Enlaces de las pantallas de acceso con al menos 24 px de alto (WCAG 2.2, criterio 2.5.8) */
 .acceso-volver, .acceso-fila a { display: inline-block; padding: 4px 0; }
 
-/* Escena del login: barrio visto desde arriba que pasa sin fin bajo el camion de SiGeRU.
-   La calle es una pieza que se repite (un tramo y su reflejo, cortados en medio de una calle
-   transversal): por eso no hay ningun corte. Sale de los cuadros del video generado con IA.
-   El camion va en el centro exacto del panel y nada lo tapa: el texto queda arriba y abajo. */
+/* Imagen del login: un barrio visto desde arriba con el camion de SiGeRU.
+   Para cambiar la imagen basta reemplazar img/acceso-poster.jpg. */
 .con-escena { justify-content: flex-start; gap: 0; padding: clamp(28px, 4vw, 56px); }
 .con-escena::after { display: none; }
 .con-escena .acceso-relato { margin-top: clamp(20px, 4vh, 40px); }
@@ -168,52 +166,15 @@ body.pagina-acceso { background: var(--hueso); }
 .con-escena .acceso-pie { text-shadow: 0 1px 2px rgba(5, 30, 22, .9), 0 2px 16px rgba(5, 30, 22, .8); }
 .con-escena .acceso-sello { text-shadow: 0 1px 2px rgba(5, 30, 22, .95), 0 0 10px rgba(5, 30, 22, .9); }
 .acceso-escena { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--barra); }
-.acceso-calle {
+.acceso-video {
   position: absolute;
-  top: 0;
-  left: -12.5%;
-  width: 125%;
-  aspect-ratio: 960 / 4482;
-  background: url("../img/acceso-calle.jpg") repeat-y center top / 100% auto;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   filter: saturate(.88);
-  animation: calle-pasa 11s linear infinite;
-  will-change: transform;
-}
-@keyframes calle-pasa {
-  from { transform: translateY(-33.3333%); }
-  to   { transform: translateY(0); }
-}
-.acceso-camion {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10.7%;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, .38));
-  animation: camion-vibra 1.6s ease-in-out infinite;
-}
-.acceso-camion img { display: block; width: 100%; height: auto; }
-@keyframes camion-vibra {
-  0%, 100% { transform: translate(-50%, -50%); }
-  50%      { transform: translate(calc(-50% + .5px), calc(-50% - .5px)); }
-}
-.acceso-escena.pausado .acceso-calle,
-.acceso-escena.pausado .acceso-camion { animation-play-state: paused; }
-.acceso-pausa {
-  margin-top: var(--esp-4);
-  min-height: 36px;
-  padding: 0 var(--esp-4);
-  border: 1px solid rgba(255, 255, 255, .45);
-  border-radius: var(--radio-full);
-  background: rgba(9, 46, 34, .6);
-  color: var(--blanco);
-  font: 600 13px var(--fuente-texto);
-  cursor: pointer;
-}
-.acceso-pausa:hover { background: rgba(9, 46, 34, .9); border-color: var(--blanco); }
-@media (prefers-reduced-motion: reduce) {
-  .acceso-calle, .acceso-camion { animation: none; }
-  .acceso-pausa { display: none; }
+  pointer-events: none;
 }
 @media (max-width: 850px) {
   .acceso-escena, .acceso-abajo { display: none; }

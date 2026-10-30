@@ -96,12 +96,6 @@
       trazos: '<path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="m16 15 2 2 4-4"/>',
     },
     {
-      href: "ruta-sugerida.html",
-      texto: "Ruta sugerida",
-      roles: ["Administrador"],
-      trazos: '<circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M5 17c0-5 4-4 6-7s1-5 6-5"/><path d="m14 9 3 .5.5-3"/>',
-    },
-    {
       href: "recolecciones.html",
       texto: "Recolecciones",
       roles: ["Administrador"],

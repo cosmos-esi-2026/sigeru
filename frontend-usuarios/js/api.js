@@ -4,13 +4,13 @@ const API = {
   recoleccion: "/sigeru/api-recoleccion",
 };
 
-function opciones(metodo, datos, cabeceras) {
+function opciones(metodo, datos) {
   const config = {
     method: metodo,
     credentials: "same-origin",
   };
   if (datos !== undefined) {
-    config.headers = Object.assign({ "Content-Type": "application/json" }, cabeceras || {});
+    config.headers = { "Content-Type": "application/json" };
     config.body = JSON.stringify(datos);
   }
   return config;
@@ -31,9 +31,8 @@ async function apiGet(url) {
   return await respuesta.json();
 }
 
-// cabeceras (opcional): por ejemplo {"Idempotency-Key": uuid} para que un reenvio no cargue el dato dos veces.
-async function apiPost(url, datos, cabeceras) {
-  const respuesta = await fetch(url, opciones("POST", datos, cabeceras));
+async function apiPost(url, datos) {
+  const respuesta = await fetch(url, opciones("POST", datos));
   const resultado = await respuesta.json();
   return { ok: respuesta.ok, resultado };
 }
@@ -87,7 +86,7 @@ const Sesion = {
     if (typeof texto !== "string" || texto.length === 0 || texto.length > 300) {
       return null;
     }
-    if (!/^[a-z0-9-]+\.html(\?[A-Za-z0-9_=&%.\-]*)?$/.test(texto) || /^(login|registro|crear-clave|recuperar-clave)\.html/.test(texto)) {
+    if (!/^[a-z0-9-]+\.html(\?[A-Za-z0-9_=&%.\-]*)?$/.test(texto) || /^(login|registro)\.html/.test(texto)) {
       return null;
     }
     return texto;

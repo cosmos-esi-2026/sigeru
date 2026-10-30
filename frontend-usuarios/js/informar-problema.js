@@ -213,10 +213,19 @@ async function enviarFoto(idIncidencia) {
   }
 }
 
+// La descripcion es opcional (el tipo ya dice que pasa), salvo en «Otro»: ahi es obligatoria. Misma regla que FlujoIncidencia::errorDeNueva.
+function descripcionObligatoria() {
+  const elegido = formIncidencia.querySelector('input[name="tipo_problema"]:checked');
+  return !!elegido && elegido.value === "otro";
+}
+
 function actualizarCuenta() {
   const largo = formIncidencia.descripcion.value.trim().length;
+  const obligatoria = descripcionObligatoria();
+  formIncidencia.descripcion.required = obligatoria;
+  document.getElementById("rotulo-descripcion").textContent = obligatoria ? "Descripción *" : "Descripción (opcional)";
   cuentaDescripcion.textContent = largo === 0
-    ? "Entre 5 y 500 caracteres."
+    ? (obligatoria ? "Obligatoria en «Otro»: entre 5 y 500 caracteres." : "Opcional: si la escribís, entre 5 y 500 caracteres.")
     : largo + " de 500 caracteres" + (largo < 5 ? " (mínimo 5)." : ".");
 }
 
@@ -347,6 +356,8 @@ formIncidencia.codigo_contenedor.addEventListener("input", function () {
 formIncidencia.querySelectorAll('input[name="tipo_problema"]').forEach(function (opcion) {
   opcion.addEventListener("change", function () {
     formIncidencia.querySelectorAll('input[name="tipo_problema"]').forEach(limpiarError);
+    limpiarError(formIncidencia.descripcion);
+    actualizarCuenta();
   });
 });
 formIncidencia.foto.addEventListener("change", elegirFoto);

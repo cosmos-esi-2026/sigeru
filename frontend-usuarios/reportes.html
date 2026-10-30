@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reportes - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -27,7 +26,6 @@
         <h1>Reportes</h1>
         <p class="bajada">Incidencias y recolección de un período: totales, tiempos de resolución y exportación.</p>
       </div>
-      <button type="button" class="boton boton-secundario" id="btn-pdf">Descargar PDF</button>
       <button type="button" class="boton boton-secundario" id="btn-imprimir">Imprimir</button>
       <button type="button" class="boton boton-primario" id="btn-csv-detalle">Exportar detalle (CSV)</button>
     </header>
@@ -122,52 +120,6 @@
         </section>
       </div>
 
-      <section class="panel" aria-labelledby="titulo-calidad">
-        <div class="barra-herramientas">
-          <h2 class="titulo" id="titulo-calidad">Calidad del servicio</h2>
-          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-calidad">Exportar (CSV)</button>
-        </div>
-        <p class="texto-tenue" id="texto-calidad">Incidencias, satisfacción de los vecinos (calificación de 1 a 5) y tiempo medio de resolución, por zona y por cuadrilla.</p>
-        <h3 class="subtitulo">Por zona</h3>
-        <div class="tabla-scroll">
-          <table class="tabla" id="tabla-calidad-zonas" role="table">
-            <thead role="rowgroup"><tr role="row">
-              <th role="columnheader">Zona</th><th role="columnheader">Incidencias</th><th role="columnheader">Resueltas</th>
-              <th role="columnheader">Calificaciones</th><th role="columnheader">Satisfacción promedio</th><th role="columnheader">Tiempo medio de resolución</th>
-            </tr></thead>
-            <tbody id="cuerpo-calidad-zonas" role="rowgroup"></tbody>
-          </table>
-        </div>
-        <h3 class="subtitulo">Por cuadrilla</h3>
-        <div class="tabla-scroll">
-          <table class="tabla" id="tabla-calidad-cuadrillas" role="table">
-            <thead role="rowgroup"><tr role="row">
-              <th role="columnheader">Cuadrilla</th><th role="columnheader">Asignadas</th><th role="columnheader">Resueltas</th>
-              <th role="columnheader">Calificaciones</th><th role="columnheader">Satisfacción promedio</th><th role="columnheader">Tiempo medio de resolución</th>
-            </tr></thead>
-            <tbody id="cuerpo-calidad-cuadrillas" role="rowgroup"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="titulo-impacto">
-        <div class="barra-herramientas">
-          <h2 class="titulo" id="titulo-impacto">Impacto ambiental</h2>
-          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-impacto">Exportar (CSV)</button>
-        </div>
-        <p class="texto-tenue" id="texto-impacto"></p>
-        <div class="tabla-scroll">
-          <table class="tabla" id="tabla-impacto" role="table">
-            <thead role="rowgroup"><tr role="row">
-              <th role="columnheader">Mes</th><th role="columnheader">Kilos recolectados</th><th role="columnheader">Kilos reciclables</th>
-              <th role="columnheader">% reciclable</th><th role="columnheader">CO2 evitado (estimación)</th>
-            </tr></thead>
-            <tbody id="cuerpo-impacto" role="rowgroup"></tbody>
-          </table>
-        </div>
-        <p class="texto-tenue" id="fuentes-impacto"></p>
-      </section>
-
       <section class="panel" aria-labelledby="titulo-top">
         <h2 class="titulo-seccion" id="titulo-top">Contenedores con más incidencias</h2>
         <div class="tabla-scroll">
@@ -236,6 +188,5 @@
 <script src="js/lista.js"></script>
 <script src="js/graficos.js"></script>
 <script src="js/reportes.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

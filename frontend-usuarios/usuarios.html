@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/base.css">
@@ -79,7 +78,6 @@
             <select name="estado">
               <option value="">Todos</option>
               <option value="activo">Activo</option>
-              <option value="pendiente">Pendiente (sin contraseña)</option>
               <option value="inactivo">Dado de baja</option>
             </select>
           </label>
@@ -135,7 +133,8 @@
 
       <div class="modal-body">
         <p class="ayuda">Los vecinos pueden registrarse solos. Si creás una cuenta desde
-          este panel, SiGeRU enviará un enlace por correo para que la persona elija su contraseña.</p>
+          este panel, definí una contraseña inicial y entregásela a la persona en mano. Si alguien perdió la suya,
+          editá su usuario y escribí una nueva.</p>
 
         <form id="form-usuario" class="formulario">
           <div class="formulario-columnas">
@@ -148,6 +147,10 @@
           </div>
           <label>Email
             <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label>Contraseña <span id="marca-clave">*</span>
+            <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+            <span class="ayuda-campo" id="ayuda-clave">Al menos 8 caracteres.</span>
           </label>
           <label>Rol
             <select name="rol">
@@ -186,6 +189,5 @@
 <script src="js/tabla.js"></script>
 <script src="js/lista.js"></script>
 <script src="js/usuarios.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

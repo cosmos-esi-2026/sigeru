@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de control - SiGeRU</title>
   <link rel="icon" href="img/logo.svg">
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#115440">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -49,11 +48,6 @@
           <a class="boton boton-secundario boton-chico" href="mis-reclamos.html" data-pagina="mis-reclamos.html">Ver todos</a>
         </div>
         <div id="zona-reclamos" aria-live="polite"></div>
-        <label class="preferencia-avisos" for="pref-correo">
-          <input type="checkbox" id="pref-correo" checked>
-          Recibir avisos por correo cuando cambie el estado de mis reclamos
-        </label>
-        <p class="texto-tenue" id="pref-estado" role="status" aria-live="polite"></p>
       </section>
 
       <section class="panel solo-vecino" aria-labelledby="titulo-pasaje">
@@ -69,33 +63,6 @@
             <button type="submit" class="boton boton-secundario boton-chico" id="boton-zona">Guardar mi zona</button>
           </div>
         </form>
-      </section>
-
-      <section class="panel solo-vecino" aria-labelledby="titulo-progreso">
-        <div class="barra-herramientas">
-          <h2 class="titulo" id="titulo-progreso">Mi progreso</h2>
-        </div>
-        <div id="zona-progreso" aria-live="polite"></div>
-      </section>
-
-      <section class="panel solo-vecino" aria-labelledby="titulo-ranking">
-        <div class="barra-herramientas">
-          <h2 class="titulo" id="titulo-ranking">Ranking de zonas</h2>
-        </div>
-        <p class="texto-tenue">Qué zonas de la ciudad participan más: por reclamos resueltos y puntos. Es por zona, nunca por persona.</p>
-        <div class="tabla-scroll">
-          <table class="tabla" role="table">
-            <thead role="rowgroup">
-              <tr role="row">
-                <th role="columnheader">Posición</th>
-                <th role="columnheader">Zona</th>
-                <th role="columnheader">Reclamos resueltos</th>
-                <th role="columnheader">Puntos</th>
-              </tr>
-            </thead>
-            <tbody id="cuerpo-ranking" role="rowgroup"></tbody>
-          </table>
-        </div>
       </section>
 
       <section class="panel solo-operario" aria-labelledby="titulo-mi-centro">
@@ -238,15 +205,6 @@
         <p class="texto-tenue" id="nota-urgencias"></p>
       </section>
 
-      <section class="panel solo-admin" aria-labelledby="titulo-pronto">
-        <div class="barra-herramientas">
-          <h2 class="titulo" id="titulo-pronto">Se llenan en las próximas 48 horas</h2>
-          <a class="boton boton-secundario boton-chico" href="contenedores.html?llena=48">Ver en Contenedores</a>
-        </div>
-        <p class="texto-tenue">Estimación estadística según el ritmo de vaciado de cada contenedor (no es inteligencia artificial).</p>
-        <ul class="lista-simple" id="lista-pronto" aria-live="polite"></ul>
-      </section>
-
       <section class="panel no-vecino no-operario" aria-labelledby="titulo-llenos">
         <div class="barra-herramientas">
           <h2 class="titulo" id="titulo-llenos">Contenedores llenos</h2>
@@ -284,12 +242,8 @@
 <script src="js/api.js"></script>
 <script src="js/formularios.js"></script>
 <script src="js/shell.js"></script>
-<script src="js/cola-offline.js"></script>
-<script src="js/pendientes.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/incidencias-comun.js"></script>
-<script src="js/prediccion.js"></script>
 <script src="js/dashboard.js"></script>
-<script src="js/pwa.js"></script>
 </body>
 </html>

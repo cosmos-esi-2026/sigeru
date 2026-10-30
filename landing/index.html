@@ -35,9 +35,7 @@
       <nav class="menu" aria-label="Secciones de la página">
         <a href="#que-es">Qué es</a>
         <a href="#mapa-publico">Mapa</a>
-        <a href="donde-tiro.html">¿Dónde tiro esto?</a>
         <a href="#como-informar">Cómo informar</a>
-        <a href="#servicios">Servicios</a>
         <a href="#registro">Registro</a>
 
         <a class="boton boton-secundario" href="../frontend-usuarios/login.html">Ingresar</a>
@@ -146,26 +144,6 @@
       </div>
     </section>
 
-    <section id="impacto" class="seccion" aria-labelledby="titulo-impacto">
-      <div class="contenedor">
-        <h2 id="titulo-impacto">Impacto ambiental</h2>
-        <p>Lo que se recolecta con SiGeRU y lo que se evita al reciclarlo. <strong>Las cifras de CO2 son una estimación</strong>, no una medición.</p>
-        <dl class="cifras" id="cifras-impacto">
-          <div><dt>Kilos recolectados</dt><dd id="impacto-kg">-</dd></div>
-          <div><dt>Reciclable</dt><dd id="impacto-pct">-</dd></div>
-          <div><dt>CO2 evitado (estimación)</dt><dd id="impacto-co2">-</dd></div>
-          <div><dt>Kilos recibidos en centros</dt><dd id="impacto-recibidos">-</dd></div>
-        </dl>
-        <p class="texto-chico" id="nota-impacto" role="status">Cargando los datos...</p>
-        <details class="fuente-impacto">
-          <summary>¿De dónde salen las cifras de CO2?</summary>
-          <p>Se multiplican los kilos recolectados de cada tipo de residuo reciclable por un factor de emisión evitada: los kilos de CO2 equivalente que se evitan al reciclar un kilo en lugar de enterrarlo.
-             Son factores de referencia del modelo WARM de la Agencia de Protección Ambiental de Estados Unidos (EPA), no medidos en Uruguay. Los tipos sin una fuente verificada (orgánico y mixto) se informan solo en kilos.</p>
-          <ul id="fuentes-impacto"></ul>
-        </details>
-      </div>
-    </section>
-
     <section id="como-informar" class="seccion seccion-gris" aria-labelledby="titulo-como">
       <div class="contenedor informar-dos">
         <figure class="foto-lateral">
@@ -191,75 +169,10 @@
             <li>
               <span class="paso-numero" aria-hidden="true">3</span>
               <h3>Seguí tu reclamo</h3>
-              <p>En «Mis reclamos» ves el estado y todo el historial hasta que se resuelve. Te avisamos en la campanita del sistema y, si lo dejás activado, también por correo cada vez que cambia el estado.</p>
+              <p>En «Mis reclamos» ves el estado y todo el historial hasta que se resuelve. Te avisamos en la campanita del sistema cada vez que cambia el estado.</p>
             </li>
           </ol>
         </div>
-      </div>
-    </section>
-
-    <section id="servicios" class="seccion" aria-labelledby="titulo-servicios">
-      <div class="contenedor">
-        <h2 id="titulo-servicios">Servicios</h2>
-        <p>Tres módulos que funcionan juntos y comparten los mismos datos.</p>
-
-        <figure class="foto-ancha">
-          <img src="img/fotos/cuadrilla.webp"
-               srcset="img/fotos/cuadrilla-720.webp 720w, img/fotos/cuadrilla.webp 1280w"
-               sizes="(max-width: 1120px) 100vw, 1072px" width="1280" height="720" loading="lazy"
-               alt="Dos trabajadores de recolección con chalecos reflectantes vaciando un contenedor en la parte trasera de un camión recolector">
-        </figure>
-
-        <div class="tarjetas">
-          <article class="tarjeta" data-color="vidrio">
-            <div class="tarjeta-icono">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 6h18"></path>
-                <path d="M8 6V4h8v2"></path>
-                <path d="M5 6l1 14h12l1-14"></path>
-                <path d="M10 10v6M14 10v6"></path>
-              </svg>
-            </div>
-            <h3>Contenedores</h3>
-            <p>Ubicación, capacidad, tipo de residuo y estado de cada contenedor, con el historial de sus cambios de estado.</p>
-          </article>
-
-          <article class="tarjeta" data-color="plastico">
-            <div class="tarjeta-icono">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M2 7h11v10H2z"></path>
-                <path d="M13 10h4l4 4v3h-8z"></path>
-                <circle cx="7" cy="18" r="2"></circle>
-                <circle cx="17" cy="18" r="2"></circle>
-              </svg>
-            </div>
-            <h3>Recolección</h3>
-            <p>Flota de camiones, rutas por zona con día y hora, y recolecciones que registran el peso y el volumen de cada vaciado.</p>
-          </article>
-
-          <article class="tarjeta" data-color="papel">
-            <div class="tarjeta-icono">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3l9 16H3z"></path>
-                <path d="M12 9v5M12 17h.01"></path>
-              </svg>
-            </div>
-            <h3>Incidencias</h3>
-            <p>El vecino registrado informa un problema; la administración lo asigna a una cuadrilla y queda todo anotado, con fecha y responsable.</p>
-          </article>
-        </div>
-
-        <ul class="tipos-lista" id="tipos-lista" aria-label="Tipos de residuo">
-          <li class="tipo" data-tipo="organico">Orgánico</li>
-          <li class="tipo" data-tipo="plastico">Plástico</li>
-          <li class="tipo" data-tipo="vidrio">Vidrio</li>
-          <li class="tipo" data-tipo="papel">Papel</li>
-          <li class="tipo" data-tipo="metal">Metal</li>
-        </ul>
-        <p class="texto-chico">¿No sabés en qué contenedor va algo? <a href="donde-tiro.html">Mirá la guía «¿Dónde tiro esto?»</a>.</p>
       </div>
     </section>
 

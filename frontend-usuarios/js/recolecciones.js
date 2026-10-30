@@ -14,7 +14,7 @@ const COLUMNAS = {
   zona:      { titulo: "Zona",      celda: function (r) { return celda("Zona", r.zona); } },
   camion:    { titulo: "Camión",    celda: function (r) { return celda("Camión", r.matricula); } },
   cuadrilla: { titulo: "Cuadrilla", celda: function (r) { return celda("Cuadrilla", r.cuadrilla); } },
-  estado:    { titulo: "Estado",    celda: function (r) { return celdaMarca("Estado", "recoleccion", r.estado); } },
+  estado:    { titulo: "Estado",    celda: function (r) { return celdaMarca("Estado", "recoleccion", r.estado, undefined, marcaVencida(r)); } },
   vaciados:  { titulo: "Vaciados",  celda: function (r) {
     return celda("Vaciados", r.vaciados === 0 ? "Ninguno" : r.vaciados + " · " + formatoKg(r.peso_total_kg), r.peso_total_kg);
   } },

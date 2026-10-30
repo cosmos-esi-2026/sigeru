@@ -65,7 +65,7 @@ function celdaAccionesMaquina(m) {
   const id = $entero(m.id_maquinaria);
   const admin = celdaAcciones(m.id_maquinaria, "Editar " + m.codigo, "Dar de baja " + m.codigo)
     .replace(/^<td[^>]*>/, "").replace(/<\/td>$/, "");
-  return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila">' +
+  return '<td role="cell" data-etiqueta="Acciones"><div class="acciones-fila acciones-fila-ancha">' +
     '<button type="button" class="boton boton-secundario boton-chico js-estado" data-id="' + id + '" data-estado="' + escaparHtml(m.estado) + '">' +
     'Estado<span class="solo-lectores"> de ' + escaparHtml(m.codigo) + "</span></button>" +
     '<button type="button" class="boton boton-secundario boton-chico js-historial" data-id="' + id + '">' +
