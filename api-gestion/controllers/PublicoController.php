@@ -3,7 +3,6 @@
 require_once __DIR__ . "/../config/database.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/LimitePeticion.php";
-require_once __DIR__ . "/../models/ImpactoDatos.php";
 
 // Datos que ve cualquiera, sin sesion, en la landing: cifras del sistema y puntos del mapa.
 // Solo agregados y datos de lugares publicos (contenedores en la calle, centros de acopio).
@@ -13,14 +12,6 @@ class PublicoController
     private static function coordenada($valor): ?float
     {
         return $valor === null ? null : (float) $valor;
-    }
-
-    // GET /publico/impacto: cifras ambientales agregadas (sin personas). Con freno por IP. Siempre rotulado como estimacion y con su fuente.
-    public function impacto(): void
-    {
-        LimitePeticion::exigir("impacto-publico", 120, 3600);
-        $datos = ImpactoDatos::resumen();
-        Response::json(["ok" => true, "datos" => $datos + ["generado_en" => (string) Database::conexion()->query("SELECT NOW()")->fetchColumn()]]);
     }
 
     public function mapa(): void

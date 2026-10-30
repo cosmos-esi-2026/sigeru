@@ -92,8 +92,8 @@ class Notificador
 
     // --- Escribir el aviso ------------------------------------------------------------------------------------
 
-    // $enlace: pagina de frontend-usuarios, por ejemplo "incidencia.html?id=3". $correo: ademas de la campanita, mandar mail.
-    public static function avisar(int $idUsuario, string $tipo, string $titulo, string $mensaje, ?string $enlace = null, bool $correo = false): void
+    // $enlace: pagina de frontend-usuarios, por ejemplo "incidencia.html?id=3".
+    public static function avisar(int $idUsuario, string $tipo, string $titulo, string $mensaje, ?string $enlace = null): void
     {
         try {
             $titulo = mb_substr($titulo, 0, self::LARGO_TITULO);
@@ -105,31 +105,12 @@ class Notificador
             error_log("SiGeRU: no se pudo guardar un aviso: " . $e->getMessage());
             return;
         }
-        if ($correo) {
-            self::correo($idUsuario, $titulo, $mensaje, $enlace);
-        }
     }
 
     public static function avisarA(array $idsUsuario, string $tipo, string $titulo, string $mensaje, ?string $enlace = null): void
     {
         foreach (array_unique($idsUsuario) as $id) {
             self::avisar((int) $id, $tipo, $titulo, $mensaje, $enlace);
-        }
-    }
-
-    private static function correo(int $idUsuario, string $titulo, string $mensaje, ?string $enlace): void
-    {
-        try {
-            $consulta = Database::conexion()->prepare("SELECT email, nombre, avisos_por_correo, estado FROM usuario WHERE id_usuario = :id");
-            $consulta->execute([":id" => $idUsuario]);
-            $u = $consulta->fetch();
-            if ($u === false || (int) $u["avisos_por_correo"] !== 1 || $u["estado"] !== "activo") {
-                return;
-            }
-            require_once __DIR__ . "/../../api-usuarios/core/Correo.php";
-            Correo::enviarAviso($u["email"], $u["nombre"], $titulo, $mensaje, $enlace);
-        } catch (Throwable $e) {
-            error_log("SiGeRU: no se pudo mandar un aviso por correo: " . $e->getMessage());
         }
     }
 }

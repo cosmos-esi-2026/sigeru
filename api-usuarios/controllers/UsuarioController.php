@@ -6,11 +6,9 @@ require_once __DIR__ . "/../core/Auth.php";
 require_once __DIR__ . "/../core/Validacion.php";
 require_once __DIR__ . "/../core/IntentosLogin.php";
 require_once __DIR__ . "/../core/PoliticaBloqueo.php";
-require_once __DIR__ . "/../core/Correo.php";
 require_once __DIR__ . "/../core/LimitePeticion.php";
 require_once __DIR__ . "/../core/FiltrosUsuario.php";
 require_once __DIR__ . "/../core/Paginacion.php";
-require_once __DIR__ . "/../models/EnlaceClave.php";
 
 class UsuarioController
 {
@@ -90,6 +88,17 @@ class UsuarioController
         return null;
     }
 
+    // El administrador define la contrasena inicial (o la nueva, al restablecerla): se la da a la persona en mano.
+    private function exigirContrasena(array $datos): void
+    {
+        if (!is_string($datos["password"] ?? null) || !Validacion::contrasena($datos["password"])) {
+            Response::error(
+                "Definí una contraseña de al menos " . Validacion::CLAVE_MINIMA . " caracteres",
+                400
+            );
+        }
+    }
+
     public function crear(): void
     {
         Auth::exigirRol("Administrador");
@@ -104,6 +113,7 @@ class UsuarioController
         if (Usuario::existeEmail($datos["email"])) {
             Response::error("Ya existe un usuario con ese email", 409);
         }
+        $this->exigirContrasena($datos);
 
         $rol = $datos["rol"] ?? "Vecino";
         if (!in_array($rol, Usuario::ROLES, true)) {
@@ -119,27 +129,8 @@ class UsuarioController
             Response::error($errorCuadrilla, 400);
         }
 
-        try {
-            Correo::verificarConfiguracion();
-        } catch (CorreoException $e) {
-            Response::error("El correo no está configurado para enviar accesos.", 503);
-        }
-        $db = Database::conexion();
-        $db->beginTransaction();
-        try {
-            $datos["password"] = bin2hex(random_bytes(32));
-            $nuevo = Usuario::crear($datos, $rol, "pendiente");
-            $token = EnlaceClave::crear((int) $nuevo["id_usuario"]);
-            Correo::enviarEnlace($nuevo["email"], $nuevo["nombre"], $token);
-            $db->commit();
-        } catch (Throwable $e) {
-            if ($db->inTransaction()) $db->rollBack();
-            if ($e instanceof CorreoException) {
-                Response::error("No se pudo enviar el correo. No se creó la cuenta.", 503);
-            }
-            throw $e;
-        }
-        Response::json(["ok" => true, "mensaje" => "Usuario creado. Se envió un enlace para definir la contraseña.", "datos" => $nuevo], 201);
+        $nuevo = Usuario::crear($datos, $rol);
+        Response::json(["ok" => true, "mensaje" => "Usuario creado. Ya puede iniciar sesión con la contraseña que le definiste.", "datos" => $nuevo], 201);
     }
 
     public function actualizar(int $id): void
@@ -211,90 +202,6 @@ class UsuarioController
         }
         Usuario::guardarZona((int) $usuario["id_usuario"], $zona === null ? null : (int) $zona);
         Response::json(["ok" => true, "mensaje" => $zona === null ? "Zona quitada" : "Zona guardada", "datos" => ["id_zona" => $zona === null ? null : (int) $zona]]);
-    }
-
-    public function enviarEnlace(int $id): void
-    {
-        Auth::exigirRol("Administrador");
-        $usuario = Usuario::obtener($id);
-        if ($usuario === null) {
-            Response::error("Usuario no encontrado", 404);
-        }
-        if ($usuario["estado"] === "inactivo") {
-            Response::error("Una cuenta dada de baja no puede recibir enlaces de acceso.", 409);
-        }
-        try {
-            Correo::verificarConfiguracion();
-        } catch (CorreoException $e) {
-            Response::error("El correo no está configurado para enviar accesos.", 503);
-        }
-        $db = Database::conexion();
-        $db->beginTransaction();
-        try {
-            $token = EnlaceClave::crear($id);
-            Correo::enviarEnlace($usuario["email"], $usuario["nombre"], $token);
-            $db->commit();
-        } catch (Throwable $e) {
-            if ($db->inTransaction()) $db->rollBack();
-            if ($e instanceof CorreoException) {
-                Response::error("No se pudo enviar el correo. El enlace anterior sigue vigente.", 503);
-            }
-            throw $e;
-        }
-        Response::json(["ok" => true, "mensaje" => "Se envió el enlace para crear una contraseña."]);
-    }
-
-    public function recuperarClave(): void
-    {
-        LimitePeticion::exigir("recuperar-clave", 10, 3600);
-        $datos = Response::leerJson();
-        $email = $datos["email"] ?? null;
-        if (!is_string($email) || !Validacion::email(trim($email))) {
-            Response::error("Escribí un correo electrónico válido.", 400);
-        }
-
-        try {
-            Correo::verificarConfiguracion();
-        } catch (CorreoException $e) {
-            Response::error("El correo no está disponible en este momento. Probá más tarde.", 503);
-        }
-
-        $usuario = Usuario::porEmail(trim($email));
-        if ($usuario !== null && $usuario["rol"] === "Vecino" &&
-            $usuario["estado"] === "activo" &&
-            !EnlaceClave::solicitadoRecientemente((int) $usuario["id_usuario"])) {
-            $db = Database::conexion();
-            $db->beginTransaction();
-            try {
-                $token = EnlaceClave::crear((int) $usuario["id_usuario"]);
-                Correo::enviarEnlace($usuario["email"], $usuario["nombre"], $token, true);
-                $db->commit();
-            } catch (Throwable $e) {
-                if ($db->inTransaction()) $db->rollBack();
-                error_log("SiGeRU: no se pudo enviar la recuperación de contraseña.");
-            }
-        }
-
-        Response::json([
-            "ok" => true,
-            "mensaje" => "Si existe una cuenta de vecino con ese correo, recibirás un enlace para crear una contraseña nueva. Revisá también la carpeta de spam. Abrí el correo en esta misma computadora.",
-        ]);
-    }
-
-    public function crearClave(): void
-    {
-        LimitePeticion::exigir("crear-clave", 30, 3600);
-        $datos = Response::leerJson();
-        $token = $datos["token"] ?? null;
-        $clave = $datos["password"] ?? null;
-        if (!is_string($token) || !is_string($clave) || !Validacion::contrasena($clave)) {
-            Response::error("El enlace o la contraseña no son válidos. La contraseña necesita al menos 8 caracteres.", 400);
-        }
-        $usuario = EnlaceClave::consumir($token, $clave);
-        if ($usuario === null) {
-            Response::error("El enlace venció o ya fue usado. Pedí uno nuevo.", 400);
-        }
-        Response::json(["ok" => true, "mensaje" => "Contraseña creada. Ya podés iniciar sesión."]);
     }
 
     public function darDeBaja(int $id): void
@@ -408,12 +315,6 @@ class UsuarioController
         }
 
         $nuevo = Usuario::crear($datos, "Vecino");
-        try {
-            Correo::enviarBienvenida($nuevo["email"], $nuevo["nombre"]);
-        } catch (CorreoException $e) {
-            // La cuenta ya existe: sin correo configurado o con SMTP caido el registro no se cae.
-            error_log("SiGeRU: no se pudo enviar la bienvenida.");
-        }
         Response::json([
             "ok" => true,
             "mensaje" => "Cuenta creada. Ya podés iniciar sesión.",
@@ -497,30 +398,15 @@ class UsuarioController
                 Response::error($errorCuadrilla, 400);
             }
             $idCuadrilla = $rol === "Cuadrilla" ? (int) $datos["id_cuadrilla"] : null;
-            try {
-                Correo::verificarConfiguracion();
-            } catch (CorreoException $e) {
-                Response::error("El correo no está configurado para enviar accesos.", 503);
-            }
+            $this->exigirContrasena($datos);
         }
 
-        try {
-            [$actualizada, $usuario] = Usuario::resolverSolicitud(
-                $id, $decision, $rol,
-                function (array $nuevo): void {
-                    $token = EnlaceClave::crear((int) $nuevo["id_usuario"]);
-                    Correo::enviarEnlace($nuevo["email"], $nuevo["nombre"], $token);
-                },
-                $idCuadrilla
-            );
-        } catch (CorreoException $e) {
-            Response::error("No se pudo enviar el correo. La solicitud sigue pendiente.", 503);
-        }
+        [$actualizada, $usuario] = Usuario::resolverSolicitud($id, $decision, $rol, $idCuadrilla, $datos["password"] ?? null);
 
         Response::json([
             "ok"      => true,
             "mensaje" => $decision === "aprobada"
-                ? "Solicitud aprobada. Se envió un enlace para crear la contraseña."
+                ? "Solicitud aprobada. La cuenta ya está activa con la contraseña que definiste."
                 : "Solicitud rechazada",
             "datos"   => ["solicitud" => $actualizada, "usuario" => $usuario],
         ]);

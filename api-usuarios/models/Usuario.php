@@ -238,18 +238,8 @@ class Usuario
 
     public static function darDeBaja(int $id): ?array
     {
-        $db = Database::conexion();
-        $db->beginTransaction();
-        try {
-            $db->prepare("UPDATE usuario SET estado = 'inactivo' WHERE id_usuario = :id")
-                ->execute([":id" => $id]);
-            $db->prepare("DELETE FROM enlace_clave WHERE id_usuario = :id")
-                ->execute([":id" => $id]);
-            $db->commit();
-        } catch (Throwable $e) {
-            if ($db->inTransaction()) $db->rollBack();
-            throw $e;
-        }
+        Database::conexion()->prepare("UPDATE usuario SET estado = 'inactivo' WHERE id_usuario = :id")
+            ->execute([":id" => $id]);
 
         return self::obtener($id);
     }
@@ -316,7 +306,7 @@ class Usuario
         return self::obtenerSolicitud((int) $conexion->lastInsertId());
     }
 
-    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?callable $notificar = null, ?int $idCuadrilla = null): ?array
+    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?int $idCuadrilla = null, ?string $clave = null): ?array
     {
         $solicitud = self::obtenerSolicitud($id);
         if ($solicitud === null) {
@@ -341,11 +331,8 @@ class Usuario
                     "direccion"    => $solicitud["direccion"],
                     "id_solicitud" => $id,
                     "id_cuadrilla" => $idCuadrilla,
-                    "password"     => bin2hex(random_bytes(32)),
-                ], $rol, "pendiente");
-                if ($notificar !== null) {
-                    $notificar($usuario);
-                }
+                    "password"     => $clave,
+                ], $rol);
             }
 
             $conexion->commit();

@@ -13,8 +13,6 @@ require_once __DIR__ . "/controllers/IncidenciaController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
 require_once __DIR__ . "/controllers/PublicoController.php";
 require_once __DIR__ . "/controllers/RecepcionController.php";
-require_once __DIR__ . "/controllers/ReporteController.php";
-require_once __DIR__ . "/models/Calificaciones.php";
 
 Response::manejarErrores();
 Response::cors();
@@ -36,17 +34,9 @@ switch ($recurso) {
 
     case "contenedores":
         $controlador = new ContenedorController();
-        $esPrediccion = ($partes[1] ?? "") === "prediccion";
-        $esRuta = ($partes[1] ?? "") === "ruta-sugerida";
-        $usuario = Permisos::exigir($esRuta ? "contenedores/ruta-sugerida" : ($esPrediccion ? "contenedores/prediccion" : ($subrecurso === "historial" ? "contenedores/historial" : "contenedores")), $metodo);
+        $usuario = Permisos::exigir($subrecurso === "historial" ? "contenedores/historial" : "contenedores", $metodo);
 
-        if ($esRuta && $metodo === "GET") {
-            $controlador->rutaSugerida();
-        } elseif ($esPrediccion && $metodo === "GET") {
-            $controlador->prediccion($usuario);
-        } elseif ($esPrediccion || $esRuta) {
-            Response::error("Método no permitido", 405);
-        } elseif ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
+        if ($subrecurso === "historial" && $metodo === "GET" && $id !== null) {
             $controlador->historial($id, $usuario);
         } elseif ($metodo === "GET" && $id !== null) {
             $controlador->obtener($id, $usuario);
@@ -174,8 +164,6 @@ switch ($recurso) {
             $controlador->resolver($id, $usuario);
         } elseif ($subrecurso === "descarte" && $metodo === "POST" && $id !== null) {
             $controlador->descartar($id, $usuario);
-        } elseif ($subrecurso === "calificacion" && $metodo === "POST" && $id !== null) {
-            $controlador->calificar($id, $usuario);
         } elseif ($subrecurso === "foto" && $metodo === "POST" && $id !== null) {
             $controlador->subirFoto($id, $usuario);
         } elseif ($subrecurso === "foto" && $metodo === "GET" && $id !== null) {
@@ -185,26 +173,11 @@ switch ($recurso) {
         }
         break;
 
-    case "participacion":
-        $tema = $partes[1] ?? "";
-        $usuario = Permisos::exigir("participacion/$tema", $metodo);
-
-        if ($metodo === "GET" && $tema === "progreso") {
-            Response::json(["ok" => true, "datos" => Calificaciones::progreso((int) $usuario["id_usuario"])]);
-        } elseif ($metodo === "GET" && $tema === "ranking") {
-            Response::json(["ok" => true, "datos" => Calificaciones::rankingZonas()]);
-        } else {
-            Response::error("Recurso no encontrado", 404);
-        }
-        break;
-
     case "publico":
         Permisos::exigir("publico", $metodo);
 
         if ($metodo === "GET" && ($partes[1] ?? "") === "mapa") {
             (new PublicoController())->mapa();
-        } elseif ($metodo === "GET" && ($partes[1] ?? "") === "impacto") {
-            (new PublicoController())->impacto();
         } elseif ($metodo === "GET") {
             Response::error("Recurso no encontrado", 404);
         } else {
@@ -227,18 +200,6 @@ switch ($recurso) {
         }
         break;
 
-    case "reportes":
-        $usuario = Permisos::exigir("reportes/" . ($partes[1] ?? ""), $metodo);
-
-        if ($metodo === "GET" && ($partes[1] ?? "") === "pdf") {
-            (new ReporteController())->pdf($usuario);
-        } elseif ($metodo === "GET") {
-            Response::error("Recurso no encontrado", 404);
-        } else {
-            Response::error("Método no permitido", 405);
-        }
-        break;
-
     case "estadisticas":
         $controlador = new EstadisticaController();
         $tema = $partes[1] ?? "";
@@ -246,10 +207,6 @@ switch ($recurso) {
 
         if ($metodo === "GET" && $tema === "centro") {
             $controlador->centro($usuario);
-        } elseif ($metodo === "GET" && $tema === "impacto") {
-            $controlador->impacto();
-        } elseif ($metodo === "GET" && $tema === "satisfaccion") {
-            $controlador->satisfaccion();
         } elseif ($metodo === "GET" && $tema === "incidencias") {
             $controlador->incidencias();
         } elseif ($metodo === "GET" && $tema === "urgencias") {
@@ -266,7 +223,7 @@ switch ($recurso) {
             "ok"      => true,
             "mensaje" => "API de gestión SiGeRU funcionando",
             "endpoints" => [
-                "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial", "/contenedores/prediccion", "/contenedores/ruta-sugerida",
+                "/contenedores", "/contenedores/{id}", "/contenedores/{id}/historial",
                 "/centros", "/centros/{id}", "/centros/{id}/stock", "/centros/{id}/movimientos",
                 "/centros/{id}/movimientos/{id}/correccion", "/recepciones", "/recepciones/{id}",
                 "/maquinaria", "/maquinaria/{id}", "/maquinaria/{id}/estado", "/maquinaria/{id}/historial",
@@ -274,10 +231,9 @@ switch ($recurso) {
                 "/zonas", "/zonas/{id}",
                 "/incidencias", "/incidencias/{id}", "/incidencias/{id}/asignacion",
                 "/incidencias/{id}/avance", "/incidencias/{id}/resolucion", "/incidencias/{id}/descarte",
-                "/incidencias/{id}/foto", "/incidencias/{id}/calificacion",
-                "/participacion/progreso", "/participacion/ranking", "/estadisticas/satisfaccion",
-                "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro", "/reportes/pdf",
-                "/publico/mapa", "/publico/impacto", "/estadisticas/impacto",
+                "/incidencias/{id}/foto",
+                "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
+                "/publico/mapa",
             ],
         ]);
         break;

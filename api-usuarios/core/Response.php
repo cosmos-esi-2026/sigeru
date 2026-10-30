@@ -20,9 +20,6 @@ class Response
         if (class_exists("Auditoria", false)) {
             Auditoria::registrar($codigo);
         }
-        if (class_exists("Idempotencia", false)) {
-            Idempotencia::terminar($codigo, $datos);
-        }
         http_response_code($codigo);
         header("Content-Type: application/json; charset=utf-8");
         header("Cache-Control: no-store");
@@ -50,6 +47,9 @@ class Response
 
     public static function manejarErrores(): void
     {
+        // Uruguay no tiene horario de verano: la hora de PHP se fija aca para que no dependa del php.ini del servidor (XAMPP trae Europe/Berlin).
+        date_default_timezone_set("America/Montevideo");
+
         set_exception_handler(function (Throwable $e) {
             error_log("SiGeRU API: " . $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine());
 

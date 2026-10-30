@@ -5,7 +5,6 @@ require_once __DIR__ . "/../models/FlujoRecoleccion.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Notificador.php";
-require_once __DIR__ . "/../core/Idempotencia.php";
 require_once __DIR__ . "/../models/Asignacion.php";
 
 class RecoleccionController
@@ -86,7 +85,6 @@ class RecoleccionController
 
     public function registrarVaciado(int $id, array $usuario): void
     {
-        Idempotencia::comenzar($usuario, "vaciado");
         $datos = Response::leerJson();
 
         $error = FlujoRecoleccion::errorDeVaciado($datos);

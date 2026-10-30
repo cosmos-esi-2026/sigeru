@@ -18,7 +18,7 @@ final class RutaParadas
     // Pura. Pedido: {"contenedores": [ids en el orden de visita], "mover": true|false}. Devuelve el motivo del rechazo, o null.
     public static function errorDeLista(array $datos): ?string
     {
-        if (!isset($datos["contenedores"]) || !is_array($datos["contenedores"]) || !array_is_list($datos["contenedores"])) {
+        if (!isset($datos["contenedores"]) || !is_array($datos["contenedores"]) || array_values($datos["contenedores"]) !== $datos["contenedores"]) {
             return "Mandá «contenedores»: la lista de ids de los contenedores en el orden de visita";
         }
         $ids = [];

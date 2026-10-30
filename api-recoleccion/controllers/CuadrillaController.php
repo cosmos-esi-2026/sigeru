@@ -29,6 +29,7 @@ class CuadrillaController
         if ($error !== null) {
             Response::error($error, 400);
         }
+        $this->exigirZonaExistente($datos);
         if (Cuadrilla::existeNombre(trim($datos["nombre"]))) {
             Response::error("Ya existe una cuadrilla con ese nombre", 409);
         }
@@ -46,6 +47,7 @@ class CuadrillaController
         if ($error !== null) {
             Response::error($error, 400);
         }
+        $this->exigirZonaExistente($datos);
         if (isset($datos["nombre"]) && trim($datos["nombre"]) !== $actual["nombre"] && Cuadrilla::existeNombre(trim($datos["nombre"]), $id)) {
             Response::error("Ya existe una cuadrilla con ese nombre", 409);
         }
@@ -66,6 +68,15 @@ class CuadrillaController
         }
         $this->exigirSinTrabajoAbierto($cuadrilla);
         Response::json(["ok" => true, "mensaje" => "Cuadrilla dada de baja", "datos" => Cuadrilla::darDeBaja($id)]);
+    }
+
+    // El municipio, si viene, tiene que ser una zona que existe (el vacio la deja sin municipio).
+    private function exigirZonaExistente(array $datos): void
+    {
+        $zona = $datos["id_zona"] ?? null;
+        if ($zona !== null && $zona !== "" && !Cuadrilla::existeZona((int) $zona)) {
+            Response::error("Ese municipio no existe", 400);
+        }
     }
 
     // Una cuadrilla con una recoleccion planificada o en curso, o una incidencia en curso, no se da de baja: primero se reasigna o se cierra.

@@ -51,17 +51,4 @@ class Notificacion
         $consulta->execute([":u" => $idUsuario]);
         return $consulta->rowCount();
     }
-
-    public static function avisosPorCorreo(int $idUsuario): bool
-    {
-        $consulta = Database::conexion()->prepare("SELECT avisos_por_correo FROM usuario WHERE id_usuario = :u");
-        $consulta->execute([":u" => $idUsuario]);
-        return (int) $consulta->fetchColumn() === 1;
-    }
-
-    public static function guardarAvisosPorCorreo(int $idUsuario, bool $activo): void
-    {
-        Database::conexion()->prepare("UPDATE usuario SET avisos_por_correo = :a WHERE id_usuario = :u")
-            ->execute([":a" => $activo ? 1 : 0, ":u" => $idUsuario]);
-    }
 }

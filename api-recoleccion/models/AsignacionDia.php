@@ -85,8 +85,12 @@ final class AsignacionDia
         usort($filas, static fn(array $a, array $b) => [$b["es_del_dia"], 0] <=> [$a["es_del_dia"], 0]);
 
         $cuadrillas = [];
-        foreach ($db->query("SELECT id_cuadrilla, nombre, turno FROM cuadrilla WHERE estado = 'activa' ORDER BY id_cuadrilla")->fetchAll() as $c) {
-            $cuadrillas[] = ["id_cuadrilla" => (int) $c["id_cuadrilla"], "nombre" => $c["nombre"], "turno" => $c["turno"], "libre" => !isset($cuadrillasOcupadas[(int) $c["id_cuadrilla"]])];
+        foreach ($db->query("SELECT q.id_cuadrilla, q.nombre, q.turno, q.id_zona, z.nombre AS zona FROM cuadrilla q LEFT JOIN zona z ON z.id_zona = q.id_zona WHERE q.estado = 'activa' ORDER BY q.id_cuadrilla")->fetchAll() as $c) {
+            $cuadrillas[] = [
+                "id_cuadrilla" => (int) $c["id_cuadrilla"], "nombre" => $c["nombre"], "turno" => $c["turno"],
+                "id_zona" => $c["id_zona"] === null ? null : (int) $c["id_zona"], "zona" => $c["zona"],
+                "libre" => !isset($cuadrillasOcupadas[(int) $c["id_cuadrilla"]]),
+            ];
         }
         $camiones = [];
         foreach ($db->query("SELECT id_camion, matricula, estado FROM camion WHERE estado = 'operativo' ORDER BY id_camion")->fetchAll() as $c) {

@@ -9,7 +9,6 @@
 //   - el resto                                                                       -> NORMAL (  0 puntos)
 //   - roto o en mantenimiento (o una incidencia «roto» abierta)                      -> NO SE RECOLECTA: no suma y se muestra aparte
 // Un contenedor puntua por lo mas grave que tenga (no se suman). La ruta toma el nivel MAS ALTO de sus contenedores recolectables y suma sus puntos.
-// La prediccion de llenado (parte 16) NO entra: hace falta historial de vaciados y el seed de defensa no lo trae; queda como mejora.
 // Esta clase es PURA (sin base de datos): recibe las paradas ya armadas y se prueba con casos hechos a mano.
 final class PrioridadRuta
 {

@@ -18,6 +18,7 @@ class ValidacionCuadrilla
             return $e;
         }
         return Campos::errorDeOpcion($datos["turno"] ?? null, "Turno", self::TURNOS)
-            ?? Campos::errorDeOpcion($datos["estado"] ?? null, "Estado", self::ESTADOS);
+            ?? Campos::errorDeOpcion($datos["estado"] ?? null, "Estado", self::ESTADOS)
+            ?? Campos::errorDeEntero($datos["id_zona"] ?? null, "El municipio", 1, 999999999);
     }
 }

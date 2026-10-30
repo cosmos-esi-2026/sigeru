@@ -11,6 +11,7 @@ class Recoleccion
                             r.id_ruta, ru.nombre AS ruta, ru.id_zona, z.nombre AS zona,
                             r.id_camion, c.matricula, c.estado AS estado_camion,
                             r.id_cuadrilla, q.nombre AS cuadrilla, r.id_centro, ce.nombre AS centro,
+                            (r.estado = 'planificada' AND r.fecha_hora_inicio < NOW()) AS vencida,
                             (SELECT COUNT(*) FROM vaciado v WHERE v.id_recoleccion = r.id_recoleccion) AS vaciados,
                             (SELECT COALESCE(SUM(v.peso_kg), 0) FROM vaciado v WHERE v.id_recoleccion = r.id_recoleccion) AS peso_total_kg";
 
@@ -115,6 +116,8 @@ class Recoleccion
         }
         $fila["id_centro"] = $fila["id_centro"] === null ? null : (int) $fila["id_centro"];
         $fila["peso_total_kg"] = (float) $fila["peso_total_kg"];
+        // Planificada para una fecha que ya paso y que nadie inicio (H-07): la calcula el servidor con su reloj, igual para todas las pantallas.
+        $fila["vencida"] = (bool) $fila["vencida"];
         $fila["numero"] = FlujoRecoleccion::numero($fila["id_recoleccion"]);
         return $fila;
     }

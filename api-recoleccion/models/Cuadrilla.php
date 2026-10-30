@@ -4,7 +4,7 @@ require_once __DIR__ . "/../config/database.php";
 
 class Cuadrilla
 {
-    private const CONSULTA = "SELECT q.id_cuadrilla, q.nombre, q.turno, q.estado,
+    private const CONSULTA = "SELECT q.id_cuadrilla, q.nombre, q.turno, q.estado, q.id_zona, z.nombre AS zona,
                                      EXISTS (SELECT 1 FROM recoleccion r
                                              WHERE r.id_cuadrilla = q.id_cuadrilla
                                                AND r.estado = 'en_curso') AS ocupada,
@@ -17,7 +17,7 @@ class Cuadrilla
                                      (SELECT COUNT(*) FROM recoleccion r
                                       WHERE r.id_cuadrilla = q.id_cuadrilla
                                         AND r.estado IN ('planificada', 'en_curso')) AS recolecciones_abiertas
-                              FROM cuadrilla q";
+                              FROM cuadrilla q LEFT JOIN zona z ON z.id_zona = q.id_zona";
 
     public static function listar(bool $soloDisponibles = false): array
     {
@@ -46,11 +46,25 @@ class Cuadrilla
         return $consulta->fetchColumn() !== false;
     }
 
+    public static function existeZona(int $idZona): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM zona WHERE id_zona = :id");
+        $consulta->execute([":id" => $idZona]);
+        return $consulta->fetchColumn() !== false;
+    }
+
+    // El municipio es opcional: vacio o ausente es NULL (la cuadrilla puede cubrir cualquiera).
+    private static function zonaOCero($valor): ?int
+    {
+        return $valor === null || $valor === "" ? null : (int) $valor;
+    }
+
     public static function crear(array $datos): array
     {
         $conexion = Database::conexion();
-        $conexion->prepare("INSERT INTO cuadrilla (nombre, turno, estado) VALUES (:nombre, :turno, 'activa')")
-            ->execute([":nombre" => trim($datos["nombre"]), ":turno" => ($datos["turno"] ?? "") === "" ? "matutino" : $datos["turno"]]);
+        $conexion->prepare("INSERT INTO cuadrilla (nombre, turno, estado, id_zona) VALUES (:nombre, :turno, 'activa', :zona)")
+            ->execute([":nombre" => trim($datos["nombre"]), ":turno" => ($datos["turno"] ?? "") === "" ? "matutino" : $datos["turno"],
+                       ":zona" => self::zonaOCero($datos["id_zona"] ?? null)]);
         return self::obtener((int) $conexion->lastInsertId());
     }
 
@@ -63,6 +77,11 @@ class Cuadrilla
                 $partes[] = "$campo = :$campo";
                 $valores[":$campo"] = $campo === "nombre" ? trim($datos[$campo]) : $datos[$campo];
             }
+        }
+        // Si el pedido trae «id_zona», se cambia (vacio la deja sin municipio); si no la trae, se conserva la que tenia.
+        if (array_key_exists("id_zona", $datos)) {
+            $partes[] = "id_zona = :id_zona";
+            $valores[":id_zona"] = self::zonaOCero($datos["id_zona"]);
         }
         if ($partes !== []) {
             Database::conexion()->prepare("UPDATE cuadrilla SET " . implode(", ", $partes) . " WHERE id_cuadrilla = :id")->execute($valores);
@@ -94,6 +113,8 @@ class Cuadrilla
             "nombre"               => $fila["nombre"],
             "turno"                => $fila["turno"],
             "estado"               => $fila["estado"],
+            "id_zona"              => $fila["id_zona"] === null ? null : (int) $fila["id_zona"],
+            "zona"                 => $fila["zona"],
             "ocupada"              => $ocupada,
             "incidencias_en_curso" => (int) $fila["incidencias_en_curso"],
             "integrantes"          => (int) $fila["integrantes"],

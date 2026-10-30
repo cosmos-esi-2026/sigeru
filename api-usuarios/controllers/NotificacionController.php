@@ -4,7 +4,7 @@ require_once __DIR__ . "/../models/Notificacion.php";
 require_once __DIR__ . "/../core/Auth.php";
 require_once __DIR__ . "/../core/Response.php";
 
-// La campanita y la preferencia de avisos por correo (extras, parte 13). Cualquier persona con sesion.
+// La campanita (extras, parte 13). Cualquier persona con sesion.
 class NotificacionController
 {
     public function listar(): void
@@ -37,22 +37,5 @@ class NotificacionController
         $usuario = Auth::exigirSesion();
         $cuantas = Notificacion::marcarTodas((int) $usuario["id_usuario"]);
         Response::json(["ok" => true, "mensaje" => "Avisos marcados como leídos", "marcadas" => $cuantas, "no_leidas" => 0]);
-    }
-
-    public function preferencias(): void
-    {
-        $usuario = Auth::exigirSesion();
-        Response::json(["ok" => true, "datos" => ["avisos_por_correo" => Notificacion::avisosPorCorreo((int) $usuario["id_usuario"])]]);
-    }
-
-    public function guardarPreferencias(): void
-    {
-        $usuario = Auth::exigirSesion();
-        $datos = Response::leerJson();
-        if (!array_key_exists("avisos_por_correo", $datos) || !is_bool($datos["avisos_por_correo"])) {
-            Response::error("avisos_por_correo tiene que ser verdadero o falso", 400);
-        }
-        Notificacion::guardarAvisosPorCorreo((int) $usuario["id_usuario"], $datos["avisos_por_correo"]);
-        Response::json(["ok" => true, "mensaje" => "Preferencia guardada", "datos" => ["avisos_por_correo" => $datos["avisos_por_correo"]]]);
     }
 }

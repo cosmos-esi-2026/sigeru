@@ -35,6 +35,8 @@ class Database
                     PDO::ATTR_EMULATE_PREPARES   => false,
                 ]
             );
+            // NOW() y los DEFAULT CURRENT_TIMESTAMP usan la hora de Uruguay (UTC-3 todo el anio) aunque el servidor de la base este en UTC.
+            self::$conexion->exec("SET time_zone = '" . self::config("SIGERU_DB_TZ", "-03:00") . "'");
         } catch (PDOException $e) {
 
             http_response_code(503);

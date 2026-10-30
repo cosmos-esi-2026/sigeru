@@ -5,6 +5,11 @@ class FlujoIncidencia
     public const ESTADOS = ["abierta", "en_curso", "resuelta", "descartada"];
     public const PRIORIDADES = ["baja", "media", "alta"];
     public const TIPOS = ["desbordado", "lleno", "roto", "residuo_no_permitido", "ausente_o_mal_ubicado", "otro"];
+    // Lo que se guarda como descripcion cuando la persona no escribio ninguna (el tipo ya dice que pasa; los mismos rotulos que incidencias-comun.js).
+    public const TEXTO_TIPO = [
+        "desbordado" => "Contenedor desbordado", "lleno" => "Contenedor lleno", "roto" => "Contenedor roto o dañado",
+        "residuo_no_permitido" => "Residuo no permitido", "ausente_o_mal_ubicado" => "Contenedor ausente o mal ubicado", "otro" => "Otro",
+    ];
 
     // Prioridad con la que entra cada tipo si quien reporta no la elige (decision SIN Fornos, a partir de lo que dijo el profe: «lleno» es media y «desbordado» es mas
     // urgente; un contenedor roto lo atiende mantenimiento). El administrador la puede cambiar despues.
@@ -149,6 +154,13 @@ class FlujoIncidencia
         return null;
     }
 
+    // La descripcion que se guarda: la escrita o, si no hay, el rotulo del tipo.
+    public static function descripcionDe(array $datos): string
+    {
+        $texto = self::limpiar($datos["descripcion"] ?? null);
+        return $texto !== "" ? $texto : (self::TEXTO_TIPO[$datos["tipo_problema"] ?? ""] ?? "");
+    }
+
     public static function errorDeNueva(array $datos): ?string
     {
         if (self::entero($datos["id_contenedor"] ?? null) === null
@@ -159,8 +171,10 @@ class FlujoIncidencia
             return "Tipo de problema inválido. Valores admitidos: " . implode(", ", self::TIPOS);
         }
 
+        // La descripcion es opcional (el tipo ya dice que pasa y un aviso rapido desde el QR no tiene que frenarse): solo «otro» la exige.
+        // Si se escribe algo, tiene que ser un texto de verdad (5 caracteres o mas).
         $largo = mb_strlen(self::limpiar($datos["descripcion"] ?? null));
-        if ($largo < 5) {
+        if (($largo === 0 && $datos["tipo_problema"] === "otro") || ($largo > 0 && $largo < 5)) {
             return "Contá el problema en al menos 5 caracteres";
         }
         if ($largo > 500) {

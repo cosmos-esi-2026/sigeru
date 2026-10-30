@@ -7,9 +7,6 @@ require_once __DIR__ . "/../models/ProcesadorFoto.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Notificador.php";
-require_once __DIR__ . "/../core/Idempotencia.php";
-require_once __DIR__ . "/../models/Calificaciones.php";
-require_once __DIR__ . "/../models/Participacion.php";
 
 class IncidenciaController
 {
@@ -102,26 +99,6 @@ class IncidenciaController
         });
     }
 
-    // POST /incidencias/{id}/calificacion: solo el vecino que informo, un reclamo resuelto, una sola vez y dentro del plazo.
-    public function calificar(int $id, array $usuario): void
-    {
-        $datos = Response::leerJson();
-        $puntaje = Participacion::puntajeValido($datos["puntaje"] ?? null);
-        if ($puntaje === null) {
-            Response::error("El puntaje tiene que ser un número entero de 1 a 5", 400);
-        }
-        $errorComentario = Participacion::errorDeComentario($datos["comentario"] ?? null);
-        if ($errorComentario !== null) {
-            Response::error($errorComentario, 400);
-        }
-        $this->ejecutar(function () use ($id, $usuario, $puntaje, $datos) {
-            $comentario = isset($datos["comentario"]) && is_string($datos["comentario"]) ? trim($datos["comentario"]) : null;
-            $calificacion = Calificaciones::calificar($id, $usuario, $puntaje, $comentario);
-            Response::json(["ok" => true, "mensaje" => "Gracias por calificar: sumaste " . Participacion::PUNTOS_CALIFICAR . " puntos",
-                            "datos" => $calificacion], 201);
-        });
-    }
-
     public function cambiarPrioridad(int $id, array $usuario): void
     {
         $datos = Response::leerJson();
@@ -139,7 +116,6 @@ class IncidenciaController
 
     public function registrarAvance(int $id, array $usuario): void
     {
-        Idempotencia::comenzar($usuario, "avance");
         $observacion = $this->observacion(true);
 
         $this->ejecutar(function () use ($id, $observacion, $usuario) {
@@ -245,7 +221,7 @@ class IncidenciaController
     private function avisarAlVecino(int $idIncidencia, int $idVecino, string $estado): void
     {
         [$titulo, $mensaje] = Notificador::incidenciaEstado(FlujoIncidencia::numero($idIncidencia), $estado);
-        Notificador::avisar($idVecino, "incidencia_" . $estado, $titulo, $mensaje, "incidencia.html?id=" . $idIncidencia, true);
+        Notificador::avisar($idVecino, "incidencia_" . $estado, $titulo, $mensaje, "incidencia.html?id=" . $idIncidencia);
     }
 
     private function observacion(bool $obligatoria): string
