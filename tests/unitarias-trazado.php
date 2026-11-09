@@ -109,6 +109,10 @@ $http = function (string $metodo, string $url, ?string $cuerpo) use (&$llamadas,
 $dormir = function (int $ms) use (&$pausas): void {
     $pausas[] = $ms;
 };
+// Desde el 30/10/2026 el modo por defecto es recta: las pruebas de los servicios piden el modo calles a proposito.
+afirmar("Por defecto (sin variable de entorno) el trazado es en linea recta y no pide nada a internet", Trazado::TIPO_RECTA, Trazado::modo());
+putenv("SIGERU_TRAZADO_MODO=calles");
+afirmar("Con SIGERU_TRAZADO_MODO=calles se piden las calles a los servicios", Trazado::TIPO_CALLES, Trazado::modo());
 $r = Trazado::calcular($paradas, $http, $dormir);
 afirmar("Valhalla responde: 20 paradas son 3 pedidos POST al primer servicio, y la ruta queda trazada por calles", [3, "POST", Trazado::TIPO_CALLES, "valhalla-truck", 20, []], [
     count($llamadas), $llamadas[0][0], $r["tipo"], $r["servicio"], count($r["coordenadas"]), $r["intentos"],

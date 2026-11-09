@@ -16,6 +16,9 @@ function mensajeDeError(campo) {
   if (estado.stepMismatch || estado.badInput) {
     return "Escribí un número válido.";
   }
+  if (estado.patternMismatch && campo.getAttribute("inputmode") === "numeric") {
+    return "Escribí solo números enteros, sin letras, puntos ni signos.";
+  }
   if (estado.tooShort) {
     return "Tiene que tener al menos " + campo.minLength + " caracteres.";
   }

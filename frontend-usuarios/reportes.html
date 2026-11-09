@@ -24,10 +24,10 @@
     <header class="topbar">
       <div class="topbar-titulo">
         <h1>Reportes</h1>
-        <p class="bajada">Incidencias y recolección de un período: totales, tiempos de resolución y exportación.</p>
+        <p class="bajada">Incidencias y recolección de un período: totales y tiempos de resolución.</p>
       </div>
+      <button type="button" class="boton boton-secundario" id="btn-csv">Descargar CSV</button>
       <button type="button" class="boton boton-secundario" id="btn-imprimir">Imprimir</button>
-      <button type="button" class="boton boton-primario" id="btn-csv-detalle">Exportar detalle (CSV)</button>
     </header>
 
     <main class="contenido" id="contenido-principal">
@@ -90,7 +90,6 @@
       <section class="panel" aria-labelledby="titulo-zonas">
         <div class="barra-herramientas">
           <h2 class="titulo" id="titulo-zonas">Incidencias por zona</h2>
-          <button type="button" class="boton boton-secundario boton-chico sin-impresion" id="btn-csv-zonas">Exportar (CSV)</button>
         </div>
         <div class="grafico" id="grafico-zonas"></div>
         <div class="tabla-scroll">
@@ -187,6 +186,7 @@
 <script src="js/incidencias-comun.js"></script>
 <script src="js/lista.js"></script>
 <script src="js/graficos.js"></script>
+<script src="js/csv.js"></script>
 <script src="js/reportes.js"></script>
 </body>
 </html>

@@ -14,3 +14,15 @@ document.querySelectorAll("[data-mostrar-clave]").forEach(function (boton) {
     campo.focus();
   });
 });
+
+// (el cálculo de la cédula está en cedula.js)
+// Marca error en el campo de la cédula si no es válida. Devuelve true si está bien.
+function revisarCedula(campo) {
+  if (cedulaUruguayaValida(campo.value)) {
+    limpiarError(campo);
+    return true;
+  }
+  marcarError(campo, "La cédula no es válida: revisá los dígitos (7 u 8, con el verificador).");
+  campo.focus();
+  return false;
+}

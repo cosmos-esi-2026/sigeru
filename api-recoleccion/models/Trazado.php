@@ -9,7 +9,9 @@
 // segundo, las URL se pueden cambiar por variables de entorno (no van fijas) y las pantallas que dibujan la ruta citan a OpenStreetMap.
 //
 // Todo lo que no es el pedido HTTP es PURO y se prueba sin red (tests/unitarias-rutas.php). El pedido real se puede reemplazar al llamar a calcular().
-// SIGERU_TRAZADO_MODO=recta apaga los pedidos externos (las pruebas automaticas lo usan).
+// DESDE EL 30/10/2026 (congelamiento) el modo por defecto es RECTA: guardar una ruta NO pide nada a internet (antes podia tardar hasta 30 s si no habia
+// conexion). Las 40 rutas del seed conservan el trazado por calles que ya tienen guardado. Para volver a pedir las calles hay que arrancar Apache con
+// SIGERU_TRAZADO_MODO=calles (el codigo de los servicios sigue aca, dormido, con sus pruebas).
 final class Trazado
 {
     public const TIPO_CALLES = "calles";
@@ -44,7 +46,7 @@ final class Trazado
 
     public static function modo(): string
     {
-        return getenv("SIGERU_TRAZADO_MODO") === "recta" ? self::TIPO_RECTA : self::TIPO_CALLES;
+        return getenv("SIGERU_TRAZADO_MODO") === "calles" ? self::TIPO_CALLES : self::TIPO_RECTA;
     }
 
     // --- Piezas puras ---------------------------------------------------------------------------------------
@@ -274,7 +276,7 @@ final class Trazado
             return $recta + ["intentos" => [], "aviso" => "Hacen falta al menos 2 paradas para trazar la ruta."];
         }
         if (self::modo() === self::TIPO_RECTA) {
-            return $recta + ["intentos" => [], "aviso" => "El trazado por calles está desactivado en este servidor: se dibuja en línea recta."];
+            return $recta + ["intentos" => [], "aviso" => "La ruta se dibuja en línea recta entre sus paradas."];
         }
 
         $inicio = microtime(true);

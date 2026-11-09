@@ -917,10 +917,6 @@ textarea:focus-visible { outline: 3px solid var(--lima); outline-offset: 2px; }
 /* Enlaces de las fichas de detalle con 24 px de alto */
 dd a, dl a { display: inline-block; padding: 3px 0; }
 
-/* Foto de una incidencia (P4b) */
-.vista-foto { display: flex; align-items: flex-start; gap: var(--esp-3); flex-wrap: wrap; margin: var(--esp-2) 0 var(--esp-3); }
-.vista-foto img { max-width: 220px; max-height: 160px; border-radius: var(--radio-1); border: 1px solid var(--borde); object-fit: cover; }
-.foto-incidencia { display: block; max-width: 100%; max-height: 420px; border-radius: var(--radio-1); border: 1px solid var(--borde); }
 
 /* Mejora UX del vecino (3ra entrega): inicio con sus reclamos e informar en dos toques */
 body:not([data-rol="Vecino"]) .solo-vecino { display: none !important; }

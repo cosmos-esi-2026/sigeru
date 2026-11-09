@@ -31,22 +31,32 @@ async function apiGet(url) {
   return await respuesta.json();
 }
 
-async function apiPost(url, datos) {
-  const respuesta = await fetch(url, opciones("POST", datos));
-  const resultado = await respuesta.json();
-  return { ok: respuesta.ok, resultado };
+// Los pedidos que cambian algo NUNCA lanzan: si se corta la red o el servidor no contesta JSON (un error de Apache, por ejemplo),
+// devuelven { ok: false, resultado: { ok: false, mensaje } } y la pantalla muestra ese mensaje. Antes los botones de baja y «Aprobar» se quedaban mudos.
+async function pedirConCuerpo(metodo, url, datos) {
+  let respuesta;
+  try {
+    respuesta = await fetch(url, opciones(metodo, datos));
+  } catch (e) {
+    return { ok: false, resultado: { ok: false, mensaje: "No se pudo conectar con el servidor. Revisá que esté corriendo e intentá de nuevo." } };
+  }
+  try {
+    return { ok: respuesta.ok, resultado: await respuesta.json() };
+  } catch (e) {
+    return { ok: false, resultado: { ok: false, mensaje: "El servidor respondió algo inesperado (código " + respuesta.status + "). Intentá de nuevo." } };
+  }
 }
 
-async function apiPut(url, datos) {
-  const respuesta = await fetch(url, opciones("PUT", datos));
-  const resultado = await respuesta.json();
-  return { ok: respuesta.ok, resultado };
+function apiPost(url, datos) {
+  return pedirConCuerpo("POST", url, datos);
 }
 
-async function apiDelete(url, datos) {
-  const respuesta = await fetch(url, opciones("DELETE", datos || {}));
-  const resultado = await respuesta.json();
-  return { ok: respuesta.ok, resultado };
+function apiPut(url, datos) {
+  return pedirConCuerpo("PUT", url, datos);
+}
+
+function apiDelete(url, datos) {
+  return pedirConCuerpo("DELETE", url, datos || {});
 }
 
 const Sesion = {

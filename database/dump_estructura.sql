@@ -55,10 +55,11 @@
 --
 -- Actualizado el 22/10/2026 (plan de rutas para la defensa): tabla ruta_contenedor y el trazado de la ruta (migracion 017); 23 tablas del modelo.
 --
-Actualizado el 23/10/2026 (plan de rutas para la defensa, migraciones 017 a 019): tabla ruta_contenedor, trazado de la ruta, tipo de problema 'lleno', derivacion a mantenimiento y tipo de cuenta de las solicitudes.
+-- Actualizado el 23/10/2026 (plan de rutas para la defensa, migraciones 017 a 019): tabla ruta_contenedor, trazado de la ruta, tipo de problema 'lleno', derivacion a mantenimiento y tipo de cuenta de las solicitudes.
 --
 -- Actualizado el 25/10/2026 (simplificacion antes del congelamiento): 21 tablas del modelo y 6 de soporte (27). Salieron calificacion, movimiento_punto, factor_ambiental y clave_idempotencia, y la columna usuario.avisos_por_correo.
 -- Actualizado el 30/10/2026: sale enlace_clave (se saco el correo y la recuperacion de contrasena): 21 tablas del modelo y 5 de soporte (26).
+-- Actualizado el 30/10/2026: sale foto_incidencia (migracion 021; el sistema ya no recibe fotos): 21 tablas del modelo y 4 de soporte (25).
 -- ============================================================================
 
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -198,23 +199,6 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-DROP TABLE IF EXISTS `foto_incidencia`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `foto_incidencia` (
-  `id_foto` int(11) NOT NULL AUTO_INCREMENT,
-  `id_incidencia` int(11) NOT NULL,
-  `archivo` char(32) NOT NULL,
-  `bytes` int(11) NOT NULL,
-  `ancho` smallint(5) unsigned NOT NULL,
-  `alto` smallint(5) unsigned NOT NULL,
-  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_foto`),
-  UNIQUE KEY `id_incidencia` (`id_incidencia`),
-  UNIQUE KEY `archivo` (`archivo`),
-  CONSTRAINT `fk_foto_incidencia` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `historial_incidencia`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -572,6 +556,7 @@ CREATE TABLE `solicitud_registro` (
   `nombre` varchar(80) NOT NULL,
   `apellido` varchar(80) NOT NULL,
   `email` varchar(120) NOT NULL,
+  `cedula` varchar(8) DEFAULT NULL,
   `telefono` varchar(30) DEFAULT NULL,
   `direccion` varchar(200) DEFAULT NULL,
   `estado` enum('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
@@ -579,7 +564,8 @@ CREATE TABLE `solicitud_registro` (
   `tipo_cuenta` enum('vecino','cuadrilla') NOT NULL DEFAULT 'vecino',
   `cuadrilla_indicada` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id_solicitud`),
-  KEY `idx_solicitud_estado` (`estado`)
+  KEY `idx_solicitud_estado` (`estado`),
+  KEY `idx_solicitud_cedula` (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tipo_residuo`;
@@ -602,6 +588,7 @@ CREATE TABLE `usuario` (
   `nombre` varchar(80) NOT NULL,
   `apellido` varchar(80) NOT NULL,
   `email` varchar(120) NOT NULL,
+  `cedula` varchar(8) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `telefono` varchar(30) DEFAULT NULL,
   `direccion` varchar(200) DEFAULT NULL,
@@ -614,6 +601,7 @@ CREATE TABLE `usuario` (
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `uq_usuario_cedula` (`cedula`),
   KEY `fk_usuario_rol` (`id_rol`),
   KEY `fk_usuario_cuadrilla` (`id_cuadrilla`),
   KEY `fk_usuario_centro` (`id_centro`),

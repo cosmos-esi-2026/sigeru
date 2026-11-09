@@ -50,8 +50,6 @@
                    placeholder="Nombre, apellido o email">
           </div>
 
-          <button type="button" class="boton boton-secundario" id="btn-exportar">Exportar CSV</button>
-
           <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
             <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
@@ -96,6 +94,7 @@
                 <th role="columnheader" data-orden>Nombre</th>
                 <th role="columnheader" data-orden>Apellido</th>
                 <th role="columnheader" data-orden>Email</th>
+                <th role="columnheader" data-orden>Cédula</th>
                 <th role="columnheader" data-orden>Rol</th>
                 <th role="columnheader" data-orden>Estado</th>
                 <th role="columnheader"><span class="solo-lectores">Acciones</span></th>
@@ -104,6 +103,7 @@
             <tbody id="cuerpo-tabla" role="rowgroup">
               <tr class="fila-esqueleto" aria-hidden="true">
                 <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
@@ -160,6 +160,10 @@
               <option>Administrador</option>
             </select>
           </label>
+          <label id="campo-cedula" class="oculto">Cédula *
+            <input type="text" name="cedula" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="1.234.567-8">
+            <span class="ayuda-campo">La cuadrilla inicia sesión con su cédula y su contraseña. Con o sin puntos y guion.</span>
+          </label>
           <label id="campo-cuadrilla" class="oculto">Cuadrilla *
             <select name="id_cuadrilla">
               <option value="">Elegí una cuadrilla</option>
@@ -188,6 +192,7 @@
 <script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
 <script src="js/lista.js"></script>
+<script src="js/cedula.js"></script>
 <script src="js/usuarios.js"></script>
 </body>
 </html>

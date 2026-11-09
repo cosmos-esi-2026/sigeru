@@ -8,12 +8,14 @@ formPedido.addEventListener("submit", async function (evento) {
   evento.preventDefault();
   mostrarEstado(mensajePedido, "", "");
   if (!validarFormulario(formPedido)) return;
+  if (!revisarCedula(formPedido.elements.cedula)) return;
 
   const boton = bloquearEnvio(formPedido, "Enviando...");
   try {
     const { ok, resultado } = await apiPost(API.usuarios + "/solicitudes", {
       nombre: formPedido.elements.nombre.value.trim(),
       apellido: formPedido.elements.apellido.value.trim(),
+      cedula: soloDigitos(formPedido.elements.cedula.value),
       email: formPedido.elements.email.value.trim(),
       telefono: formPedido.elements.telefono.value.trim() || null,
       tipo_cuenta: "cuadrilla",
@@ -26,7 +28,12 @@ formPedido.addEventListener("submit", async function (evento) {
       return;
     }
     const texto = resultado.mensaje || "No pudimos enviar el pedido.";
-    if (!marcarErrorDeApi(formPedido, texto)) mostrarEstado(mensajePedido, texto, "error");
+    if (/c[eé]dula/i.test(texto)) {
+      marcarError(formPedido.elements.cedula, texto);
+      formPedido.elements.cedula.focus();
+    } else if (!marcarErrorDeApi(formPedido, texto)) {
+      mostrarEstado(mensajePedido, texto, "error");
+    }
   } catch (error) {
     mostrarEstado(mensajePedido, "No pudimos conectar con SIGERU. Probá de nuevo en unos minutos.", "error");
   } finally {

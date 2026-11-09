@@ -29,7 +29,8 @@
   <main class="acceso-layout" id="contenido">
     <section class="acceso-presentacion con-escena" aria-label="SiGeRU">
       <div class="acceso-escena" aria-hidden="true">
-        <img class="acceso-video" src="img/acceso-poster.jpg" alt="">
+        <div class="acceso-calle"></div>
+        <div class="acceso-camion"><img src="img/acceso-camion.png" alt="" width="82" height="241"></div>
       </div>
       <a class="acceso-marca" href="../landing/index.html">SiGeRU</a>
       <div class="acceso-relato">
@@ -39,6 +40,7 @@
       <div class="acceso-abajo">
         <p class="acceso-bajada">Entrá para informar problemas y seguir lo que pasa con los residuos de tu zona.</p>
         <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
+        <button type="button" class="acceso-pausa" aria-pressed="false" hidden>Pausar la animación de fondo</button>
       </div>
     </section>
 
@@ -47,11 +49,16 @@
         <a class="acceso-volver" href="../landing/index.html">← Volver al inicio</a>
         <p class="acceso-etiqueta">Bienvenido de nuevo</p>
         <h1 id="titulo-acceso">Iniciar sesión</h1>
-        <p class="acceso-descripcion">Ingresá con el correo y la contraseña de tu cuenta.</p>
+        <p class="acceso-descripcion">Ingresá con el correo y la contraseña de tu cuenta. Las cuadrillas entran por la pestaña «Cuadrilla».</p>
 
-        <form id="form-login" class="formulario acceso-form">
-          <label for="login-email">Correo electrónico</label>
-          <input id="login-email" type="email" name="email" autocomplete="email"
+        <div class="acceso-pestanias" role="tablist" aria-label="Cómo querés entrar">
+          <button type="button" class="activa" role="tab" aria-selected="true" aria-controls="form-login" data-modo-acceso="correo">Vecino y personal</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="form-login" tabindex="-1" data-modo-acceso="cedula">Cuadrilla</button>
+        </div>
+
+        <form id="form-login" class="formulario acceso-form" role="tabpanel">
+          <label for="login-usuario" id="login-usuario-etiqueta">Correo electrónico</label>
+          <input id="login-usuario" type="email" name="email" autocomplete="email"
                  inputmode="email" placeholder="nombre@correo.com" required>
 
           <div class="acceso-fila">
@@ -71,7 +78,7 @@
 
         <div class="acceso-alternativa">
           <p>¿Todavía no tenés cuenta? <a href="registro.html">Registrate como vecino</a></p>
-          <p>¿Sos de una cuadrilla de recolección? <a href="acceso-cuadrilla.html">Pedí acceso</a></p>
+          <p>¿Sos de una cuadrilla de recolección y todavía no tenés acceso? <a href="acceso-cuadrilla.html">Pedí acceso</a></p>
         </div>
       </div>
     </section>
@@ -79,7 +86,9 @@
 
   <script src="js/api.js"></script>
   <script src="js/formularios.js"></script>
+  <script src="js/cedula.js"></script>
   <script src="js/acceso.js"></script>
+  <script src="js/acceso-escena.js"></script>
   <script src="js/auth.js"></script>
 </body>
 </html>

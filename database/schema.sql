@@ -5,13 +5,13 @@
 --           las 15 de la 2da entrega, historial_incidencia (15 bis, de la 3ra) y, de
 --           las extras, recepcion, movimiento_stock, historial_maquinaria (parte 12) y
 --           notificacion (parte 13).
---           Mas cinco tablas fuera del modelo de clases: migracion, intento_login,
---           limite_peticion (freno por IP a los pedidos publicos),
---           auditoria (quien hizo que) y
---           foto_incidencia (la foto opcional de una incidencia, RF-222; es parte
---           de Incidencia, no una clase aparte).
+--           Mas cuatro tablas fuera del modelo de clases: migracion, intento_login,
+--           limite_peticion (freno por IP a los pedidos publicos) y
+--           auditoria (quien hizo que).
+--           La foto opcional de una incidencia (foto_incidencia, migracion 006) se
+--           quito el 30/10/2026 (migracion 021): el sistema ya no recibe fotos.
 --  Motor  : MySQL / MariaDB (InnoDB, utf8mb4)
---  Entrega: 2da entrega. Reemplaza al schema de 7 tablas de la 1ra.
+--  Entrega: esquema vigente de la 3ra, ampliado desde la 2da entrega.
 -- ============================================================================
 --
 --  DE DONDE SALEN ESTAS TABLAS
@@ -63,7 +63,6 @@ DROP TABLE IF EXISTS movimiento_stock;
 DROP TABLE IF EXISTS recepcion;
 DROP TABLE IF EXISTS limite_peticion;
 DROP TABLE IF EXISTS auditoria;
-DROP TABLE IF EXISTS foto_incidencia;
 DROP TABLE IF EXISTS historial_incidencia;
 DROP TABLE IF EXISTS incidencia;
 DROP TABLE IF EXISTS vaciado;
@@ -167,12 +166,14 @@ CREATE TABLE solicitud_registro (
     nombre          VARCHAR(80)  NOT NULL,
     apellido        VARCHAR(80)  NOT NULL,
     email           VARCHAR(120) NOT NULL,
+    cedula          VARCHAR(8)   NULL,
     telefono        VARCHAR(30)  NULL,
     direccion       VARCHAR(200) NULL,
     estado          ENUM('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
     fecha_solicitud DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tipo_cuenta     ENUM('vecino','cuadrilla') NOT NULL DEFAULT 'vecino',
-    cuadrilla_indicada VARCHAR(80) NULL
+    cuadrilla_indicada VARCHAR(80) NULL,
+    INDEX idx_solicitud_cedula (cedula)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -186,6 +187,7 @@ CREATE TABLE usuario (
     nombre         VARCHAR(80)  NOT NULL,
     apellido       VARCHAR(80)  NOT NULL,
     email          VARCHAR(120) NOT NULL UNIQUE,
+    cedula         VARCHAR(8)   NULL,
     password_hash  VARCHAR(255) NOT NULL,
     telefono       VARCHAR(30)  NULL,
     direccion      VARCHAR(200) NULL,
@@ -196,6 +198,7 @@ CREATE TABLE usuario (
     id_solicitud   INT          NULL,
     estado         ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo',
     fecha_registro DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_usuario_cedula (cedula),
     CONSTRAINT fk_usuario_rol
         FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
     CONSTRAINT fk_usuario_cuadrilla
@@ -514,7 +517,9 @@ INSERT INTO migracion (nombre) VALUES
     ('017-rutas-con-contenedores.sql'),
     ('018-incidencias-lleno-y-mantenimiento.sql'),
     ('019-solicitud-tipo-cuenta.sql'),
-    ('020-cuadrilla-municipio.sql');
+    ('020-cuadrilla-municipio.sql'),
+    ('021-quitar-foto-incidencia.sql'),
+    ('022-cedula-cuadrilla.sql');
 
 -- ----------------------------------------------------------------------------
 -- Freno por IP a los pedidos publicos (OWASP A04). Nace con la migracion 008.
@@ -542,24 +547,6 @@ CREATE TABLE auditoria (
     ip           VARCHAR(45)   NOT NULL,
     INDEX idx_auditoria_fecha (fecha_hora),
     INDEX idx_auditoria_usuario (id_usuario, fecha_hora)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------------------------------------------------------
--- Foto opcional de una incidencia (RF-222, RF-223). El archivo se guarda fuera de
--- la carpeta publica (almacen/incidencias/), con un nombre al azar y ya reconvertido
--- a JPEG sin metadatos; aca queda su ficha. Una por incidencia. Nace con la
--- migracion 006.
--- ----------------------------------------------------------------------------
-CREATE TABLE foto_incidencia (
-    id_foto       INT AUTO_INCREMENT PRIMARY KEY,
-    id_incidencia INT      NOT NULL UNIQUE,
-    archivo       CHAR(32) NOT NULL UNIQUE,
-    bytes         INT      NOT NULL,
-    ancho         SMALLINT UNSIGNED NOT NULL,
-    alto          SMALLINT UNSIGNED NOT NULL,
-    fecha_hora    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_foto_incidencia
-        FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -672,7 +659,7 @@ FOR EACH ROW SIGNAL SQLSTATE '45000'
 SET MESSAGE_TEXT = 'El historial de una maquina es de solo agregado';
 
 -- ============================================================================
---  Fin del schema. 23 tablas del modelo de clases (15 + historial_incidencia + recepcion,
---  movimiento_stock, historial_maquinaria, notificacion y ruta_contenedor, de las extras)
---  mas las tecnicas migracion e intento_login.
+--  Fin del schema. 21 tablas del dominio (15 de la segunda entrega, historial_incidencia,
+--  recepcion, movimiento_stock, historial_maquinaria, notificacion y ruta_contenedor)
+--  mas cuatro tablas de soporte: migracion, intento_login, limite_peticion y auditoria.
 -- ============================================================================

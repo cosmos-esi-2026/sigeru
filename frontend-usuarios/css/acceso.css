@@ -17,7 +17,7 @@ body.pagina-acceso { background: var(--hueso); }
   gap: 48px;
   padding: clamp(28px, 5vw, 72px);
   color: var(--blanco);
-  background: radial-gradient(circle at 95% 12%, #26795c 0, transparent 35%), var(--verde-oscuro);
+  background: radial-gradient(circle at 95% 12%, #26795c 0, transparent 35%), var(--barra);
 }
 
 .acceso-presentacion::after {
@@ -149,8 +149,8 @@ body.pagina-acceso { background: var(--hueso); }
 /* Enlaces de las pantallas de acceso con al menos 24 px de alto (WCAG 2.2, criterio 2.5.8) */
 .acceso-volver, .acceso-fila a { display: inline-block; padding: 4px 0; }
 
-/* Imagen del login: un barrio visto desde arriba con el camion de SiGeRU.
-   Para cambiar la imagen basta reemplazar img/acceso-poster.jpg. */
+/* Escena del login: un barrio visto desde arriba, la calle pasa y el camion de SiGeRU queda fijo al centro.
+   Es solo CSS (img/acceso-calle.jpg se repite hacia abajo y se desplaza); no hay ningun archivo de video. */
 .con-escena { justify-content: flex-start; gap: 0; padding: clamp(28px, 4vw, 56px); }
 .con-escena::after { display: none; }
 .con-escena .acceso-relato { margin-top: clamp(20px, 4vh, 40px); }
@@ -166,16 +166,272 @@ body.pagina-acceso { background: var(--hueso); }
 .con-escena .acceso-pie { text-shadow: 0 1px 2px rgba(5, 30, 22, .9), 0 2px 16px rgba(5, 30, 22, .8); }
 .con-escena .acceso-sello { text-shadow: 0 1px 2px rgba(5, 30, 22, .95), 0 0 10px rgba(5, 30, 22, .9); }
 .acceso-escena { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--barra); }
-.acceso-video {
+/* Velo oscuro arriba y abajo: el texto se lee sobre la foto sin importar que pase por detras. */
+.acceso-escena::after {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  filter: saturate(.88);
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(5, 30, 22, .72) 0, rgba(5, 30, 22, .25) 30%, rgba(5, 30, 22, .25) 55%, rgba(5, 30, 22, .82) 100%);
   pointer-events: none;
 }
+.acceso-calle {
+  position: absolute;
+  top: 0;
+  left: -12.5%;
+  width: 125%;
+  aspect-ratio: 960 / 4482;
+  background: url("../img/acceso-calle.jpg") repeat-y center top / 100% auto;
+  filter: saturate(.88);
+  animation: calle-pasa 11s linear infinite;
+  will-change: transform;
+}
+@keyframes calle-pasa {
+  from { transform: translateY(-33.3333%); }
+  to   { transform: translateY(0); }
+}
+.acceso-camion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10.7%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, .38));
+  animation: camion-vibra 1.6s ease-in-out infinite;
+}
+.acceso-camion img { display: block; width: 100%; height: auto; }
+@keyframes camion-vibra {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50%      { transform: translate(calc(-50% + .5px), calc(-50% - .5px)); }
+}
+
+/* Lo que se mueve sin parar tiene que poder detenerse (WCAG 2.2.2): el boton pone .pausado en el panel (js/acceso-escena.js).
+   Con «reducir movimiento» no se anima nada y el boton no se muestra. */
+.acceso-pausa {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--esp-4);
+  min-height: 36px;
+  padding: 0 var(--esp-4);
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: var(--radio-full);
+  background: rgba(9, 46, 34, .6);
+  color: var(--blanco);
+  font: 600 13px var(--fuente-texto);
+  cursor: pointer;
+}
+.acceso-pausa:hover { background: rgba(9, 46, 34, .9); border-color: var(--blanco); }
+.pausado *, .pausado *::before, .pausado *::after { animation-play-state: paused !important; }
+
+/* Pestanias del login: «Vecino y personal» entra con correo, «Cuadrilla» con cedula. */
+.acceso-pestanias {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 26px;
+  padding: 4px;
+  border-radius: var(--radio-full);
+  background: var(--verde-agua);
+}
+.acceso-pestanias button {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radio-full);
+  background: transparent;
+  color: var(--tinta-suave);
+  font: 600 14px var(--fuente-texto);
+  cursor: pointer;
+  transition: background var(--transicion), color var(--transicion);
+}
+.acceso-pestanias button:hover { color: var(--tinta); }
+.acceso-pestanias button.activa { background: var(--superficie); color: var(--verde); box-shadow: var(--sombra-1); }
+
+/* ---- Registro de vecino: un reclamo que avanza de «Informado» a «Resuelto» ---- */
+.panel-vecino, .panel-cuadrilla { justify-content: flex-start; gap: 0; padding: clamp(28px, 4vw, 56px); }
+.panel-vecino::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px) 0 0 / 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 70% 65%, #000 15%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 70% 65%, #000 15%, transparent 75%);
+  pointer-events: none;
+}
+.panel-vecino .acceso-relato, .panel-cuadrilla .acceso-relato { margin-top: clamp(20px, 5vh, 56px); }
+.panel-vecino .acceso-relato h2, .panel-cuadrilla .acceso-relato h2 { max-width: 14ch; font-size: clamp(30px, 3vw, 46px); }
+.panel-vecino .acceso-pie, .panel-cuadrilla .acceso-pie { position: relative; z-index: 1; margin-top: auto; }
+.panel-vecino .acceso-marca, .panel-cuadrilla .acceso-marca { position: relative; z-index: 1; }
+
+.reclamo, .hoja-ruta { position: relative; z-index: 1; width: min(100%, 400px); margin: auto 0 28px; }
+.reclamo figcaption, .hoja-ruta figcaption { margin-top: 12px; color: #bcd6c8; font-size: 13px; }
+.reclamo-tarjeta, .hoja-tarjeta {
+  padding: 20px;
+  border-radius: var(--radio-2);
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 1px solid rgba(255, 255, 255, .16);
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, .55);
+}
+.reclamo-cabecera { display: flex; align-items: center; gap: 12px; }
+.reclamo-pin {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--plastico);
+  animation: reclamo-pulso 2.4s ease-out infinite;
+}
+@keyframes reclamo-pulso {
+  0%   { box-shadow: 0 0 0 0 rgba(217, 163, 0, .55); }
+  100% { box-shadow: 0 0 0 16px rgba(217, 163, 0, 0); }
+}
+.reclamo-lugar strong { display: block; font: 600 16px/1.2 var(--fuente-titulo); }
+.reclamo-lugar small { color: var(--tinta-suave); font-size: 13px; }
+.reclamo-estado { position: relative; flex: none; width: 92px; height: 26px; margin-left: auto; }
+.reclamo-estado span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 10px;
+  border-radius: var(--radio-full);
+  font: 600 12px/1.2 var(--fuente-texto);
+  white-space: nowrap;
+  opacity: 0;
+  animation: reclamo-estado 12s linear infinite;
+}
+.reclamo-estado span:nth-child(1) { background: var(--alerta-fondo); color: var(--alerta-texto); }
+.reclamo-estado span:nth-child(2) { background: var(--azul-fondo); color: var(--azul-texto); animation-delay: 3s; }
+.reclamo-estado span:nth-child(3) { background: var(--alerta-fondo); color: var(--alerta-texto); animation-delay: 6s; }
+.reclamo-estado span:nth-child(4) { background: var(--ok-fondo); color: var(--ok-texto); animation-delay: 9s; }
+@keyframes reclamo-estado { 0%, 24.9% { opacity: 1; } 25%, 100% { opacity: 0; } }
+
+.reclamo-pasos {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.reclamo-pasos::before, .reclamo-pasos::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  height: 3px;
+  border-radius: 2px;
+}
+.reclamo-pasos::before { right: 7px; background: var(--borde-fuerte); }
+.reclamo-pasos::after { width: 0; background: var(--verde); animation: reclamo-avance 12s linear infinite; }
+@keyframes reclamo-avance {
+  0%, 22% { width: 0; }
+  28%, 47% { width: calc((100% - 14px) / 3); }
+  53%, 72% { width: calc((100% - 14px) * 2 / 3); }
+  78%, 96% { width: calc(100% - 14px); }
+  100% { width: 0; }
+}
+.reclamo-pasos li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: .5;
+}
+.reclamo-pasos li::before {
+  content: "";
+  z-index: 1;
+  width: 15px;
+  height: 15px;
+  border: 3px solid var(--verde);
+  border-radius: 50%;
+  background: var(--lima);
+}
+.reclamo-pasos li:nth-child(1) { animation: reclamo-paso-1 12s linear infinite; }
+.reclamo-pasos li:nth-child(2) { animation: reclamo-paso-2 12s linear infinite; }
+.reclamo-pasos li:nth-child(3) { animation: reclamo-paso-3 12s linear infinite; }
+.reclamo-pasos li:nth-child(4) { animation: reclamo-paso-4 12s linear infinite; }
+@keyframes reclamo-paso-1 { 0%, 96% { opacity: 1; } 100% { opacity: .5; } }
+@keyframes reclamo-paso-2 { 0%, 24% { opacity: .5; } 28%, 96% { opacity: 1; } 100% { opacity: .5; } }
+@keyframes reclamo-paso-3 { 0%, 49% { opacity: .5; } 53%, 96% { opacity: 1; } 100% { opacity: .5; } }
+@keyframes reclamo-paso-4 { 0%, 74% { opacity: .5; } 78%, 96% { opacity: 1; } 100% { opacity: .5; } }
+.reclamo-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--borde);
+  color: var(--tinta-suave);
+  font-size: 13px;
+}
+.reclamo-campana {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: var(--verde);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transform-origin: 50% 0;
+  animation: reclamo-campana 12s ease-in-out infinite;
+}
+@keyframes reclamo-campana {
+  0%, 24%, 30%, 49%, 55%, 74%, 80%, 100% { transform: rotate(0); }
+  26% { transform: rotate(16deg); }
+  28% { transform: rotate(-12deg); }
+  51% { transform: rotate(16deg); }
+  53% { transform: rotate(-12deg); }
+  76% { transform: rotate(16deg); }
+  78% { transform: rotate(-12deg); }
+}
+
+/* ---- Pedido de cuadrilla: la ruta del dia se recorre parada por parada ---- */
+.hoja-titulo { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 14px; }
+.hoja-titulo span { font: 600 16px var(--fuente-titulo); }
+.hoja-titulo b { color: var(--tinta-suave); font: 500 12px var(--fuente-dato); letter-spacing: .06em; text-transform: uppercase; }
+.ruta-mapa { display: block; width: 100%; height: auto; border-radius: var(--radio-1); background: var(--mapa-fondo); }
+.ruta-calles path { fill: none; stroke: var(--borde); stroke-width: 11; }
+.ruta-fondo, .ruta-trazo { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.ruta-fondo { stroke: var(--borde-fuerte); stroke-dasharray: 1 1.6; }
+.ruta-trazo { stroke: var(--verde); stroke-dasharray: 100; stroke-dashoffset: 100; animation: ruta-traza 14s linear infinite; }
+@keyframes ruta-traza {
+  0%   { stroke-dashoffset: 100; opacity: 1; }
+  75%  { stroke-dashoffset: 0; opacity: 1; }
+  94%  { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.ruta-parada { fill: var(--superficie); stroke: var(--verde); stroke-width: 3.5; }
+.ruta-parada.p1 { animation: ruta-parada-1 14s linear infinite; }
+.ruta-parada.p2 { animation: ruta-parada-2 14s linear infinite; }
+.ruta-parada.p3 { animation: ruta-parada-3 14s linear infinite; }
+.ruta-parada.p4 { animation: ruta-parada-4 14s linear infinite; }
+.ruta-parada.p5 { animation: ruta-parada-5 14s linear infinite; }
+@keyframes ruta-parada-1 { 0%, 94% { fill: var(--lima); } 98%, 100% { fill: var(--superficie); } }
+@keyframes ruta-parada-2 { 0%, 16% { fill: var(--superficie); } 18%, 94% { fill: var(--lima); } 98%, 100% { fill: var(--superficie); } }
+@keyframes ruta-parada-3 { 0%, 32% { fill: var(--superficie); } 34%, 94% { fill: var(--lima); } 98%, 100% { fill: var(--superficie); } }
+@keyframes ruta-parada-4 { 0%, 49% { fill: var(--superficie); } 51%, 94% { fill: var(--lima); } 98%, 100% { fill: var(--superficie); } }
+@keyframes ruta-parada-5 { 0%, 66% { fill: var(--superficie); } 68%, 94% { fill: var(--lima); } 98%, 100% { fill: var(--superficie); } }
+.hoja-barra { height: 6px; margin-top: 14px; border-radius: var(--radio-full); background: var(--borde-fuerte); overflow: hidden; }
+.hoja-barra span { display: block; height: 100%; border-radius: inherit; background: var(--verde); animation: hoja-avance 14s linear infinite; }
+@keyframes hoja-avance { 0% { width: 8%; } 75%, 94% { width: 100%; } 100% { width: 8%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .acceso-calle, .acceso-camion, .reclamo-pin, .reclamo-campana,
+  .reclamo-estado span, .reclamo-pasos::after, .reclamo-pasos li,
+  .ruta-trazo, .ruta-parada, .hoja-barra span { animation: none; }
+  .acceso-pausa { display: none; }
+  /* Sin movimiento queda una foto fija del recorrido: reclamo «En curso» y ruta a mitad de camino. */
+  .reclamo-estado span:nth-child(3) { opacity: 1; }
+  .reclamo-pasos::after { width: calc((100% - 14px) * 2 / 3); }
+  .reclamo-pasos li:nth-child(-n+3) { opacity: 1; }
+  .ruta-trazo { stroke-dashoffset: 48; }
+  .ruta-parada.p1, .ruta-parada.p2, .ruta-parada.p3 { fill: var(--lima); }
+  .hoja-barra span { width: 60%; }
+}
 @media (max-width: 850px) {
-  .acceso-escena, .acceso-abajo { display: none; }
+  .acceso-escena, .acceso-abajo, .reclamo, .hoja-ruta, .panel-vecino::before, .acceso-pausa { display: none; }
 }

@@ -22,6 +22,7 @@
 // ============================================================================
 
 const BASE = "http://localhost/sigeru";
+const CEDULAS_DEL_SEED = ["cuadrilla@sigeru.uy" => "41000019", "carla.nunez@sigeru.uy" => "41000025"];
 const CLAVE_DE_PRUEBA = "sigeru2026";   // la de todos los usuarios del seed (8 o mas caracteres, como pide la politica)
 
 $pasaron = 0;
@@ -84,8 +85,10 @@ function iniciarSesion(string $email, string $archivoCookies): void
     if (file_exists($archivoCookies)) {
         unlink($archivoCookies);
     }
+    // Las cuentas de cuadrilla entran solo con cedula (las del seed llevan las de CEDULAS_DEL_SEED).
+    $credencial = isset(CEDULAS_DEL_SEED[$email]) ? ["cedula" => CEDULAS_DEL_SEED[$email]] : ["email" => $email];
     peticion("POST", "/api-usuarios/login",
-             ["email" => $email, "password" => CLAVE_DE_PRUEBA], $archivoCookies);
+             $credencial + ["password" => CLAVE_DE_PRUEBA], $archivoCookies);
 }
 
 

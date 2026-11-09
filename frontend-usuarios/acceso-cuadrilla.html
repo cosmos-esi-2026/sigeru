@@ -14,14 +14,35 @@
 <body class="pagina-acceso">
   <a class="saltar-contenido" href="#contenido">Saltar al formulario</a>
   <main class="acceso-layout" id="contenido">
-    <section class="acceso-presentacion" aria-label="SiGeRU">
+    <section class="acceso-presentacion panel-cuadrilla" aria-label="SiGeRU">
       <a class="acceso-marca" href="../landing/index.html">SiGeRU</a>
       <div class="acceso-relato">
         <span class="acceso-sello">Cuadrillas de recolección</span>
-        <h2>Tu ruta, en tu teléfono.</h2>
-        <p>Pedí tu acceso: un administrador confirma en qué cuadrilla trabajás y te entrega tu contraseña.</p>
+        <h2>Tu ruta del día, parada por parada.</h2>
+        <p>Pedí tu acceso con tu cédula. Un administrador confirma tu cuadrilla y te da tu contraseña.</p>
       </div>
+      <figure class="hoja-ruta" aria-hidden="true">
+        <div class="hoja-tarjeta">
+          <p class="hoja-titulo"><span>Ruta de hoy</span><b>5 paradas</b></p>
+          <svg class="ruta-mapa" viewBox="0 0 300 300" focusable="false">
+            <g class="ruta-calles">
+              <path d="M-10 35H310M-10 110H310M-10 185H310M-10 260H310"/>
+              <path d="M50-10V310M150-10V310M250-10V310"/>
+            </g>
+            <path class="ruta-fondo" d="M50 260H150V185H50V110H150V35H250V110H150" pathLength="100"/>
+            <path class="ruta-trazo" d="M50 260H150V185H50V110H150V35H250V110H150" pathLength="100"/>
+            <circle class="ruta-parada p1" cx="50" cy="260" r="10"/>
+            <circle class="ruta-parada p2" cx="150" cy="185" r="10"/>
+            <circle class="ruta-parada p3" cx="50" cy="110" r="10"/>
+            <circle class="ruta-parada p4" cx="150" cy="35" r="10"/>
+            <circle class="ruta-parada p5" cx="250" cy="110" r="10"/>
+          </svg>
+          <div class="hoja-barra"><span></span></div>
+        </div>
+        <figcaption>Así ve su ruta cada cuadrilla</figcaption>
+      </figure>
       <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
+      <button type="button" class="acceso-pausa" aria-pressed="false" hidden>Pausar la animación de fondo</button>
     </section>
 
     <section class="acceso-contenido" aria-labelledby="titulo-pedido">
@@ -42,6 +63,10 @@
               <input id="pedido-apellido" type="text" name="apellido" autocomplete="family-name" maxlength="80" required>
             </div>
           </div>
+          <label for="pedido-cedula">Cédula de identidad</label>
+          <input id="pedido-cedula" type="text" name="cedula" inputmode="numeric" autocomplete="off"
+                 maxlength="12" placeholder="1.234.567-8" required>
+          <p class="acceso-ayuda">Con ella vas a iniciar sesión. Escribila con o sin puntos y guion.</p>
           <label for="pedido-email">Correo electrónico</label>
           <input id="pedido-email" type="email" name="email" autocomplete="email"
                  inputmode="email" placeholder="nombre@correo.com" required>
@@ -56,8 +81,8 @@
         <p id="mensaje-pedido" class="mensaje" role="status" aria-live="polite"></p>
         <div id="pedido-exito" class="acceso-exito" hidden>
           <h2>Pedido enviado</h2>
-          <p>Un administrador lo va a revisar. Cuando lo apruebe, te entrega tu contraseña en mano.</p>
-          <a class="boton boton-primario" href="login.html">Volver a iniciar sesión</a>
+          <p>Un administrador lo va a revisar. Cuando lo apruebe, te entrega tu contraseña en mano y vas a poder entrar con tu cédula.</p>
+          <a class="boton boton-primario" href="login.html?cuadrilla">Volver a iniciar sesión</a>
         </div>
       </div>
     </section>
@@ -65,7 +90,9 @@
 
   <script src="js/api.js"></script>
   <script src="js/formularios.js"></script>
+  <script src="js/cedula.js"></script>
   <script src="js/acceso.js"></script>
+  <script src="js/acceso-escena.js"></script>
   <script src="js/acceso-cuadrilla.js"></script>
 </body>
 </html>

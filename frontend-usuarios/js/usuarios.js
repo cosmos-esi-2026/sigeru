@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 7;
+const COLUMNAS = 8;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const formUsuario = document.getElementById("form-usuario");
 const mensaje = document.getElementById("mensaje");
@@ -39,20 +39,6 @@ async function cargarUsuarios() {
   }
 }
 
-async function exportarUsuarios() {
-  try {
-    const datos = await apiGet(API.usuarios + "/usuarios" + consultaDeLaLista({}));
-    const filas = [["ID", "Nombre", "Apellido", "Correo", "Teléfono", "Rol", "Cuadrilla", "Estado", "Fecha de registro"]];
-    datos.datos.forEach(function (u) {
-      filas.push([u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.rol, u.cuadrilla, textoEstado(u.estado), u.fecha_registro]);
-    });
-    descargarCsv("usuarios_" + fechaParaArchivo() + ".csv", filas);
-    avisoPagina("Se exportaron " + datos.datos.length + " usuarios (con los filtros activos). El archivo no incluye contraseñas.");
-  } catch (error) {
-    avisoPaginaError("No se pudo exportar. " + mensajeDeFallo(error));
-  }
-}
-
 function dibujarTabla(usuarios) {
   if (!usuarios || usuarios.length === 0) {
     cuerpoTabla.innerHTML = hayFiltros
@@ -72,6 +58,7 @@ function dibujarTabla(usuarios) {
       celda("Nombre", u.nombre) +
       celda("Apellido", u.apellido) +
       celda("Email", u.email) +
+      celda("Cédula", u.cedula ? formatearCedula(u.cedula) : null) +
       celda("Rol", u.rol + (u.centro ? " · " + u.centro : "") + (u.rol === "Cuadrilla" ? " · " + (u.cuadrilla || "sin cuadrilla") : "")) +
       celdaEstado("Estado", u.estado, color) +
       celdaAcciones(u.id_usuario, "Editar " + u.nombre, "Dar de baja a " + u.nombre) +
@@ -81,11 +68,14 @@ function dibujarTabla(usuarios) {
 
 const campoCentro = document.getElementById("campo-centro");
 const campoCuadrilla = document.getElementById("campo-cuadrilla");
+const campoCedula = document.getElementById("campo-cedula");
 
 function actualizarCampoCentro() {
   campoCentro.classList.toggle("oculto", formUsuario.rol.value !== "Operario");
   campoCuadrilla.classList.toggle("oculto", formUsuario.rol.value !== "Cuadrilla");
+  campoCedula.classList.toggle("oculto", formUsuario.rol.value !== "Cuadrilla");
   formUsuario.id_cuadrilla.required = formUsuario.rol.value === "Cuadrilla";
+  formUsuario.cedula.required = formUsuario.rol.value === "Cuadrilla";
 }
 
 // Las cuadrillas se traen una vez: sirven para el campo del formulario y para el filtro de la lista.
@@ -133,6 +123,7 @@ function prepararAlta() {
   formUsuario.querySelector('button[type="submit"]').textContent = "Guardar usuario";
   formUsuario.id_centro.value = "";
   formUsuario.id_cuadrilla.value = "";
+  formUsuario.cedula.value = "";
   actualizarCampoCentro();
 }
 
@@ -148,6 +139,7 @@ function prepararEdicion(usuario) {
   formUsuario.rol.value = usuario.rol || "Vecino";
   formUsuario.id_centro.value = usuario.id_centro ? String(usuario.id_centro) : "";
   formUsuario.id_cuadrilla.value = usuario.id_cuadrilla ? String(usuario.id_cuadrilla) : "";
+  formUsuario.cedula.value = usuario.cedula ? formatearCedula(usuario.cedula) : "";
   actualizarCampoCentro();
 }
 
@@ -156,6 +148,11 @@ formUsuario.addEventListener("submit", async function (evento) {
   mostrar("", "");
 
   if (!validarFormulario(formUsuario)) {
+    return;
+  }
+  if (formUsuario.cedula.value.trim() !== "" && !cedulaUruguayaValida(formUsuario.cedula.value)) {
+    marcarError(formUsuario.cedula, "La cédula no es válida: revisá los dígitos (7 u 8, con el verificador).");
+    formUsuario.cedula.focus();
     return;
   }
 
@@ -174,6 +171,10 @@ formUsuario.addEventListener("submit", async function (evento) {
   }
   if (formUsuario.rol.value === "Cuadrilla") {
     datos.id_cuadrilla = formUsuario.id_cuadrilla.value === "" ? null : parseInt(formUsuario.id_cuadrilla.value, 10);
+  }
+  // Solo se manda si hay algo: así una cuenta que no es de cuadrilla no pisa una cédula con un campo oculto vacío.
+  if (formUsuario.cedula.value.trim() !== "") {
+    datos.cedula = soloDigitos(formUsuario.cedula.value);
   }
 
   try {
@@ -245,7 +246,6 @@ function mostrar(texto, tipo) {
 }
 
 document.getElementById("btn-recargar").addEventListener("click", cargarUsuarios);
-document.getElementById("btn-exportar").addEventListener("click", exportarUsuarios);
 function volverALaPrimera() { paginador.volverAlPrincipio(); cargarUsuarios(); }
 formFiltros.addEventListener("change", volverALaPrimera);
 formFiltros.addEventListener("reset", function () { campoBusqueda.value = ""; setTimeout(volverALaPrimera, 0); });

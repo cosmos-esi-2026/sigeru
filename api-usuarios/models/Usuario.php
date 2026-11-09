@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../config/database.php";
 require_once __DIR__ . "/../core/Paginacion.php";
+require_once __DIR__ . "/../core/Validacion.php";
 
 class Usuario
 {
@@ -9,7 +10,7 @@ class Usuario
 
     private const HASH_FALSO = '$2y$10$726ooijwYffp.y0Zo54Ulu7IbL6EQlG/sI2FtIRy/GDNMwjpSFJla';
 
-    private const CAMPOS = "u.id_usuario, u.nombre, u.apellido, u.email,
+    private const CAMPOS = "u.id_usuario, u.nombre, u.apellido, u.email, u.cedula,
                             u.telefono, u.direccion, r.nombre AS rol, u.estado,
                             u.id_cuadrilla,
                             (SELECT q.nombre FROM cuadrilla q WHERE q.id_cuadrilla = u.id_cuadrilla) AS cuadrilla,
@@ -39,8 +40,8 @@ class Usuario
         $valores = [];
         if (isset($filtros["q"])) {
             $like = Paginacion::paraLike($filtros["q"]);
-            $donde[] = "(u.nombre LIKE :q1 OR u.apellido LIKE :q2 OR u.email LIKE :q3)";
-            foreach ([":q1", ":q2", ":q3"] as $nombre) {
+            $donde[] = "(u.nombre LIKE :q1 OR u.apellido LIKE :q2 OR u.email LIKE :q3 OR u.cedula LIKE :q4)";
+            foreach ([":q1", ":q2", ":q3", ":q4"] as $nombre) {
                 $valores[$nombre] = $like;
             }
         }
@@ -118,6 +119,36 @@ class Usuario
         return $usuario === false ? null : $usuario;
     }
 
+    // La cedula va guardada solo con digitos; quien llama la normaliza antes (Validacion::normalizarCedula).
+    public static function porCedula(string $cedula): ?array
+    {
+        $sql = "SELECT " . self::CAMPOS . ", u.password_hash
+                FROM usuario u
+                JOIN rol r ON r.id_rol = u.id_rol
+                WHERE u.cedula = :cedula";
+
+        $consulta = Database::conexion()->prepare($sql);
+        $consulta->execute([":cedula" => $cedula]);
+
+        $usuario = $consulta->fetch();
+        return $usuario === false ? null : $usuario;
+    }
+
+    // $exceptoId: al editar un usuario, su propia cedula no cuenta como repetida.
+    public static function existeCedula(string $cedula, ?int $exceptoId = null): bool
+    {
+        $encontrado = self::porCedula($cedula);
+        return $encontrado !== null && (int) $encontrado["id_usuario"] !== $exceptoId;
+    }
+
+    // Un pedido de cuadrilla pendiente con esa cedula: evita que la misma persona quede dos veces en la cola del administrador.
+    public static function haySolicitudPendienteConCedula(string $cedula): bool
+    {
+        $consulta = Database::conexion()->prepare("SELECT 1 FROM solicitud_registro WHERE cedula = :cedula AND estado = 'pendiente' LIMIT 1");
+        $consulta->execute([":cedula" => $cedula]);
+        return $consulta->fetchColumn() !== false;
+    }
+
     public static function existeZona(int $id): bool
     {
         $consulta = Database::conexion()->prepare("SELECT 1 FROM zona WHERE id_zona = :id");
@@ -167,10 +198,10 @@ class Usuario
         $clave = $datos["password"];
 
         $sql = "INSERT INTO usuario
-                   (nombre, apellido, email, password_hash, telefono, direccion,
+                   (nombre, apellido, email, cedula, password_hash, telefono, direccion,
                     id_rol, id_centro, id_cuadrilla, id_solicitud, estado)
                 VALUES
-                   (:nombre, :apellido, :email, :hash, :telefono, :direccion,
+                   (:nombre, :apellido, :email, :cedula, :hash, :telefono, :direccion,
                     :id_rol, :id_centro, :id_cuadrilla, :id_solicitud, :estado)";
 
         $conexion = Database::conexion();
@@ -179,6 +210,7 @@ class Usuario
             ":nombre"       => $datos["nombre"]    ?? "",
             ":apellido"     => $datos["apellido"]  ?? "",
             ":email"        => $datos["email"]     ?? "",
+            ":cedula"       => !empty($datos["cedula"]) ? Validacion::normalizarCedula((string) $datos["cedula"]) : null,
             ":hash"         => password_hash($clave, PASSWORD_DEFAULT),
             ":telefono"     => $datos["telefono"]  ?? null,
             ":direccion"    => $datos["direccion"] ?? null,
@@ -202,6 +234,12 @@ class Usuario
                 $partes[] = "$campo = :$campo";
                 $valores[":$campo"] = $datos[$campo];
             }
+        }
+
+        // Vacia o ausente la deja como estaba solo si no se manda; mandada vacia la borra.
+        if (array_key_exists("cedula", $datos)) {
+            $partes[] = "cedula = :cedula";
+            $valores[":cedula"] = empty($datos["cedula"]) ? null : Validacion::normalizarCedula((string) $datos["cedula"]);
         }
 
         if (array_key_exists("id_centro", $datos) || ($rol !== null && $rol !== "Operario")) {
@@ -244,9 +282,10 @@ class Usuario
         return self::obtener($id);
     }
 
-    public static function login(string $email, string $clave): ?array
+    // $identificador es el correo o, con $porCedula, la cedula ya normalizada (solo digitos).
+    public static function login(string $identificador, string $clave, bool $porCedula = false): ?array
     {
-        $u = self::porEmail($email);
+        $u = $porCedula ? self::porCedula($identificador) : self::porEmail($identificador);
 
         if ($u === null || ($u["estado"] ?? "") !== "activo") {
             password_verify($clave, self::HASH_FALSO);
@@ -287,9 +326,9 @@ class Usuario
     public static function crearSolicitud(array $datos): array
     {
         $sql = "INSERT INTO solicitud_registro
-                   (nombre, apellido, email, telefono, direccion, tipo_cuenta, cuadrilla_indicada, estado)
+                   (nombre, apellido, email, cedula, telefono, direccion, tipo_cuenta, cuadrilla_indicada, estado)
                 VALUES
-                   (:nombre, :apellido, :email, :telefono, :direccion, :tipo, :indicada, 'pendiente')";
+                   (:nombre, :apellido, :email, :cedula, :telefono, :direccion, :tipo, :indicada, 'pendiente')";
 
         $conexion = Database::conexion();
         $consulta = $conexion->prepare($sql);
@@ -297,6 +336,7 @@ class Usuario
             ":nombre"    => $datos["nombre"]    ?? "",
             ":apellido"  => $datos["apellido"]  ?? "",
             ":email"     => $datos["email"]     ?? "",
+            ":cedula"    => $datos["cedula"]    ?? null,
             ":telefono"  => $datos["telefono"]  ?? null,
             ":direccion" => $datos["direccion"] ?? null,
             ":tipo"      => ($datos["tipo_cuenta"] ?? "vecino") === "cuadrilla" ? "cuadrilla" : "vecino",
@@ -306,7 +346,8 @@ class Usuario
         return self::obtenerSolicitud((int) $conexion->lastInsertId());
     }
 
-    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?int $idCuadrilla = null, ?string $clave = null): ?array
+    // $cedula: la que el administrador confirma al aprobar; si no viene, se usa la del pedido.
+    public static function resolverSolicitud(int $id, string $decision, string $rol = "Vecino", ?int $idCuadrilla = null, ?string $clave = null, ?string $cedula = null): ?array
     {
         $solicitud = self::obtenerSolicitud($id);
         if ($solicitud === null) {
@@ -327,6 +368,7 @@ class Usuario
                     "nombre"       => $solicitud["nombre"],
                     "apellido"     => $solicitud["apellido"],
                     "email"        => $solicitud["email"],
+                    "cedula"       => $cedula ?? $solicitud["cedula"],
                     "telefono"     => $solicitud["telefono"],
                     "direccion"    => $solicitud["direccion"],
                     "id_solicitud" => $id,

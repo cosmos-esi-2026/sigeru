@@ -39,7 +39,6 @@ if ($ruta === "/" && $metodo === "GET") {
             "GET /notificaciones",
             "POST /notificaciones/{id}/leida",
             "POST /notificaciones/leer-todas",
-            "PUT /mi-zona",
         ],
     ]);
 }
@@ -105,10 +104,6 @@ if ($recurso === "notificaciones") {
     if ($metodo === "POST" && count($segmentos) === 3 && $segmentos[2] === "leida" && ctype_digit($segmentos[1])) {
         $avisos->marcarLeida((int) $segmentos[1]);
     }
-}
-
-if ($recurso === "mi-zona" && $metodo === "PUT" && count($segmentos) === 1) {
-    $controlador->guardarMiZona();
 }
 
 Response::json(["ok" => false, "mensaje" => "Ruta no encontrada: $metodo $ruta"], 404);

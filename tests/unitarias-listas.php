@@ -82,6 +82,7 @@ foreach (["0", "-5", "1.5", "mucha", "100001", 0, -1] as $capacidad) {
     afirmar("Capacidad invalida: " . var_export($capacidad, true), true, ValidacionContenedor::error(["capacidad" => $capacidad] + $alta, true) !== null);
 }
 afirmar("La capacidad maxima sirve", null, ValidacionContenedor::error(["capacidad" => 100000] + $alta, true));
+afirmar("La capacidad minima sirve", null, ValidacionContenedor::error(["capacidad" => 1] + $alta, true));
 afirmar("Latitud sin longitud", "La ubicación necesita latitud y longitud juntas", ValidacionContenedor::error($alta + ["latitud" => "-34.9"], true));
 afirmar("Latitud fuera de rango", true, ValidacionContenedor::error($alta + ["latitud" => "95", "longitud" => "-56"], true) !== null);
 afirmar("Longitud fuera de rango", true, ValidacionContenedor::error($alta + ["latitud" => "-34", "longitud" => "-181"], true) !== null);
@@ -105,12 +106,8 @@ foreach (["contenedores" => "js/contenedores.js", "usuarios" => "js/usuarios.js"
         strpos($html, 'src="js/lista.js"') !== false && strpos($html, 'src="js/lista.js"') < strpos($html, 'src="' . $script . '"'));
 }
 $cuenta = fn (string $archivo, string $patron) => preg_match_all($patron, (string) file_get_contents("$frontListas/$archivo"));
-afirmar("El CSV se define una sola vez (en lista.js), no en cada pantalla", [1, 0, 0],
-    [$cuenta("js/lista.js", '/function descargarCsv\(/'), $cuenta("js/reportes.js", '/function descargarCsv\(/'), $cuenta("js/usuarios.js", '/function descargarCsv\(/')]);
-afirmar("El CSV protege contra formulas de planilla", true, str_contains((string) file_get_contents("$frontListas/js/lista.js"), "[=+\-@"));
 afirmar("Las listas con filtros en el servidor ya no usan el buscador del navegador (ese filtraria solo la pagina)", [false, false],
     [str_contains((string) file_get_contents("$frontListas/contenedores.html"), 'id="buscador"'), str_contains((string) file_get_contents("$frontListas/usuarios.html"), 'id="buscador"')]);
-afirmar("La exportacion de usuarios no incluye contrasenas", false, (bool) preg_match('/password|clave|hash/i', (string) substr((string) file_get_contents("$frontListas/js/usuarios.js"), (int) strpos((string) file_get_contents("$frontListas/js/usuarios.js"), "async function exportarUsuarios"), 700)));
 
 titulo("18. Validacion de centros, maquinaria y camiones");
 

@@ -241,73 +241,6 @@ function dibujarReclamos(incidencias) {
     }).join("") + "</ul>";
 }
 
-const DIAS_SEMANA = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-
-// "2026-11-16 06:30:00" -> "lunes 16/11 a las 06:30"
-function diaYHora(valor) {
-  const partes = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(valor || "");
-  if (!partes) {
-    return "";
-  }
-  const dia = DIAS_SEMANA[new Date(parseInt(partes[1], 10), parseInt(partes[2], 10) - 1, parseInt(partes[3], 10)).getDay()];
-  return dia + " " + partes[3] + "/" + partes[2] + " a las " + partes[4] + ":" + partes[5];
-}
-
-function textoDelPasaje(d) {
-  if (d.estado === "sin_zona") {
-    return "Elegí tu zona para saber cuándo pasa la recolección.";
-  }
-  const aviso = d.cancelada ? " Se canceló la recolección del " + diaYHora(d.cancelada) + "." : "";
-  if (d.estado === "en_curso") {
-    return "Hoy el camión está pasando por " + d.zona + "." + (d.proximo ? " La siguiente: " + diaYHora(d.proximo) + "." : "") + aviso;
-  }
-  if (d.estado === "sin_planificadas") {
-    return "Todavía no hay recolecciones planificadas para tu zona (" + d.zona + ")." + aviso;
-  }
-  return "Próximo pasaje en " + d.zona + ": " + diaYHora(d.proximo) + "." + aviso;
-}
-
-async function cargarPasaje() {
-  const zona = document.getElementById("zona-pasaje");
-  const selector = document.getElementById("select-zona");
-  try {
-    if (selector.options.length === 1) {
-      const zonas = (await apiGet(API.gestion + "/zonas")).datos || [];
-      selector.innerHTML = '<option value="">Elegí tu zona</option>' + zonas.map(function (z) {
-        return '<option value="' + $entero(z.id_zona) + '">' + escaparHtml(z.nombre) + "</option>";
-      }).join("");
-    }
-    const d = (await apiGet(API.recoleccion + "/proximo-pasaje")).datos;
-    selector.value = d.id_zona ? String(d.id_zona) : "";
-    document.getElementById("boton-zona").textContent = d.id_zona ? "Cambiar mi zona" : "Guardar mi zona";
-    zona.innerHTML = '<p class="pasaje-texto' + (d.estado === "programado" || d.estado === "en_curso" ? " con-pasaje" : "") + '">' + escaparHtml(textoDelPasaje(d)) + "</p>";
-  } catch (error) {
-    zona.innerHTML = bloqueEstado("No se pudo traer el pasaje", mensajeDeFallo(error), true);
-  }
-}
-
-document.getElementById("form-zona").addEventListener("submit", async function (evento) {
-  evento.preventDefault();
-  const selector = document.getElementById("select-zona");
-  if (selector.value === "") {
-    avisoPaginaError("Elegí una zona de la lista.");
-    selector.focus();
-    return;
-  }
-  try {
-    const { ok, resultado } = await apiPut(API.usuarios + "/mi-zona", { id_zona: parseInt(selector.value, 10) });
-    if (ok) {
-      avisoPagina("Zona guardada.");
-      cargarPasaje();
-    } else {
-      avisoPaginaError(resultado.mensaje || "No se pudo guardar la zona.");
-    }
-  } catch (error) {
-    avisoPaginaError("No se pudo conectar con el servidor. Revisá que esté corriendo.");
-  }
-});
-
-
 async function cargarReclamos() {
   const zona = document.getElementById("zona-reclamos");
   zona.innerHTML = '<span class="esqueleto"></span>';
@@ -358,7 +291,6 @@ function cargarPanel() {
   if (Sesion.obtener().rol === "Vecino") {
     document.getElementById("bajada-panel").textContent = "Cómo van los problemas que informaste.";
     cargarReclamos();
-    cargarPasaje();
     return;
   }
   if (Sesion.obtener().rol === "Operario") {

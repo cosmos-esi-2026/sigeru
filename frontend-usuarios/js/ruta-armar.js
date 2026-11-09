@@ -12,7 +12,6 @@ const listaCandidatos = document.getElementById("lista-candidatos");
 const buscador = document.getElementById("buscar-candidato");
 const btnGuardar = document.getElementById("btn-guardar");
 const btnDescartar = document.getElementById("btn-descartar");
-const btnOrdenar = document.getElementById("btn-ordenar");
 const btnReintentar = document.getElementById("btn-reintentar");
 const avisoSinRed = document.getElementById("aviso-sin-red");
 const estadoTrazado = document.getElementById("estado-trazado");
@@ -238,7 +237,6 @@ function dibujarCifras() {
 function sincronizarBotones() {
   btnGuardar.disabled = ocupado || !sucio;
   btnDescartar.disabled = ocupado || !sucio;
-  btnOrdenar.disabled = ocupado || lista.length < 3;
   const t = ruta && ruta.trazado;
   const hayQueTrazar = !sucio && lista.length >= 2 && (!t || t.tipo !== "calles" || !t.vigente);
   btnReintentar.classList.toggle("oculto", !hayQueTrazar);
@@ -311,55 +309,6 @@ function desplazar(id, delta) {
   }
 }
 
-// Vecino mas cercano a partir de la primera parada (la decide el administrador) y 2-opt para sacar los cruces. Son <= 25 puntos: es instantaneo.
-function ordenarPorCercania() {
-  if (lista.length < 3) {
-    return;
-  }
-  const puntos = lista.map(function (id) { return porId[id]; });
-  const resto = puntos.slice(1);
-  const camino = [puntos[0]];
-  while (resto.length) {
-    const ultimo = camino[camino.length - 1];
-    let mejor = 0;
-    for (let i = 1; i < resto.length; i++) {
-      if (distanciaKm(ultimo, resto[i]) < distanciaKm(ultimo, resto[mejor])) {
-        mejor = i;
-      }
-    }
-    camino.push(resto.splice(mejor, 1)[0]);
-  }
-  const largo = function (c) {
-    let s = 0;
-    for (let i = 1; i < c.length; i++) {
-      s += distanciaKm(c[i - 1], c[i]);
-    }
-    return s;
-  };
-  let mejora = true;
-  while (mejora) {
-    mejora = false;
-    for (let i = 1; i < camino.length - 1; i++) {
-      for (let j = i + 1; j < camino.length; j++) {
-        const nuevo = camino.slice(0, i).concat(camino.slice(i, j + 1).reverse(), camino.slice(j + 1));
-        if (largo(nuevo) < largo(camino) - 1e-9) {
-          camino.splice(0, camino.length, ...nuevo);
-          mejora = true;
-        }
-      }
-    }
-  }
-  const nuevaLista = camino.map(function (c) { return c.id_contenedor; });
-  if (nuevaLista.join(",") !== lista.join(",")) {
-    lista = nuevaLista;
-    sucio = true;
-    avisoPagina("Ordenadas por cercanía, a partir de la primera parada. Revisá el orden y guardá.");
-    refrescar();
-  } else {
-    avisoPagina("El orden ya es el más corto que encuentra este método.");
-  }
-}
-
 // ---------------------------------------------------------------------------------------------- servidor
 
 function armarPorId() {
@@ -396,7 +345,7 @@ async function cargar() {
     sucio = false;
     document.getElementById("titulo-ruta").textContent = ruta.nombre;
     document.getElementById("bajada-ruta").textContent = ruta.zona + " · " + ruta.dia_semana + " " + ruta.hora_inicio + (ruta.estado === "inactiva" ? " · ruta inactiva" : "") +
-      ". Elegí los contenedores, ordenalos y guardá: el recorrido se traza por las calles.";
+      ". Elegí los contenedores, ordenalos y guardá.";
     panel.classList.remove("oculto");
     refrescar(true);
   } catch (error) {
@@ -405,7 +354,7 @@ async function cargar() {
 }
 
 async function trazar() {
-  mostrarEstado("Trazando por las calles… puede tardar unos segundos.", "aviso");
+  mostrarEstado("Guardando el recorrido…", "aviso");
   ocupado = true;
   sincronizarBotones();
   try {
@@ -422,7 +371,9 @@ async function trazar() {
       avisoPagina("Ruta guardada y trazada por las calles: " + kilometros(ruta.trazado.distancia_m / 1000) + "." + avisoDeMovidos);
       avisoDeMovidos = "";
     } else {
-      mostrarEstado(resultado.aviso || "No se pudo trazar por las calles: se dibuja en línea recta.", "aviso");
+      mostrarEstado("", "ok");
+      avisoPagina("Ruta guardada: se dibuja en línea recta entre sus paradas." + avisoDeMovidos);
+      avisoDeMovidos = "";
     }
   } catch (error) {
     mostrarEstado("No se pudo conectar con el servidor para trazar la ruta. " + mensajeDeFallo(error), "error");
@@ -511,7 +462,6 @@ listaCandidatos.addEventListener("click", function (evento) {
 buscador.addEventListener("input", dibujarCandidatos);
 btnGuardar.addEventListener("click", guardar);
 btnDescartar.addEventListener("click", descartar);
-btnOrdenar.addEventListener("click", ordenarPorCercania);
 btnReintentar.addEventListener("click", function () { trazar(); });
 window.addEventListener("beforeunload", function (evento) {
   if (sucio) {

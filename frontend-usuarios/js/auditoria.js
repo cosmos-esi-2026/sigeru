@@ -15,7 +15,6 @@ const FRASES = [
   ["POST", /^\/api-usuarios\/usuarios$/, "Creó un usuario"],
   ["PUT", /^\/api-usuarios\/usuarios\/\d+$/, "Modificó un usuario"],
   ["DELETE", /^\/api-usuarios\/usuarios\/\d+$/, "Dio de baja a un usuario"],
-  ["POST", /^\/api-usuarios\/usuarios\/\d+\/enlace$/, "Envió un acceso por correo"],
   ["POST", /^\/api-usuarios\/solicitudes$/, "Pidió que lo registren"],
   ["PUT", /^\/api-usuarios\/solicitudes\/\d+$/, "Resolvió una solicitud de registro"],
   ["POST", /^\/api-gestion\/contenedores$/, "Creó un contenedor"],

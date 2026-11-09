@@ -14,14 +14,37 @@
 <body class="pagina-acceso">
   <a class="saltar-contenido" href="#contenido">Saltar al formulario</a>
   <main class="acceso-layout" id="contenido">
-    <section class="acceso-presentacion" aria-label="SiGeRU">
+    <section class="acceso-presentacion panel-vecino" aria-label="SiGeRU">
       <a class="acceso-marca" href="../landing/index.html">SiGeRU</a>
       <div class="acceso-relato">
         <span class="acceso-sello">Cuenta de vecino</span>
-        <h2>Participá en tu comunidad.</h2>
-        <p>Creá tu cuenta para informar problemas y consultar lo que sucede en tu barrio.</p>
+        <h2>Lo que ves en la calle, a un toque.</h2>
+        <p>Informá un contenedor lleno o roto y seguí tu reclamo hasta que se resuelve.</p>
       </div>
+      <figure class="reclamo" aria-hidden="true">
+        <div class="reclamo-tarjeta">
+          <div class="reclamo-cabecera">
+            <span class="reclamo-pin"></span>
+            <div class="reclamo-lugar">
+              <strong>Contenedor desbordado</strong>
+              <small>Av. Italia esq. Propios</small>
+            </div>
+            <span class="reclamo-estado">
+              <span>Informado</span><span>Recibido</span><span>En curso</span><span>Resuelto</span>
+            </span>
+          </div>
+          <ol class="reclamo-pasos">
+            <li>Informado</li>
+            <li>Recibido</li>
+            <li>En curso</li>
+            <li>Resuelto</li>
+          </ol>
+          <p class="reclamo-aviso"><span class="reclamo-campana"></span>Te avisamos cuando cambia de estado</p>
+        </div>
+        <figcaption>Así seguís un reclamo desde tu cuenta</figcaption>
+      </figure>
       <p class="acceso-pie">Sistema de Gestión de Residuos Urbanos · Equipo COSMOS</p>
+      <button type="button" class="acceso-pausa" aria-pressed="false" hidden>Pausar la animación de fondo</button>
     </section>
 
     <section class="acceso-contenido" aria-labelledby="titulo-registro">
@@ -74,6 +97,7 @@
   <script src="js/api.js"></script>
   <script src="js/formularios.js"></script>
   <script src="js/acceso.js"></script>
+  <script src="js/acceso-escena.js"></script>
   <script src="js/registro.js"></script>
 </body>
 </html>

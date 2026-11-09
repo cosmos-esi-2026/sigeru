@@ -49,13 +49,7 @@ function dibujarDatos(i) {
     (i.de_mantenimiento && !i.derivada && (i.estado === "abierta" || i.estado === "en_curso")
       ? '<p class="ayuda">Un contenedor roto o dañado no lo recolecta el camión: el administrador tiene que derivarlo a mantenimiento.</p>' : "") +
     '<h3 class="subtitulo-panel">Descripción</h3>' +
-    '<p class="texto-largo">' + escaparHtml(i.descripcion) + "</p>" +
-    (i.tiene_foto
-      ? '<h3 class="subtitulo-panel">Foto</h3>' +
-        '<a href="' + API.gestion + "/incidencias/" + $entero(i.id_incidencia) + '/foto" target="_blank" rel="noopener">' +
-        '<img class="foto-incidencia" src="' + API.gestion + "/incidencias/" + $entero(i.id_incidencia) + '/foto" ' +
-        'alt="Foto del problema, enviada por quien lo informó"></a>'
-      : "");
+    '<p class="texto-largo">' + escaparHtml(i.descripcion) + "</p>";
 }
 
 function campoObservacion(nombre, etiqueta, obligatoria, ayuda) {

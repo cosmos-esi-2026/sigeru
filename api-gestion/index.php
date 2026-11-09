@@ -164,10 +164,6 @@ switch ($recurso) {
             $controlador->resolver($id, $usuario);
         } elseif ($subrecurso === "descarte" && $metodo === "POST" && $id !== null) {
             $controlador->descartar($id, $usuario);
-        } elseif ($subrecurso === "foto" && $metodo === "POST" && $id !== null) {
-            $controlador->subirFoto($id, $usuario);
-        } elseif ($subrecurso === "foto" && $metodo === "GET" && $id !== null) {
-            $controlador->verFoto($id, $usuario);
         } else {
             Response::error("Método no permitido", 405);
         }
@@ -231,7 +227,6 @@ switch ($recurso) {
                 "/zonas", "/zonas/{id}",
                 "/incidencias", "/incidencias/{id}", "/incidencias/{id}/asignacion",
                 "/incidencias/{id}/avance", "/incidencias/{id}/resolucion", "/incidencias/{id}/descarte",
-                "/incidencias/{id}/foto",
                 "/estadisticas/incidencias", "/estadisticas/urgencias", "/estadisticas/centro",
                 "/publico/mapa",
             ],

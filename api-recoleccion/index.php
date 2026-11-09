@@ -9,7 +9,6 @@ require_once __DIR__ . "/controllers/CuadrillaController.php";
 require_once __DIR__ . "/controllers/RutaController.php";
 require_once __DIR__ . "/controllers/RecoleccionController.php";
 require_once __DIR__ . "/controllers/EstadisticaController.php";
-require_once __DIR__ . "/controllers/PasajeController.php";
 require_once __DIR__ . "/controllers/AsignacionController.php";
 
 Response::manejarErrores();
@@ -148,16 +147,6 @@ switch ($recurso) {
         }
         break;
 
-    case "proximo-pasaje":
-        $usuario = Permisos::exigir("proximo-pasaje", $metodo);
-
-        if ($metodo === "GET") {
-            (new PasajeController())->proximo($usuario);
-        } else {
-            Response::error("Método no permitido", 405);
-        }
-        break;
-
     case "estadisticas":
         $controlador = new EstadisticaController();
         Permisos::exigir("estadisticas", $metodo);
@@ -182,7 +171,7 @@ switch ($recurso) {
                 "/rutas", "/rutas/{id}", "/rutas/mapa", "/rutas/{id}/contenedores", "/rutas/{id}/candidatos", "/rutas/{id}/trazado",
                 "/recolecciones", "/recolecciones/lote", "/recolecciones/{id}", "/recolecciones/{id}/inicio",
                 "/recolecciones/{id}/vaciados", "/recolecciones/{id}/fin", "/recolecciones/{id}/cancelacion",
-                "/estadisticas/recoleccion", "/proximo-pasaje", "/asignacion", "/mis-rutas",
+                "/estadisticas/recoleccion", "/asignacion", "/mis-rutas",
             ],
         ]);
         break;

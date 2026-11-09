@@ -18,7 +18,6 @@ USE sigeru;
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE limite_peticion;
 TRUNCATE TABLE auditoria;
-TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
 TRUNCATE TABLE notificacion;
@@ -108,6 +107,9 @@ INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefon
 
 -- El Operario trabaja en un centro (extras, parte 12): Sergio Ferreira, en el Felipe Cardoso.
 UPDATE usuario SET id_centro = 1 WHERE id_usuario = 4;
+
+-- Cedulas de prueba (ficticias, con digito verificador valido): las cuadrillas inician sesion con cedula y contrasena (migracion 022).
+UPDATE usuario SET cedula = CASE id_usuario WHEN 2 THEN '41000019' WHEN 5 THEN '41000025' END WHERE id_usuario IN (2, 5);
 
 
 -- --- 8) Contenedores --------------------------------------------------------

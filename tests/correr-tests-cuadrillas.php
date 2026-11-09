@@ -18,6 +18,21 @@ $limpiarCua = function () use ($pdo): void {
 };
 $limpiarCua();
 
+// Cedulas de prueba: validas (con su digito verificador) y distintas en cada corrida; el sistema las guarda solo con digitos.
+require_once __DIR__ . "/../api-usuarios/core/Validacion.php";
+$cedulaDePrueba = function (int $n): string {
+    static $base = null;
+    $base ??= mt_rand(9000000, 9900000);
+    for ($dv = 0; $dv < 10; $dv++) {
+        $cedula = ($base + $n) . $dv;
+        if (Validacion::cedula($cedula)) {
+            return $cedula;
+        }
+    }
+};
+$formatoCedula = fn(string $c): string => preg_replace('/\B(?=(\d{3})+(?!\d))/', ".", substr($c, 0, -1)) . "-" . substr($c, -1);
+[$ced1, $ced2, $ced3, $ced4] = [$cedulaDePrueba(1), $cedulaDePrueba(2), $cedulaDePrueba(3), $cedulaDePrueba(4)];
+
 $esperados = [];
 $obtenidos = [];
 foreach ($sesiones as $rol => $cookies) {
@@ -130,22 +145,55 @@ afirmar("Se puede reactivar", [200, "activa"], [$codigo, $cuerpo["datos"]["estad
 titulo("48. Usuarios: la cuadrilla de un usuario con rol Cuadrilla");
 
 $usuario = fn(string $quien, array $extra = []) => ["nombre" => "Tcua", "apellido" => $quien, "email" => "tcua-$quien-$sufijo@test.uy", "password" => "ClavePrueba-1"] + $extra;
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla"]), $admin);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $ced1]), $admin);
 afirmar("Un usuario Cuadrilla sin cuadrilla: 400 (sin ella no veria ninguna ruta)", 400, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => null]), $admin);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $ced1, "id_cuadrilla" => null]), $admin);
 afirmar("Con id_cuadrilla null tampoco: 400", 400, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => 99999]), $admin);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $ced1, "id_cuadrilla" => 99999]), $admin);
 afirmar("Una cuadrilla que no existe: 400", 400, $codigo);
-[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => "abc"]), $admin);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $ced1, "id_cuadrilla" => "abc"]), $admin);
 afirmar("Una cuadrilla con texto: 400", 400, $codigo);
 peticion("DELETE", "/api-recoleccion/cuadrillas/$idCua2", null, $admin);
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua2]), $admin);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $ced1, "id_cuadrilla" => $idCua2]), $admin);
 afirmar("Una cuadrilla dada de baja no recibe gente nueva: 400", [400, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "baja")]);
 [$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("v", ["rol" => "Vecino", "id_cuadrilla" => $idCua1]), $admin);
 afirmar("Un Vecino no se asocia a una cuadrilla: 400", 400, $codigo);
-[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1]), $admin);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("a", ["rol" => "Cuadrilla", "cedula" => $formatoCedula($ced1), "id_cuadrilla" => $idCua1]), $admin);
 $idUsuC = (int) ($cuerpo["datos"]["id_usuario"] ?? 0);
 afirmar("Con una cuadrilla activa se crea: 201 y queda asociado", [201, $idCua1, "TCUA Uno $sufijo"], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["cuadrilla"] ?? null]);
+afirmar("La cedula se guarda solo con digitos, aunque llegue con puntos y guion", $ced1, $cuerpo["datos"]["cedula"] ?? null);
+
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", ["cedula" => null] + $usuario("b", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1]), $admin);
+afirmar("Un usuario Cuadrilla sin cedula: 400 (con ella inicia sesion)", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("b", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1, "cedula" => "   "]), $admin);
+afirmar("Una cedula en blanco tampoco: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("b", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1, "cedula" => substr($ced2, 0, -1) . ((int) substr($ced2, -1) + 1) % 10]), $admin);
+afirmar("Una cedula con el digito verificador mal: 400", [400, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+[$codigo] = peticion("POST", "/api-usuarios/usuarios", $usuario("b", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1, "cedula" => "12ab"]), $admin);
+afirmar("Una cedula con letras o muy corta: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/usuarios", $usuario("b", ["rol" => "Cuadrilla", "id_cuadrilla" => $idCua1, "cedula" => $formatoCedula($ced1)]), $admin);
+afirmar("Una cedula que ya tiene otro usuario (aunque venga con otro formato): 409", [409, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+
+$sesionCedula = function (string $cedula, string $clave): array {
+    [$codigo, $cuerpo] = peticion("POST", "/api-usuarios/login", ["cedula" => $cedula, "password" => $clave], null);
+    return [$codigo, $cuerpo];
+};
+[$codigo, $cuerpo] = $sesionCedula($formatoCedula($ced1), "ClavePrueba-1");
+afirmar("La cuadrilla entra con cedula (con puntos y guion) y contrasena: 200, rol Cuadrilla", [200, "Cuadrilla", $ced1], [$codigo, $cuerpo["datos"]["rol"] ?? null, $cuerpo["datos"]["cedula"] ?? null]);
+[$codigo] = $sesionCedula($ced1, "ClavePrueba-1");
+afirmar("Y con la cedula solo con digitos", 200, $codigo);
+[$codigo, $cuerpo] = $sesionCedula($ced1, "mala-clave-1");
+afirmar("Contrasena equivocada: 401 con mensaje de cedula", [401, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+[$codigo] = $sesionCedula($ced3, "ClavePrueba-1");
+afirmar("Una cedula que no existe: 401", 401, $codigo);
+[$codigo] = $sesionCedula("", "ClavePrueba-1");
+afirmar("Una cedula vacia: 401", 401, $codigo);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/login", ["email" => "tcua-a-$sufijo@test.uy", "password" => "ClavePrueba-1"], null);
+afirmar("Una cuenta de cuadrilla no entra con el correo, ni con la contrasena correcta: 403 que lo explica", [403, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["email" => "vecino@sigeru.uy", "password" => "sigeru2026"], null);
+afirmar("El resto de los roles sigue entrando con correo", 200, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/login", ["cedula" => ["x"], "password" => "ClavePrueba-1"], null);
+afirmar("Una cedula que no es texto no rompe el login: 401", 401, $codigo);
 
 [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/usuarios/$idUsuC", ["nombre" => "Otro"], $admin);
 afirmar("Editar otro dato no le saca la cuadrilla", [200, $idCua1], [$codigo, (int) ($cuerpo["datos"]["id_cuadrilla"] ?? 0)]);
@@ -177,9 +225,15 @@ afirmar("El registro publico ignora rol e id_cuadrilla: queda Vecino y sin cuadr
 $filaReg = $pdo->query("SELECT r.nombre AS rol, u.id_cuadrilla FROM usuario u JOIN rol r ON r.id_rol = u.id_rol WHERE u.email = 'tcua-registro-$sufijo@test.uy'")->fetch();
 afirmar("Y en la base tambien", ["Vecino", null], [$filaReg["rol"] ?? null, is_array($filaReg) ? $filaReg["id_cuadrilla"] : "falta"]);
 
-$pedido = ["nombre" => "Tcua", "apellido" => "Pide", "email" => "tcua-pide-$sufijo@test.uy", "tipo_cuenta" => "cuadrilla", "cuadrilla_indicada" => "Cuadrilla Municipio A"];
+$pedido = ["nombre" => "Tcua", "apellido" => "Pide", "email" => "tcua-pide-$sufijo@test.uy", "tipo_cuenta" => "cuadrilla", "cuadrilla_indicada" => "Cuadrilla Municipio A", "cedula" => $ced2];
 [$codigo] = peticion("POST", "/api-usuarios/solicitudes", array_diff_key($pedido, ["cuadrilla_indicada" => 1]), null);
 afirmar("Un pedido de cuadrilla sin decir cual: 400", 400, $codigo);
+[$codigo] = peticion("POST", "/api-usuarios/solicitudes", array_diff_key($pedido, ["cedula" => 1]), null);
+afirmar("Un pedido de cuadrilla sin cedula: 400", 400, $codigo);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", ["cedula" => "1234567-0"] + $pedido, null);
+afirmar("Con la cedula mal (verificador): 400", [400, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", ["cedula" => $ced1] + $pedido, null);
+afirmar("Con la cedula de un usuario que ya existe: 409", [409, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
 [$codigo] = peticion("POST", "/api-usuarios/solicitudes", ["tipo_cuenta" => "administrador"] + $pedido, null);
 afirmar("Un tipo de cuenta inventado: 400 (no se puede pedir ser administrador)", 400, $codigo);
 [$codigo] = peticion("POST", "/api-usuarios/solicitudes", ["cuadrilla_indicada" => str_repeat("x", 81)] + $pedido, null);
@@ -188,6 +242,10 @@ afirmar("Una cuadrilla de mas de 80 letras: 400", 400, $codigo);
 $idSol = (int) ($cuerpo["datos"]["id_solicitud"] ?? 0);
 afirmar("El pedido sin sesion se acepta: 201, pendiente y de tipo cuadrilla", [201, "pendiente", "cuadrilla", "Cuadrilla Municipio A"],
     [$codigo, $cuerpo["datos"]["estado"] ?? null, $cuerpo["datos"]["tipo_cuenta"] ?? null, $cuerpo["datos"]["cuadrilla_indicada"] ?? null]);
+afirmar("La solicitud guarda la cedula solo con digitos", $ced2, $pdo->query("SELECT cedula FROM solicitud_registro WHERE id_solicitud = $idSol")->fetchColumn());
+[$codigo, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", ["email" => "tcua-repite-$sufijo@test.uy", "cedula" => $formatoCedula($ced2)] + $pedido, null);
+afirmar("Otro pedido pendiente con la misma cedula: 409", [409, true], [$codigo, str_contains($cuerpo["mensaje"] ?? "", "cédula")]);
+$pdo->exec("DELETE FROM limite_peticion WHERE clave LIKE 'solicitud:%'"); // el freno por IP son 10 pedidos por hora y esta seccion hace mas
 afirmar("No crea ninguna cuenta ni sesion", 0, (int) $pdo->query("SELECT COUNT(*) FROM usuario WHERE email = 'tcua-pide-$sufijo@test.uy'")->fetchColumn());
 [$codigo] = peticion("POST", "/api-usuarios/solicitudes", ["email" => "vecino@sigeru.uy"] + $pedido, null);
 afirmar("Un correo de un usuario existente: 409", 409, $codigo);
@@ -214,15 +272,22 @@ afirmar("Aprobarla sin definir la contrasena inicial: 400", 400, $codigo);
 [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1, "password" => "ClavePrueba-1"], $admin);
 afirmar("Aprobada con la cuadrilla real: 200, usuario Cuadrilla con su id_cuadrilla y activo", [200, "Cuadrilla", $idCua1, "activo"],
     [$codigo, $cuerpo["datos"]["usuario"]["rol"] ?? null, (int) ($cuerpo["datos"]["usuario"]["id_cuadrilla"] ?? 0), $cuerpo["datos"]["usuario"]["estado"] ?? null]);
+afirmar("La cuenta trae la cedula del pedido", $ced2, $cuerpo["datos"]["usuario"]["cedula"] ?? null);
+[$codigo, $cuerpo] = $sesionCedula($ced2, "ClavePrueba-1");
+afirmar("Y la cuadrilla aprobada entra con esa cedula y la contrasena que definio el administrador", [200, "Cuadrilla"], [$codigo, $cuerpo["datos"]["rol"] ?? null]);
 [$codigo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol", ["decision" => "aprobada", "id_cuadrilla" => $idCua1, "password" => "ClavePrueba-1"], $admin);
 afirmar("Aprobarla dos veces: 409", 409, $codigo);
-$pedido2 = ["email" => "tcua-pide2-$sufijo@test.uy"] + $pedido;
+$pedido2 = ["email" => "tcua-pide2-$sufijo@test.uy", "cedula" => $ced3] + $pedido;
 [, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", $pedido2, null);
 $idSol2 = (int) ($cuerpo["datos"]["id_solicitud"] ?? 0);
 [$codigo, $cuerpo] = peticion("PUT", "/api-usuarios/solicitudes/$idSol2", ["decision" => "rechazada"], $admin);
 afirmar("Rechazar no pide cuadrilla y no crea cuenta: 200", [200, 0], [$codigo, (int) $pdo->query("SELECT COUNT(*) FROM usuario WHERE email = 'tcua-pide2-$sufijo@test.uy'")->fetchColumn()]);
-[, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", ["email" => "tcua-vecino-$sufijo@test.uy", "nombre" => "Tcua", "apellido" => "Vecino"], null);
-afirmar("Una solicitud comun (sin tipo) sigue siendo de vecino", "vecino", $cuerpo["datos"]["tipo_cuenta"] ?? null);
+[, $cuerpo] = peticion("POST", "/api-usuarios/solicitudes", ["email" => "tcua-vecino-$sufijo@test.uy", "nombre" => "Tcua", "apellido" => "Vecino", "cedula" => $ced4], null);
+afirmar("Una solicitud comun (sin tipo) sigue siendo de vecino, y no guarda cedula", ["vecino", null], [$cuerpo["datos"]["tipo_cuenta"] ?? null, array_key_exists("cedula", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["cedula"] : "falta"]);
+[, $cuerpo] = peticion("POST", "/api-usuarios/registro", ["nombre" => "Tcua", "apellido" => "Cedula", "email" => "tcua-registro2-$sufijo@test.uy", "password" => "sigeru2026", "cedula" => $ced4], null);
+afirmar("El registro publico de vecino ignora la cedula", [null], [array_key_exists("cedula", $cuerpo["datos"] ?? []) ? $cuerpo["datos"]["cedula"] : "falta"]);
+[$codigo] = $sesionCedula($ced4, "sigeru2026");
+afirmar("Y con esa cedula nadie puede entrar: 401", 401, $codigo);
 
 $limpiarCua();
 afirmar("Se borraron las cuadrillas, usuarios y solicitudes de prueba", [0, 0, 0], [

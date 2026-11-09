@@ -151,68 +151,6 @@ async function buscarCercanos() {
   }
 }
 
-const TIPOS_DE_FOTO = ["image/jpeg", "image/png", "image/webp"];
-const TAMANO_MAXIMO_FOTO = 2 * 1024 * 1024;
-const vistaFoto = document.getElementById("vista-foto");
-let direccionDeVista = null;
-
-function quitarFoto() {
-  formIncidencia.foto.value = "";
-  vistaFoto.classList.add("oculto");
-  if (direccionDeVista) {
-    URL.revokeObjectURL(direccionDeVista);
-    direccionDeVista = null;
-  }
-  limpiarError(formIncidencia.foto);
-}
-
-// La revision del navegador es solo una ayuda: el servidor vuelve a comprobar el contenido de la foto.
-function elegirFoto() {
-  const archivo = formIncidencia.foto.files[0];
-  if (!archivo) {
-    quitarFoto();
-    return;
-  }
-  if (TIPOS_DE_FOTO.indexOf(archivo.type) === -1) {
-    quitarFoto();
-    marcarError(formIncidencia.foto, "La foto tiene que ser JPG, PNG o WebP.");
-    return;
-  }
-  if (archivo.size > TAMANO_MAXIMO_FOTO) {
-    quitarFoto();
-    marcarError(formIncidencia.foto, "La foto pesa más de 2 MB.");
-    return;
-  }
-  limpiarError(formIncidencia.foto);
-  if (direccionDeVista) {
-    URL.revokeObjectURL(direccionDeVista);
-  }
-  direccionDeVista = URL.createObjectURL(archivo);
-  document.getElementById("vista-foto-imagen").src = direccionDeVista;
-  vistaFoto.classList.remove("oculto");
-}
-
-// Devuelve un texto para la confirmacion: se informo el problema aunque la foto falle.
-async function enviarFoto(idIncidencia) {
-  const archivo = formIncidencia.foto.files[0];
-  if (!archivo) {
-    return "Sin foto";
-  }
-  const datos = new FormData();
-  datos.append("foto", archivo);
-  try {
-    const respuesta = await fetch(API.gestion + "/incidencias/" + $entero(idIncidencia) + "/foto", {
-      method: "POST", body: datos, credentials: "same-origin",
-    });
-    const resultado = await respuesta.json().catch(function () { return {}; });
-    return respuesta.ok
-      ? "Adjuntada"
-      : "No se pudo adjuntar: " + (resultado.mensaje || "error " + respuesta.status) + " El reporte quedó registrado igual.";
-  } catch (error) {
-    return "No se pudo adjuntar por un problema de conexión. El reporte quedó registrado igual.";
-  }
-}
-
 // La descripcion es opcional (el tipo ya dice que pasa), salvo en «Otro»: ahi es obligatoria. Misma regla que FlujoIncidencia::errorDeNueva.
 function descripcionObligatoria() {
   const elegido = formIncidencia.querySelector('input[name="tipo_problema"]:checked');
@@ -264,14 +202,13 @@ async function avisarRepetido(resultado) {
   }
 }
 
-function mostrarConfirmacion(incidencia, textoFoto) {
+function mostrarConfirmacion(incidencia) {
   document.getElementById("ficha-confirmacion").innerHTML =
     "<dt>Número</dt><dd><strong>" + escaparHtml(incidencia.numero) + "</strong></dd>" +
     "<dt>Estado</dt><dd>" + marcaDeEstado("estado", incidencia.estado) + "</dd>" +
     "<dt>Contenedor</dt><dd>" + escaparHtml(incidencia.contenedor + " · " + incidencia.direccion) + "</dd>" +
     "<dt>Problema</dt><dd>" + escaparHtml(textoTipoProblema(incidencia.tipo_problema)) + "</dd>" +
     "<dt>Registrado</dt><dd>" + escaparHtml(fechaLegible(incidencia.fecha_reporte)) + "</dd>" +
-    "<dt>Foto</dt><dd>" + escaparHtml(textoFoto || "Sin foto") + "</dd>" +
     "<dt>Responsable</dt><dd>Sin asignar todavía</dd>";
   document.getElementById("enlace-reclamo").href = "incidencia.html?id=" + $entero(incidencia.id_incidencia);
   // A la cuadrilla no le sirve «se va a asignar a una cuadrilla»: el aviso queda para el administrador (hallazgo del 23/10/2026).
@@ -305,8 +242,7 @@ formIncidencia.addEventListener("submit", async function (evento) {
   try {
     const { ok, resultado } = await apiPost(API.gestion + "/incidencias", datos);
     if (ok) {
-      const textoFoto = await enviarFoto(resultado.datos.id_incidencia);
-      mostrarConfirmacion(resultado.datos, textoFoto);
+      mostrarConfirmacion(resultado.datos);
     } else if (resultado.datos && resultado.datos.numero) {
       await avisarRepetido(resultado);
     } else {
@@ -328,7 +264,6 @@ formIncidencia.addEventListener("submit", async function (evento) {
 
 document.getElementById("btn-otro").addEventListener("click", function () {
   formIncidencia.reset();
-  quitarFoto();
   limpiarErrores(formIncidencia);
   mostrar("", "");
   actualizarCuenta();
@@ -360,8 +295,6 @@ formIncidencia.querySelectorAll('input[name="tipo_problema"]').forEach(function 
     actualizarCuenta();
   });
 });
-formIncidencia.foto.addEventListener("change", elegirFoto);
-document.getElementById("quitar-foto").addEventListener("click", quitarFoto);
 
 const codigoInicial = new URLSearchParams(window.location.search).get("contenedor");
 if (codigoInicial && /^[A-Za-z0-9-]{1,20}$/.test(codigoInicial)) {

@@ -1,6 +1,6 @@
 Sesion.exigir();
 
-const COLUMNAS = 7;
+const COLUMNAS = 8;
 const cuerpoTabla = document.getElementById("cuerpo-tabla");
 const filtroEstado = document.getElementById("filtro-estado");
 const formAprobar = document.getElementById("form-aprobar");
@@ -64,6 +64,7 @@ function dibujarTabla(solicitudes) {
       celda("Fecha", soloFecha(s.fecha_solicitud), s.fecha_solicitud) +
       celda("Nombre", s.nombre + " " + s.apellido) +
       celda("Email", s.email) +
+      celda("Cédula", s.cedula ? formatearCedula(s.cedula) : null) +
       celda("Teléfono", s.telefono) +
       celda("Pide ser", textoTipo(s)) +
       celdaEstado("Estado", s.estado, colorEstado(s.estado)) +
@@ -101,6 +102,7 @@ cuerpoTabla.addEventListener("click", async function (evento) {
       id: botonAprobar.dataset.id,
       nombre: fila.cells[1].textContent,
       email: fila.cells[2].textContent,
+      cedula: (solicitudesPorId[botonAprobar.dataset.id] || {}).cedula || "",
       esDeCuadrilla: (solicitudesPorId[botonAprobar.dataset.id] || {}).tipo_cuenta === "cuadrilla",
     };
     prepararCampoCuadrilla(solicitudElegida.esDeCuadrilla);
@@ -109,6 +111,7 @@ cuerpoTabla.addEventListener("click", async function (evento) {
       "Se va a crear la cuenta de " + solicitudElegida.nombre +
       " (" + solicitudElegida.email + "). Definí su contraseña inicial y entregásela en mano.";
     formAprobar.password.value = "";
+    formAprobar.cedula.value = solicitudElegida.cedula ? formatearCedula(solicitudElegida.cedula) : "";
 
     bootstrap.Modal.getOrCreateInstance(modalAprobar).show();
     return;
@@ -147,6 +150,8 @@ cuerpoTabla.addEventListener("click", async function (evento) {
 async function prepararCampoCuadrilla(esDeCuadrilla) {
   document.getElementById("campo-rol").classList.toggle("oculto", esDeCuadrilla);
   document.getElementById("campo-cuadrilla").classList.toggle("oculto", !esDeCuadrilla);
+  document.getElementById("campo-cedula").classList.toggle("oculto", !esDeCuadrilla);
+  formAprobar.cedula.required = esDeCuadrilla;
   formAprobar.id_cuadrilla.required = esDeCuadrilla;
   formAprobar.rol.value = esDeCuadrilla ? "Cuadrilla" : "Vecino";
   if (!esDeCuadrilla) {
@@ -170,6 +175,11 @@ formAprobar.addEventListener("submit", async function (evento) {
   if (solicitudElegida === null || !validarFormulario(formAprobar)) {
     return;
   }
+  if (solicitudElegida.esDeCuadrilla && !cedulaUruguayaValida(formAprobar.cedula.value)) {
+    marcarError(formAprobar.cedula, "La cédula no es válida: revisá los dígitos (7 u 8, con el verificador).");
+    formAprobar.cedula.focus();
+    return;
+  }
 
   const boton = bloquearEnvio(formAprobar, "Aprobando...");
 
@@ -177,7 +187,7 @@ formAprobar.addEventListener("submit", async function (evento) {
     const { ok, resultado } = await apiPut(
       API.usuarios + "/solicitudes/" + solicitudElegida.id,
       solicitudElegida.esDeCuadrilla
-        ? { decision: "aprobada", rol: "Cuadrilla", id_cuadrilla: parseInt(formAprobar.id_cuadrilla.value, 10), password: formAprobar.password.value }
+        ? { decision: "aprobada", rol: "Cuadrilla", id_cuadrilla: parseInt(formAprobar.id_cuadrilla.value, 10), cedula: soloDigitos(formAprobar.cedula.value), password: formAprobar.password.value }
         : { decision: "aprobada", rol: formAprobar.rol.value, password: formAprobar.password.value }
     );
 

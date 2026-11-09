@@ -2,8 +2,6 @@
 
 require_once __DIR__ . "/../models/Incidencia.php";
 require_once __DIR__ . "/../models/FlujoIncidencia.php";
-require_once __DIR__ . "/../models/FotoIncidencia.php";
-require_once __DIR__ . "/../models/ProcesadorFoto.php";
 require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/../core/Response.php";
 require_once __DIR__ . "/../core/Notificador.php";
@@ -150,71 +148,6 @@ class IncidenciaController
             }
             Response::json(["ok" => true, "mensaje" => "Incidencia descartada", "datos" => $incidencia]);
         });
-    }
-
-    // POST /incidencias/{id}/foto (multipart, campo "foto"). Solo quien informo, una vez, mientras sigue abierta.
-    public function subirFoto(int $id, array $usuario): void
-    {
-        $incidencia = Incidencia::obtener($id);
-        if ($incidencia === null || !FlujoIncidencia::alcanza($usuario, $incidencia)) {
-            Response::error("Incidencia no encontrada", 404);
-        }
-        if (!FlujoIncidencia::estaAbierta($incidencia["estado"])) {
-            Response::error("La incidencia ya está cerrada y no admite fotos", 409);
-        }
-        if (FotoIncidencia::existe($id)) {
-            Response::error("Esta incidencia ya tiene una foto", 409);
-        }
-
-        $archivo = $_FILES["foto"] ?? null;
-        if (!is_array($archivo) || is_array($archivo["error"] ?? null)) {
-            Response::error("Mandá una sola foto en el campo 'foto'", 400);
-        }
-        $errorDeSubida = (int) $archivo["error"];
-        if ($errorDeSubida === UPLOAD_ERR_INI_SIZE || $errorDeSubida === UPLOAD_ERR_FORM_SIZE) {
-            Response::error("La foto pesa más de 2 MB", 413);
-        }
-        if ($errorDeSubida === UPLOAD_ERR_NO_FILE) {
-            Response::error("No llegó ninguna foto", 400);
-        }
-        if ($errorDeSubida !== UPLOAD_ERR_OK || !is_uploaded_file($archivo["tmp_name"])) {
-            Response::error("No se pudo recibir la foto, probá de nuevo", 400);
-        }
-
-        $resultado = ProcesadorFoto::procesar($archivo["tmp_name"], (int) $archivo["size"]);
-        if (!$resultado["ok"]) {
-            Response::error($resultado["error"], $resultado["estado"]);
-        }
-
-        $this->ejecutar(function () use ($id, $resultado) {
-            $ficha = FotoIncidencia::guardar($id, $resultado["jpeg"], $resultado["ancho"], $resultado["alto"]);
-            Response::json(["ok" => true, "mensaje" => "Foto guardada", "datos" => [
-                "bytes" => (int) $ficha["bytes"], "ancho" => (int) $ficha["ancho"], "alto" => (int) $ficha["alto"],
-            ]], 201);
-        });
-    }
-
-    // GET /incidencias/{id}/foto: la imagen, solo para quien puede ver la incidencia.
-    public function verFoto(int $id, array $usuario): void
-    {
-        $incidencia = Incidencia::obtener($id);
-        if ($incidencia === null || !FlujoIncidencia::alcanza($usuario, $incidencia)) {
-            Response::error("Incidencia no encontrada", 404);
-        }
-        $ficha = FotoIncidencia::de($id);
-        $bytes = $ficha === null ? null : FotoIncidencia::contenido($ficha);
-        if ($bytes === null) {
-            Response::error("La incidencia no tiene foto", 404);
-        }
-        http_response_code(200);
-        header("Content-Type: image/jpeg");
-        header("Content-Length: " . strlen($bytes));
-        header("Content-Disposition: inline; filename=\"" . FlujoIncidencia::numero($id) . ".jpg\"");
-        header("X-Content-Type-Options: nosniff");
-        header("Content-Security-Policy: default-src 'none'; sandbox");
-        header("Cache-Control: private, max-age=300");
-        echo $bytes;
-        exit;
     }
 
     // Al vecino que informo: campanita y correo (si lo tiene activado). Nunca rompe la operacion.

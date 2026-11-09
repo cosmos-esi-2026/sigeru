@@ -46,20 +46,6 @@ async function cargarContenedores() {
   }
 }
 
-async function exportarContenedores() {
-  try {
-    const datos = await apiGet(API.gestion + "/contenedores" + consultaDeLaLista({}));
-    const filas = [["Código", "Dirección", "Zona", "Tipo de residuo", "Capacidad (L)", "Estado", "Latitud", "Longitud"]];
-    datos.datos.forEach(function (c) {
-      filas.push([c.codigo, c.direccion, c.zona, c.tipo_residuo, c.capacidad, textoEstado(c.estado), c.latitud, c.longitud]);
-    });
-    descargarCsv("contenedores_" + fechaParaArchivo() + ".csv", filas);
-    avisoPagina("Se exportaron " + datos.datos.length + " contenedores (con los filtros que están activos).");
-  } catch (error) {
-    avisoPaginaError("No se pudo exportar. " + mensajeDeFallo(error));
-  }
-}
-
 function dibujarTabla(contenedores) {
   if (!contenedores || contenedores.length === 0) {
     cuerpoTabla.innerHTML = hayFiltros
@@ -217,7 +203,6 @@ function mostrar(texto, tipo) {
 }
 
 document.getElementById("btn-recargar").addEventListener("click", cargarContenedores);
-document.getElementById("btn-exportar").addEventListener("click", exportarContenedores);
 function volverALaPrimera() { paginador.volverAlPrincipio(); cargarContenedores(); }
 formFiltros.addEventListener("change", volverALaPrimera);
 formFiltros.addEventListener("reset", function () { campoBusqueda.value = ""; setTimeout(volverALaPrimera, 0); });

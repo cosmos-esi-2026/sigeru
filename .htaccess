@@ -20,7 +20,7 @@ RewriteRule ^ - [F]
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     Header always set Cross-Origin-Opener-Policy "same-origin"
     # Solo se ejecuta codigo propio; el unico servidor externo que se admite es el de los mosaicos del mapa.
-    # setifempty: la foto de una incidencia manda su propia politica, mas estricta.
+    # setifempty: una respuesta que ya trae su propia politica (mas estricta) la conserva.
     Header always setifempty Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
     Header unset X-Powered-By
 

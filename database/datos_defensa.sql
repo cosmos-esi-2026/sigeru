@@ -23,7 +23,6 @@ USE sigeru;
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE limite_peticion;
 TRUNCATE TABLE auditoria;
-TRUNCATE TABLE foto_incidencia;
 TRUNCATE TABLE historial_incidencia;
 TRUNCATE TABLE incidencia;
 TRUNCATE TABLE notificacion;
@@ -124,6 +123,9 @@ INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefon
 -- El Operario trabaja en un centro (extras, parte 12): Sergio Ferreira, en el Felipe Cardoso.
 UPDATE usuario SET id_centro = 1 WHERE id_usuario = 4;
 
+-- Cedulas de prueba (ficticias, con digito verificador valido): las cuadrillas inician sesion con cedula y contrasena (migracion 022).
+UPDATE usuario SET cedula = CASE id_usuario WHEN 2 THEN '41000019' WHEN 5 THEN '41000025' END WHERE id_usuario IN (2, 5);
+
 -- DEFENSA: un usuario de prueba por cada cuadrilla que no tenia (clave de todos: sigeru2026). Fictizios.
 INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefono, direccion, id_rol, id_cuadrilla, id_solicitud, estado, fecha_registro) VALUES
 (7, 'Jorge', 'Silva', 'cuadrilla.c@sigeru.uy', '$2y$10$162Z9Fe9GVaJcVZPwInJh.OIRj.R5gQCM.Itn/FA3B2h3dwkrJkvy', '091 100 200', 'Montevideo', 3, 3, NULL, 'activo', '2026-10-22 08:00:00'),
@@ -132,6 +134,10 @@ INSERT INTO usuario (id_usuario, nombre, apellido, email, password_hash, telefon
 (10, 'Sofia', 'Benitez', 'cuadrilla.e@sigeru.uy', '$2y$10$162Z9Fe9GVaJcVZPwInJh.OIRj.R5gQCM.Itn/FA3B2h3dwkrJkvy', '094 100 203', 'Montevideo', 3, 6, NULL, 'activo', '2026-10-22 08:00:00'),
 (11, 'Diego', 'Cabrera', 'cuadrilla.f@sigeru.uy', '$2y$10$162Z9Fe9GVaJcVZPwInJh.OIRj.R5gQCM.Itn/FA3B2h3dwkrJkvy', '095 100 204', 'Montevideo', 3, 7, NULL, 'activo', '2026-10-22 08:00:00'),
 (12, 'Camila', 'Duarte', 'cuadrilla.g@sigeru.uy', '$2y$10$162Z9Fe9GVaJcVZPwInJh.OIRj.R5gQCM.Itn/FA3B2h3dwkrJkvy', '096 100 205', 'Montevideo', 3, 8, NULL, 'activo', '2026-10-22 08:00:00');
+
+-- Cedulas de prueba (ficticias, con digito verificador valido): las cuadrillas inician sesion con cedula y contrasena (migracion 022).
+UPDATE usuario SET cedula = CASE id_usuario WHEN 7 THEN '41000031' WHEN 8 THEN '41000047' WHEN 9 THEN '41000053'
+    WHEN 10 THEN '41000069' WHEN 11 THEN '41000075' WHEN 12 THEN '41000081' END WHERE id_usuario IN (7, 8, 9, 10, 11, 12);
 
 
 

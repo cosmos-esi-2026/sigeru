@@ -49,8 +49,6 @@
                    placeholder="Código, dirección, zona o tipo">
           </div>
 
-          <button type="button" class="boton boton-secundario" id="btn-exportar">Exportar CSV</button>
-
           <button class="boton boton-icono" id="btn-recargar" aria-label="Recargar el listado">
             <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>
@@ -135,7 +133,7 @@
           </label>
           <div class="formulario-columnas">
             <label>Capacidad (litros)
-              <input type="number" name="capacidad" min="0" placeholder="1100">
+              <input type="text" name="capacidad" inputmode="numeric" pattern="[0-9]+" maxlength="6" placeholder="1100">
             </label>
 
             <label>Tipo de residuo

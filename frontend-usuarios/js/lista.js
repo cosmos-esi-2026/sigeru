@@ -1,4 +1,4 @@
-// Ayudas para las listas que filtran y paginan en el servidor (parte 9) y exportan a CSV.
+// Ayudas para las listas que filtran y paginan en el servidor (parte 9).
 
 function retrasar(funcion, milisegundos) {
   let temporizador = null;
@@ -78,33 +78,4 @@ function crearPaginador(idNav, sustantivo, alCambiar) {
       return false;
     },
   };
-}
-
-function celdaCsv(valor) {
-  let texto = valor === null || valor === undefined ? "" : String(valor);
-  if (/^[=+\-@\t\r]/.test(texto) && !/^-?\d+([.,]\d+)?$/.test(texto)) {
-    texto = "'" + texto;
-  }
-  return '"' + texto.replace(/"/g, '""') + '"';
-}
-
-// CSV para planilla en espanol: separador ";", UTF-8 con BOM y saltos de linea de Windows.
-function descargarCsv(nombre, filas) {
-  const contenido = "\uFEFF" + filas.map(function (fila) {
-    return fila.map(celdaCsv).join(";");
-  }).join("\r\n") + "\r\n";
-  const url = URL.createObjectURL(new Blob([contenido], { type: "text/csv;charset=utf-8" }));
-  const enlace = document.createElement("a");
-  enlace.href = url;
-  enlace.download = nombre;
-  document.body.appendChild(enlace);
-  enlace.click();
-  enlace.remove();
-  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-}
-
-function fechaParaArchivo() {
-  const hoy = new Date();
-  const dos = function (n) { return String(n).padStart(2, "0"); };
-  return hoy.getFullYear() + "-" + dos(hoy.getMonth() + 1) + "-" + dos(hoy.getDate());
 }

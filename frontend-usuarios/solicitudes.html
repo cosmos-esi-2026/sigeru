@@ -70,6 +70,7 @@
                 <th role="columnheader" data-orden>Fecha</th>
                 <th role="columnheader" data-orden>Nombre</th>
                 <th role="columnheader" data-orden>Email</th>
+                <th role="columnheader" data-orden>Cédula</th>
                 <th role="columnheader" data-orden>Teléfono</th>
                 <th role="columnheader" data-orden>Pide ser</th>
                 <th role="columnheader" data-orden>Estado</th>
@@ -79,6 +80,7 @@
             <tbody id="cuerpo-tabla" role="rowgroup">
               <tr class="fila-esqueleto" aria-hidden="true">
                 <td><span class="esqueleto esqueleto-corto"></span></td>
+                <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
                 <td><span class="esqueleto"></span></td>
@@ -120,6 +122,10 @@
               <option value="Administrador">Administrador</option>
             </select>
           </label>
+          <label id="campo-cedula" class="oculto">Cédula *
+            <input type="text" name="cedula" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="1.234.567-8">
+            <span class="ayuda-campo">Es con la que la persona va a iniciar sesión. Viene del pedido: revisala y corregila si hace falta.</span>
+          </label>
           <label id="campo-cuadrilla" class="oculto">Cuadrilla real
             <select name="id_cuadrilla">
               <option value="">Elegí una cuadrilla</option>
@@ -141,6 +147,7 @@
 <script src="js/formularios.js"></script>
 <script src="js/shell.js"></script>
 <script src="js/tabla.js"></script>
+<script src="js/cedula.js"></script>
 <script src="js/solicitudes.js"></script>
 </body>
 </html>

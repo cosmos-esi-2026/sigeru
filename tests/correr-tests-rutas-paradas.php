@@ -174,7 +174,7 @@ titulo("48 quater. Rutas con contenedores: trazado y borrado");
 
 [, $raiz] = peticion("GET", "/api-recoleccion/");
 if (($raiz["trazado"] ?? "") !== "recta") {
-    omitir("El trazado por calles con Apache sin SIGERU_TRAZADO_MODO=recta pediria servicios externos: se prueba arrancando Apache con esa variable");
+    omitir("Con Apache arrancado con SIGERU_TRAZADO_MODO=calles el trazado pediria servicios externos: se prueba con el arranque comun (modo recta)");
 } else {
     [$codigo, $cuerpo] = peticion("POST", "/api-recoleccion/rutas/$idI/trazado", [], $admin);
     $paradasI = count($paradasDe($idI));

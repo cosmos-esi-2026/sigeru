@@ -5,7 +5,6 @@ require_once __DIR__ . "/../core/ErrorDeNegocio.php";
 require_once __DIR__ . "/FlujoIncidencia.php";
 require_once __DIR__ . "/Contenedor.php";
 require_once __DIR__ . "/Cuadrilla.php";
-require_once __DIR__ . "/FotoIncidencia.php";
 
 class Incidencia
 {
@@ -89,7 +88,6 @@ class Incidencia
 
         $detalle = self::formatear($fila, $usuario);
         $detalle["historial"] = FlujoIncidencia::historialVisible(self::historial($id), $usuario);
-        $detalle["tiene_foto"] = FotoIncidencia::existe($id);
         return $detalle;
     }
 

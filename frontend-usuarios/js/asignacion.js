@@ -365,9 +365,8 @@ formDia.elements.fecha.value = hoyMasUno();
 activarValidacion(formAsignar);
 // Venir desde «Rutas» con ?ruta=N: se muestran las rutas de todos los dias y se abre directamente el formulario de esa ruta.
 const rutaPedida = parseInt(new URLSearchParams(window.location.search).get("ruta"), 10) || null;
-if (rutaPedida) {
-  formDia.elements.otros_dias.checked = true;
-}
+// Siempre se muestran las rutas de todos los dias: si el dia elegido no tiene rutas, la pantalla no queda vacia (30/10/2026).
+formDia.elements.otros_dias.checked = true;
 cargar().then(function () {
   const r = rutaPedida && datos && datos.rutas.find(function (x) { return x.id_ruta === rutaPedida; });
   if (r && !r.asignada) {

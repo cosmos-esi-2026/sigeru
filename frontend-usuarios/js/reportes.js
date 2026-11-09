@@ -212,43 +212,6 @@ async function cargarZonas() {
   }
 }
 
-function sufijoDeArchivo() {
-  const desde = formPeriodo.elements.desde.value || "inicio";
-  const hasta = formPeriodo.elements.hasta.value || fechaIso(new Date());
-  return desde + "_a_" + hasta;
-}
-
-function decimalCsv(valor) {
-  return valor === null || valor === undefined ? "" : String(valor).replace(".", ",");
-}
-
-function exportarDetalle() {
-  if (!informeIncidencias) {
-    avisoPaginaError("Primero generá el informe.");
-    return;
-  }
-  const filas = [["Número", "Fecha de reporte", "Contenedor", "Dirección", "Zona", "Tipo", "Prioridad", "Estado",
-                  "Fecha de resolución", "Horas hasta resolver"]];
-  informeIncidencias.detalle.forEach(function (i) {
-    filas.push([i.numero, i.fecha_reporte, i.contenedor, i.direccion, i.zona, textoTipoProblema(i.tipo_problema),
-                etiquetaIncidencia("prioridad", i.prioridad).texto, etiquetaIncidencia("estado", i.estado).texto,
-                i.fecha_resolucion, decimalCsv(i.horas_resolucion)]);
-  });
-  descargarCsv("incidencias_" + sufijoDeArchivo() + ".csv", filas);
-}
-
-function exportarZonas() {
-  if (!informeIncidencias) {
-    avisoPaginaError("Primero generá el informe.");
-    return;
-  }
-  const filas = [["Zona", "Abiertas", "En curso", "Resueltas", "Descartadas", "Total", "Tiempo medio de resolución (horas)"]];
-  informeIncidencias.por_zona.forEach(function (z) {
-    filas.push([z.zona, z.abiertas, z.en_curso, z.resueltas, z.descartadas, z.total, decimalCsv(z.tiempo_medio_horas)]);
-  });
-  descargarCsv("incidencias-por-zona_" + sufijoDeArchivo() + ".csv", filas);
-}
-
 formPeriodo.addEventListener("submit", function (evento) {
   evento.preventDefault();
   generar();
@@ -263,9 +226,26 @@ document.querySelectorAll("[data-rapido]").forEach(function (boton) {
   });
 });
 
-document.getElementById("btn-csv-detalle").addEventListener("click", exportarDetalle);
-document.getElementById("btn-csv-zonas").addEventListener("click", exportarZonas);
 document.getElementById("btn-imprimir").addEventListener("click", function () { window.print(); });
+
+// Lo que se descarga es el detalle de incidencias del período que está en pantalla.
+document.getElementById("btn-csv").addEventListener("click", function () {
+  if (!informeIncidencias || informeIncidencias.detalle.length === 0) {
+    avisoPaginaError("No hay incidencias en este período para descargar.");
+    return;
+  }
+  const filas = informeIncidencias.detalle.map(function (i) {
+    return [i.numero, i.fecha_reporte, i.contenedor, i.zona, textoTipoProblema(i.tipo_problema),
+            i.prioridad, i.estado,
+            i.horas_resolucion === null ? "" : String(i.horas_resolucion).replace(".", ",")];   // coma decimal, como lee la planilla en español
+  });
+  const texto = construirCsv(["Número", "Fecha", "Contenedor", "Zona", "Tipo", "Prioridad", "Estado",
+                              "Horas hasta resolver"], filas);
+  descargarCsv("incidencias-" + fechaIso(new Date()) + ".csv", texto);
+  avisoPagina(informeIncidencias.detalle_truncado
+    ? "El archivo tiene solo las primeras " + filas.length + " incidencias: acotá el período para el resto."
+    : "Se descargó el archivo con " + filas.length + " incidencias.");
+});
 
 document.querySelectorAll("#tabla-detalle th").forEach(function (th) { th.setAttribute("data-orden", ""); });
 activarOrden("tabla-detalle");

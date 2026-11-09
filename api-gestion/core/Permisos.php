@@ -31,7 +31,6 @@ class Permisos
         "incidencias/avance"     => ["POST" => ["Cuadrilla"]],
         "incidencias/resolucion" => ["POST" => self::QUIEN_ATIENDE],
         "incidencias/descarte"   => ["POST" => self::ADMINISTRADOR],
-        "incidencias/foto"       => ["GET" => ["Administrador", "Cuadrilla", "Vecino"], "POST" => ["Vecino"]],
         "estadisticas"           => ["GET" => self::ADMINISTRADOR],
         "estadisticas/centro"    => ["GET" => self::PERSONAL_DE_CENTRO],
         "publico"                => ["GET" => self::ANONIMO],

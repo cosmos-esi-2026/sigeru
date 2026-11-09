@@ -129,7 +129,7 @@ class RutaController
         Ruta::guardarTrazado($id, Trazado::firma($paradas), $resultado);
         Response::json([
             "ok"      => true,
-            "mensaje" => $resultado["tipo"] === Trazado::TIPO_CALLES ? "Ruta trazada por las calles" : "No se pudo trazar por las calles: se dibuja en línea recta",
+            "mensaje" => $resultado["tipo"] === Trazado::TIPO_CALLES ? "Ruta trazada por las calles" : "Ruta guardada: se dibuja en línea recta entre sus paradas",
             "aviso"   => $resultado["aviso"] ?? null,
             "intentos" => $resultado["intentos"],
             "datos"   => Ruta::detalle($id),

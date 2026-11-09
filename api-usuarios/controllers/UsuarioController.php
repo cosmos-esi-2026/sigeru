@@ -88,6 +88,29 @@ class UsuarioController
         return null;
     }
 
+    // La cedula es obligatoria para el rol Cuadrilla (con ella inicia sesion) y opcional para los demas.
+    // $actual es el usuario que se edita (null al crear): si no se manda cedula se conserva la que ya tenia.
+    private function exigirCedula(array $datos, string $rolFinal, ?array $actual): void
+    {
+        $manda = array_key_exists("cedula", $datos);
+        $valor = $datos["cedula"] ?? null;
+        $vacia = $valor === null || (is_string($valor) && trim($valor) === "");
+
+        if ($vacia) {
+            $conserva = !$manda && $actual !== null && !empty($actual["cedula"]);
+            if ($rolFinal === "Cuadrilla" && !$conserva) {
+                Response::error("Ingresá la cédula: la cuadrilla inicia sesión con ella", 400);
+            }
+            return;
+        }
+        if (!Validacion::cedula($valor)) {
+            Response::error("La cédula no es válida: revisá los dígitos (con el verificador, sin puntos ni guion)", 400);
+        }
+        if (Usuario::existeCedula(Validacion::normalizarCedula((string) $valor), $actual === null ? null : (int) $actual["id_usuario"])) {
+            Response::error("Ya existe un usuario con esa cédula", 409);
+        }
+    }
+
     // El administrador define la contrasena inicial (o la nueva, al restablecerla): se la da a la persona en mano.
     private function exigirContrasena(array $datos): void
     {
@@ -128,6 +151,7 @@ class UsuarioController
         if ($errorCuadrilla !== null) {
             Response::error($errorCuadrilla, 400);
         }
+        $this->exigirCedula($datos, $rol, null);
 
         $nuevo = Usuario::crear($datos, $rol);
         Response::json(["ok" => true, "mensaje" => "Usuario creado. Ya puede iniciar sesión con la contraseña que le definiste.", "datos" => $nuevo], 201);
@@ -168,6 +192,7 @@ class UsuarioController
         if ($errorCuadrilla !== null) {
             Response::error($errorCuadrilla, 400);
         }
+        $this->exigirCedula($datos, $rol ?? $actual["rol"], $actual);
 
         if (array_key_exists("password", $datos)) {
             if (!is_string($datos["password"]) || !Validacion::contrasena($datos["password"])) {
@@ -180,28 +205,6 @@ class UsuarioController
 
         $actualizado = Usuario::actualizar($id, $datos, $rol);
         Response::json(["ok" => true, "mensaje" => "Usuario actualizado", "datos" => $actualizado]);
-    }
-
-    // PUT /mi-zona: el vecino elige (o cambia, o saca) su zona. Es de cada persona: no hay un id en la ruta.
-    public function guardarMiZona(): void
-    {
-        $usuario = Auth::exigirRol("Vecino");
-        $datos = Response::leerJson();
-        if (!array_key_exists("id_zona", $datos)) {
-            Response::error("Falta id_zona (un número, o null para sacarla)", 400);
-        }
-        $zona = $datos["id_zona"];
-        if ($zona !== null) {
-            $esEntero = is_int($zona) || (is_string($zona) && ctype_digit($zona));
-            if (!$esEntero || (int) $zona < 1) {
-                Response::error("La zona indicada no es válida", 400);
-            }
-            if (!Usuario::existeZona((int) $zona)) {
-                Response::error("La zona indicada no existe", 404);
-            }
-        }
-        Usuario::guardarZona((int) $usuario["id_usuario"], $zona === null ? null : (int) $zona);
-        Response::json(["ok" => true, "mensaje" => $zona === null ? "Zona quitada" : "Zona guardada", "datos" => ["id_zona" => $zona === null ? null : (int) $zona]]);
     }
 
     public function darDeBaja(int $id): void
@@ -227,8 +230,18 @@ class UsuarioController
     public function login(): void
     {
         $datos = Response::leerJson();
-        $email = PoliticaBloqueo::normalizar($datos["email"] ?? "");
+        // La cuadrilla entra solo con cedula; el resto, con correo. El limite de intentos cuenta por lo que se uso para entrar
+        // (la cedula va solo con digitos, asi que nunca se confunde con un correo).
+        $porCedula = array_key_exists("cedula", $datos);
+        $email = $porCedula
+            ? substr((string) Validacion::soloDigitosCedula($datos["cedula"]), 0, 20)
+            : PoliticaBloqueo::normalizar($datos["email"] ?? "");
         $clave = is_string($datos["password"] ?? null) ? $datos["password"] : "";
+
+        // Sin ningun digito no hay cedula que buscar ni cuenta que bloquear: se responde igual que si no coincidiera.
+        if ($porCedula && $email === "") {
+            Response::error("La cédula o la contraseña no coinciden", 401);
+        }
 
         $espera = IntentosLogin::esperaPara($email);
         if ($espera > 0) {
@@ -240,11 +253,16 @@ class UsuarioController
             );
         }
 
-        $usuario = Usuario::login($email, $clave);
-        IntentosLogin::registrar($email, $usuario !== null);
+        $usuario = Usuario::login($email, $clave, $porCedula);
+        // Una cuenta de cuadrilla entra solo con cedula: con el correo no se abre sesion, aunque la contrasena sea la correcta.
+        $cuadrillaPorCorreo = !$porCedula && $usuario !== null && $usuario["rol"] === "Cuadrilla";
+        IntentosLogin::registrar($email, $usuario !== null && !$cuadrillaPorCorreo);
+        if ($cuadrillaPorCorreo) {
+            Response::error("Las cuadrillas ingresan con su cédula: usá la pestaña «Cuadrilla».", 403);
+        }
 
         if ($usuario === null) {
-            Response::error("El email o la contraseña no coinciden", 401);
+            Response::error($porCedula ? "La cédula o la contraseña no coinciden" : "El email o la contraseña no coinciden", 401);
         }
 
         Auth::iniciarSesion($usuario);
@@ -314,6 +332,7 @@ class UsuarioController
             Response::error("Ya existe un usuario con ese email", 409);
         }
 
+        unset($datos["cedula"]); // el vecino se registra solo con correo: la cedula es de la cuadrilla
         $nuevo = Usuario::crear($datos, "Vecino");
         Response::json([
             "ok" => true,
@@ -348,6 +367,25 @@ class UsuarioController
         if ($tipo === "cuadrilla" && (!is_string($indicada) || trim($indicada) === "")) {
             Response::error("Contanos en qué cuadrilla trabajás", 400);
         }
+        // La cuadrilla inicia sesion con cedula: el pedido la trae. Un vecino no la pide (si la manda, se ignora).
+        $cedula = null;
+        if ($tipo === "cuadrilla") {
+            $crudo = $datos["cedula"] ?? null;
+            if ($crudo === null || (is_string($crudo) && trim($crudo) === "")) {
+                Response::error("Ingresá tu cédula: es con la que vas a iniciar sesión", 400);
+            }
+            if (!Validacion::cedula($crudo)) {
+                Response::error("La cédula no es válida: revisá los dígitos (con el verificador, sin puntos ni guion)", 400);
+            }
+            $cedula = Validacion::normalizarCedula((string) $crudo);
+            if (Usuario::existeCedula($cedula)) {
+                Response::error("Ya existe un usuario con esa cédula", 409);
+            }
+            if (Usuario::haySolicitudPendienteConCedula($cedula)) {
+                Response::error("Ya hay un pedido pendiente con esa cédula", 409);
+            }
+        }
+        $datos["cedula"] = $cedula;
         $datos["tipo_cuenta"] = $tipo;
         $datos["cuadrilla_indicada"] = is_string($indicada) && trim($indicada) !== "" ? trim($indicada) : null;
         $nueva = Usuario::crearSolicitud($datos);
@@ -399,9 +437,15 @@ class UsuarioController
             }
             $idCuadrilla = $rol === "Cuadrilla" ? (int) $datos["id_cuadrilla"] : null;
             $this->exigirContrasena($datos);
+            // La cedula del pedido, o la que el administrador confirma o corrige al aprobar (los pedidos viejos no la traian).
+            if (!array_key_exists("cedula", $datos) && !empty($solicitud["cedula"])) {
+                $datos["cedula"] = $solicitud["cedula"];
+            }
+            $this->exigirCedula($datos, $rol, null);
+            $cedula = !empty($datos["cedula"]) ? Validacion::normalizarCedula((string) $datos["cedula"]) : null;
         }
 
-        [$actualizada, $usuario] = Usuario::resolverSolicitud($id, $decision, $rol, $idCuadrilla, $datos["password"] ?? null);
+        [$actualizada, $usuario] = Usuario::resolverSolicitud($id, $decision, $rol, $idCuadrilla, $datos["password"] ?? null, $cedula ?? null);
 
         Response::json([
             "ok"      => true,
