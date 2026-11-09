@@ -1,0 +1,7 @@
+CP-UI-03 - 03/11/2026 ~16:20 - consola del navegador, sesion de admin@sigeru.uy
+POST /sigeru/api-gestion/contenedores con capacidad 'abc' -> HTTP 400
+{"ok":false,"mensaje":"La capacidad tiene que ser un número entero de litros, de 1 a 100000"}
+
+Consulta a la base despues de guardar desde la pantalla (campo capacidad quedo vacio):
+codigo	direccion	capacidad	estado
+TEST-UI-03	Calle de prueba 123	NULL	disponible

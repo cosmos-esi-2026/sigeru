@@ -1,0 +1,11 @@
+CP-UI-08 repetido con el arreglo de DEF-17 - 03/11/2026 ~16:30 - sesion de admin@sigeru.uy, base con el seed de defensa (5 incidencias)
+Boton «Descargar CSV» en Reportes. Para ver el contenido sin abrir el archivo se reemplazo descargarCsv por una funcion que guarda el texto. Nombre: incidencias-2026-11-03.csv. Aviso en pantalla: «Se descargó el archivo con 5 incidencias.» Contenido (separador ;, fin de linea CRLF, UTF-8 con BOM):
+Número;Fecha;Contenedor;Zona;Tipo;Prioridad;Estado;Horas hasta resolver
+INC-0004;2026-09-09 09:40:00;CNT-007;Municipio CH;Contenedor lleno;media;abierta;
+INC-0001;2026-09-08 19:30:00;CNT-002;Municipio B;Contenedor desbordado;alta;abierta;
+INC-0003;2026-09-06 08:15:00;CNT-005;Municipio B;Contenedor roto o dañado;media;abierta;
+INC-0005;2026-09-02 12:00:00;CNT-001;Municipio D;Otro;baja;descartada;
+INC-0002;2026-08-30 10:05:00;CNT-005;Municipio B;Contenedor roto o dañado;media;resuelta;48.9
+Las cifras coinciden con la pantalla (5 incidencias: 3 pendientes y 2 cerradas).
+Luego se cambio el separador decimal de las horas a coma (48,9) para que la planilla en español lo lea como numero; no se volvio a abrir el archivo en una planilla.
+Pruebas de la funcion construirCsv con casos raros: '=1+1' sale como '=1+1 (texto); 'tiene;punto y coma' y 'dice "hola"' van entre comillas con la comilla duplicada; null sale vacio; 0 sale 0.

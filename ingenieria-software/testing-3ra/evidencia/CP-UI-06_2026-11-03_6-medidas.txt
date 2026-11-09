@@ -1,0 +1,8 @@
+CP-UI-06 - 03/11/2026 ~16:21 - SIMULADO: navegador con motor Chromium del panel del escritorio, ancho emulado 375x812 (no es un celular real)
+Medida en cada pantalla: document.documentElement.scrollWidth contra window.innerWidth (desborde horizontal si es mayor)
+/sigeru/landing/                              ancho 375, scrollWidth 375, desborda: no
+/sigeru/frontend-usuarios/mapa.html           ancho 375, scrollWidth 375, desborda: no   (sesion de vecino)
+/sigeru/frontend-usuarios/mis-reclamos.html   ancho 375, scrollWidth 375, desborda: no   (sesion de vecino; la tabla pasa a tarjetas)
+/sigeru/frontend-usuarios/login.html          ancho 375, scrollWidth 375, desborda: no
+/sigeru/frontend-usuarios/mis-tareas.html     ancho 375, scrollWidth 375, desborda: no   (sesion de cuadrilla; la tabla pasa a tarjetas)
+Observacion visual: el boton flotante del tema claro/oscuro (abajo a la derecha) tapa parte del texto al final de la pagina de login, de Mis tareas y de Mis reclamos; se puede desplazar la pagina y no impide usarla.

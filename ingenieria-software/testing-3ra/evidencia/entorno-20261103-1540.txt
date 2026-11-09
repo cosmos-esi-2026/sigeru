@@ -1,0 +1,8 @@
+﻿Corrida del 03/11/2026 (unitarias 15:35, HTTP 15:40)
+PHP: PHP 8.2.33 (cli) (built: Jul 28 2026 10:27:30) (NTS Visual C++ 2019 x64)
+Base: MariaDB 10.4.32-MariaDB
+Tablas en la base sigeru: 25
+Commit: 7c780d5
+Archivos con cambios sin commitear: 117 al correr las pruebas (118 despues, al sumarse esta carpeta)
+Datos cargados: seed de pruebas (database/datos_prueba.sql) con restaurar-base-demo.cmd, copia previa en respaldo-bd/sigeru-antes-del-reset-20261103-153825.sql
+Cobertura de lineas: no medida (php -m no muestra xdebug ni pcov)

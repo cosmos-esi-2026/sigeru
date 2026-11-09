@@ -1,0 +1,842 @@
+SiGeRU - Pruebas unitarias (sin base de datos ni servidor)
+==============================================
+
+1. Migraciones: dividir un archivo en sentencias
+------------------------------------------------
+  ✓ Dos sentencias separadas por punto y coma
+  ✓ Un punto y coma dentro de un texto no corta la sentencia
+  ✓ Una comilla escapada dentro del texto no confunde el corte
+  ✓ Los comentarios de linea se descartan, aunque lleven punto y coma
+  ✓ Los comentarios de bloque se descartan
+  ✓ Una sentencia final sin punto y coma tambien cuenta
+  ✓ Un archivo vacio no tiene sentencias
+
+2. Migraciones: nombres de archivo
+----------------------------------
+  ✓ 001-incidencias.sql es valido
+  ✓ 012-historial-de-incidencias.sql es valido
+  ✓ Sin el cero inicial no es valido
+  ✓ Con mayusculas no es valido
+  ✓ Con guion bajo no es valido
+  ✓ Con otra extension no es valido
+  ✓ Dos archivos con el mismo numero se detectan
+
+3. Migraciones: registro en schema.sql
+--------------------------------------
+  ✓ Se leen los nombres del INSERT de migracion
+  ✓ Un INSERT dentro de un comentario no cuenta
+  ✓ Los archivos de migraciones/ son validos y sin numeros repetidos
+  ✓ schema.sql registra exactamente las migraciones que hay en migraciones/
+  ✓ schema.sql crea la tabla tecnica migracion
+
+4. Front: copias compartidas entre landing y frontend-usuarios
+--------------------------------------------------------------
+  ✓ css/base.css es identico en las dos aplicaciones
+  ✓ js/tema.js es identico en las dos aplicaciones
+  ✓ img/logo.svg es identico en las dos aplicaciones
+  ✓ Las dos aplicaciones traen las mismas fuentes y licencias
+  ✓ Cada fuente es identica en las dos
+  ✓ Todas las fuentes que pide base.css existen
+
+5. Front: sin dependencias de internet ni entre aplicaciones
+------------------------------------------------------------
+  ✓ Ninguna pagina, hoja de estilos ni script carga algo de internet
+  ✓ Los unicos pedidos a internet (los mosaicos del fondo del mapa) estan en el mapa interno, en el recorrido de la recoleccion, en armar ruta y en el publico
+  ✓ Leaflet esta dentro del repo, con su licencia, y es la version verificada
+  ✓ mapa.html carga Leaflet local, no de un CDN
+  ✓ La landing no carga nada de frontend-usuarios
+
+5b. Landing: datos reales, mapa publico y promesas honestas
+-----------------------------------------------------------
+  ✓ La landing tiene su propia copia identica de Leaflet
+  ✓ La landing carga Leaflet y su script de datos desde su propia carpeta
+  ✓ La landing no tiene la ficha inventada ni promesas que el sistema no cumple
+  ✓ Las cifras de la landing salen de la API publica, que no pide sesion
+  ✓ La landing ya no trae el script duplicado de registro
+
+6. Front: un solo menu y base compartida
+----------------------------------------
+  ✓ Cada pagina del menu de shell.js existe
+  ✓ Las paginas con menu lateral son las 26 de gestion (23 mas armar ruta, asignacion y cuadrillas)
+  ✓ Todas cargan shell.js
+  ✓ Ninguna tiene copiado el menu ni la hamburguesa
+  ✓ Las paginas con menu estan en el menu de shell.js
+  ✓ Todas cargan base.css justo antes de styles.css
+  ✓ El login no trae credenciales precargadas
+
+7. Login: politica de bloqueo por intentos
+------------------------------------------
+  ✓ Con 4 fallos no hay espera
+  ✓ Con 5 fallos hay que esperar hasta que el quinto salga de la ventana
+  ✓ Los fallos viejos (fuera de los 15 minutos) no cuentan
+  ✓ Con mas de 5 fallos manda el quinto mas reciente
+  ✓ Cuando el quinto fallo cumple los 15 minutos, se levanta
+  ✓ El email se normaliza: minusculas y sin espacios
+  ✓ Un valor que no es texto queda vacio
+  ✓ Un email enorme se recorta a 120 caracteres
+
+8. Permisos: la tabla, el router, el menu y las copias
+------------------------------------------------------
+  ✓ Cada recurso del router de gestion tiene su regla de permisos
+  ✓ Cada recurso del router de recoleccion tiene su regla de permisos
+  ✓ Camiones y cuadrillas ya no estan en api-gestion
+  ✓ Los camiones solo los lee un administrador
+  ✓ Las recolecciones las leen el administrador y la cuadrilla
+  ✓ Planificar y cancelar es solo del administrador
+  ✓ Los cuatro roles leen contenedores
+  ✓ Escribir contenedores es solo del administrador
+  ✓ El operario puede actualizar centros
+  ✓ Pero no darlos de baja
+  ✓ Un recurso que no existe no lo puede usar nadie
+  ✓ El menu no muestra pantallas cuya lectura la API le niega al rol
+  ✓ shell.js define las 26 pantallas de gestion
+  ✓ Cada pantalla de incidencias esta atada a su permiso de la API
+  ✓ core/Auth.php es identico en las tres APIs
+  ✓ core/Response.php es identico en las tres APIs
+  ✓ config/database.php es identico en api-gestion y api-recoleccion
+  ✓ core/ErrorDeNegocio.php es identico en api-gestion y api-recoleccion
+  ✓ models/Cuadrilla.php es identico en api-gestion y api-recoleccion
+  ✓ .htaccess es identico en api-gestion y api-recoleccion
+  ✓ La lista blanca del .htaccess son exactamente las aplicaciones
+
+9. Incidencias: el flujo de estados
+-----------------------------------
+  ✓ El numero de incidencia lleva cuatro cifras
+  ✓ Y no se trunca cuando crece
+  ✓ Que se puede hacer en cada estado: una cerrada no admite nada, un avance pide estar en curso
+  ✓ Una accion que no existe no se puede hacer
+  ✓ Asignar deja la incidencia en curso
+  ✓ Reasignar una en curso la deja en curso
+  ✓ Un avance no cambia el estado
+  ✓ Resolver la deja resuelta
+  ✓ Descartar la deja descartada
+  ✓ Cambiar la prioridad no cambia el estado
+  ✓ Abierta y en curso cuentan como abiertas; las finales no
+  ✓ El motivo de rechazo de una cerrada lo dice
+  ✓ El de un avance sobre una abierta pide asignarla primero
+
+10. Incidencias: quien ve y toca cada una
+-----------------------------------------
+  ✓ El administrador alcanza cualquiera
+  ✓ Una cuadrilla alcanza solo las asignadas a ella
+  ✓ Un integrante sin cuadrilla no alcanza ni las que no tienen cuadrilla
+  ✓ Un vecino alcanza solo las que informo el
+  ✓ El operario no alcanza ninguna
+  ✓ Un usuario sin rol tampoco
+  ✓ El administrador ve el historial completo, con quien informo
+  ✓ La cuadrilla no ve el nombre del vecino en el historial, solo su rol
+  ✓ Pero si el de quien asigno y quien trabajo
+  ✓ Y ningun asiento lleva el id de usuario
+  ✓ El vecino que informo se ve a si mismo
+  ✓ Otro vecino (si llegara a verlo) no ve el nombre
+  ✓ Al vecino el personal se le muestra por su rol, sin nombre (decision del 17/10)
+  ✓ Y tampoco lleva ningun id de usuario
+
+11. Incidencias: lo que le pasa al contenedor
+---------------------------------------------
+  ✓ Un desborde sobre un contenedor disponible lo pasa a lleno
+  ✓ Si ya estaba lleno no cambia nada
+  ✓ Ni si estaba en mantenimiento
+  ✓ Los otros problemas no tocan el estado
+  ✓ Cerrar la ultima incidencia devuelve a disponible un contenedor lleno o en mantenimiento
+  ✓ Si quedan otras abiertas sobre el, no se toca
+  ✓ Uno disponible o retirado no cambia
+
+12. Incidencias: validacion de lo que llega
+-------------------------------------------
+  ✓ Un reporte completo es valido
+  ✓ El contenedor puede venir por id, incluso como texto
+  ✓ La prioridad es opcional pero tiene que ser una conocida
+  ✓ Sin contenedor se pide el codigo
+  ✓ Un id de contenedor que no es positivo tampoco sirve
+  ✓ Un tipo desconocido se rechaza y lista los validos
+  ✓ Una descripcion de menos de 5 letras se rechaza
+  ✓ Una hecha de espacios cuenta como vacia: en «otro» se rechaza
+  ✓ Una descripcion que no es texto cuenta como vacia: en «otro» tambien se rechaza
+  ✓ En «otro» sin la clave «descripcion» tambien
+  ✓ En cualquier otro tipo, vacia, en blanco o ausente esta bien
+  ✓ Pero si se escribe algo en cualquier tipo, tiene que tener 5 caracteres o mas
+  ✓ Sin texto se guarda el rotulo del tipo; con texto, el texto sin espacios de los bordes
+  ✓ Cada tipo valido tiene su rotulo (y el mismo que usa la pantalla)
+  ✓ Pasarse de 500 caracteres se rechaza
+  ✓ 500 justos entran
+  ✓ Una prioridad inventada se rechaza
+  ✓ entero() acepta enteros positivos, tambien como texto
+  ✓ Y rechaza cero, negativos, decimales, texto y nulos
+  ✓ Una observacion obligatoria no puede venir vacia
+  ✓ Una opcional si
+  ✓ 300 caracteres entran y 301 no
+  ✓ limpiar() recorta el texto y deja vacio lo que no es texto
+
+13. Incidencias: filtros del listado
+------------------------------------
+  ✓ Sin filtros no hay nada que aplicar
+  ✓ Los vacios se ignoran
+  ✓ Estado, tipo, zona y periodo se aceptan
+  ✓ Un estado desconocido se rechaza
+  ✓ Una zona que no es un numero se rechaza
+  ✓ Una fecha imposible se rechaza
+  ✓ Una fecha en otro formato tambien
+  ✓ Un periodo al reves se rechaza
+  ✓ Un dia solo (desde = hasta) es un periodo valido
+  ✓ Un filtro que llega como lista no rompe nada
+
+14. Incidencias: permisos y consistencia con la base
+----------------------------------------------------
+  ✓ Ver incidencias: administrador, cuadrilla y vecino
+  ✓ Informar una incidencia es del vecino y de la cuadrilla (en terreno)
+  ✓ Cambiar la prioridad es solo del administrador
+  ✓ Nadie borra una incidencia
+  ✓ Asignar y descartar: administrador
+  ✓ Registrar un avance es de la cuadrilla
+  ✓ Resolver: administrador o cuadrilla
+  ✓ El operario no toca nada de incidencias ni de cuadrillas
+  ✓ Las cuadrillas (en api-recoleccion) se leen y se administran solo siendo administrador
+  ✓ Cada subrecurso de incidencias del router tiene su regla de permisos
+  ✓ Los estados del codigo son los del ENUM de schema.sql
+  ✓ Los tipos de problema del codigo son los del ENUM de schema.sql
+  ✓ Las prioridades del codigo son las del ENUM de schema.sql
+  ✓ schema.sql crea la tabla del historial y los cuatro triggers de solo agregado
+  ✓ Prioridad por tipo: desbordado alta, lleno media, roto media, residuo no permitido y otro baja
+  ✓ Todos los tipos tienen prioridad por defecto, y es una prioridad valida
+  ✓ Solo lo roto o danado es de mantenimiento
+  ✓ Derivar solo se puede con la incidencia abierta o en curso
+  ✓ Un lleno (aun sin desbordar) deja el contenedor en estado lleno si estaba disponible; si ya estaba en mantenimiento no lo toca
+  ✓ Derivar no cambia el estado de la incidencia (sigue abierta o en curso)
+  ✓ La cuadrilla alcanza lo que ella misma informo, aunque no sea suyo
+
+15. Recolecciones: el flujo de estados
+--------------------------------------
+  ✓ El numero de recoleccion lleva cuatro cifras
+  ✓ Que se puede hacer en cada estado
+  ✓ A donde lleva cada accion
+  ✓ Una accion desconocida no se puede en ningun estado
+  ✓ El motivo de rechazo distingue cerrada, ya iniciada y sin iniciar
+
+16. Recolecciones: quien alcanza cada una y el camion
+-----------------------------------------------------
+  ✓ El administrador alcanza cualquiera; la cuadrilla, solo las suyas
+  ✓ Solo un camion operativo puede salir
+  ✓ Al cerrar una que estaba en curso, el camion en ruta vuelve a operativo
+  ✓ Si no habia salido, o el camion ya cambio, no se toca
+
+17. Recolecciones: validacion de lo que llega
+---------------------------------------------
+  ✓ Una planificacion completa es valida
+  ✓ La fecha acepta el formato del navegador y el de la base
+  ✓ Fechas imposibles o mal escritas no pasan
+  ✓ Falta la ruta, el camion o la cuadrilla
+  ✓ Un centro que no es numero se rechaza; vacio se acepta
+  ✓ Observaciones de mas de 300 caracteres no
+  ✓ Un vaciado completo es valido, y sin volumen tambien
+  ✓ El peso es obligatorio, positivo y con tope
+  ✓ El volumen no puede ser negativo ni pasar la capacidad del contenedor
+  ✓ Sin contenedor no hay vaciado
+  ✓ Una ruta completa es valida
+  ✓ Al editar se valida solo lo que llega
+  ✓ Dia, hora, nombre, zona y estado invalidos
+
+18. Recolecciones: filtros y consistencia con la base
+-----------------------------------------------------
+  ✓ Filtros validos
+  ✓ Filtros invalidos: estado, numero, fecha y rango al reves
+  ✓ Los estados del codigo son los del ENUM de recoleccion
+  ✓ Los dias del codigo son los del ENUM de ruta
+
+10. Estadisticas: matematica basica
+-----------------------------------
+  ✓ Mediana de una cantidad impar
+  ✓ Mediana de una cantidad par
+  ✓ Mediana de nada
+  ✓ Promedio de nada
+  ✓ Redondea a un decimal
+  ✓ Doce horas entre dos fechas
+  ✓ Cruza la medianoche y cuenta dias
+  ✓ Sin fecha de resolucion no hay horas
+  ✓ Una resolucion anterior al reporte no cuenta
+  ✓ Una fecha rota no cuenta
+  ✓ Resumen de tiempos
+  ✓ Resumen de tiempos sin datos
+  ✓ El problema frecuente es el de mayor cantidad
+  ✓ En un empate gana el primero de la lista de tipos
+  ✓ Sin incidencias no hay problema frecuente
+
+11. Estadisticas: informe de incidencias de un periodo
+------------------------------------------------------
+  ✓ Totales por estado, abiertas (pendientes) y cerradas
+  ✓ Por prioridad
+  ✓ Por tipo, de mayor a menor
+  ✓ Tiempo de resolucion: solo cuentan las resueltas
+  ✓ Por zona, con su tiempo medio
+  ✓ Contenedores con mas incidencias y su problema mas frecuente
+  ✓ El detalle trae una fila por incidencia, con su numero
+  ✓ Y las horas de resolucion de las resueltas
+  ✓ La suma de las zonas es el total
+  ✓ La suma de los tipos es el total
+  ✓ Sin recortar el detalle
+  ✓ Un periodo sin incidencias da todo en cero
+  ✓ El detalle se corta en el maximo pero los totales cuentan todo
+  ✓ Una resuelta con fechas incoherentes cuenta como resuelta pero no entra en los tiempos
+
+12. Estadisticas: panel por urgencias
+-------------------------------------
+  ✓ Umbral por omision: 3 dias
+  ✓ Un umbral vacio tambien
+  ✓ Un umbral valido
+  ✓ El maximo de 60 dias
+  ✓ Cero, negativo, pasado de 60 o texto no sirven
+  ✓ Alta y vencida: critica
+  ✓ Alta sin vencer: urgente
+  ✓ Media vencida: urgente
+  ✓ Sin cuadrilla y sin vencer: atencion
+  ✓ Con cuadrilla y sin vencer: normal
+  ✓ A las 72 horas justas ya esta vencida (umbral de 3 dias)
+  ✓ Indicadores del panel
+  ✓ Orden: criticas (la mas vieja primero), urgentes, atencion y normales
+  ✓ Cada fila trae su nivel y sus dias
+  ✓ La lista se corta en las mas urgentes pero los indicadores cuentan todo
+  ✓ Sin incidencias abiertas el panel esta limpio
+
+13. Estadisticas: resumen de lo recolectado
+-------------------------------------------
+  ✓ Totales (un vaciado sin peso se cuenta aparte)
+  ✓ Por tipo de residuo, de mayor a menor peso
+  ✓ Por zona
+  ✓ La suma por tipo es el peso total
+  ✓ Sin recolecciones todo da cero
+  ✓ Los estados de recoleccion del resumen son los del flujo
+
+14. Listas: paginacion y busqueda
+---------------------------------
+  ✓ Sin 'pagina' no se pagina (el mapa y los formularios siguen recibiendo todo)
+  ✓ Con 'pagina' se pagina y el tamano por omision es 25
+  ✓ Tamano de pagina elegido
+  ✓ Una pagina '0' se rechaza
+  ✓ Una pagina '-1' se rechaza
+  ✓ Una pagina 'abc' se rechaza
+  ✓ Una pagina '1.5' se rechaza
+  ✓ Una pagina '' se rechaza
+  ✓ Una pagina '1000000000' se rechaza
+  ✓ Un por_pagina '0' se rechaza
+  ✓ Un por_pagina '101' se rechaza
+  ✓ Un por_pagina 'x' se rechaza
+  ✓ Un por_pagina suelto tambien pagina
+  ✓ Meta de la primera pagina
+  ✓ Meta de la ultima pagina
+  ✓ Meta de una pagina que no existe
+  ✓ Meta sin resultados
+  ✓ Meta con el total justo
+  ✓ Busqueda vacia = sin busqueda
+  ✓ Busqueda con espacios de mas
+  ✓ Busqueda demasiado larga
+  ✓ Busqueda que no es texto
+  ✓ % y _ del usuario no son comodines
+  ✓ La barra tambien se escapa
+  ✓ Paginacion es identica en api-gestion y api-usuarios
+
+15. Listas: filtros de usuarios y de contenedores
+-------------------------------------------------
+  ✓ Filtros de usuarios validos
+  ✓ Sin filtros
+  ✓ Un rol inexistente
+  ✓ Un estado inexistente
+  ✓ Un rol que es una lista
+  ✓ Filtros de contenedores validos
+  ✓ Filtro de contenedores invalido: {"estado":"volando"}
+  ✓ Filtro de contenedores invalido: {"zona":"abc"}
+  ✓ Filtro de contenedores invalido: {"zona":"0"}
+  ✓ Filtro de contenedores invalido: {"tipo":["x"]}
+  ✓ Filtro de contenedores invalido: {"q":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+
+16. Contenedores: validacion de los datos
+-----------------------------------------
+  ✓ Un alta completa sirve
+  ✓ Un alta con capacidad y ubicacion sirve
+  ✓ Una capacidad vacia es 'sin dato'
+  ✓ Falta codigo
+  ✓ Falta direccion
+  ✓ Codigo con espacios y simbolos
+  ✓ Codigo de mas de 30 caracteres
+  ✓ Direccion de mas de 200 caracteres
+  ✓ Capacidad invalida: '0'
+  ✓ Capacidad invalida: '-5'
+  ✓ Capacidad invalida: '1.5'
+  ✓ Capacidad invalida: 'mucha'
+  ✓ Capacidad invalida: '100001'
+  ✓ Capacidad invalida: 0
+  ✓ Capacidad invalida: -1
+  ✓ La capacidad maxima sirve
+  ✓ La capacidad minima sirve
+  ✓ Latitud sin longitud
+  ✓ Latitud fuera de rango
+  ✓ Longitud fuera de rango
+  ✓ Coordenadas que no son numeros
+  ✓ Un estado inexistente
+  ✓ Un alta sin zona ya no usa 'la primera'
+  ✓ Una zona por nombre sirve
+  ✓ Un alta sin tipo ya no usa 'Mixto'
+  ✓ Una zona que no es un numero
+  ✓ En una edicion no hace falta mandar todo
+  ✓ Pero lo que se manda se valida
+  ✓ Una edicion puede vaciar la ubicacion
+  ✓ Una edicion no puede dejar el codigo vacio
+
+17. Listas: pantallas que filtran y paginan en el servidor
+----------------------------------------------------------
+  ✓ contenedores.html carga lista.js antes de su propio script
+  ✓ usuarios.html carga lista.js antes de su propio script
+  ✓ reportes.html carga lista.js antes de su propio script
+  ✓ Las listas con filtros en el servidor ya no usan el buscador del navegador (ese filtraria solo la pagina)
+
+18. Validacion de centros, maquinaria y camiones
+------------------------------------------------
+  ✓ Campos es identico en api-gestion y api-recoleccion
+  ✓ Un centro completo sirve
+  ✓ Un centro solo con nombre sirve
+  ✓ Un centro sin nombre
+  ✓ Un nombre de mas de 120 caracteres
+  ✓ Un estado inventado ya no se cambia en silencio por 'activo'
+  ✓ Capacidad de centro invalida: '-1'
+  ✓ Capacidad de centro invalida: '0'
+  ✓ Capacidad de centro invalida: 'mucha'
+  ✓ Capacidad de centro invalida: 10000001
+  ✓ Capacidad de centro invalida: '1.5'
+  ✓ Latitud sin longitud en un centro
+  ✓ Una edicion parcial de un centro sirve
+  ✓ Una edicion no puede dejar el nombre vacio
+  ✓ Una maquinaria con codigo sirve
+  ✓ Una maquinaria sin codigo
+  ✓ Codigo de maquinaria con caracteres raros
+  ✓ Marca demasiado larga
+  ✓ Marca que no es texto
+  ✓ Un camion con matricula sirve
+  ✓ Un camion sin matricula
+  ✓ Matricula con simbolos
+  ✓ Matricula de mas de 20 caracteres
+  ✓ Capacidad de camion invalida
+  ✓ Estado de camion invalido
+  ✓ Una edicion de camion puede mandar solo el estado
+
+19. Clave de prueba del seed
+----------------------------
+  ✓ El seed tiene los 6 usuarios con hash bcrypt
+  ✓ La clave de prueba cumple la politica de contrasenas
+  ✓ Y la vieja de 6 caracteres no la cumple
+  ✓ Todos los usuarios del seed entran con la clave de prueba
+  ✓ Ninguno conserva la clave de 6 caracteres
+  ✓ Cada usuario tiene su propio hash (cada uno con su sal)
+
+20. Accesibilidad: estructura de cada pagina
+--------------------------------------------
+  ✓ Las 30 paginas cumplen lang, title, un h1, un main, viewport, alt, etiquetas, nombres y ids unicos
+  ✓ El foco visible esta en la base compartida y el movimiento reducido en los estilos del panel
+  ✓ La landing respeta el movimiento reducido
+
+22. Seguridad: auditoria y codigo compartido
+--------------------------------------------
+  ✓ POST con codigo 200 se registra
+  ✓ POST con codigo 201 se registra
+  ✓ PUT con codigo 204 se registra
+  ✓ DELETE con codigo 200 se registra
+  ✓ POST con codigo 403 se registra
+  ✓ PUT con codigo 403 se registra
+  ✓ GET con codigo 200 no se registra
+  ✓ GET con codigo 403 no se registra
+  ✓ POST con codigo 400 no se registra
+  ✓ POST con codigo 401 no se registra
+  ✓ POST con codigo 404 no se registra
+  ✓ DELETE con codigo 409 no se registra
+  ✓ POST con codigo 500 no se registra
+  ✓ OPTIONS con codigo 204 no se registra
+  ✓ La ruta se guarda sin parametros
+  ✓ Y sin el prefijo del alias
+  ✓ Una ruta con un id se conserva
+  ✓ Los caracteres de control no pasan (no se puede falsear una linea)
+  ✓ Una ruta enorme se corta en 200 caracteres
+  ✓ Una URI vacia queda en la raiz
+  ✓ Sin filtros
+  ✓ Filtros validos de auditoria
+  ✓ Filtro de auditoria invalido: {"usuario":"abc"}
+  ✓ Filtro de auditoria invalido: {"usuario":"0"}
+  ✓ Filtro de auditoria invalido: {"metodo":"GET"}
+  ✓ Filtro de auditoria invalido: {"metodo":["PUT"]}
+  ✓ Filtro de auditoria invalido: {"resultado":"quizas"}
+  ✓ Filtro de auditoria invalido: {"desde":"2026-13-01"}
+  ✓ Filtro de auditoria invalido: {"hasta":"ayer"}
+  ✓ Filtro de auditoria invalido: {"desde":"2026-10-10","hasta":"2026-10-01"}
+  ✓ Filtro de auditoria invalido: {"q":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+  ✓ core/Auditoria.php es identico en las tres APIs
+  ✓ core/Auth.php es identico en las tres APIs
+  ✓ core/Response.php es identico en las tres APIs
+  ✓ El .htaccess de las tres APIs es identico y manda el codigo interno al router
+  ✓ El .htaccess de la raiz pone las cabeceras de seguridad
+  ✓ Y la politica no admite codigo inline ni eval
+  ✓ Auth prende la cookie 'secure' con HTTPS y no acepta ids de sesion impuestos
+  ✓ Response solo lee JSON
+  ✓ El freno salta al llegar al maximo, no antes
+  ✓ La clave junta la accion y la IP y entra en la columna
+  ✓ Cada accion publica pide el freno
+  ✓ Una sesion sin actividad por mas de 2 horas esta vencida; con actividad reciente no; sin dato, no se juzga
+
+26. Operario: stock del centro (calculos puros)
+-----------------------------------------------
+  ✓ El stock es entradas menos salidas por tipo, sin restos de coma flotante
+  ✓ Sin movimientos no hay saldos
+  ✓ El total suma los tipos
+  ✓ 0,1 + 0,2 kg dan 0,3 (se redondea a 2 decimales)
+  ✓ La ocupacion es kg sobre capacidad, con un decimal
+  ✓ Sin capacidad cargada no hay ocupacion
+  ✓ Capacidad 0 tampoco
+  ✓ Ocupacion NULL % es nivel sin_capacidad
+  ✓ Ocupacion 0.0 % es nivel normal
+  ✓ Ocupacion 80.0 % es nivel normal
+  ✓ Ocupacion 80.1 % es nivel alerta
+  ✓ Ocupacion 99.9 % es nivel alerta
+  ✓ Ocupacion 100.0 % es nivel lleno
+  ✓ Ocupacion 120.5 % es nivel lleno
+  ✓ El aviso salta al PASAR del 80 % (con un decimal), no al llegar
+  ✓ Un peso valido: '12'
+  ✓ Un peso valido: '12.5'
+  ✓ Un peso valido: 12
+  ✓ Un peso valido: 0.25
+  ✓ Un peso valido: '1000000'
+  ✓ Un peso invalido: 0
+  ✓ Un peso invalido: "0"
+  ✓ Un peso invalido: -5
+  ✓ Un peso invalido: "-5"
+  ✓ Un peso invalido: "abc"
+  ✓ Un peso invalido: ""
+  ✓ Un peso invalido: null
+  ✓ Un peso invalido: "1.234"
+  ✓ Un peso invalido: 1.234
+  ✓ Un peso invalido: "1e3"
+  ✓ Un peso invalido: true
+  ✓ Un peso invalido: []
+  ✓ Un peso invalido: "1000001"
+  ✓ Un peso invalido: 2000000
+  ✓ Un peso invalido: "12,5"
+  ✓ Un peso invalido: " "
+  ✓ Retirar menos de lo que hay: sin error
+  ✓ Retirar todo lo que hay se puede
+  ✓ Retirar mas de lo que hay: error con las cifras
+  ✓ Un motivo inventado
+  ✓ Un peso de 0 no es un retiro
+  ✓ Retirar de un tipo sin stock
+  ✓ Corregir una entrada con stock de sobra: sin error
+  ✓ Corregir una entrada cuando ya salio parte: error
+  ✓ Corregir una salida siempre se puede (devuelve stock)
+  ✓ Un movimiento ya corregido no se corrige otra vez
+  ✓ Una correccion no se corrige
+  ✓ El inverso de una entrada es una salida y al reves
+
+26 bis. Operario: lineas de una recepcion
+-----------------------------------------
+  ✓ Dos tipos validos se normalizan
+  ✓ Sin lineas: error
+  ✓ No es una lista: error
+  ✓ Un tipo que no existe: error
+  ✓ Un tipo repetido: error
+  ✓ Un peso de cero: error
+  ✓ Un peso con texto: error
+  ✓ Una linea que no es un objeto: error
+  ✓ Demasiadas lineas: error
+  ✓ Nulo no es una lista de lineas
+  ✓ El numero de recoleccion tiene 4 cifras
+  ✓ Los kg se muestran sin ceros de mas
+
+26 ter. Operario: alcance por centro
+------------------------------------
+  ✓ El Operario llega a su centro
+  ✓ y no al de al lado
+  ✓ Un Operario sin centro no llega a ninguno
+  ✓ El centro del Operario sale como entero
+  ✓ El Administrador llega a todos y no esta atado a uno
+  ✓ El rol 'Cuadrilla' no llega a ningun centro
+  ✓ El rol 'Vecino' no llega a ningun centro
+  ✓ El rol '' no llega a ningun centro
+  ✓ El rol 'Otro' no llega a ningun centro
+
+26 quater. Operario: matriz de permisos nueva
+---------------------------------------------
+  ✓ GET centros/stock: lo pueden hacer el Administrador y el Operario
+  ✓ GET centros/movimientos: lo pueden hacer el Administrador y el Operario
+  ✓ POST centros/movimientos: lo pueden hacer el Administrador y el Operario
+  ✓ POST centros/correccion: lo pueden hacer el Administrador y el Operario
+  ✓ POST maquinaria/estado: lo pueden hacer el Administrador y el Operario
+  ✓ GET maquinaria/historial: lo pueden hacer el Administrador y el Operario
+  ✓ GET recepciones: lo pueden hacer el Administrador y el Operario
+  ✓ POST recepciones: lo pueden hacer el Administrador y el Operario
+  ✓ GET estadisticas/centro: lo pueden hacer el Administrador y el Operario
+  ✓ POST centros/stock: no lo puede hacer nadie
+  ✓ DELETE centros/movimientos: no lo puede hacer nadie
+  ✓ PUT centros/movimientos: no lo puede hacer nadie
+  ✓ DELETE recepciones: no lo puede hacer nadie
+  ✓ PUT recepciones: no lo puede hacer nadie
+  ✓ PUT maquinaria/estado: no lo puede hacer nadie
+  ✓ El Operario sigue sin poder crear ni borrar centros ni maquinaria
+
+28. Avisos: textos de cada evento
+---------------------------------
+  ✓ El aviso al vecino (en_curso) nombra el reclamo y entra en los limites
+  ✓ El aviso al vecino (resuelta) nombra el reclamo y entra en los limites
+  ✓ El aviso al vecino (descartada) nombra el reclamo y entra en los limites
+  ✓ Un estado raro no rompe: avisa que cambio
+  ✓ El aviso al vecino no nombra a la cuadrilla ni al personal (privacidad)
+  ✓ El aviso a la cuadrilla trae el numero y la direccion del contenedor
+  ✓ El de la recolecion trae numero, ruta y fecha
+  ✓ El de la incidencia critica va a los administradores con el numero
+  ✓ El del centro pasado del 80 % dice el porcentaje con coma
+  ✓ El del centro lleno pide retirar material
+  ✓ La fecha del aviso se escribe dia/mes/anio hora:minuto
+
+28 bis. Avisos: copias identicas
+--------------------------------
+  ✓ core/Notificador.php es identico en api-gestion y api-recoleccion
+
+47. Rutas: topes y esquema
+--------------------------
+  ✓ Limites.php es identico en api-gestion y api-recoleccion
+  ✓ Topes: 100 contenedores en servicio por zona (municipio) y 25 paradas por ruta
+  ✓ Los mensajes dicen el tope y la zona, y que hacer
+  ✓ Todas las migraciones estan registradas al final de schema.sql
+  ✓ La migracion 017 existe y schema.sql crea ruta_contenedor y las columnas del trazado de la ruta
+  ✓ Los dos seeds vacian ruta_contenedor antes de cargar
+  ✓ La autoprueba del conversor UTM a latitud/longitud pasa (ida y vuelta, arco de meridiano, escala)
+
+48. Trazado: firma, polilinea, tramos y calidad
+-----------------------------------------------
+  ✓ La firma de PHP coincide con la que calculo Python para las 40 rutas del seed de defensa
+  ✓ La firma cambia con un decimal de la septima cifra, y no con el mismo dato
+  ✓ Una firma es un sha256 (64 caracteres hexadecimales)
+  ✓ Polilinea codificada: el ejemplo clasico se decodifica a [lon, lat]
+  ✓ Polilinea de precision 6: ida y vuelta de cuatro puntos de Montevideo
+  ✓ Una polilinea truncada se rechaza
+  ✓ Tramos de a 10 puntos que se solapan en uno: 20 paradas son 3 pedidos (10, 10 y 2)
+  ✓ El ultimo punto de un tramo es el primero del siguiente
+  ✓ Casos borde: 10 paradas un tramo; 11 paradas dos; 2 paradas uno; 1 parada ninguno
+  ✓ El pedido a Valhalla es de camion, en kilometros, con polilinea de precision 6 y las dimensiones supuestas del recolector
+  ✓ La URL de OSRM lleva longitud,latitud separadas por punto y coma
+  ✓ Distancia: un grado de latitud son 111195 m
+  ✓ La recta de emergencia une las paradas, dice que es recta y no inventa una duracion ni un servicio
+  ✓ Calidad: paradas pegadas a la linea (5 m) estan bien
+  ✓ Calidad: una parada a casi 1 km de la linea se descarta, y el mensaje dice cuanto
+  ✓ Calidad: una linea sin puntos se descarta
+
+48 bis. Trazado: la cascada de servicios con respuestas simuladas
+-----------------------------------------------------------------
+  ✓ Por defecto (sin variable de entorno) el trazado es en linea recta y no pide nada a internet
+  ✓ Con SIGERU_TRAZADO_MODO=calles se piden las calles a los servicios
+  ✓ Valhalla responde: 20 paradas son 3 pedidos POST al primer servicio, y la ruta queda trazada por calles
+  ✓ La distancia y la duracion son la suma de los tramos (19 tramos de 0,25 km y 60 s)
+  ✓ Entre un pedido y el siguiente se espera al menos 1 segundo (politica: un pedido por segundo)
+  ✓ El primer punto de la linea es la primera parada y el ultimo la ultima
+  ✓ Si Valhalla falla, se pasa a OSRM de FOSSGIS y se anota por que fallo el primero
+  ✓ Si ninguno responde, cae a linea recta con un aviso y el detalle de cada intento
+  ✓ Una respuesta que no es JSON tambien cuenta como fallo
+  ✓ Una respuesta con una linea que no pasa por las paradas se descarta (y se cae a recta)
+  ✓ Con SIGERU_TRAZADO_MODO=recta no se llama a ningun servicio externo
+  ✓ Con menos de 2 paradas no hay que trazar: recta y aviso, sin pedidos
+  ✓ Las URL de los servicios no van fijas: se cambian por variable de entorno
+  ✓ Sin la variable vuelve la URL publica de FOSSGIS
+  ✓ El User-Agent identifica la aplicacion y no lleva correos
+
+49. Paradas de una ruta: forma del pedido
+-----------------------------------------
+  ✓ Una lista valida en orden, sin mover: sin error
+  ✓ Una lista vacia es valida (es como se vacia una ruta)
+  ✓ Los ids pueden venir como texto numerico
+  ✓ Con mover verdadero o falso
+  ✓ Falta la clave contenedores: rechazado
+  ✓ contenedores que no es una lista (un texto, un numero, un objeto con claves): rechazado
+  ✓ Un id que no es entero positivo (cero, negativo, texto, decimal, nulo, lista): rechazado
+  ✓ Ids repetidos: rechazado con un mensaje claro
+  ✓ «4» y 4 cuentan como repetidos
+  ✓ Justo el tope de paradas es valido
+  ✓ Una mas que el tope: rechazado con el mensaje del tope
+  ✓ mover que no es booleano (1, «si», null): rechazado
+  ✓ idsDe devuelve enteros en el mismo orden
+
+51. Prioridad de contenedores y de rutas
+----------------------------------------
+  ✓ Un contenedor disponible y sin incidencias: normal, 0 puntos, se recolecta
+  ✓ Un contenedor lleno: prioridad media, 50 puntos
+  ✓ Una incidencia «desbordado» abierta: prioridad alta, 100 puntos
+  ✓ Lleno y ademas desbordado puntua por lo mas grave (100), no se suman
+  ✓ Una incidencia «lleno» sobre un contenedor que figura disponible lo vuelve de prioridad media
+  ✓ Otras incidencias (mal ubicado, residuo no permitido, otro) no cambian la recoleccion
+  ✓ Un contenedor en mantenimiento o retirado no se recolecta y no suma
+  ✓ Un contenedor ROTO (incidencia abierta) no se recolecta aunque este lleno o desbordado: lo atiende mantenimiento
+  ✓ Una parada sin datos se toma como disponible sin incidencias
+  ✓ Una ruta toma el nivel mas alto de sus contenedores y suma sus puntos (lleno 50 + desbordado 100), contando aparte los que no se recolectan
+  ✓ Una ruta con solo llenos es de prioridad media
+  ✓ Una ruta sin nada urgente es normal; una ruta vacia tambien (sin dividir por cero)
+  ✓ Si lo unico urgente esta roto, la ruta NO sube de nivel (el camion no se lo lleva)
+  ✓ Los textos de prioridad
+  ✓ Orden: primero alta, despues media, despues normal
+  ✓ A igual nivel, gana el mayor puntaje (dos llenos antes que uno)
+  ✓ A igual puntaje, va antes la que hace mas dias que no se recolecta; una que nunca se recolecto va antes que todas
+  ✓ Si todo empata, el orden es por id (siempre el mismo)
+
+51 bis. Asignacion sugerida de cuadrillas y camiones
+----------------------------------------------------
+  ✓ Se empareja en orden: la primera ruta (la de mayor prioridad) con la primera cuadrilla y el primer camion
+  ✓ Si sobran cuadrillas, quedan libres para otras rutas y se avisa cuales
+  ✓ Si sobran rutas, las de menor prioridad quedan sin asignar y se avisa cuales; los camiones que sobran tambien
+  ✓ Sin rutas no hay propuestas y todo sobra
+  ✓ Sin cuadrillas libres no hay propuestas y las tres rutas quedan sin asignar
+  ✓ Fecha y hora: se arma «AAAA-MM-DD HH:MM:00» (la hora de la ruta puede traer segundos)
+  ✓ Una fecha que no existe o una hora imposible se rechazan
+  ✓ Un pedido de lote valido: sin error
+  ✓ Sin la clave, vacio o con claves sueltas: rechazado
+  ✓ Una asignacion incompleta dice cual es (la numero 2)
+  ✓ La misma ruta, cuadrilla o camion dos veces el mismo dia: rechazado, y dice cual
+  ✓ Pero la misma cuadrilla en dias distintos si se puede
+  ✓ Mas del maximo de asignaciones de una vez: rechazado
+
+51 ter. Sugerencia por municipio y turno
+----------------------------------------
+  ✓ Cada ruta recibe la cuadrilla de su municipio
+  ✓ Aunque las cuadrillas lleguen en otro orden, la de cada municipio sigue siendo la suya (antes se corrian un lugar)
+  ✓ Del propio municipio y en turno: ningun aviso
+  ✓ Si la cuadrilla del municipio no esta libre, la ruta queda sin asignar y no se le roba la de otro: 7 propuestas, la ruta 103 sin cuadrilla, nada sobra
+  ✓ Falta la cuadrilla del municipio 3 pero sobra la del 1: se ofrece a esa ruta, marcada «fuera de su municipio»; la del 2 va a su ruta
+  ✓ Entre una sin municipio y una del municipio de la ruta, gana la del municipio
+  ✓ Entre una sin municipio y una de OTRO municipio, gana la que no tiene municipio y no se marca como fuera de zona
+  ✓ Una cuadrilla del municipio 1 y dos rutas: la del municipio 1 la recibe (es de su municipio) y la mas urgente queda sin cuadrilla
+  ✓ Sin camiones libres no hay propuestas: las ocho rutas quedan sin asignar y las ocho cuadrillas sobran
+  ✓ Con 3 camiones entran las 3 rutas mas urgentes, en orden, cada una con su camion
+  ✓ Y las cinco rutas que no entran se avisan, y los camiones no sobran
+  ✓ Una ruta nocturna con una cuadrilla matutina: se propone igual, con aviso de turno
+  ✓ El turno de cada hora: 04:59 nocturno, 05:00 y 12:59 matutino, 13:00 y 20:59 vespertino, 21:00 y 00:00 nocturno
+  ✓ «06:30:00» tambien se entiende; una hora imposible o vacia no tiene turno
+  ✓ Si nadie trae municipio, se empareja en orden y no hay avisos
+  ✓ asignacion.js usa la misma tabla de turnos que Asignacion::TURNO_DESDE
+  ✓ Un municipio entero, vacio o ausente es valido
+  ✓ Un municipio que no es un numero entero positivo se rechaza
+  ✓ schema.sql y la migracion 020 crean cuadrilla.id_zona con su clave foranea fk_cuadrilla_zona
+  ✓ El seed de defensa le da municipio a las 8 cuadrillas
+
+45. Tema claro y oscuro: contraste AA
+-------------------------------------
+  ✓ Hay paleta clara, oscura por sistema y oscura forzada, y las dos oscuras son iguales
+  ✓ Paleta claro: 25 combinaciones de texto y fondo con contraste de al menos 4,5:1 (AA)
+  ✓ Paleta oscuro: 25 combinaciones de texto y fondo con contraste de al menos 4,5:1 (AA)
+  ✓ Cuenta a mano del contraste: blanco sobre negro = 21:1 y negro sobre negro = 1:1
+  ✓ El texto del menu lateral (#bcd6c8) sobre la barra tambien pasa en las dos paletas
+
+45 bis. Tema: tokens definidos, interruptor y paginas
+-----------------------------------------------------
+  ✓ Todos los colores y medidas que usan los estilos (var(--x)) estan definidos
+  ✓ Ningun fondo usa el blanco fijo: las superficies usan --superficie, que cambia con el tema
+  ✓ Los dos base.css siguen siendo identicos
+  ✓ El interruptor tiene tres estados (automatico, oscuro, claro) y no depende de localStorage para andar
+  ✓ El boton del tema tiene nombre accesible y no se imprime
+  ✓ Todas las pantallas cargan tema.js en el <head> (el tema se aplica antes de pintar)
+
+46. Pulido: errores, imagen para compartir, estados vacios e impresion
+----------------------------------------------------------------------
+  ✓ El .htaccess apunta 403, 404 y 500 a paginas propias dentro de la landing (que la lista blanca deja pasar)
+  ✓ Las tres paginas de error: titulo y codigo, sin datos internos, con rutas absolutas (se sirven bajo cualquier URL), accesibles y sin indexar
+  ✓ compartir.png es un PNG de 1200 x 630 (el tamano de las vistas previas)
+  ✓ Las paginas publicas (inicio y login) llevan las metaetiquetas de Open Graph y Twitter con su imagen
+  ✓ Los estados vacios usan ilustraciones propias (contenedor y lupa), no un icono generico
+  ✓ La impresion de Reportes: hoja apaisada, tabla de ancho fijo, botones de ordenar sin dibujo y siempre sobre fondo blanco (H11-1)
+  ✓ Los placeholders de las busquedas entran en el campo (34 caracteres o menos; H11-3)
+  ✓ El contenedor de las tablas es relative (los textos solo-lectores no ensanchan la pagina) y las acciones de fila pasan de renglon
+
+52. QR de los contenedores: el login vuelve a donde estaba
+----------------------------------------------------------
+  ✓ api.js tiene destinoSeguro e irAlLogin, y exigir() pasa por irAlLogin
+  ✓ destinoSeguro exige una pagina .html de la misma carpeta (sin barras, esquemas ni '..')
+  ✓ shell.js ya no manda al login a mano: las dos salidas usan Sesion.irAlLogin()
+  ✓ auth.js vuelve al destino seguro de ?volver= o, si no hay, al panel
+  ✓ informar-problema.js sigue leyendo ?contenedor= (es lo que abre el QR)
+  ✓ Existe la pagina de pruebas de la vuelta para el navegador
+  ✓ El generador de etiquetas arma el mismo enlace que lee la pantalla
+
+52 bis. Hallazgos de la evaluación heurística arreglados (23/10/2026)
+-----------------------------------------------------------------------
+  ✓ La prioridad del formulario arranca en «Según el problema» (valor vacío) y no en «Media»
+  ✓ Si la prioridad queda vacía no se manda, y el servidor aplica la del tipo (desbordado = alta)
+  ✓ El ejemplo del código del contenedor tiene la forma de los reales (MVD-...)
+  ✓ La confirmación le habla distinto a la cuadrilla (no «se va a asignar a una cuadrilla»)
+
+53. Compatibilidad con PHP 8.0 y hora de Uruguay
+------------------------------------------------
+  ✓ Se revisan los archivos PHP de las tres APIs y de la libreria de migraciones (mas de 50)
+  ✓ Ningun archivo usa funciones ni sintaxis posteriores a PHP 8.0
+  ✓ El detector marca cada una de las siete clases de cosas prohibidas
+  ✓ Y no marca una palabra suelta dentro de un mensaje o un comentario
+  ✓ Una lista con claves sueltas o saltadas no es una lista (rutas)
+  ✓ Una lista con claves sueltas o saltadas no es una lista (asignaciones)
+  ✓ Las tres APIs fijan America/Montevideo al arrancar
+  ✓ Las tres conexiones a la base fijan time_zone de la sesion (UTC-3 por defecto, SIGERU_DB_TZ para cambiarlo)
+
+9. Cedula: validacion y formato
+-------------------------------
+  ✓ Cedula valida: «1.234.567-2»
+  ✓ Cedula valida: «1234567-2»
+  ✓ Cedula valida: «12345672»
+  ✓ Cedula valida: « 1234567 2 »
+  ✓ Cedula valida: «41000019»
+  ✓ Cedula valida: «4.100.001-9»
+  ✓ Una cedula de 7 digitos tiene un solo verificador valido
+  ✓ Cedula invalida (verificador mal): «1234567-3»
+  ✓ Cedula invalida (faltaria un digito): «1234567»
+  ✓ Cedula invalida (demasiado larga): «123456789»
+  ✓ Cedula invalida (vacia): «»
+  ✓ Cedula invalida (letras): «abc»
+  ✓ Cedula invalida (muy corta): «12345»
+  ✓ Cedula invalida (con letras): «1.234.56-72a»
+  ✓ Un valor que no es texto no es cedula
+  ✓ Null tampoco
+  ✓ Un entero con una cedula valida sirve
+  ✓ Normalizar deja solo los digitos
+  ✓ Normalizar no inventa digitos
+  ✓ Sin digitos, soloDigitosCedula devuelve null
+  ✓ Cada cuerpo tiene un solo verificador valido
+
+9b. Cedula: esquema, migracion, semillas y pantallas
+----------------------------------------------------
+  ✓ schema.sql: usuario.cedula es unica
+  ✓ schema.sql: solicitud_registro.cedula tiene indice
+  ✓ schema.sql registra la migracion 022
+  ✓ La migracion 022 se puede repetir (guardas con information_schema)
+  ✓ La migracion 022 no usa IF NOT EXISTS de MariaDB
+  ✓ datos_prueba.sql: las cuadrillas del seed traen cedula
+  ✓ datos_prueba.sql: todas las cedulas del seed son validas
+  ✓ datos_defensa.sql: las cuadrillas del seed traen cedula
+  ✓ datos_defensa.sql: todas las cedulas del seed son validas
+  ✓ El login tiene la pestania de cuadrilla (cedula)
+  ✓ El login ya no usa una imagen fija de fondo
+  ✓ El login anima la calle y tiene el boton de pausa
+  ✓ El login manda cedula (no email) en la pestania de cuadrilla
+  ✓ El pedido de cuadrilla pide la cedula, obligatoria
+  ✓ El pedido de cuadrilla manda la cedula solo con digitos
+  ✓ Usuarios del administrador tiene el campo de cedula
+  ✓ Solicitudes del administrador muestra y confirma la cedula
+  ✓ login.html: el panel animado tiene boton de pausa y el script que lo maneja
+  ✓ registro.html: el panel animado tiene boton de pausa y el script que lo maneja
+  ✓ acceso-cuadrilla.html: el panel animado tiene boton de pausa y el script que lo maneja
+  ✓ acceso.css respeta «reducir movimiento» en todo lo que se anima
+  ✓ acceso.css: el fondo del panel no depende de --verde-oscuro (se aclara en modo oscuro)
+
+54. Capacidad del contenedor (DEF-16) y descarga del informe en CSV (DEF-17)
+----------------------------------------------------------------------------
+  ✓ El campo capacidad existe en el formulario de contenedores
+  ✓ Ya no es de tipo number (el navegador descartaba las letras sin avisar)
+  ✓ Es de texto con teclado numerico y acepta solo digitos
+  ✓ Los digitos que no cumplen el patron tienen un mensaje propio
+  ✓ La pantalla Reportes tiene el boton para descargar el CSV
+  ✓ Y carga csv.js antes de reportes.js
+  ✓ El CSV usa punto y coma y fin de linea de Windows (como espera una planilla en espanol)
+  ✓ El archivo lleva la marca UTF-8 para que se lean las tildes
+  ✓ Las comillas se duplican y los textos con ; o saltos de linea van entre comillas
+  ✓ Un texto que empieza con = + - @ no se toma como formula en la planilla
+  ✓ El boton descarga el detalle del informe que esta en pantalla
+  ✓ Avisa si el detalle esta cortado o si no hay incidencias
+  ✓ El boton queda oculto al imprimir (la barra superior no se imprime)
+
+==================================================
+Pasaron: 677   Fallaron: 0
+Todo verde.

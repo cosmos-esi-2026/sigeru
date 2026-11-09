@@ -2,7 +2,7 @@
 documento: Adenda de alcance — tercera entrega
 sistema: SiGeRU
 fecha: 2026-10-17
-estado: BORRADOR para revisión del equipo (el 25/10 se agregó la simplificación, secciones 11 a 14; secciones 1 a 5: sesión autónoma del 17/10; secciones 6 a 10: sesión autónoma del 19/10, partes 12 a 22; no hay PDF todavía)
+estado: BORRADOR para revisión del equipo (secciones 1 a 15: registro histórico de octubre; sección 16: control de vigencia del 06/11; el total de PF no está validado para la versión actual)
 ---
 
 # Adenda de alcance — 3ra entrega
@@ -11,6 +11,8 @@ Esta adenda hace lo que dejó pendiente la parte 10 del plan: **medir en puntos 
 octubre y que no estaba en los 228 PF del 02/09** (ni en los 252 con maquinaria), y registrar **qué se hizo, qué se
 hizo distinto a la especificación y qué no se hizo**. Sigue el método de la adenda de maquinaria (IFPUG, factor de
 ajuste 1,10 sin cambios). **Es una estimación mía: conviene que la revise quien firma la medición.**
+
+**Estado al 06/11/2026:** los conteos y las funciones de las secciones 1 a 15 muestran cómo fue cambiando el proyecto; no son una medición cerrada del sistema actual. La sección 16 señala los cambios posteriores y la sección 17 trae el recálculo completo del 06/11/2026. El total vigente es el de la sección 17, no los 432 PF de la sección 15.
 
 ## 1. Qué se agregó desde el 14/09
 
@@ -256,3 +258,189 @@ Se sacó el correo del sistema (bienvenida, enlace de acceso y «Olvidé mi cont
 - **Conteo acumulado hoy:** 399 − 6 = **393** sin ajustar y **432** ajustados (× 1,10). Sigue siendo una estimación **pendiente de revisión del equipo**.
 - **Modelo de datos:** 21 tablas del modelo y 26 con las técnicas (sale `enlace_clave`); migraciones 001 a 003, 005 a 011, 014 y 017 a 020 (se borró la 004).
 - Las menciones al «correo de acceso» en las secciones 2 a 8 describen lo que se hizo el 16-17/10 y ya no rigen.
+
+## 16. Control de vigencia al 06/11/2026
+
+El 30/10 se retiraron la foto de la incidencia, la consulta «¿Cuándo pasa el camión por mi zona?» y las descargas CSV de Usuarios y Contenedores. El 03/11 volvió una descarga CSV en **Reportes**, limitada al detalle visible de incidencias (hasta 1000 filas). Esto está documentado en `programacion-full-stack/ampliacion-simplificacion-2-3ra.md`, `frontend-usuarios/reportes.html`, `frontend-usuarios/js/reportes.js` y `api-gestion/models/Estadisticas.php`.
+
+Por esos cambios, los 393 PF sin ajustar y 432 ajustados de la sección 15 incluyen funciones que ya no están, y el CSV de Reportes cambió después. No corresponde restar cifras a ojo, así que en la sección 17 se volvió a contar todo el sistema actual, proceso por proceso.
+
+El modelo físico actual tiene 25 tablas: 21 del dominio y cuatro de soporte. El diseño actualizado de clases, casos de uso y paquetes está en `ingenieria-software/Diseno_del_Sistema_SiGeRU_v3.pdf` y `ingenieria-software/Casos_de_Uso_SiGeRU_v3.pdf`; la frase de la sección 13 sobre el diagrama de 16 clases quedó histórica. La ERS v3 registra también las funciones retiradas.
+
+## 17. Recálculo de puntos de función al 06/11/2026
+
+Se contó de nuevo todo el sistema que se entrega, sin partir de los conteos anteriores. Se usaron las rutas de las tres APIs (`api-usuarios`, `api-gestion` y `api-recoleccion`), las pantallas de `frontend-usuarios` y las 25 tablas de `schema.sql`. Los pesos son los de IFPUG (ILF 7/10/15; EI 3/4/6; EO 4/5/7; EQ 3/4/6) y la complejidad sale de las tablas de FTR y DET de IFPUG.
+
+**Criterios.** Un proceso elemental es una operación que el usuario reconoce como una unidad (alta, modificación, baja, consulta o informe). La lista y la ficha de un mismo recurso se cuentan por separado solo cuando devuelven datos distintos. Los grupos de tablas que se leen y se escriben juntos son un solo archivo lógico con sus RET: por ejemplo, la incidencia con su historial. Las tablas técnicas (`migracion`, `intento_login`, `limite_peticion` y `auditoria`) no son archivos lógicos. No hay archivos de interfaz externos: los mosaicos del mapa son de OpenStreetMap y el sistema solo los muestra. Las altas, modificaciones y bajas de zonas, tipos de residuo, camiones y cuadrillas se cuentan como 3 procesos de la misma complejidad. No se cuentan cerrar sesión ni consultar la sesión actual, que son parte del acceso.
+
+**Archivos lógicos internos (14 × 7 = 98 PF).** Todos son de complejidad baja (1 a 2 RET y menos de 20 DET):
+
+| N.º | Archivo lógico | PF |
+|---|---|---|
+| 1 | Usuario (con su rol) | 7 |
+| 2 | Solicitud de registro | 7 |
+| 3 | Cuadrilla | 7 |
+| 4 | Contenedor (con su estado) | 7 |
+| 5 | Camión | 7 |
+| 6 | Centro de acopio | 7 |
+| 7 | Zona | 7 |
+| 8 | Tipo de residuo | 7 |
+| 9 | Maquinaria (con su historial) | 7 |
+| 10 | Ruta (con sus paradas) | 7 |
+| 11 | Recolección (con sus vaciados) | 7 |
+| 12 | Incidencia (con su historial) | 7 |
+| 13 | Recepción (con sus movimientos de stock) | 7 |
+| 14 | Notificación | 7 |
+
+**Procesos elementales.** FTR = archivos referenciados; DET = campos que cruzan el límite del sistema.
+
+*Usuarios y acceso*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar un usuario (administrador) | EI | 3 | 9 | Alta | 6 |
+| Modificar un usuario o restablecer su clave | EI | 3 | 10 | Alta | 6 |
+| Dar de baja un usuario | EI | 1 | 2 | Baja | 3 |
+| Enviar una solicitud de registro (público) | EI | 1 | 7 | Baja | 3 |
+| Aprobar o rechazar una solicitud | EI | 2 | 5 | Media | 4 |
+| Iniciar sesión (correo o cédula) | EI | 1 | 3 | Baja | 3 |
+| Consultar usuarios con filtros | EQ | 2 | 9 | Media | 4 |
+| Ver un usuario | EQ | 2 | 10 | Media | 4 |
+| Consultar solicitudes de registro | EQ | 1 | 8 | Baja | 3 |
+| Consultar el registro de auditoría | EQ | 1 | 7 | Baja | 3 |
+
+*Notificaciones*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Marcar una notificación como leída | EI | 1 | 2 | Baja | 3 |
+| Marcar todas como leídas | EI | 1 | 1 | Baja | 3 |
+| Consultar mis notificaciones | EQ | 1 | 6 | Baja | 3 |
+
+*Contenedores*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar un contenedor | EI | 3 | 9 | Alta | 6 |
+| Modificar un contenedor | EI | 3 | 9 | Alta | 6 |
+| Dar de baja un contenedor | EI | 2 | 3 | Baja | 3 |
+| Consultar contenedores con filtros | EQ | 2 | 9 | Media | 4 |
+| Ver la ficha de un contenedor | EQ | 2 | 10 | Media | 4 |
+| Consultar el historial de un contenedor | EQ | 2 | 7 | Media | 4 |
+
+*Centros de acopio*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar un centro | EI | 2 | 6 | Media | 4 |
+| Modificar un centro | EI | 2 | 6 | Media | 4 |
+| Dar de baja un centro | EI | 1 | 2 | Baja | 3 |
+| Consultar centros | EQ | 2 | 7 | Media | 4 |
+| Ver un centro | EQ | 2 | 8 | Media | 4 |
+| Ver el stock y los movimientos de un centro | EQ | 3 | 9 | Media | 4 |
+| Retirar material del centro | EI | 2 | 5 | Media | 4 |
+| Corregir un movimiento de stock | EI | 2 | 4 | Baja | 3 |
+| Confirmar una recepción en el centro | EI | 3 | 6 | Alta | 6 |
+| Consultar recepciones | EQ | 2 | 8 | Media | 4 |
+| Ver el detalle de una recepción | EQ | 3 | 8 | Media | 4 |
+
+*Maquinaria*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar una máquina | EI | 2 | 6 | Media | 4 |
+| Modificar una máquina | EI | 2 | 6 | Media | 4 |
+| Dar de baja una máquina | EI | 1 | 2 | Baja | 3 |
+| Cambiar el estado de una máquina (con nota) | EI | 2 | 4 | Baja | 3 |
+| Consultar maquinaria | EQ | 2 | 7 | Media | 4 |
+| Consultar el historial de una máquina | EQ | 2 | 6 | Media | 4 |
+
+*Tablas de apoyo*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar, modificar o dar de baja una zona (3 procesos) | EI | 1 | 3 | Baja | 9 |
+| Consultar zonas | EQ | 1 | 4 | Baja | 3 |
+| Registrar, modificar o dar de baja un tipo de residuo (3 procesos) | EI | 1 | 3 | Baja | 9 |
+| Consultar tipos de residuo | EQ | 1 | 4 | Baja | 3 |
+
+*Incidencias*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Informar un problema sobre un contenedor | EI | 3 | 7 | Alta | 6 |
+| Asignar una incidencia a una cuadrilla | EI | 3 | 5 | Alta | 6 |
+| Derivar una incidencia | EI | 2 | 4 | Baja | 3 |
+| Registrar un avance (cuadrilla) | EI | 2 | 4 | Baja | 3 |
+| Resolver una incidencia | EI | 2 | 5 | Media | 4 |
+| Descartar una incidencia | EI | 2 | 4 | Baja | 3 |
+| Cambiar la prioridad de una incidencia | EI | 1 | 2 | Baja | 3 |
+| Consultar incidencias (administrador, cuadrilla y vecino) | EQ | 3 | 12 | Media | 4 |
+| Ver el detalle y el historial de una incidencia | EQ | 3 | 14 | Media | 4 |
+
+*Camiones y cuadrillas*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar, modificar o dar de baja un camión (3 procesos) | EI | 1 | 5 | Baja | 9 |
+| Consultar camiones | EQ | 1 | 6 | Baja | 3 |
+| Registrar, modificar o dar de baja una cuadrilla (3 procesos) | EI | 2 | 5 | Media | 12 |
+| Consultar cuadrillas | EQ | 1 | 6 | Baja | 3 |
+
+*Rutas*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Registrar una ruta | EI | 2 | 8 | Media | 4 |
+| Modificar una ruta | EI | 2 | 8 | Media | 4 |
+| Dar de baja una ruta | EI | 1 | 2 | Baja | 3 |
+| Definir los contenedores de una ruta | EI | 2 | 4 | Baja | 3 |
+| Consultar rutas | EQ | 2 | 7 | Media | 4 |
+| Ver el detalle de una ruta | EQ | 3 | 9 | Media | 4 |
+| Consultar contenedores candidatos para una ruta | EQ | 2 | 6 | Media | 4 |
+| Calcular el trazado de una ruta | EO | 2 | 8 | Media | 5 |
+
+*Recolecciones*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Planificar una recolección (ruta, camión, cuadrilla, fecha) | EI | 4 | 8 | Alta | 6 |
+| Iniciar una recolección | EI | 2 | 4 | Baja | 3 |
+| Registrar un vaciado (contenedor, peso, volumen) | EI | 2 | 5 | Media | 4 |
+| Finalizar una recolección | EI | 2 | 4 | Baja | 3 |
+| Cancelar una recolección | EI | 2 | 3 | Baja | 3 |
+| Consultar recolecciones | EQ | 3 | 10 | Media | 4 |
+| Ver una recolección con sus vaciados | EQ | 3 | 12 | Media | 4 |
+| Consultar las tareas asignadas | EQ | 3 | 9 | Media | 4 |
+| Consultar mis rutas (cuadrilla) | EQ | 3 | 9 | Media | 4 |
+
+*Mapas e informes*
+
+| Proceso elemental | Tipo | FTR | DET | Complejidad | PF |
+|---|---|---|---|---|---|
+| Mapa interactivo (contenedores, centros e incidencias) | EQ | 3 | 9 | Media | 4 |
+| Mapa público y cifras de la página de inicio | EQ | 5 | 9 | Alta | 6 |
+| Panel por urgencias (nivel calculado y orden) | EO | 4 | 12 | Alta | 7 |
+| Informe de incidencias por período y zona | EO | 3 | 10 | Media | 5 |
+| Resumen de lo recolectado (kg y litros por tipo y zona) | EO | 4 | 8 | Alta | 7 |
+| Descargar el informe de incidencias en CSV | EO | 3 | 10 | Media | 5 |
+| Panel del centro del operario (ocupación y avisos) | EO | 3 | 8 | Media | 5 |
+
+**Resultado.**
+
+| Tipo | Procesos | PF |
+|---|---|---|
+| Entradas externas (EI) | 49 | 184 |
+| Salidas externas (EO) | 6 | 34 |
+| Consultas externas (EQ) | 30 | 115 |
+| Archivos lógicos internos (ILF) | 14 | 98 |
+| **Total sin ajustar** | | **431** |
+| **Total ajustado (× 1,10)** | | **474** |
+
+**Por qué no se parece al 393 de antes.** El conteo de la sección 15 venía de sumar a un conteo base de septiembre (24 procesos y 12 archivos) las partes que se fueron agregando, y después restar a ojo lo que se sacó. El de ahora cuenta cada operación de las APIs como un proceso, así que las altas, modificaciones y bajas aparecen por separado y los 431 PF no son comparables con los 393. No quiere decir que el sistema haya crecido: cambió el nivel de detalle con que se cuenta.
+
+**Qué no se cuenta.** Las funciones retiradas (foto de la incidencia, consulta del próximo pasaje, calificación, puntos, predicción de llenado, ruta sugerida, impacto ambiental, guía, reporte en PDF, correo y recuperación de clave), la descarga CSV de usuarios y de contenedores, y los requerimientos no funcionales (modo oscuro, páginas de error, imagen para compartir). Tampoco se cuentan las funciones técnicas de las pruebas ni las migraciones.
+
+**Factor de ajuste.** Se mantiene el 1,10 de los conteos anteriores; no se volvieron a evaluar las 14 características generales del sistema.
+
+**Límite.** Los FTR y DET se tomaron de las columnas de las tablas y de lo que reciben y devuelven las rutas, no de revisar cada campo de cada pantalla. Por eso el total es una estimación con el criterio de quien la hizo, y puede variar unos puntos si otra persona cuenta distinto. Sigue valiendo la advertencia de siempre: no es productividad medida.

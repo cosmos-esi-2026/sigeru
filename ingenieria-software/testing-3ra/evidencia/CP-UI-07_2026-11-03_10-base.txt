@@ -1,0 +1,5 @@
+CP-UI-07 - estado final en la base, 03/11/2026 ~16:19
+id_recoleccion	estado	fecha_hora_inicio	fecha_hora_fin	matricula	estado_camion
+11	finalizada	2026-11-03 16:17:59	2026-11-03 16:18:39	SBD-3456	operativo
+id_recoleccion	id_contenedor	peso_kg
+11	6	120.00

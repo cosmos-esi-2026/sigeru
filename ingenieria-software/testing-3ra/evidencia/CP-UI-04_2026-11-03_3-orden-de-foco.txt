@@ -1,0 +1,23 @@
+CP-UI-04 - 03/11/2026 ~16:19 - sesion de vecino@sigeru.uy, pagina informar-problema.html
+Orden en que recibe el foco el teclado (tecla Tab, registrado con un escuchador de focusin en la consola):
+1. A Saltar al contenido
+2. A SiGeRU
+3. A Inicio
+4. A Mapa
+5. A Informar un problema
+6. A Mis reclamos
+7. A btn-salir (Cerrar sesion)
+8. BUTTON Avisos
+9. BUTTON btn-ubicacion (Buscar los mas cercanos a mi)
+10. INPUT codigo_contenedor
+11. A buscarlo en el mapa
+12. INPUT tipo_problema (grupo de opciones)
+13. TEXTAREA descripcion
+14. SUMMARY Mas opciones
+15. BUTTON Enviar el reporte
+16. A Cancelar
+17. BUTTON Tema de colores
+18. vuelve a empezar: A Saltar al contenido ...
+Enter sobre "Enviar el reporte" con el formulario vacio: el foco pasa al campo codigo_contenedor, que queda con aria-invalid; tambien se marcan las 6 opciones de tipo_problema ("Completa este campo", "Elegi una opcion").
+Completado solo con teclado: codigo CNT-004, Tab Tab + barra espaciadora elige "Desbordado" (valor desbordado, marcado), Tab Tab Tab + Enter envia. Se creo INC-0007 y el foco queda en el panel de confirmacion (SECTION panel-confirmacion).
+No probado en esta corrida: la tecla Escape (no habia ningun cuadro de dialogo abierto en este recorrido).

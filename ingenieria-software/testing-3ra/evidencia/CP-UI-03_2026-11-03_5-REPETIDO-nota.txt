@@ -1,0 +1,3 @@
+CP-UI-03 repetido con el arreglo de DEF-16 - 03/11/2026 ~16:28 - sesion de admin@sigeru.uy
+El campo capacidad ahora es de texto con teclado numerico y patron [0-9]+. Se escribio abc: al guardar el campo se marca con «Escribí solo números enteros, sin letras, puntos ni signos.» y no se crea el contenedor (consulta a la base: 0 filas con ese codigo).
+Patron del navegador: 1.5 y -5 se rechazan en pantalla; 0, 1, 100000, 100001 y vacio pasan el patron y los valida el servidor (0 y 100001 dan 400, probado por HTTP 22f y unitarias 16). La captura esta en CP-UI-03_..._4-REPETIDO-con-arreglo-aviso-en-capacidad.jpg

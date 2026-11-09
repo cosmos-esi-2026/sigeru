@@ -1,0 +1,1182 @@
+﻿SiGeRU - Tests de la API
+========================
+
+0. El entorno esta levantado
+----------------------------
+  ✓ La API de gestion responde
+  ✓ La API de recoleccion responde
+  ✓ La API de usuarios responde
+
+1. Control de acceso
+--------------------
+  ✓ Sin sesion no se puede listar usuarios
+  ✓ Sin sesion no se puede crear un administrador
+  ✓ Falsificar la cabecera de rol ya no sirve
+  ✓ Con sesion de administrador si se puede listar
+  ✓ Un vecino no puede listar usuarios
+  ✓ Un vecino no puede crear contenedores
+  ✓ Un vecino si puede consultar contenedores
+  ✓ La sesion sirve tambien en la otra API
+
+2. Alta valida
+--------------
+  ✓ Crear un contenedor devuelve 201
+  ✓ El contenedor creado vuelve con su codigo
+  ✓ El contenedor persiste entre peticiones
+  ✓ Y conserva la capacidad guardada
+  ✓ El alta genera historial de estado
+
+3. Alta duplicada
+-----------------
+  ✓ Un codigo repetido devuelve 409
+  ✓ Una matricula repetida devuelve 409
+  ✓ Un email repetido devuelve 409
+
+4. Validaciones
+---------------
+  ✓ Falta la direccion: 400
+  ✓ Un estado inexistente: 400
+  ✓ Un rol inexistente: 400
+  ✓ Un email sin formato valido: 400
+  ✓ Modificar con un email invalido: 400
+  ✓ Una solicitud de registro con email invalido: 400
+  ✓ Un id que no existe: 404
+  ✓ Contrasena incorrecta: 401
+  ✓ Un admin no puede darse de baja a si mismo: 409
+
+5. Baja logica
+--------------
+  ✓ La baja devuelve 200
+  ✓ El contenedor queda 'retirado', no borrado
+  ✓ La fila sigue existiendo despues de la baja
+  ✓ Dar de baja dos veces: 409
+
+6. Maquinaria de los centros de acopio
+--------------------------------------
+  ✓ Un vecino ya no puede consultar maquinaria (se cerro en la 3ra entrega)
+  ✓ Un vecino no puede crear maquinaria
+  ✓ Crear una maquinaria devuelve 201
+  ✓ Y vuelve con el NOMBRE de su centro, no solo el id
+  ✓ Un codigo de maquinaria repetido devuelve 409
+  ✓ Una maquina sin centro de acopio: 400
+  ✓ Un tipo de maquinaria inexistente: 400
+  ✓ Modificar la maquinaria devuelve 200
+  ✓ Y el cambio de estado quedo guardado
+  ✓ La baja de maquinaria devuelve 200
+  ✓ La maquina queda 'fuera_servicio', no borrada
+  ✓ Dar de baja la maquinaria dos veces: 409
+
+7. Solicitudes de registro
+--------------------------
+  ✓ El registro publico crea una solicitud (201)
+  ✓ Y queda PENDIENTE, no crea un usuario activo
+  ✓ Aprobar sin definir la contrasena inicial: 400
+  ✓ Aprobar con una contrasena de menos de 8 caracteres: 400
+  ✓ Y la solicitud sigue pendiente
+  ✓ Aprobar la solicitud devuelve 200
+  ✓ Y crea el usuario
+  ✓ Que queda activo, sin pasos intermedios
+  ✓ Y entra con la contrasena que definio el administrador
+  ✓ Aprobarla de nuevo: 409
+
+7b. Contrasena que define el administrador
+------------------------------------------
+  ✓ Crear una cuenta sin contrasena: 400
+  ✓ Crear una cuenta con menos de 8 caracteres: 400
+  ✓ Un vecino no puede crear cuentas: 403
+  ✓ El administrador crea la cuenta (201)
+  ✓ Queda activa
+  ✓ La respuesta no devuelve la contrasena ni su hash
+  ✓ Entra con la contrasena inicial
+  ✓ Restablecer con menos de 8 caracteres: 400
+  ✓ Un vecino no puede restablecer la de otro: 403
+  ✓ El administrador restablece la contrasena (200)
+  ✓ La contrasena vieja ya no sirve: 401
+  ✓ La nueva si
+  ✓ Editar sin tocar la contrasena (200)
+  ✓ Y la contrasena sigue siendo la misma
+  ✓ /api-usuarios/crear-clave ya no existe: 404
+  ✓ /api-usuarios/recuperar-clave ya no existe: 404
+  ✓ Tampoco el envio de enlaces: 404
+  ✓ Se da de baja a la cuenta de prueba
+  ✓ Una cuenta dada de baja no entra: 401
+
+8. Matriz de permisos por rol
+-----------------------------
+  ✓ GET /api-gestion/contenedores
+  ✓ GET /api-gestion/contenedores/1/historial
+  ✓ GET /api-recoleccion/camiones
+  ✓ GET /api-recoleccion/rutas
+  ✓ GET /api-recoleccion/recolecciones
+  ✓ GET /api-gestion/centros
+  ✓ GET /api-gestion/maquinaria
+  ✓ GET /api-gestion/tipos-residuo
+  ✓ GET /api-gestion/zonas
+  ✓ GET /api-recoleccion/cuadrillas
+  ✓ GET /api-gestion/incidencias
+  ✓ GET /api-usuarios/usuarios
+  ✓ GET /api-usuarios/solicitudes
+  ✓ POST /api-gestion/contenedores solo lo puede hacer un administrador
+  ✓ PUT /api-gestion/contenedores/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-gestion/contenedores/99999 solo lo puede hacer un administrador
+  ✓ POST /api-recoleccion/camiones solo lo puede hacer un administrador
+  ✓ PUT /api-recoleccion/camiones/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-recoleccion/camiones/99999 solo lo puede hacer un administrador
+  ✓ POST /api-gestion/centros solo lo puede hacer un administrador
+  ✓ DELETE /api-gestion/centros/99999 solo lo puede hacer un administrador
+  ✓ POST /api-gestion/maquinaria solo lo puede hacer un administrador
+  ✓ PUT /api-gestion/maquinaria/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-gestion/maquinaria/99999 solo lo puede hacer un administrador
+  ✓ POST /api-gestion/tipos-residuo solo lo puede hacer un administrador
+  ✓ PUT /api-gestion/tipos-residuo/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-gestion/tipos-residuo/99999 solo lo puede hacer un administrador
+  ✓ POST /api-gestion/zonas solo lo puede hacer un administrador
+  ✓ PUT /api-gestion/zonas/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-gestion/zonas/99999 solo lo puede hacer un administrador
+  ✓ POST /api-usuarios/usuarios solo lo puede hacer un administrador
+  ✓ PUT /api-usuarios/usuarios/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-usuarios/usuarios/99999 solo lo puede hacer un administrador
+  ✓ POST /api-recoleccion/rutas solo lo puede hacer un administrador
+  ✓ PUT /api-recoleccion/rutas/99999 solo lo puede hacer un administrador
+  ✓ DELETE /api-recoleccion/rutas/99999 solo lo puede hacer un administrador
+  ✓ Un operario puede actualizar la capacidad de un centro
+  ✓ Y el cambio quedo guardado
+  ✓ Reenviar el mismo estado no es un cambio: 200
+  ✓ Un operario no puede cambiar el estado de un centro
+  ✓ Y el estado sigue como estaba
+  ✓ El permiso del operario pasa y recien ahi falta el centro: 404
+  ✓ Una cuadrilla no puede actualizar centros
+  ✓ La sesion de una cuadrilla trae su rol
+  ✓ Y la cuadrilla a la que pertenece
+  ✓ Sin sesion, /sesion responde 401
+
+9. Limite de intentos de login y estado de la cuenta
+----------------------------------------------------
+  ✓ Los 5 primeros intentos fallidos dan 401
+  ✓ El sexto queda bloqueado: 429
+  ✓ El bloqueo no distingue mayusculas
+  ✓ La respuesta dice cuanto esperar (Retry-After entre 1 y 900 s)
+  ✓ Otro email no queda afectado
+  ✓ Cinco fallos de hace 20 minutos ya no cuentan
+  ✓ Con 4 fallos todavia se puede entrar con la clave correcta
+  ✓ Un acceso correcto reinicia la cuenta: otros 4 fallos no bloquean
+  ✓ Con la cuenta activa, /sesion responde 200
+  ✓ Dada de baja, la misma sesion ya no sirve: /sesion 403
+  ✓ Ni para leer contenedores: 403
+  ✓ Y no puede volver a entrar, ni con la clave correcta
+
+10. Cabeceras y archivos que no se sirven
+-----------------------------------------
+  ✓ Las respuestas de la API no se guardan en cache
+  ✓ Y llevan nosniff
+  ✓ No se sirve /.git/HEAD
+  ✓ No se sirve /tests/correr-tests.php
+  ✓ No se sirve /docker/docker-compose.yml
+  ✓ No se sirve /README.md
+  ✓ No se sirve /database/schema.sql
+  ✓ No se sirve /ingenieria-software/
+  ✓ No se sirve /tmp/correo/
+  ✓ No se sirve /
+  ✓ Si se sirve /landing/
+  ✓ Si se sirve /frontend-usuarios/login.html
+  ✓ Si se sirve /landing/fonts/space-grotesk-500.woff2
+  ✓ Si se sirve /frontend-usuarios/css/base.css
+  ✓ Si se sirve /frontend-usuarios/mapa.html
+  ✓ Si se sirve /frontend-usuarios/reportes.html
+  ✓ Si se sirve /frontend-usuarios/rutas.html
+  ✓ Si se sirve /frontend-usuarios/js/rutas.js
+  ✓ Si se sirve /frontend-usuarios/auditoria.html
+  ✓ Si se sirve /frontend-usuarios/js/auditoria.js
+  ✓ Si se sirve /frontend-usuarios/css/reportes.css
+  ✓ Si se sirve /landing/vendor/leaflet/leaflet.js
+  ✓ Si se sirve /landing/vendor/leaflet/leaflet.css
+  ✓ Si se sirve /landing/js/publico.js
+  ✓ Si se sirve /frontend-usuarios/js/graficos.js
+  ✓ Si se sirve /frontend-usuarios/js/reportes.js
+  ✓ Si se sirve /frontend-usuarios/vendor/leaflet/leaflet.js
+  ✓ Si se sirve /frontend-usuarios/vendor/leaflet/leaflet.css
+
+11. Incidencias: matriz de permisos
+-----------------------------------
+  ✓ POST /api-gestion/incidencias/99999/asignacion: quien no corresponde recibe 403, y a quien si le toca le falta la incidencia: 404
+  ✓ POST /api-gestion/incidencias/99999/avance: quien no corresponde recibe 403, y a quien si le toca le falta la incidencia: 404
+  ✓ POST /api-gestion/incidencias/99999/resolucion: quien no corresponde recibe 403, y a quien si le toca le falta la incidencia: 404
+  ✓ POST /api-gestion/incidencias/99999/descarte: quien no corresponde recibe 403, y a quien si le toca le falta la incidencia: 404
+  ✓ POST /api-gestion/incidencias/99999/derivacion: quien no corresponde recibe 403, y a quien si le toca le falta la incidencia: 404
+  ✓ POST /incidencias lo pueden hacer un vecino y una cuadrilla en terreno (con un cuerpo vacio llega a la validacion: 400)
+  ✓ PUT /incidencias/{id} (prioridad) solo lo puede hacer un administrador
+  ✓ Nadie puede borrar una incidencia, ni el administrador
+  ✓ Un subrecurso que no existe no lo usa nadie: 403
+  ✓ Las cuadrillas no las crea una cuadrilla (solo el administrador): 403
+
+12. Incidencias: registrar y validar
+------------------------------------
+  ✓ El contenedor de las pruebas de incidencias se crea
+  ✓ Sin tipo de problema: 400
+  ✓ Un tipo de problema que no existe: 400
+  ✓ Una descripcion de menos de 5 caracteres: 400
+  ✓ Una prioridad que no existe: 400
+  ✓ Sin indicar el contenedor: 400
+  ✓ Un problema de tipo «otro» con la descripcion en blanco: 400 (es el unico tipo que la exige)
+  ✓ Un problema de tipo «otro» sin descripcion: 400
+  ✓ Ninguna de las anteriores dejo una incidencia a medias
+  ✓ Un codigo de contenedor que no existe: 404 (RF-221)
+  ✓ Un id de contenedor que no existe: 404
+  ✓ Un contenedor retirado no admite reportes: 409
+  ✓ Y el mensaje dice por que
+  ✓ Sin descripcion en un tipo que no es «otro»: 201, con prioridad media y el rotulo del tipo como descripcion
+  ✓ Un vecino registra un desborde: 201
+  ✓ Se le informa el numero de incidencia (RF-220)
+  ✓ El mensaje tambien lo dice
+  ✓ Nace abierta, con prioridad alta (el desborde es lo mas urgente) y el tipo informado (RF-219)
+  ✓ Nace con su primer asiento, hecho por el vecino (RNF-017)
+  ✓ El vecino no ve quien reporto (es el mismo) ni su id
+  ✓ Un desborde sobre un contenedor disponible lo pasa a lleno
+  ✓ Y deja su asiento en el historial del contenedor, con el numero
+  ✓ El mismo problema en el mismo contenedor, abierto todavia: 409
+  ✓ Y le dice cual es el reporte existente
+
+13. Incidencias: quien ve cada una y los filtros
+------------------------------------------------
+  ✓ Un vecino ve exactamente las que informo el (RF-241)
+  ✓ Y la nueva esta entre ellas
+  ✓ Una cuadrilla ve solo las suyas: ninguna de las que no tienen cuadrilla (RF-229)
+  ✓ Y todavia no ve la nueva, que no esta asignada
+  ✓ El administrador las ve todas (RF-238): las 5 del seed mas la nueva
+  ✓ Y ve quien la reporto
+  ✓ La lista trae contenedor, zona, tipo, estado, prioridad y fecha (RF-237)
+  ✓ Una cuadrilla no puede abrir una que no tiene asignada: 404
+  ✓ El vecino abre el detalle de la suya: 200
+  ✓ Pero no el de una que informo otra persona: 404
+  ✓ Una incidencia que no existe: 404
+  ✓ Filtrar por estado, zona y contenedor la encuentra (RF-239)
+  ✓ Con otro estado no aparece
+  ✓ Ni con otra zona
+  ✓ Un periodo que incluye hoy, el dia completo, la encuentra
+  ✓ Un periodo en el futuro no trae nada
+  ✓ Por tipo de problema tambien se filtra
+  ✓ El filtro invalido 'estado=reportada' se rechaza: 400
+  ✓ El filtro invalido 'zona=abc' se rechaza: 400
+  ✓ El filtro invalido 'desde=ayer' se rechaza: 400
+  ✓ El filtro invalido 'desde=2026-10-02&hasta=2026-10-01' se rechaza: 400
+  ✓ El filtro invalido 'tipo=inventado' se rechaza: 400
+
+14. Incidencias: prioridad y asignacion
+---------------------------------------
+  ✓ Un vecino no puede asignar: 403
+  ✓ Una cuadrilla tampoco: 403
+  ✓ Una cuadrilla no puede dar avance de una que no es suya: 403
+  ✓ El administrador no registra avances, es trabajo de la cuadrilla: 403
+  ✓ Una prioridad inventada: 400
+  ✓ El administrador cambia la prioridad (RF-225)
+  ✓ Y el cambio queda en el historial
+  ✓ Pedir la misma prioridad no agrega otro asiento
+  ✓ Asignar sin decir la cuadrilla: 400
+  ✓ Asignar con una prioridad inventada: 400
+  ✓ Una cuadrilla que no existe: 404
+  ✓ Una cuadrilla inactiva no se puede asignar: 409 (RF-226)
+  ✓ Una cuadrilla en una recoleccion en curso tampoco: 409 (RF-228)
+  ✓ Y las dos negativas no tocaron la incidencia
+  ✓ Solo se ofrecen las cuadrillas disponibles: activas y fuera de una recoleccion (RF-228)
+  ✓ Sin filtro se listan las 4, cada una con su disponibilidad
+  ✓ Y se distingue la ocupada (en una recoleccion) de la inactiva
+  ✓ Asignar a una cuadrilla disponible: 200
+  ✓ La incidencia pasa a en curso, con esa cuadrilla (RF-226, RF-227)
+  ✓ Y la prioridad que ya tenia se conserva
+  ✓ El asiento dice a quien se asigno y quien lo hizo
+  ✓ Asignarla otra vez a la misma cuadrilla: 409
+  ✓ Reasignar a otra cuadrilla disponible, cambiando la prioridad: 200
+  ✓ El asiento cuenta de donde a donde y el cambio de prioridad
+  ✓ Y vuelve a la Norte para seguir con el recorrido
+  ✓ La lista de cuadrillas cuenta sus incidencias en curso
+
+15. Incidencias: el trabajo de la cuadrilla
+-------------------------------------------
+  ✓ La cuadrilla asignada ahora la ve en su lista
+  ✓ Otra cuadrilla no
+  ✓ Ni puede abrir su detalle: 404
+  ✓ Ni registrarle un avance: 403
+  ✓ Ni resolverla: 403
+  ✓ La cuadrilla asignada abre el detalle con su historial (RF-240)
+  ✓ La cuadrilla no ve el nombre de quien reporto
+  ✓ Ni en el historial: el primer asiento dice Vecino, sin nombre ni id
+  ✓ El administrador si ve en el historial quien lo informo
+  ✓ Y el vecino que lo informo se ve a si mismo
+  ✓ Pero al personal que lo atendio lo ve por su rol, no por su nombre
+  ✓ Un avance sin observacion: 400
+  ✓ Una observacion de mas de 300 caracteres: 400
+  ✓ Registrar un avance con su observacion: 200 (RF-230)
+  ✓ Queda un asiento mas, en curso, firmado por la cuadrilla
+  ✓ La cuadrilla la resuelve: 200 (RF-231)
+  ✓ Queda resuelta con su fecha de resolucion
+  ✓ El historial cuenta la historia completa, en orden (RF-232)
+  ✓ Cada asiento tiene fecha, orden cronologico y autor (RNF-017, visto por el administrador)
+  ✓ Al cerrar la ultima incidencia el contenedor vuelve a disponible
+  ✓ Con su asiento, que cita el numero
+  ✓ Una incidencia ya resuelta no admite 'avance': 409
+  ✓ Una incidencia ya resuelta no admite 'resolucion': 409
+  ✓ Una incidencia ya resuelta no admite 'asignacion': 409
+  ✓ Una incidencia ya resuelta no admite 'descarte': 409
+  ✓ Ni un cambio de prioridad: 409
+
+16. Incidencias: el contenedor se libera solo cuando no queda nada abierto
+--------------------------------------------------------------------------
+  ✓ Con la anterior ya resuelta, el mismo problema se puede volver a informar: 201
+  ✓ Y otro problema distinto sobre el mismo contenedor tambien: 201
+  ✓ El contenedor esta lleno por el desborde
+  ✓ El administrador resuelve el desborde sin asignarlo (la observacion es opcional): 200
+  ✓ Se guarda una observacion por omision
+  ✓ El contenedor sigue lleno: queda el reporte de la tapa abierto
+  ✓ Descartar sin decir el motivo: 400
+  ✓ Descartar con su motivo: 200
+  ✓ Una descartada tambien lleva fecha de cierre
+  ✓ Cerrada la ultima, el contenedor vuelve a disponible
+  ✓ El historial del contenedor cuenta todo: alta, lleno, disponible, lleno, disponible
+
+17. Estado del contenedor: un solo camino, con asiento y sin duplicados
+-----------------------------------------------------------------------
+  ✓ Cambiar el estado a mano: 200
+  ✓ Deja su asiento (RF-233)
+  ✓ Reenviar el mismo estado no duplica el asiento (CU-027 A1.0)
+  ✓ Pero lo demas que vino en el pedido si se guarda
+  ✓ La base impide modificar o borrar un asiento del historial del contenedor (RF-235, RNF-016)
+  ✓ Y lo mismo con el historial de las incidencias
+  ✓ Siguen todos los asientos de la incidencia (el intento no borro nada)
+  ✓ Si algo falla a mitad de una transaccion, ni lo de afuera ni lo de adentro queda guardado
+  ✓ Y si todo sale bien, se guarda
+
+19. Recolecciones: matriz de permisos
+-------------------------------------
+  ✓ /api-gestion/camiones ya no existe en api-gestion: 404 (se mudo a api-recoleccion)
+  ✓ /api-gestion/cuadrillas ya no existe en api-gestion: 404 (se mudo a api-recoleccion)
+  ✓ POST /recolecciones: lo pueden hacer Administrador
+  ✓ POST /recolecciones/99999/inicio: lo pueden hacer Administrador y Cuadrilla
+  ✓ POST /recolecciones/99999/vaciados: lo pueden hacer Administrador y Cuadrilla
+  ✓ POST /recolecciones/99999/fin: lo pueden hacer Administrador y Cuadrilla
+  ✓ POST /recolecciones/99999/cancelacion: lo pueden hacer Administrador
+  ✓ Nadie borra una recoleccion, ni el administrador: 403
+  ✓ Un subrecurso que no existe no lo usa nadie: 403
+
+20. Rutas
+---------
+  ✓ Una ruta sin dia: 400
+  ✓ Una hora imposible: 400
+  ✓ Una zona que no existe: 404
+  ✓ Crear una ruta: 201, activa y con su zona
+  ✓ Editarla cambia solo lo que llega
+  ✓ Un dia inventado al editar: 400
+  ✓ Editar una ruta que no existe: 404
+  ✓ Dar de baja una ruta la deja inactiva (no la borra)
+  ✓ Darla de baja otra vez: 409
+
+21. Recolecciones: planificar, iniciar, vaciar y finalizar
+----------------------------------------------------------
+  ✓ Se crea un camion de prueba en la nueva API
+  ✓ Los contenedores de prueba se ponen en la ruta de prueba
+  ✓ Planificar sin una fecha valida: 400
+  ✓ Con una ruta que no existe: 404
+  ✓ Con una ruta inactiva: 409
+  ✓ Con un camion en mantenimiento: 409
+  ✓ Con una cuadrilla inactiva: 409
+  ✓ Con un centro que no existe: 404
+  ✓ Planificar: 201, con numero REC-, planificada, para la Norte y sin tocar el camion
+  ✓ La cuadrilla Norte la ve en sus tareas
+  ✓ Y en su lista no hay recolecciones de otras cuadrillas
+  ✓ Otra cuadrilla no la ve
+  ✓ Ni abre su detalle: 404
+  ✓ Ni la puede iniciar: 403
+  ✓ Un filtro de estado inventado: 400
+  ✓ Vaciar antes de iniciar: 409
+  ✓ Finalizar antes de iniciar: 409
+  ✓ La cuadrilla la inicia: en curso y el camion pasa a en ruta
+  ✓ La hora de inicio pasa a ser la real
+  ✓ Iniciarla otra vez: 409
+  ✓ La Norte deja de figurar como disponible para incidencias
+  ✓ No se puede cambiar a mano el estado de un camion en una recoleccion en curso: 409
+  ✓ Ni darlo de baja: 409
+  ✓ Pero si editar sus otros datos
+  ✓ Un vaciado con peso 0: 400
+  ✓ Un contenedor que no existe: 404
+  ✓ Mas volumen que la capacidad del contenedor: 400
+  ✓ Registrar un vaciado: 201 y suma al total
+  ✓ El detalle trae el vaciado con su contenedor
+  ✓ El mismo contenedor dos veces en la misma recoleccion: 409
+  ✓ Un contenedor retirado no se vacia: 409
+  ✓ Se puede planificar otra con el mismo camion aunque este en ruta
+  ✓ Pero no iniciarla mientras el camion sigue en ruta: 409
+  ✓ Cancelar sin motivo: 400
+  ✓ La cuadrilla no cancela: 403
+  ✓ Cancelar una planificada: queda cancelada, sin hora de fin y el camion sigue en ruta
+  ✓ La cuadrilla la finaliza: con hora de fin y el camion vuelve a operativo
+  ✓ Finalizada no admite vaciados: 409
+  ✓ Ni cancelarla: 409
+  ✓ La Norte vuelve a estar disponible
+  ✓ Cancelar una en curso: con hora de fin y el camion vuelve a operativo
+
+22. Recolecciones: limpieza y datos del seed intactos
+-----------------------------------------------------
+  ✓ No quedan camiones, rutas ni contenedores de prueba
+  ✓ Los camiones del seed siguen con su estado
+  ✓ Y las recolecciones del seed, intactas
+
+24. Operario: preparar los datos de prueba
+------------------------------------------
+  ✓ El administrador crea un centro de prueba
+  ✓ La sesion del Operario trae su centro
+
+24 bis. Operario: quien puede y a que centro llega
+--------------------------------------------------
+  ✓ GET /recepciones: sin sesion 401, vecino y cuadrilla 403
+  ✓ GET /centros/4/stock: sin sesion 401, vecino y cuadrilla 403
+  ✓ GET /centros/4/movimientos: sin sesion 401, vecino y cuadrilla 403
+  ✓ GET /estadisticas/centro?centro=4: sin sesion 401, vecino y cuadrilla 403
+  ✓ GET /maquinaria/1/historial: sin sesion 401, vecino y cuadrilla 403
+  ✓ POST /recepciones/1: sin sesion 401, vecino y cuadrilla 403
+  ✓ POST /centros/4/movimientos: sin sesion 401, vecino y cuadrilla 403
+  ✓ POST /centros/4/movimientos/1/correccion: sin sesion 401, vecino y cuadrilla 403
+  ✓ POST /maquinaria/1/estado: sin sesion 401, vecino y cuadrilla 403
+  ✓ El Operario del seed ve solo su centro (el 1) en la lista
+  ✓ El Operario de prueba ve solo el suyo
+  ✓ El administrador ve todos
+  ✓ Cada centro trae su stock, su ocupacion y su nivel
+  ✓ El Operario del seed no ve lo de otro centro (GET /centros/4): 404
+  ✓ El Operario del seed no ve lo de otro centro (GET /centros/4/stock): 404
+  ✓ El Operario del seed no ve lo de otro centro (GET /centros/4/movimientos): 404
+  ✓ El Operario del seed no ve lo de otro centro (GET /recepciones/1): 404
+  ✓ Ni edita otro centro: 404
+  ✓ Ni retira de otro centro: 404
+  ✓ El Operario edita su propio centro
+  ✓ Un Operario sin centro asignado: 403 con un mensaje claro
+  ✓ Sin centro tampoco ve recepciones: 403
+  ✓ El resumen del administrador pide ?centro=: 400
+
+25. Operario: recibir lo que trae una recoleccion
+-------------------------------------------------
+  ✓ Una recoleccion solo planificada todavia no se recibe: no figura
+  ✓ Ni abre su detalle: 404
+  ✓ Ni se puede recibir: 409 (todavia no salio)
+  ✓ En curso y con vaciados: figura como pendiente, con lo esperado
+  ✓ El Operario de otro centro no la ve
+  ✓ El administrador la ve filtrando por centro
+  ✓ Un estado inventado: 400
+  ✓ Un centro inventado: 400
+  ✓ El detalle muestra lo esperado por tipo de residuo
+  ✓ El Operario de otro centro no abre el detalle: 404
+  ✓ Recibir con datos malos (Sin lineas): 400
+  ✓ Recibir con datos malos (Sin el campo lineas): 400
+  ✓ Recibir con datos malos (Un tipo que no existe): 400
+  ✓ Recibir con datos malos (Un peso de cero): 400
+  ✓ Recibir con datos malos (Un peso negativo): 400
+  ✓ Recibir con datos malos (Un peso con texto): 400
+  ✓ Recibir con datos malos (Un tipo repetido): 400
+  ✓ Recibir con datos malos (Una nota enorme): 400
+  ✓ El Operario de otro centro no la recibe: 404
+  ✓ Una recoleccion que no existe: 404
+  ✓ Recibir: 201, queda recibida con lo recibido por tipo y sin aviso
+  ✓ Recibirla otra vez: 409
+  ✓ Ya no esta entre las pendientes
+  ✓ Esta entre las recibidas
+  ✓ El stock subio: 100 de Mixto, 50 de Vidrio, 150 en total, 15 % y nivel normal
+
+26 quinquies. Operario: retiros y correcciones
+----------------------------------------------
+  ✓ Retirar con datos malos (Sin motivo): 400
+  ✓ Retirar con datos malos (Un motivo inventado): 400
+  ✓ Retirar con datos malos (Un peso de cero): 400
+  ✓ Retirar con datos malos (Un peso con texto): 400
+  ✓ Retirar con datos malos (Un tipo que no existe): 400
+  ✓ Retirar con datos malos (Sin tipo): 400
+  ✓ Retirar con datos malos (Una nota enorme): 400
+  ✓ Retirar 30 kg de Mixto: 201, es una salida por venta
+  ✓ El stock de Mixto bajo a 70
+  ✓ Retirar mas de lo que hay: 409 y no cambia nada
+  ✓ Retirar de un tipo sin stock (Plastico): 409
+  ✓ Corregir sin decir por que: 400
+  ✓ El Operario de otro centro no corrige: 404
+  ✓ Corregir un movimiento que no existe: 404
+  ✓ Corregir el retiro: 201, es una entrada inversa por correccion
+  ✓ El stock de Mixto volvio a 100
+  ✓ Corregirlo dos veces: 409
+  ✓ Una correccion no se corrige: 409
+  ✓ La recepcion dejo un movimiento por tipo y dice de que recoleccion salio
+  ✓ Corregir una entrada cuando ya salio parte de ese stock: 409
+  ✓ Corregir la entrada de Vidrio (nada salio): 201 y el Vidrio queda en 0
+
+26 sexies. Operario: aviso del 80 %, resumen e historial
+--------------------------------------------------------
+  ✓ Recibir 820 kg deja el centro sobre el 80 %: 201 con aviso
+  ✓ La lista de centros marca el nivel de alerta: 840 kg, 84 %
+  ✓ El resumen del Operario: 1 recepcion pendiente, 84 % y nivel alerta, sin maquinas en mantenimiento
+  ✓ El resumen del Operario del seed es el de su centro, no el de otro
+  ✓ El administrador pide el centro que quiere
+  ✓ Un centro que no existe: 404
+  ✓ El historial pagina: 3 filas y el total en meta
+  ✓ Un sentido inventado: 400
+  ✓ Filtrar por salidas
+  ✓ El retiro corregido figura como corregido
+  ✓ Un movimiento de stock no se edita ni se borra, ni por fuera de la API (UPDATE)
+  ✓ Un movimiento de stock no se edita ni se borra, ni por fuera de la API (DELETE)
+
+27. Operario: estado de la maquinaria con historial
+---------------------------------------------------
+  ✓ El administrador crea una maquina en el centro de prueba
+  ✓ Al crearla queda anotada en su historial: 'Alta en el sistema'
+  ✓ El Operario de prueba ve solo las maquinas de su centro
+  ✓ El Operario del seed no ve la de otro centro
+  ✓ El Operario de otro centro no la abre (GET /maquinaria/8): 404
+  ✓ El Operario de otro centro no la abre (GET /maquinaria/8/historial): 404
+  ✓ Ni le cambia el estado: 404
+  ✓ Cambiar el estado sin nota: 400
+  ✓ Una nota de puros espacios: 400
+  ✓ Un estado inventado: 400
+  ✓ Una nota enorme: 400
+  ✓ Pasarla al estado en que ya esta: 409
+  ✓ El Operario la pasa a mantenimiento con una nota: 200
+  ✓ El resumen cuenta 1 maquina en mantenimiento
+  ✓ El historial suma el cambio, con la nota y quien lo hizo (lo mas nuevo primero)
+  ✓ El Operario sigue sin poder editar los datos de la maquina: 403
+  ✓ Ni darla de baja: 403
+  ✓ Lo que hace el administrador tambien queda anotado (cuatro asientos)
+  ✓ El historial de una maquina no se edita ni se borra (UPDATE)
+  ✓ El historial de una maquina no se edita ni se borra (DELETE)
+
+27 bis. Operario: asignar el centro desde Usuarios
+--------------------------------------------------
+  ✓ El administrador cambia el centro de un Operario
+  ✓ Un centro que no existe: 400
+  ✓ Un centro con texto: 400
+  ✓ Un Vecino no se asocia a un centro: 400
+  ✓ Un Operario no cambia centros: 403
+  ✓ Se le saca el centro con null
+  ✓ Sin centro, el Operario queda sin acceso (el cambio rige de inmediato): 403
+  ✓ Al pasar a otro rol se le suelta el centro
+  ✓ La lista de usuarios muestra el centro del Operario
+
+27 ter. Operario: limpieza y datos del seed intactos
+----------------------------------------------------
+  ✓ No quedan centros, usuarios, camiones, rutas, contenedores ni maquinas de prueba
+  ✓ Los movimientos, recepciones e historiales de maquinas volvieron a los del seed (se fueron en cascada)
+  ✓ El stock de los centros del seed no cambio
+
+29. Avisos: preparar los datos de prueba
+----------------------------------------
+  ✓ GET /notificaciones sin sesion: 401
+  ✓ POST /notificaciones/1/leida sin sesion: 401
+  ✓ POST /notificaciones/leer-todas sin sesion: 401
+
+29 bis. Avisos: limites de la lista
+-----------------------------------
+  ✓ Un limite invalido (limite=0): 400
+  ✓ Un limite invalido (limite=abc): 400
+  ✓ Un limite invalido (limite=51): 400
+  ✓ Un limite invalido (limite=-1): 400
+
+29 ter. Avisos: una incidencia mueve los avisos de cada persona
+---------------------------------------------------------------
+  ✓ El vecino informa una incidencia de prioridad alta
+  ✓ Los administradores reciben un aviso de incidencia critica con el enlace a la incidencia
+  ✓ El contador de no leidas del administrador subio
+  ✓ El vecino no recibe el aviso de critica
+  ✓ Ni la cuadrilla
+  ✓ Al asignarla, la cuadrilla recibe el aviso con el numero y la direccion
+  ✓ Otra cuadrilla no recibe nada de eso
+  ✓ El vecino que informo recibe: en curso
+  ✓ Y el mensaje no trae el nombre de la cuadrilla ni del personal
+  ✓ Pedir la misma asignacion otra vez (409) no genera avisos de mas
+
+29 quater. Avisos: leer, marcar y que cada uno vea solo los suyos
+-----------------------------------------------------------------
+  ✓ El vecino tiene avisos sin leer
+  ✓ Un vecino no puede marcar el aviso de otra persona: 404
+  ✓ Y ese aviso sigue sin leer
+  ✓ Un aviso que no existe: 404
+  ✓ El vecino solo ve avisos propios (enlaces a lo suyo, sin datos ajenos)
+  ✓ La cuadrilla marca el suyo: 200 y el contador baja
+  ✓ Marcarlo otra vez no falla
+  ✓ El limite se respeta
+  ✓ Solo no leidas: ninguna leida
+  ✓ El vecino marca todas como leidas: 200 y su contador en 0
+  ✓ Y no toca los avisos de los demas
+
+29 quinquies. Avisos: resolver, descartar y textos largos
+---------------------------------------------------------
+  ✓ La cuadrilla resuelve: el vecino recibe el aviso de resuelta
+  ✓ El administrador descarta: 200 y el vecino recibe el aviso en la campanita
+php.exe : SiGeRU: no se pudo guardar un aviso: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or 
+update a child row: a foreign key constraint fails (`sigeru`.`notificacion`, CONSTRAINT `fk_notificacion_usuario` 
+FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE)
+En línea: 1 Carácter: 451
++ ... evidencia"; & "D:\herramientas\php\php.exe" correr-tests.php > "$d\ht ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (SiGeRU: no se p...DELETE CASCADE):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ✓ Avisar a una persona que no existe, o con textos enormes, no lanza ningun error
+  ✓ Los textos largos se cortan a los limites de la tabla
+
+29 sexies. Avisos: recolecciones y centros de acopio
+----------------------------------------------------
+  ✓ Al planificar una recoleccion, la cuadrilla recibe el aviso con numero, ruta y fecha
+  ✓ Otra cuadrilla no recibe nada
+  ✓ Una planificacion que falla (404) no deja avisos
+  ✓ Recibir 500 kg en un centro de 1000 kg (50 %): no hay aviso
+  ✓ Al pasar del 80 % (85 %) avisan al operario del centro y a los administradores, con el porcentaje
+  ✓ El operario de otro centro (el del seed) no recibe ese aviso
+  ✓ Una recepcion mas, ya por encima del 80 %, no repite el aviso
+
+29 septies. Avisos: limpieza y datos del seed intactos
+------------------------------------------------------
+  ✓ No quedan avisos de la corrida ni datos de prueba
+
+47. Tope de contenedores por zona (municipio)
+---------------------------------------------
+  ✓ El contenedor numero 100 de la zona entra: 201
+  ✓ El siguiente no entra: 409 con un mensaje que dice el maximo y la zona
+  ✓ Y no se creo
+  ✓ Otra zona con lugar sigue aceptando altas: 201
+  ✓ La zona llena tiene exactamente el tope en servicio
+  ✓ Mover un contenedor a la zona llena tampoco se puede: 409
+  ✓ El contenedor se quedo donde estaba
+  ✓ Cambiar un dato que no es la zona no se ve afectado por el tope: 200
+  ✓ Retirar uno de la zona llena: 200
+  ✓ Con uno menos en servicio, ahora si entra otro: 201 (los retirados no cuentan)
+  ✓ Volver a poner en servicio al retirado en una zona llena: 409
+  ✓ Mover a la zona llena un contenedor que esta retirado no suma al cupo: 200
+  ✓ Los contenedores y las zonas de prueba se borraron
+
+48. Rutas con contenedores: permisos y validaciones
+---------------------------------------------------
+  ✓ Se crearon dos rutas de prueba en la zona TRUP
+  ✓ Armar rutas es solo del Administrador: sin sesion 401; vecino, operario y cuadrilla 403 (poner contenedores, candidatos, trazar y ver)
+  ✓ Y no se cambio nada: la ruta sigue sin contenedores
+  ✓ Una ruta que no existe: 404 (poner contenedores)
+  ✓ Una ruta que no existe: 404 (candidatos)
+  ✓ Una ruta que no existe: 404 (trazar)
+  ✓ Pedidos mal armados: todos 400
+  ✓ Mas del tope de paradas (25): 400 y el mensaje dice el maximo
+  ✓ Despues de tantos rechazos la ruta sigue vacia (nada quedo a medias)
+  ✓ Un contenedor retirado, uno en mantenimiento (nuevo en la ruta) o uno sin ubicacion no entran: 400 con el motivo
+
+48 bis. Rutas con contenedores: guardar, ordenar y mover
+--------------------------------------------------------
+  ✓ Guardar la lista en el orden pedido: 200 y la respuesta trae las paradas numeradas en ese orden
+  ✓ En la base queda el mismo orden
+  ✓ El detalle de la ruta trae las paradas con su ubicacion, la cantidad y el tope
+  ✓ La lista de rutas muestra cuantos contenedores tiene cada una y si tiene trazado
+  ✓ Reordenar y agregar uno: 200 y queda en el nuevo orden
+  ✓ Un pedido con un contenedor inexistente no cambia nada (atomico): 400 y la lista sigue igual
+  ✓ Un contenedor que ya esta en otra ruta activa: 409 que dice en cual y trae los conflictos
+  ✓ Y la ruta B no cambio
+  ✓ Con mover: 200, el contenedor pasa a la ruta B y la respuesta dice cual se movio
+  ✓ La ruta A perdio ese contenedor y se renumero sin huecos
+  ✓ Vaciar una ruta: 200 y queda sin contenedores
+  ✓ Se vuelven a poner dos
+  ✓ Un contenedor que ya estaba en la ruta y paso a mantenimiento se conserva (se muestra como «no se recolecta»)
+  ✓ Candidatos: los de la zona de la ruta (30 menos el retirado... que ya no esta retirado, y sin los de otra zona), con su estado de ruta
+
+48 ter. Rutas con contenedores: inactivas, recolecciones en curso, cambio de zona y avisos
+------------------------------------------------------------------------------------------
+  ✓ Una ruta inactiva puede llevar contenedores que estan en una activa (no hay conflicto)
+  ✓ Pero no se puede reactivar si deja un contenedor en dos rutas activas: 409 con cuales
+  ✓ A una ruta con contenedores no se le puede cambiar la zona: 409
+  ✓ Renombrarla si se puede: 200
+  ✓ Una ruta que esta en una recoleccion en curso no se toca: 409
+  ✓ Y tampoco se le puede sacar un contenedor moviendolo a otra ruta: 409 y nada cambia
+  ✓ Darla de baja con una recoleccion en curso tampoco: 409
+  ✓ Cambiar una ruta con una recoleccion planificada avisa a los de la cuadrilla (1 aviso por integrante activo)
+  ✓ Dar de baja una ruta con una recoleccion planificada: 409 (hay que cancelarla antes)
+  ✓ Borrarla de verdad tampoco, porque ya tiene una recoleccion: 409
+
+48 quater. Rutas con contenedores: trazado y borrado
+----------------------------------------------------
+  ✓ Trazar una ruta de 2 paradas en modo recta: 200, tipo recta, con aviso y sin servicio
+  ✓ El trazado guardado esta vigente y trae la distancia en linea recta
+  ✓ Si cambia la ubicacion de un contenedor, el trazado guardado deja de estar vigente
+  ✓ Si cambia la lista de paradas, el trazado se borra
+  ✓ Con menos de 2 paradas no se puede trazar: 409
+  ✓ Dar de baja una ruta sin recolecciones: 200 y queda inactiva
+  ✓ Darla de baja otra vez: 409
+  ✓ Borrar de verdad una ruta que nunca tuvo recolecciones: 200; sus vinculos se van y los contenedores siguen
+  ✓ Y la ruta ya no existe: 404
+  ✓ Las rutas, los contenedores y las zonas de prueba se borraron (y la cascada se llevo los vinculos)
+
+50. Rutas en el mapa: permisos y respuesta
+------------------------------------------
+  ✓ Las rutas del mapa son solo del Administrador: sin sesion 401; vecino, operario y cuadrilla 403
+  ✓ El administrador recibe todas las rutas activas (y solo ellas)
+  ✓ Con id_zona trae solo las de esa zona
+  ✓ Cada ruta trae lo que hace falta para dibujarla: nombre, dia, hora, cantidad, y el trazado o las paradas para la linea recta
+  ✓ Una ruta sin trazado por calles trae las coordenadas de sus paradas para unirlas en linea recta
+  ✓ id_zona invalido (abc): 400
+  ✓ id_zona invalido (0): 400
+  ✓ id_zona invalido (-3): 400
+  ✓ id_zona invalido (1.5): 400
+  ✓ Solo se lee: POST a /rutas/mapa no esta permitido (405)
+
+52. Asignacion de rutas: permisos y validaciones
+------------------------------------------------
+  ✓ Se armaron tres rutas (lunes, lunes y jueves) y dos camiones de prueba
+  ✓ La asignacion y el lote son solo del Administrador: sin sesion 401; vecino, operario y cuadrilla 403
+  ✓ «Mis rutas» es solo de la Cuadrilla: sin sesion 401; vecino, operario y administrador 403; la cuadrilla 200
+  ✓ Fecha invalida («»): 400
+  ✓ Fecha invalida («abc»): 400
+  ✓ Fecha invalida («2030-13-01»): 400
+  ✓ Fecha invalida («2030-02-30»): 400
+  ✓ Fecha invalida («07/01/2030»): 400
+  ✓ Sin fecha: 400
+  ✓ Solo se lee: ni el administrador puede hacer POST a /asignacion (403, no esta en la matriz de permisos)
+  ✓ Un lote mal armado: 400
+  ✓ Un lote mal armado: 400
+  ✓ Un lote mal armado: 400
+  ✓ Un lote mal armado: 400
+  ✓ El lote solo se crea (GET a /recolecciones/lote): 405
+
+52 bis. Asignacion de rutas: el dia, la prioridad y la sugerencia
+-----------------------------------------------------------------
+  ✓ El lunes aparecen las dos rutas del lunes (y no la del jueves), cada una con su prioridad
+  ✓ La ruta con un contenedor lleno cuenta 50 puntos y 1 lleno, y no tiene cuadrilla
+  ✓ Con «otros dias» aparece tambien la del jueves, despues de las del dia
+  ✓ Una incidencia «desbordado» sube la ruta a prioridad alta y la pone primera; un contenedor «roto» no se recolecta y no suma
+  ✓ La sugerencia pone la ruta urgente antes que la de prioridad media, con la hora de cada ruta
+  ✓ Pedir la asignacion del dia no crea ninguna recoleccion
+
+52 bis 2. La sugerencia empareja cada ruta con la cuadrilla de su municipio (parte 26)
+--------------------------------------------------------------------------------------
+  ✓ La asignacion del dia trae el municipio de cada cuadrilla
+  ✓ La ruta del municipio TASG recibe la cuadrilla de su municipio, sin aviso de otro municipio
+  ✓ En todas las propuestas del dia, el aviso «fuera de su municipio» aparece exactamente cuando el municipio de la ruta y el de la cuadrilla son distintos
+  ✓ Y ninguna propuesta lleva dos veces la misma cuadrilla ni el mismo camion
+
+52 ter. Asignacion de rutas: el lote, todas o ninguna
+-----------------------------------------------------
+  ✓ Si una asignacion falla (ruta que no existe), no se crea ninguna y el mensaje dice cual es
+  ✓ La misma cuadrilla dos veces el mismo dia en un lote: 400
+  ✓ Una cuadrilla inactiva: 409 y no se crea nada
+  ✓ Un lote valido: 201 con las dos recolecciones planificadas
+  ✓ A la cuadrilla se le avisa de cada recoleccion asignada
+  ✓ Despues, las dos rutas figuran asignadas (con su cuadrilla) y esas cuadrillas ya no estan libres ese dia
+  ✓ Esa cuadrilla y ese camion no se pueden asignar otra vez el mismo dia: 409 que dice cual
+
+52 quater. Mis rutas y lo que ve la cuadrilla
+---------------------------------------------
+  ✓ La cuadrilla Norte ve su recoleccion con la ruta, las paradas en orden y su prioridad
+  ✓ La parada «rota» se muestra como que no se recolecta, y nadie ha vaciado todavia
+  ✓ Otra cuadrilla no ve esa recoleccion ni su ruta
+  ✓ El detalle de su recoleccion trae el recorrido (paradas y trazado) para dibujar el mapa
+  ✓ Y la cuadrilla ajena no lo abre: 404
+  ✓ La cuadrilla sigue sin poder leer ni armar rutas: 403
+  ✓ La cuadrilla Norte ve solo los contenedores de su ruta: los de la ruta 1 si; los de la ruta 2 (de otra cuadrilla) no
+  ✓ Pero el administrador los ve todos, y el vecino tambien (no se le limita)
+  ✓ Un contenedor de otra ruta: la cuadrilla recibe 404 en la ficha y en el historial
+  ✓ La lista paginada tambien respeta el alcance: el total de la cuadrilla es menor que el del administrador
+  ✓ La cuadrilla inicia su recoleccion
+  ✓ Vaciar un contenedor de su ruta: 201, y en el recorrido queda como visitado
+  ✓ Vaciar un contenedor que NO es de su ruta (es de la ruta 2): 409 que lo dice
+  ✓ Vaciar uno de su ruta que esta en mantenimiento: 409 (lo atiende mantenimiento, no el camion)
+  ✓ Y el mismo contenedor dos veces sigue siendo 409
+  ✓ Las rutas, contenedores, camiones y la zona de prueba se borraron
+
+46. Incidencias: prioridad por tipo, lleno, roto y derivacion a mantenimiento
+-----------------------------------------------------------------------------
+  ✓ Un desborde sin prioridad nace ALTA
+  ✓ Un contenedor lleno (sin desbordar) nace MEDIA y se acepta como tipo: 201
+  ✓ Informar «lleno» deja el contenedor en estado lleno
+  ✓ Un contenedor roto nace media y se marca como de mantenimiento, sin derivar todavia
+  ✓ Informar «roto» no cambia el estado del contenedor (lo decide el administrador al derivar)
+  ✓ Si quien informa elige la prioridad, se respeta
+  ✓ Al informarse un contenedor roto, los administradores reciben un aviso
+  ✓ Un contenedor roto no se asigna a una cuadrilla: 409 y explica por que
+  ✓ Un lleno si se puede asignar: 200
+  ✓ Derivar es solo del administrador (Vecino)
+  ✓ Derivar es solo del administrador (Cuadrilla)
+  ✓ Derivar es solo del administrador (Operario)
+  ✓ Derivar es solo del administrador (sin sesion)
+  ✓ Un desborde no se deriva a mantenimiento: 409
+  ✓ Una nota de mas de 200 caracteres: 400
+  ✓ El administrador deriva el roto: 200, queda derivada con su nota y sigue abierta
+  ✓ El contenedor pasa a mantenimiento
+  ✓ El hecho queda en el historial (solo agregado)
+  ✓ Y el vecino que informo recibe el aviso de que paso a mantenimiento
+  ✓ Derivarla dos veces: 409
+  ✓ Derivada y todo, tampoco se asigna: 409
+  ✓ El administrador la cierra cuando lo arreglan: resuelta
+  ✓ El contenedor vuelve a estar disponible
+  ✓ Una incidencia cerrada no se deriva: 409
+  ✓ Se planifica una recoleccion de prueba con la cuadrilla 1
+  ✓ Una cuadrilla informa un contenedor de su ruta: 201
+  ✓ Pero no uno que no es de su ruta: 404
+  ✓ La cuadrilla ve lo que ella informo
+  ✓ Y aparece en su lista
+  ✓ Otra cuadrilla no la ve
+  ✓ Ni abre su detalle: 403 o 404
+  ✓ Los datos de prueba de mantenimiento se borraron
+
+47. Cuadrillas: alta, edicion, baja y matriz de permisos
+--------------------------------------------------------
+  ✓ PUT /cuadrillas es solo del administrador (a los demas 401/403; al administrador le falta la cuadrilla: 404)
+  ✓ POST /cuadrillas es solo del administrador (con un cuerpo vacio llega a la validacion: 400)
+  ✓ DELETE /cuadrillas es solo del administrador
+  ✓ Crear con datos malos (Sin nombre): 400
+  ✓ Crear con datos malos (Un nombre de una letra): 400
+  ✓ Crear con datos malos (Un nombre de mas de 80 letras): 400
+  ✓ Crear con datos malos (Un turno inventado): 400
+  ✓ El administrador crea una cuadrilla: 201, activa, con su turno y sin integrantes
+  ✓ Un nombre repetido: 409
+  ✓ Sin turno entra como matutino
+  ✓ Se renombra y cambia de turno
+  ✓ Renombrarla con el nombre de otra: 409
+  ✓ Una cuadrilla creada sin municipio lo devuelve en null (puede cubrir cualquiera)
+  ✓ Crear con municipio: 201 y devuelve su id y su nombre
+  ✓ Crear con datos malos (Un municipio que no existe): 400
+  ✓ Crear con datos malos (Un municipio con texto): 400
+  ✓ Crear con datos malos (Un municipio en cero): 400
+  ✓ Crear con datos malos (Un municipio negativo): 400
+  ✓ Se le cambia el municipio
+  ✓ Editar otro dato no le saca el municipio
+  ✓ Cambiarlo a un municipio que no existe: 400
+  ✓ La lista trae el municipio de cada cuadrilla
+  ✓ Mandar el municipio vacio se lo quita
+  ✓ El municipio de una cuadrilla no lo cambia vecino: 403
+  ✓ El municipio de una cuadrilla no lo cambia operario: 403
+  ✓ El municipio de una cuadrilla no lo cambia cuadrilla: 403
+  ✓ Un estado inventado: 400
+  ✓ El detalle trae sus integrantes (una lista) y los contadores
+  ✓ Se planifica una recoleccion de prueba para la cuadrilla nueva
+  ✓ Planificada para manana: no esta vencida (ni en el detalle ni en la lista)
+  ✓ Planificada para ayer y sin iniciar: vencida, en el detalle y en la lista
+  ✓ Planificada para dentro de un minuto: todavia no
+  ✓ Con una recoleccion planificada no se puede dar de baja: 409 y dice por que
+  ✓ Ni pasandola a inactiva por la edicion: 409
+  ✓ Cancelada la recoleccion, se da de baja: 200, inactiva
+  ✓ Darla de baja dos veces: 409
+  ✓ Se puede reactivar
+
+48. Usuarios: la cuadrilla de un usuario con rol Cuadrilla
+----------------------------------------------------------
+  ✓ Un usuario Cuadrilla sin cuadrilla: 400 (sin ella no veria ninguna ruta)
+  ✓ Con id_cuadrilla null tampoco: 400
+  ✓ Una cuadrilla que no existe: 400
+  ✓ Una cuadrilla con texto: 400
+  ✓ Una cuadrilla dada de baja no recibe gente nueva: 400
+  ✓ Un Vecino no se asocia a una cuadrilla: 400
+  ✓ Con una cuadrilla activa se crea: 201 y queda asociado
+  ✓ La cedula se guarda solo con digitos, aunque llegue con puntos y guion
+  ✓ Un usuario Cuadrilla sin cedula: 400 (con ella inicia sesion)
+  ✓ Una cedula en blanco tampoco: 400
+  ✓ Una cedula con el digito verificador mal: 400
+  ✓ Una cedula con letras o muy corta: 400
+  ✓ Una cedula que ya tiene otro usuario (aunque venga con otro formato): 409
+  ✓ La cuadrilla entra con cedula (con puntos y guion) y contrasena: 200, rol Cuadrilla
+  ✓ Y con la cedula solo con digitos
+  ✓ Contrasena equivocada: 401 con mensaje de cedula
+  ✓ Una cedula que no existe: 401
+  ✓ Una cedula vacia: 401
+  ✓ Una cuenta de cuadrilla no entra con el correo, ni con la contrasena correcta: 403 que lo explica
+  ✓ El resto de los roles sigue entrando con correo
+  ✓ Una cedula que no es texto no rompe el login: 401
+  ✓ Editar otro dato no le saca la cuadrilla
+  ✓ Dejar a un Cuadrilla sin cuadrilla: 400
+  ✓ Se lo cambia a otra cuadrilla
+  ✓ La lista se filtra por cuadrilla
+  ✓ Un filtro de cuadrilla invalido: 400
+  ✓ La cuadrilla cuenta su integrante y lo lista por nombre
+  ✓ Al pasar a otro rol se le suelta la cuadrilla
+  ✓ Pasarlo a Cuadrilla sin decir la cuadrilla: 400
+  ✓ Y diciendola, queda: 200
+  ✓ Un Operario no cambia cuadrillas: 403
+
+49. Registro y pedidos de acceso: nadie se hace cuadrilla solo
+--------------------------------------------------------------
+  ✓ El registro publico ignora rol e id_cuadrilla: queda Vecino y sin cuadrilla
+  ✓ Y en la base tambien
+  ✓ Un pedido de cuadrilla sin decir cual: 400
+  ✓ Un pedido de cuadrilla sin cedula: 400
+  ✓ Con la cedula mal (verificador): 400
+  ✓ Con la cedula de un usuario que ya existe: 409
+  ✓ Un tipo de cuenta inventado: 400 (no se puede pedir ser administrador)
+  ✓ Una cuadrilla de mas de 80 letras: 400
+  ✓ El pedido sin sesion se acepta: 201, pendiente y de tipo cuadrilla
+  ✓ La solicitud guarda la cedula solo con digitos
+  ✓ Otro pedido pendiente con la misma cedula: 409
+  ✓ No crea ninguna cuenta ni sesion
+  ✓ Un correo de un usuario existente: 409
+  ✓ Las solicitudes solo las ve el administrador: 403
+  ✓ El administrador la ve marcada como de cuadrilla, con lo que escribio la persona
+  ✓ Un vecino no aprueba nada: 403
+  ✓ Una solicitud de cuadrilla no se aprueba con otro rol: 400
+  ✓ Aprobarla sin elegir la cuadrilla real: 400
+  ✓ Con una cuadrilla que no existe: 400
+  ✓ Y la solicitud sigue pendiente, sin cuenta
+  ✓ Aprobarla sin definir la contrasena inicial: 400
+  ✓ Aprobada con la cuadrilla real: 200, usuario Cuadrilla con su id_cuadrilla y activo
+  ✓ La cuenta trae la cedula del pedido
+  ✓ Y la cuadrilla aprobada entra con esa cedula y la contrasena que definio el administrador
+  ✓ Aprobarla dos veces: 409
+  ✓ Rechazar no pide cuadrilla y no crea cuenta: 200
+  ✓ Una solicitud comun (sin tipo) sigue siendo de vecino, y no guarda cedula
+  ✓ El registro publico de vecino ignora la cedula
+  ✓ Y con esa cedula nadie puede entrar: 401
+  ✓ Se borraron las cuadrillas, usuarios y solicitudes de prueba
+
+46h. Paginas de error amables
+-----------------------------
+  ✓ Una direccion inexistente: 404 con la pagina propia (HTML, en espanol, sin datos del servidor)
+  ✓ Tambien en el panel: 404 propia
+  ✓ Una carpeta fuera de la lista blanca (tests): 403 con la pagina propia y sin mostrar su contenido
+  ✓ Los .sql de la base no se sirven: 403 propia
+  ✓ Las APIs siguen contestando sus errores en JSON (no se reemplazan por la pagina propia)
+  ✓ La pagina de error 403 se sirve (200) y trae su codigo
+  ✓ La pagina de error 404 se sirve (200) y trae su codigo
+  ✓ La pagina de error 500 se sirve (200) y trae su codigo
+  ✓ La imagen para compartir se sirve (200, PNG)
+
+22b. Estadisticas: permisos
+---------------------------
+  ✓ GET /api-gestion/estadisticas/incidencias solo lo puede leer un administrador
+  ✓ GET /api-gestion/estadisticas/urgencias solo lo puede leer un administrador
+  ✓ GET /api-recoleccion/estadisticas/recoleccion solo lo puede leer un administrador
+  ✓ Las estadisticas no se escriben: ni el administrador puede hacer POST (403)
+  ✓ Ni DELETE en recoleccion (403)
+  ✓ Una estadistica que no existe: 404
+  ✓ Tampoco en recoleccion: 404
+
+22c. Estadisticas: validaciones del periodo
+-------------------------------------------
+  ✓ /api-gestion/estadisticas/incidencias con una fecha imposible: 400
+  ✓ /api-recoleccion/estadisticas/recoleccion con una fecha imposible: 400
+  ✓ /api-gestion/estadisticas/incidencias con una fecha con texto: 400
+  ✓ /api-recoleccion/estadisticas/recoleccion con una fecha con texto: 400
+  ✓ /api-gestion/estadisticas/incidencias con un periodo al reves: 400
+  ✓ /api-recoleccion/estadisticas/recoleccion con un periodo al reves: 400
+  ✓ /api-gestion/estadisticas/incidencias con una zona con texto: 400
+  ✓ /api-recoleccion/estadisticas/recoleccion con una zona con texto: 400
+  ✓ /api-gestion/estadisticas/incidencias con una zona en cero: 400
+  ✓ /api-recoleccion/estadisticas/recoleccion con una zona en cero: 400
+  ✓ Una zona que no existe: 404
+  ✓ Tambien en recoleccion: 404
+  ✓ Un umbral de dias '0': 400
+  ✓ Un umbral de dias '61': 400
+  ✓ Un umbral de dias '-1': 400
+  ✓ Un umbral de dias 'abc': 400
+
+22d. Estadisticas: las cifras coinciden con las listas
+------------------------------------------------------
+  ✓ El informe sin filtros responde 200
+  ✓ El total es el de la lista de incidencias
+  ✓ Y el desglose por estado tambien
+  ✓ Pendientes y cerradas suman el total
+  ✓ Las zonas suman el total
+  ✓ Los tipos suman el total
+  ✓ Las prioridades suman el total
+  ✓ El detalle trae una fila por incidencia
+  ✓ El detalle incluye la incidencia que creo esta corrida
+  ✓ El periodo vuelve en la respuesta
+  ✓ Un periodo que es solo hoy incluye lo creado en esta corrida
+  ✓ Un periodo en el futuro esta vacio
+  ✓ Filtrar por zona da lo mismo que el listado filtrado
+  ✓ Y el periodo informa el nombre de la zona
+  ✓ El panel por urgencias responde 200
+  ✓ Las abiertas del panel son las abiertas y en curso del listado
+  ✓ Los llenos del panel son los del listado de contenedores
+  ✓ Y la lista de llenos trae los mismos
+  ✓ El umbral por omision es de 3 dias
+  ✓ Cada urgencia trae nivel, dias y numero
+  ✓ Con otro umbral cambia lo vencido pero no lo abierto
+  ✓ El resumen de recoleccion responde 200
+  ✓ Las recolecciones del resumen son las del listado
+  ✓ Los kilos por tipo suman el total
+  ✓ Los kilos por zona tambien
+  ✓ Un periodo en el futuro no tiene recolecciones ni kilos
+  ✓ Filtrar recoleccion por zona deja solo esa zona
+  ✓ Y sus kilos son los de esa zona en el informe completo
+  ✓ Y el periodo informa la zona
+
+22e. Datos publicos de la landing
+---------------------------------
+  ✓ El mapa publico se lee sin sesion (200)
+  ✓ Tambien lo lee un Administrador (200)
+  ✓ Tambien lo lee un Vecino (200)
+  ✓ Cada contenedor trae solo los campos publicos
+  ✓ Cada centro trae solo nombre, direccion y ubicacion
+  ✓ No hay ningun correo, telefono ni id de usuario en la respuesta
+  ✓ Los contenedores retirados no se muestran
+  ✓ Son los mismos contenedores en servicio que ve el administrador
+  ✓ Y el resumen cuenta lo mismo
+  ✓ Disponibles + llenos + en mantenimiento = en servicio
+  ✓ Los centros publicos son los activos
+  ✓ Las incidencias resueltas del resumen son las del listado
+  ✓ No se escribe en lo publico sin sesion (401)
+  ✓ Ni con sesion de administrador (403)
+  ✓ Un recurso publico que no existe: 404
+  ✓ Sin indicar cual: 404
+
+22f. Contenedores: ya no hay valores por omision silenciosos
+------------------------------------------------------------
+  ✓ Un alta sin zona: 400
+  ✓ Un alta sin tipo de residuo: 400
+  ✓ Un alta con una zona inexistente: 400
+  ✓ Un alta con una zona por nombre inexistente: 400
+  ✓ Un alta con un tipo inexistente: 400
+  ✓ Un alta con capacidad negativa: 400
+  ✓ Un alta con capacidad en texto: 400
+  ✓ Un alta con capacidad enorme: 400
+  ✓ Un alta con latitud sola: 400
+  ✓ Un alta con latitud imposible: 400
+  ✓ Un alta con un codigo con espacios: 400
+  ✓ Un alta con un codigo larguisimo: 400
+  ✓ Y ninguna de esas altas dejo un contenedor
+  ✓ Editar con {"capacidad":-3}: 400
+  ✓ Editar con {"tipo_residuo":"Antimateria"}: 400
+  ✓ Editar con {"id_zona":99999}: 400
+  ✓ Editar con {"latitud":"10"}: 400
+  ✓ Editar con {"codigo":""}: 400
+  ✓ Y el contenedor 1 quedo como estaba
+
+22g. Listas: filtros y paginacion en el servidor
+------------------------------------------------
+  ✓ Sin 'pagina' la lista viene entera y sin meta (como siempre)
+  ✓ La primera pagina trae 4 y el total de todos
+  ✓ El meta de la primera pagina
+  ✓ Recorriendo todas las paginas salen todos los contenedores, una vez cada uno
+  ✓ Una pagina que no existe viene vacia, con el meta
+  ✓ Un vecino tambien puede paginar contenedores
+  ✓ Consulta invalida 'pagina=0': 400
+  ✓ Consulta invalida 'pagina=x': 400
+  ✓ Consulta invalida 'pagina=1&por_pagina=0': 400
+  ✓ Consulta invalida 'pagina=1&por_pagina=101': 400
+  ✓ Consulta invalida 'estado=volando': 400
+  ✓ Consulta invalida 'zona=abc': 400
+  ✓ Consulta invalida 'q=aaaaaaaaaaaaaaaaaaaaaaaaaaaa': 400
+  ✓ El filtro por estado coincide con filtrar la lista entera
+  ✓ El filtro por zona
+  ✓ El filtro por tipo
+  ✓ La busqueda ignora mayusculas y encuentra por codigo
+  ✓ La busqueda tambien mira la zona
+  ✓ Un % en la busqueda no es comodin
+  ✓ Ni una inyeccion SQL en la busqueda
+  ✓ Filtros y pagina juntos: el total es el del filtro
+  ✓ La lista de usuarios sin pagina viene entera y sin meta
+  ✓ Usuarios paginados
+  ✓ Usuarios por rol
+  ✓ Usuarios por estado
+  ✓ Usuarios: la busqueda encuentra por correo
+  ✓ Usuarios con 'rol=Rey': 400
+  ✓ Usuarios con 'estado=volando': 400
+  ✓ Usuarios con 'pagina=0': 400
+  ✓ Un vecino no lista usuarios, tampoco paginados (403)
+  ✓ Sin sesion (401)
+
+22h. Centros, maquinaria y camiones: datos validados
+----------------------------------------------------
+  ✓ Un alta de un centro con estado inventado: 400
+  ✓ Un alta de un centro con capacidad negativa: 400
+  ✓ Un alta de un centro con latitud imposible: 400
+  ✓ Un alta de un centro con latitud sola: 400
+  ✓ Un alta de un centro con nombre larguisimo: 400
+  ✓ Un alta de una maquinaria con codigo con simbolos: 400
+  ✓ Un alta de una maquinaria con marca larguisima: 400
+  ✓ Un alta de un camion con matricula con simbolos: 400
+  ✓ Un alta de un camion con capacidad negativa: 400
+  ✓ Un alta de un camion con capacidad en texto: 400
+  ✓ Un alta de un camion con estado inventado: 400
+  ✓ Ninguna de esas altas dejo un centro
+  ✓ Ni un camion
+  ✓ Editar el centro 1 con {"capacidad":"mucha"}: 400
+  ✓ Editar el centro 1 con {"estado":"volando"}: 400
+  ✓ Editar el centro 1 con {"nombre":""}: 400
+  ✓ Editar un camion con capacidad negativa: 400
+  ✓ Editar una maquinaria con codigo con simbolos: 400
+  ✓ Y el centro 1 sigue activo y con nombre
+
+22j. Seguridad: cabeceras, sesion y exposicion
+----------------------------------------------
+  ✓ La landing lleva las cabeceras de seguridad
+  ✓ La landing: la politica de contenido solo deja ejecutar codigo propio
+  ✓ Una pantalla del panel lleva las cabeceras de seguridad
+  ✓ Una pantalla del panel: la politica de contenido solo deja ejecutar codigo propio
+  ✓ Una API lleva las cabeceras de seguridad
+  ✓ Una API: la politica de contenido solo deja ejecutar codigo propio
+  ✓ No se anuncia la version de PHP
+  ✓ Ni la version de Apache
+  ✓ La cookie de sesion es HttpOnly y SameSite=Lax
+  ✓ Un cuerpo 'text/plain' se rechaza (415): un formulario de otro sitio no puede mandarlo como JSON
+  ✓ Un cuerpo 'application/x-www-form-urlencoded' se rechaza (415): un formulario de otro sitio no puede mandarlo como JSON
+  ✓ Un formulario multipart no llega como JSON (PHP no entrega su cuerpo): no inicia sesion
+  ✓ Tampoco para una accion del administrador
+  ✓ JSON con charset si se acepta
+  ✓ Un id de sesion impuesto desde afuera no se reutiliza al iniciar sesion
+  ✓ Con sesion, /sesion responde 200
+  ✓ Despues de cerrar sesion, la cookie vieja ya no sirve (401)
+  ✓ CORS: otro origen no recibe permiso (ni cookies compartidas)
+  ✓ No se expone /.htaccess
+  ✓ No se expone /.github/workflows/docker.yml
+  ✓ No se expone /api-usuarios/core/Auth.php
+  ✓ No se expone /api-gestion/config/database.php
+  ✓ No se expone /database/datos_prueba.sql
+  ✓ No se expone /tests/unitarias.php
+  ✓ No se expone /tmp/correo/
+  ✓ No se expone /almacen/
+  ✓ No se expone /docker/Dockerfile
+  ✓ No se expone /ciberseguridad/LEEME.md
+
+22k. Auditoria: quien hizo que
+------------------------------
+  ✓ Un cambio del administrador queda registrado con su persona, rol, ruta y resultado
+  ✓ Un acceso negado por permisos tambien (403), con quien lo intento
+  ✓ Las lecturas, los errores de validacion, los 404 y los 401 no se registran
+  ✓ Iniciar sesion queda registrado
+  ✓ Cerrar sesion tambien, y sabe quien era aunque la sesion ya no exista
+  ✓ Nada de lo que viaja en el cuerpo (contrasenas, enlaces) llega a la auditoria
+  ✓ El administrador lee la auditoria (200), de lo mas nuevo a lo mas viejo
+  ✓ Cada fila trae fecha, persona, rol, operacion, ruta, resultado e IP
+  ✓ La respuesta no trae el cuerpo de ninguna peticion ni cabeceras
+  ✓ Filtrar por 'negado' deja solo los 403
+  ✓ Filtrar por operacion y por ruta
+  ✓ Filtrar por persona
+  ✓ Paginada: dos filas y el total del registro
+  ✓ Filtrar por fecha
+  ✓ Un periodo sin movimientos esta vacio
+  ✓ Auditoria con 'usuario=abc': 400
+  ✓ Auditoria con 'metodo=GET': 400
+  ✓ Auditoria con 'resultado=quizas': 400
+  ✓ Auditoria con 'desde=2026-13-45': 400
+  ✓ Auditoria con 'pagina=0': 400
+  ✓ Un Vecino no lee la auditoria (403)
+  ✓ Un Operario no lee la auditoria (403)
+  ✓ Un Cuadrilla no lee la auditoria (403)
+  ✓ Sin sesion (401)
+  ✓ No existe ninguna operacion para borrar o cambiar la auditoria (404)
+  ✓ Ni para modificarla (404)
+
+22l. Seguridad: inyeccion SQL
+-----------------------------
+  ✓ Login con el correo "admin@sigeru.uy' OR '1'='1" no entra
+  ✓ Login con el correo "' OR 1=1 --" no entra
+  ✓ Login con el correo "admin@sigeru.uy'; DROP TABLE usuario; --" no entra
+  ✓ Login con una contrasena de inyeccion no entra (401)
+  ✓ Un filtro numerico con SQL se rechaza (400)
+  ✓ Una busqueda con SQL es solo texto: sin resultados y sin efectos
+  ✓ La tabla sigue ahi
+  ✓ Un id con SQL no devuelve la lista entera
+  ✓ Una fecha con SQL (400)
+  ✓ La busqueda de la auditoria tambien es solo texto (200)
+
+22m. Seguridad: freno a los pedidos publicos
+--------------------------------------------
+  ✓ Una misma IP no puede mandar mas de 10 solicitudes de registro por hora: el pedido numero 11 recibe 429 con Retry-After
+  ✓ Una misma IP no puede mandar mas de 10 registros por hora: el pedido numero 11 recibe 429 con Retry-After
+  ✓ Pasada la ventana (aca, borrando el contador) se puede de nuevo
+  ✓ No se lista el contenido de /frontend-usuarios/js/
+  ✓ No se lista el contenido de /landing/js/
+  ✓ No se lista el contenido de /frontend-usuarios/css/
+  ✓ No se lista el contenido de /landing/vendor/
+
+23. Limpieza
+------------
+  ✓ Los datos de prueba quedaron borrados
+  ✓ La maquinaria de prueba tambien
+  ✓ Las incidencias de prueba y todos sus historiales se fueron en cascada
+
+==================================================
+Pasaron: 969   Fallaron: 0   Omitidas: 0
+Todo verde.

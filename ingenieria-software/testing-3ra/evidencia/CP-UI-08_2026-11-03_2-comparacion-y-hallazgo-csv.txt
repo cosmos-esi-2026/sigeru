@@ -1,0 +1,5 @@
+CP-UI-08 - 03/11/2026 ~16:22 - sesion de admin@sigeru.uy, pantalla Reportes (periodo: todo el historial)
+Pantalla: 6 incidencias, 4 pendientes (abiertas y en curso), 2 cerradas (resueltas y descartadas).
+Listado GET /api-gestion/incidencias: 6 filas; abierta 3, en_curso 1, resuelta 1, descartada 1 (4 pendientes, 2 cerradas).
+Resultado: las cifras del informe coinciden con el listado.
+Hallazgo: la pantalla Reportes no tiene boton de CSV; solo 'Imprimir'. Busqueda 'csv' en frontend-usuarios y api-gestion: 0 resultados.
