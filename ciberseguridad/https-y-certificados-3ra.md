@@ -2,7 +2,7 @@
 materia: Ciberseguridad
 entrega: 3ra (certificado SSL/TLS y acceso HTTPS)
 fecha: 2026-10-17
-estado: Probado en la PC de desarrollo (hostname `frannxito`, 17/10/2026). El script del servidor `sigeru-srv` está escrito y revisado, NO probado.
+estado: HTTPS probado en XAMPP el 17/10/2026. Revisión del 06/11: sin evidencia de HTTPS instalado o probado en las tres VM Rocky.
 ---
 
 # HTTPS y certificados
@@ -10,12 +10,14 @@ estado: Probado en la PC de desarrollo (hostname `frannxito`, 17/10/2026). El sc
 ## 1. Qué se pide y qué hay
 
 La letra reserva para esta entrega «implementación de certificado SSL dentro del servidor» y que se pueda probar desde un
-cliente. Hay dos entornos y no se confunden:
+cliente. La prueba de XAMPP y el laboratorio Rocky son entornos distintos:
 
 | Entorno | Estado | Dónde |
 |---|---|---|
 | **Apache del pendrive (XAMPP)**, PC de desarrollo y de la defensa | **Hecho y probado** el 17/10/2026 | `herramientas/xampp/` |
-| **`sigeru-srv`** (Ubuntu Server, Apache) | **Script escrito, sin probar** | `administracion-sistemas-operativos/scripts/https/configurar-https.sh` |
+| **`sigeru-app`** (Rocky Linux, Apache tradicional y contenedor web) | **No veo instalación ni prueba HTTPS en la carpeta** | Despliegue actual: `sistemas/manual/Manual_Despliegue_Tradicional_Docker_SiGeRU.pdf` |
+
+El script `sistemas/base-scripts/administracion-sistemas-operativos/scripts/https/configurar-https.sh` pertenece a la etapa Ubuntu. No demuestra que HTTPS esté configurado en Rocky y habría que adaptarlo y probarlo antes de usarlo.
 
 ## 2. El certificado
 
@@ -56,32 +58,30 @@ Set-Cookie: SIGERUSESSID=...; path=/; secure; HttpOnly; SameSite=Lax
 ```
 
 Sin `--cacert`, `curl` rechaza la conexión (el certificado no es de una autoridad conocida): es el comportamiento correcto.
-**Qué falta como evidencia:** una captura del navegador con el candado y el detalle del certificado, y la misma prueba contra
-`sigeru-srv` con el hostname y la fecha a la vista (regla del proyecto: una salida de texto sola no alcanza para ASO).
+**Qué falta como evidencia:** una captura del navegador con el detalle del certificado de XAMPP y, por separado, instalación y prueba desde un cliente contra `sigeru-app` Rocky, con hostname y fecha visibles. No veo esas capturas en la carpeta.
 
 ## 4. Acceso HTTPS: forzado o no
 
-- **En el pendrive no se fuerza.** Toda la documentación, el `SIGERU_PUBLIC_URL` de los correos (`http://localhost/sigeru`) y las
-  pruebas usan `http://localhost`. Forzar HTTPS en la PC de la defensa agregaría un aviso del navegador sin ganancia real (el tráfico
-  no sale de la máquina). Se documenta que `https://localhost/sigeru/landing/` funciona.
-- **En el servidor sí:** `configurar-https.sh` redirige el puerto 80 al 443 (301) y manda `Strict-Transport-Security`
-  (`max-age=31536000`). Con HTTPS la cookie de sesión sale `Secure` sola.
-- **Docker** sirve en el 8080 sin TLS (es un entorno de verificación, no de producción).
+- **En el pendrive no se fuerza.** Las pruebas de XAMPP usaron `http://localhost` y también se comprobó `https://localhost/sigeru/landing/` con certificado propio. Como es autofirmado, el navegador avisa si no se importa.
+- **En las VM Rocky no se comprobó HTTPS.** El despliegue tradicional documentado sirve por el puerto 80 y Docker por el 8081. No corresponde afirmar que hoy redirigen al 443 o mandan HSTS.
+- **Si se configura en Rocky**, hay que comprobar la redirección, el certificado, la cookie `Secure` y la conexión desde otra máquina. Hasta entonces es una tarea pendiente.
 
 ## 5. Cómo se prueba en `sigeru-srv` (para quien tenga acceso)
 
+El título conserva el nombre de la VM Ubuntu anterior para mantener la estructura del documento. Esa VM ya no es el laboratorio vigente. Los comandos de abajo son una guía pendiente para `sigeru-app` Rocky; no son resultados obtenidos.
+
 ```bash
-sudo ./configurar-https.sh sigeru-srv           # crea el certificado, el sitio 443, la redirección; recarga Apache
-curl -vk https://sigeru-srv/sigeru/landing/ 2>&1 | grep -E 'SSL connection|subject|expire|HTTP/'
-openssl s_client -connect sigeru-srv:443 -servername sigeru-srv </dev/null 2>/dev/null | grep -E 'Protocol|Cipher|Verify'
-curl -sI http://sigeru-srv/sigeru/landing/ | head -3     # tiene que ser 301 hacia https
+curl -vk https://192.168.56.11/sigeru/landing/   # solo después de instalar y habilitar TLS en Rocky
+openssl s_client -connect 192.168.56.11:443 </dev/null
+curl -sI http://192.168.56.11/sigeru/landing/    # comprobar si redirige; hoy no hay prueba de 301
 ```
+
+Son comandos propuestos para la comprobación, no resultados obtenidos. Para validar el nombre del certificado hará falta uno que incluya la IP o el nombre real de la VM en SAN; el certificado de `localhost` de XAMPP no sirve para esa dirección.
 
 ## 6. Riesgos y límites
 
 - Autofirmado: sin importar el certificado, un atacante en la red podría presentar uno propio y el usuario acostumbrado a aceptar la
   excepción no lo notaría. Por eso la huella de arriba figura en el documento: se puede comparar.
-- La clave privada (`sigeru.key`) está sin contraseña, como es habitual para que Apache arranque sola; se protege con permisos
-  (600 en el servidor). En el pendrive (exFAT) no hay permisos: quien tenga el pendrive tiene la clave. Es aceptable para un
+- La clave privada (`sigeru.key`) de XAMPP está sin contraseña para que Apache pueda iniciar. Si se instala una clave en Rocky, habría que protegerla con permisos 600 y comprobarlos. En el pendrive (exFAT) no hay permisos: quien tenga el pendrive tiene la clave. Es aceptable para un
   certificado de `localhost`, no para uno de producción.
 - No se configuró OCSP, `Expect-CT` ni TLS mutuo: no aplican.

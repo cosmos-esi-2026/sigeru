@@ -6,9 +6,7 @@ fecha: 2026-10-12
 
 # Ampliación: matriz de permisos por rol, límite de intentos y archivos que no se sirven
 
-Amplía `controles-de-acceso.md` (14/09) sin reemplazarlo: lo que ese documento describe sigue
-valiendo, salvo lo que se corrige expresamente en la sección 2. Se escribió en la parte 2 de la
-mejora de la página de la 3ra entrega.
+Amplía `controles-de-acceso.md` (14/09). Se escribió por etapas; por eso las tablas fechadas de octubre muestran cómo era el sistema en ese momento. Para la versión que se entrega, leer primero la actualización final del 30/10 (sección 26): la foto, el correo y varias funciones opcionales fueron retirados. Las reglas vigentes están en las APIs y requieren comprobarse allí.
 
 ## 1. Matriz de permisos
 
@@ -168,6 +166,8 @@ contenedor tenga exactamente los siete campos públicos y que la respuesta no co
 
 ## 12. Actualización del 17/10/2026 (P4b: foto de la incidencia)
 
+Esta función se retiró el 30/10. Las rutas de la tabla siguiente ya no son parte del sistema vigente; se conservan para mostrar el cambio.
+
 | Recurso | Administrador | Operario | Cuadrilla | Vecino |
 |---|---|---|---|---|
 | `POST /incidencias/{id}/foto` (subir) | — | — | — | Solo **quien informó**, una vez, con la incidencia abierta |
@@ -177,6 +177,8 @@ La regla de alcance es la misma de la incidencia (`FlujoIncidencia::alcanza`): u
 se sirve como archivo: pasa siempre por la API, con sesión, y vive fuera de la lista blanca del `.htaccess`.
 
 ## 13. Actualización del 17/10/2026 (revisión de coherencia: rutas de `api-usuarios`)
+
+Las filas de enlaces de correo que siguen existían en esa fecha. Se retiraron el 30/10, como explica la sección 26.
 
 La fila «Sin sesión» de la sección 1 decía que sin sesión solo se puede `POST /login` y `POST /solicitudes`. Era cierto el
 12/10; después se sumaron el mapa público (sección 11), el acceso por enlace de correo
@@ -324,7 +326,7 @@ El servicio externo de rutas (Valhalla/OSRM de FOSSGIS) **no recibe datos de per
 | `POST /api-gestion/incidencias/{id}/derivacion` | **Solo Administrador** (nuevo) | `{"nota": "..."}` hasta 200 caracteres. Solo de tipo «roto», abierta o en curso, una sola vez (409 si no). El contenedor pasa a «mantenimiento» (sale de las rutas como «no se recolecta»), queda un asiento en el historial de solo agregado y se avisa al vecino. Al resolver la incidencia el contenedor vuelve a «disponible» |
 
 Al informarse un contenedor roto se avisa a los administradores. Cubierto por `unitarias-incidencias.php` y `correr-tests-incidencias-mant.php`.
-La foto de la incidencia sigue siendo solo del Vecino (decisión SIN Fornos: la cuadrilla informa con texto).
+En esa versión, la foto de la incidencia era solo del Vecino. Se retiró el 30/10; la cuadrilla informa con texto.
 
 ### 25. Cuadrillas y usuarios con cuadrilla (plan de rutas para la defensa, bloque 8, 23/10/2026; migración 019)
 
@@ -337,7 +339,7 @@ La foto de la incidencia sigue siendo solo del Vecino (decisión SIN Fornos: la 
 | `POST /api-usuarios/solicitudes` | Público (con freno por IP, 10 por hora) | Acepta `tipo_cuenta` (`vecino`, `cuadrilla`; cualquier otro valor: 400, no se puede pedir ser administrador) y `cuadrilla_indicada` (obligatoria para `cuadrilla`, hasta 80 caracteres, **texto libre que escribe la persona: es solo una pista y se escapa al mostrarla**). No crea ninguna cuenta ni sesión |
 | `PUT /api-usuarios/solicitudes/{id}` | Solo Administrador | Una solicitud de cuadrilla solo se aprueba como Cuadrilla y con una **`id_cuadrilla` real elegida por el administrador** (400 si falta, no existe o está dada de baja); la solicitud sigue pendiente si falla. Al aprobar se crea el usuario `pendiente` y se envía el enlace para crear la contraseña (flujo existente) |
 
-Cubierto por `correr-tests-cuadrillas.php`. Cambios en la auditoría: etiquetas para crear, modificar y dar de baja una cuadrilla.
+Cubierto por `correr-tests-cuadrillas.php` en la versión de esa fecha. La aprobación por enlace de la última fila quedó retirada el 30/10; ahora el administrador define la contraseña. Cambios en la auditoría: etiquetas para crear, modificar y dar de baja una cuadrilla.
 
 ## 24. Actualización del 25/10/2026 (simplificación: rutas que ya no existen)
 
@@ -368,4 +370,4 @@ Se borran `POST /recuperar-clave`, `POST /crear-clave` y `POST /usuarios/{id}/en
 | `PUT /solicitudes/{id}` con `decision: aprobada` | Solo el Administrador | `password` obligatoria al aprobar; al rechazar no se pide |
 | `POST /registro` | Cualquiera, sin sesión (10 por hora por IP) | La contraseña la elige el vecino |
 
-Sin sesión, lo público es: `POST /login`, `/solicitudes`, `/registro` y `GET /publico/mapa`. La auditoría sigue sin guardar nada del cuerpo de los pedidos (lo comprueba una prueba por HTTP). Probado: 654 unitarias y 995 HTTP, sección 7b de `correr-tests.php`.
+Sin sesión, lo público es: `POST /login`, `/solicitudes`, `/registro` y `GET /publico/mapa`. La Cuadrilla entra con cédula; los perfiles generales, con correo. Una foto de incidencia ya no se puede subir ni consultar. La auditoría sigue sin guardar nada del cuerpo de los pedidos (lo comprueba una prueba por HTTP). Las cifras 654 unitarias y 995 HTTP son de la corrida documentada del 30/10, no de una ejecución repetida hoy.

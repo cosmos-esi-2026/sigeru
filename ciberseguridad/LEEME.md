@@ -19,7 +19,7 @@ ampliación hecha ahora, no como si se hubiera entregado en su fecha original.
 | `validaciones-frontend-backend.md` | Qué valida el HTML (ya existía) y qué se sumó en el backend (`core/Validacion.php`) | 2da |
 | `encriptacion-contrasenas.md` | `password_hash`/`password_verify`, por qué es hashing y no cifrado | 2da |
 | `esquema-de-red-y-seguridad.md` + `Esquema_Red_Seguridad_SiGeRU.png` | Diagrama del perímetro, los tres servicios y el único canal de administración | 2da |
-| `firewall-fail2ban.md` | `ufw` + `fail2ban` instalados y probados contra `sigeru-srv` real | 2da |
+| `firewall-fail2ban.md` | `ufw` + `fail2ban` instalados y probados contra `sigeru-srv` real | 2da (VM Ubuntu; en Rocky no verificado) |
 | `config/fail2ban/sigeru.conf` | Jail de `fail2ban`, listo para copiar a `/etc/fail2ban/jail.d/` | 2da |
 | `analisis-owasp-3ra.md` | Análisis OWASP Top 10 con pruebas dirigidas: 10 hallazgos corregidos, lo que estaba bien y lo que queda abierto | **3ra** |
 | `especificacion-criptografica-3ra.md` | Hashing, cifrado y firma digital: qué está implementado y qué es propuesta | **3ra** |
@@ -35,7 +35,7 @@ ampliación hecha ahora, no como si se hubiera entregado en su fecha original.
   `crear()`, `actualizar()` y `crearSolicitud()`.
 - `tests/correr-tests.php`: 4 pruebas nuevas en la sección "Validaciones".
   **51 de 51, todas en verde** (antes: 47 de 47).
-- `sigeru-srv`: `ufw` y `fail2ban` instalados y activos (no solo
+- `sigeru-srv` (VM Ubuntu de la 2da, ya no vigente; en Rocky fail2ban no está verificado): `ufw` y `fail2ban` instalados y activos (no solo
   documentados — ver `pruebas/2026-09-14-prueba-firewall-fail2ban.txt`).
 
 ## Por qué se pudo resolver tan rápido

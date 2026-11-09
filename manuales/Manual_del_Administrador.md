@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Administrador
 sistema: SiGeRU 2026
-version: 1.1 (19/10/2026, con capturas propias)
-estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
+version: 1.2 (06/11/2026, texto ajustado al alcance actual)
+estado: Texto contrastado con las pantallas y el código. La captura del panel es del 19/10/2026; falta repetir el recorrido con una persona ajena al equipo.
 ---
 
 # Manual del Administrador
@@ -13,7 +13,7 @@ centros, maquinaria, reportes y auditoría.
 ## 1. Entrar y panel
 
 ![Panel de control del administrador](img/admin-panel.png)
-*Panel de control del administrador*
+*Panel de control del administrador. Captura del 19/10/2026 con datos de demostración.*
 
 **Ingresar** con correo y contraseña. **Inicio** (Panel de control) muestra el bloque **Requiere atención**, con las incidencias urgentes
 calculadas al momento. Tras 2 horas sin actividad la sesión se cierra.
@@ -21,9 +21,9 @@ calculadas al momento. Tras 2 horas sin actividad la sesión se cierra.
 ## 2. Usuarios
 
 **Usuarios** lista las cuentas. Podés buscar y filtrar por **Rol** (Administrador, Operario, Cuadrilla, Vecino) y **Estado** (Activo,
-Dado de baja); **Limpiar** borra los filtros y **Exportar CSV** baja el listado.
+Dado de baja); **Limpiar** borra los filtros. Esta lista no tiene descarga CSV en la versión actual.
 
-- **Alta:** botón de nuevo usuario, completar Nombre, Apellido, Email, **Contraseña** (8 caracteres o más) y rol, **Guardar usuario**. La cuenta queda activa y le entregás la contraseña a la persona en mano: el sistema no manda correo.
+- **Alta:** botón de nuevo usuario, completar Nombre, Apellido, Email, **Contraseña** (8 caracteres o más) y rol, **Guardar usuario**. Si el rol es Cuadrilla, también tenés que indicar una cédula válida y la cuadrilla a la que pertenece. La cuenta queda activa y le entregás la contraseña a la persona en mano: el sistema no manda correo.
 - **Contraseña perdida:** **Editar** el usuario y escribir una **Contraseña** nueva (vacía no se cambia). No hay «Olvidé mi contraseña»: la restablece la administración.
 - **Centro del Operario:** al elegir el rol Operario aparece **Centro de acopio**. Un Operario solo ve y mueve el centro que le asignes; sin
   centro no puede operar (la lista muestra «Operario · nombre del centro»).
@@ -31,8 +31,7 @@ Dado de baja); **Limpiar** borra los filtros y **Exportar CSV** baja el listado.
 
 ## 3. Solicitudes de acceso
 
-**Solicitudes de acceso** tiene las pestañas Pendientes, Todas, Aprobadas y Rechazadas. **Aprobar** pide el **Rol con el que entra**
-(Vecino, Operario, Cuadrilla o Administrador) y **Aprobar y crear la cuenta**. **Rechazar** cierra la solicitud.
+**Solicitudes de acceso** tiene las pestañas Pendientes, Todas, Aprobadas y Rechazadas. **Aprobar** pide una contraseña inicial y el **Rol con el que entra**. Si la solicitud es de Cuadrilla, revisá la cédula y elegí la cuadrilla real: no se puede aprobar con otro rol. Después tocá **Aprobar y crear la cuenta**. **Rechazar** cierra la solicitud. Los vecinos también pueden registrarse solos, sin pasar por esta pantalla.
 
 ## 4. Contenedores
 
@@ -69,8 +68,7 @@ corrige con un movimiento inverso: no se borra nada. Cuando un centro pasa del 8
 
 ## 8. Reportes
 
-**Reportes:** período (Últimos 30 días, Este mes, Todo el historial o Desde/Hasta) y Zona; **Generar informe**, **Imprimir**,
-**Exportar (CSV)** y **Exportar detalle (CSV)**.
+**Reportes:** período (Últimos 30 días, Este mes, Todo el historial o Desde/Hasta) y Zona; **Generar informe**, **Imprimir** o **Descargar CSV**. El CSV contiene el detalle visible de incidencias; si supera 1000 filas, el sistema avisa que quedó cortado. No descarga el informe entero ni los listados de Usuarios y Contenedores.
 
 ## 9. Auditoría
 
@@ -85,6 +83,6 @@ cuadrillas reciben sus propios avisos cuando asignás, resolvés o descartás un
 
 ## 10. Preguntas frecuentes
 
-- **Un usuario no puede entrar:** revisá que no esté dado de baja o pendiente; usá **Enviar acceso**.
+- **Un usuario no puede entrar:** revisá que no esté dado de baja o pendiente. Si olvidó la contraseña, entrá en **Editar** y definile otra. Si es Cuadrilla, tiene que usar su cédula en la pestaña **Cuadrilla**.
 - **No encuentro una incidencia cerrada para editarla:** no se puede, por diseño.
 - **Cambié algo y no sé quién fue:** Auditoría.

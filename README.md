@@ -12,7 +12,7 @@ responsables y reportes.
 | Carpeta | Qué es | Estado |
 | --- | --- | --- |
 | `landing/` | Página pública: cifras reales del sistema, mapa público de contenedores y centros de acopio, cómo informar un problema, enlace al registro y páginas de error propias | Funcionando |
-| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol (con foto), reportes (panel por urgencias, informe del período y exportación a CSV), recepciones y stock del centro (Operario), notificaciones (la campanita), armado de rutas y asignación a cuadrillas, auditoría y modo oscuro | Funcionando |
+| `frontend-usuarios/` | Interfaz de gestión: login, panel, mapa, usuarios, contenedores (con su ficha e historial), camiones, rutas, recolecciones («Mis tareas» de la cuadrilla), centros de acopio, maquinaria, solicitudes, incidencias por rol, reportes (panel por urgencias e informe del período), recepciones y stock del centro (Operario), notificaciones (la campanita), armado de rutas y asignación a cuadrillas, auditoría y modo oscuro | Funcionando |
 | `api-usuarios/` | API de usuarios, login, sesión, solicitudes de registro, registro de vecinos, contraseñas definidas por el administrador y auditoría | Funcionando, sobre MySQL |
 | `api-gestion/` | API de contenedores, centros de acopio, maquinaria, tipos de residuo, zonas e incidencias (informar, asignar, avance, resolver; historial de solo agregado) y estadísticas (informe de un período, panel por urgencias) | Funcionando, sobre MySQL |
 | `api-recoleccion/` | API de camiones, cuadrillas, rutas y recolecciones (planificar, iniciar, registrar vaciados con peso y volumen, finalizar, cancelar) y estadísticas de lo recolectado | Funcionando, sobre MySQL (desde el 14/10/2026) |
@@ -54,7 +54,8 @@ para desarrollar y presentar, o con un XAMPP común en otra máquina. Las dos le
 MySQL con las tablas del modelo y los datos de prueba) y se usan igual desde el navegador.
 
 Usuarios de prueba (todos con contraseña `sigeru2026`): `admin@sigeru.uy` (Administrador),
-`operario@sigeru.uy`, `cuadrilla@sigeru.uy` y `vecino@sigeru.uy`.
+`operario@sigeru.uy` y `vecino@sigeru.uy`. La cuadrilla entra por la pestaña «Cuadrilla» con su **cédula**
+(`41000019`, Cuadrilla Municipio A) y la misma contraseña.
 
 Cada rol ve su menú. Las **incidencias** se recorren con tres usuarios: el vecino entra a
 «Informar un problema» (código del contenedor, tipo, descripción) y recibe el número `INC-NNNN`,
@@ -84,8 +85,9 @@ viene de OpenStreetMap y, sin internet, el mapa sigue funcionando sobre fondo li
 4. Entrar con `admin@sigeru.uy` / `sigeru2026`. Aparece el inicio del administrador:
    indicadores y «Requiere atención» (lo urgente primero), con el menú a todo el sistema.
 5. Para mostrar que las pruebas pasan: doble clic en **`sigeru/tests/correr-tests.cmd`**.
-   Corre las pruebas contra las APIs por HTTP y termina con `Fallaron: 0` (al 30/10/2026
-   son 995 y 1 omitida si Apache no arranca con el trazado en modo recta; el resumen avisa de lo que omite). Los registros que crea los borra solos.
+   Corre las pruebas contra las APIs por HTTP y termina con `Fallaron: 0` (el resumen dice
+   cuántas pasaron y avisa de lo que omite; desde el 30/10/2026 el trazado de las rutas es en línea recta por defecto, y con
+   `SIGERU_TRAZADO_MODO=calles` en Apache se vuelve a pedir el trazado por calles a los servicios públicos). Los registros que crea los borra solos.
 6. Para apagar: doble clic en **`detener-xampp.cmd`**. MySQL tarda entre 10 y 15 segundos en
    terminar de escribir en el pendrive: el script espera a que termine y recién entonces dice
    `Listo. Ya se puede expulsar el pendrive.` Antes de ese mensaje **no** sacarlo. El pendrive

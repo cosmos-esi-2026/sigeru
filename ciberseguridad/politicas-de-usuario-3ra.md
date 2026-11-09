@@ -2,7 +2,7 @@
 materia: Ciberseguridad
 entrega: 3ra (políticas de seguridad de usuario, consolidadas)
 fecha: 2026-10-17
-estado: Cada política dice cómo se hace cumplir en el sistema (código o configuración) y quién responde por ella.
+estado: Revisión del 06/11 contra el código actual y las VM Rocky. Las prácticas aún sin evidencia quedan indicadas.
 ---
 
 # Políticas de seguridad de usuario
@@ -15,11 +15,11 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 
 | Política | Cómo se cumple |
 |---|---|
-| Nadie, ni el administrador, conoce la contraseña de otra persona | Las cuentas nuevas nacen `pendiente` y la persona crea su contraseña con un enlace de un solo uso (1 hora); la que envíe el administrador se ignora. Pruebas HTTP 7b |
+| El administrador define la contraseña inicial de las cuentas que crea o aprueba | Desde el 30/10 no se usa el enlace por correo: `POST /usuarios` y la aprobación piden `password`; la cuenta nace activa. Falta acordar y documentar cómo se entrega esa clave sin exponerla |
 | Largo mínimo de 8 caracteres | `Validacion::contrasena`; la clave de prueba del seed ahora cumple (prueba unitaria) |
 | Contraseñas guardadas con hash, sin recuperación posible | bcrypt con sal propia; «recuperar» = que el administrador defina una nueva (no hay correo ni «Olvidé mi contraseña») |
-| Sin recuperación automática | Toda contraseña perdida la restablece un administrador (nadie toma una cuenta con solo conocer su correo) |
-| El sistema no revela si una cuenta existe al iniciar sesión | Misma respuesta con correo inexistente o contraseña mala; el registro público sí avisa si el correo ya existe (limitación aceptada) |
+| Sin recuperación automática | Toda contraseña perdida la restablece un administrador; no hay correo ni «Olvidé mi contraseña» |
+| El sistema no revela si una cuenta existe al iniciar sesión | Respuesta equivalente con credencial inexistente o contraseña mala; los perfiles generales entran con correo y la Cuadrilla con cédula. El registro público sí avisa si el correo ya existe (limitación aceptada) |
 | Una cuenta dada de baja no entra | `estado = inactivo` se comprueba en **cada** pedido; pruebas de la sección 9 |
 
 ## 2. Sesiones
@@ -36,17 +36,17 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 
 | Política | Cómo se cumple |
 |---|---|
-| 5 intentos fallidos de entrar en 15 minutos bloquean ese correo | `IntentosLogin`; 429 con `Retry-After`; el conteo no distingue mayúsculas y se reinicia con un acceso correcto |
-| Los pedidos públicos (registro, solicitud, recuperar, crear contraseña) tienen tope por IP: 10 por hora (30 el último) | `LimitePeticion`; 429; pruebas 22m |
+| 5 intentos fallidos de entrar en 15 minutos bloquean esa credencial | `IntentosLogin`; 429 con `Retry-After`; cuenta por correo normalizado o cédula normalizada según el perfil, y se reinicia con un acceso correcto |
+| Los pedidos públicos vigentes (registro y solicitud) tienen tope por IP | `LimitePeticion`; 429; las rutas de recuperar y crear contraseña por enlace fueron retiradas el 30/10 |
 
 ## 4. Mínimo privilegio
 
 | Política | Cómo se cumple |
 |---|---|
 | Cada rol hace lo mínimo que necesita | Tabla de permisos por recurso y método, **negada por defecto**: `ampliacion-matriz-de-permisos-3ra.md`; probada con los cuatro roles y sin sesión |
-| Lo ajeno no se confirma que exista | Una incidencia, recolección o foto ajena responde 404 |
+| Lo ajeno no se confirma que exista | Una incidencia o recolección ajena responde 404. La foto de incidencia ya no es una función vigente |
 | El administrador es el único rol que ve datos agregados, la auditoría y los datos de las personas | Estadísticas, auditoría y usuarios: solo `Administrador` |
-| Los servicios de la base y del servidor corren con el mínimo | **Pendiente:** hoy la aplicación usa `root` en XAMPP; en el servidor, el usuario `sigeru` de la base |
+| Los servicios de la base y del servidor corren con el mínimo | **Parcial:** XAMPP de desarrollo usa `root`; en el despliegue tradicional Rocky se creó `sigeru@192.168.56.11` con permisos sobre la base `sigeru` (`sistemas/CHECKLIST.md` §3.1). Falta revisar los privilegios efectivos de ambos despliegues |
 
 ## 5. Privacidad (Ley 18.331 de protección de datos personales)
 
@@ -55,9 +55,9 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 | Se pide solo lo necesario | La pantalla de registro pide solo nombre, apellido, correo y contraseña (la API admite además teléfono y dirección, opcionales) |
 | Quién reportó solo lo ve la administración | Ni la cuadrilla ni otros vecinos ven su nombre ni su id (ni en el historial); **el personal se muestra al vecino por su rol, no por su nombre** (decisión del 17/10) |
 | La página pública no muestra personas | `/publico/mapa` trae lugares y totales; una prueba falla si aparece un `@`, un teléfono o un id de usuario |
-| Las fotos no revelan dónde estaba la persona | Se vuelven a dibujar sin EXIF/GPS; solo las ven quien las subió, la administración y la cuadrilla asignada |
-| Nada sensible en direcciones web ni en registros | El token del enlace sale de la barra con `history.replaceState` y `Referrer-Policy: same-origin`; la auditoría no guarda cuerpos ni parámetros |
-| Las exportaciones no llevan contraseñas | CSV de usuarios sin hashes ni enlaces; prueba estática |
+| No se reciben fotos de incidencias | La función se retiró el 30/10; los archivos y clases de la versión anterior no prueban que siga activa |
+| Nada sensible en direcciones web ni en registros | No hay enlaces de acceso con token. La auditoría no guarda el cuerpo de los pedidos, donde puede viajar una contraseña |
+| Las exportaciones no llevan contraseñas | El CSV de reportes no debe incluir hashes. La exportación de usuarios mencionada en la versión anterior necesita comprobarse contra las pantallas actuales antes de afirmarla |
 | **Pendiente:** derecho de acceso, rectificación y baja de datos del vecino | Hoy la baja es lógica (se conservan sus reportes); falta un procedimiento y una pantalla |
 
 ## 6. Responsabilidades
@@ -71,7 +71,7 @@ columna «Cómo se cumple» indica dónde está y qué prueba la vigila.
 ## 7. Incidentes: qué se hace
 
 1. Detectar: pantalla **Auditoría** (muchos «Negado», accesos a deshoras), bloqueos 429, y los registros de Apache.
-2. Contener: dar de baja la cuenta (rige en el pedido siguiente) y, si hace falta, `detener-xampp.cmd`.
+2. Contener: dar de baja la cuenta (rige en el pedido siguiente) y, según el entorno afectado, detener XAMPP o el servicio de la VM. No veo un ensayo de respuesta a incidentes en Rocky.
 3. Investigar: la auditoría dice quién, qué, cuándo y desde qué IP; el historial de incidencias y de contenedores no se puede editar.
-4. Recuperar: `restaurar.sh` desde un respaldo cuya firma y huella se verificaron.
+4. Recuperar: restaurar desde un respaldo comprobado. Hay una prueba de restauración de archivo y de base MySQL en `sistemas/manual/Manual_Backup_Cron_SiGeRU.pdf`; no veo firma ni huella SHA-256 integradas al script actual de Rocky.
 5. Aprender: anotar en el vault y agregar la prueba que habría detectado el problema.

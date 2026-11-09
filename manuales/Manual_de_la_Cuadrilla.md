@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Cuadrilla de recolección
 sistema: SiGeRU 2026
-version: 1.1 (19/10/2026, con capturas propias)
-estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
+version: 1.2 (06/11/2026, texto ajustado al alcance actual)
+estado: Texto contrastado con las pantallas y el código. La captura de Mis tareas es del 19/10/2026; falta repetir el recorrido con una persona ajena al equipo.
 ---
 
 # Manual de la Cuadrilla
@@ -12,8 +12,7 @@ de su cuadrilla. Desde acá registra el avance de cada trabajo, lo cierra, y ano
 
 ## 1. Entrar
 
-Desde la página de SiGeRU, **Ingresar** con el correo y la contraseña que te dio la administración. Si la perdiste, la
-administración te define una nueva (no hay «Olvidé mi contraseña»). Tu cuenta tiene que estar vinculada a una cuadrilla (lo hace la administración); si no lo está, no vas a ver incidencias ni recolecciones.
+Desde la página de SiGeRU, tocá **Ingresar**, elegí la pestaña **Cuadrilla** y escribí tu **cédula** y la contraseña que te dio la administración. Podés escribir la cédula con o sin puntos y guion. El ingreso por correo no sirve para este rol. Si perdiste la contraseña, la administración te define una nueva (no hay «Olvidé mi contraseña»). Tu cuenta tiene que estar vinculada a una cuadrilla (lo hace la administración); si no lo está, no vas a ver incidencias ni recolecciones.
 Menú: **Inicio**, **Mapa**, **Contenedores**, **Mis incidencias** y **Mis tareas**. La sesión se cierra sola tras 2 horas sin uso.
 
 ## 2. Mis incidencias
@@ -21,7 +20,7 @@ Menú: **Inicio**, **Mapa**, **Contenedores**, **Mis incidencias** y **Mis tarea
 **Mis incidencias** lista lo asignado a tu cuadrilla, con número, contenedor, dirección, tipo, prioridad, estado y fecha. Podés
 buscar y filtrar por estado.
 
-1. Tocá el número (por ejemplo `INC-0003`) para abrir el detalle: datos, descripción, **foto** (si el vecino adjuntó una) e **historial**.
+1. Tocá el número (por ejemplo `INC-0003`) para abrir el detalle: datos, descripción e **historial**. Esta versión no recibe fotos de incidencias.
 2. **Registrar un avance:** escribí **Qué se hizo hasta ahora** (por ejemplo, «se pidió una tapa al depósito») y tocá **Registrar el avance**.
    El texto es obligatorio (hasta 300 caracteres) y queda firmado con tu nombre y la hora.
 3. **Cerrar como resuelta:** cuando el problema está solucionado, escribí **Qué se hizo** (opcional) y tocá **Marcar como resuelta**.
@@ -33,7 +32,7 @@ informó el problema, solo que lo informó un vecino.
 ## 3. Mis tareas (recolecciones)
 
 ![Mis tareas: las recolecciones de la cuadrilla](img/cuadrilla-tareas.png)
-*Mis tareas: las recolecciones de la cuadrilla*
+*Mis tareas: las recolecciones de la cuadrilla. Captura del 19/10/2026 con datos de demostración.*
 
 **Mis tareas** muestra las recolecciones de tu cuadrilla, con estado: **Planificada**, **En curso**, **Finalizada**, **Cancelada**.
 Tocá una para abrirla: ruta, camión, cuadrilla, centro de destino, inicio previsto y la tabla de **Vaciados**.

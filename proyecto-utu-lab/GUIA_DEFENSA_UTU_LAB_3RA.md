@@ -3,7 +3,7 @@
 **Para estudiar antes de la defensa (16 al 19/11/2026). Docente: Diego Pereira. Equipo COSMOS.**  
 **Corte que se defiende:** la tercera entrega del **06/11/2026**. Esta guía se armó el **23/10/2026**; lo que cambie hasta el 06/11 (sobre todo los resultados de las sesiones con usuarios) hay que actualizarlo acá y volver a generar el PDF con `generadores/guia_defensa_utulab_3ra.py`.
 
-> **Idea central:** en julio definimos el problema y dibujamos ocho pantallas; en septiembre las hicimos recorribles; en octubre el sistema funciona con 800 contenedores reales de la Intendencia y le sumamos una pieza de papel —una etiqueta con QR pegada en el contenedor— que lleva el sistema a la calle. Cada nivel de prototipo encontró errores que el anterior no veía. La validación con personas llegó tarde y se dice así: lo que hay es lo que hay, con su evidencia.
+> **Idea central:** en julio definimos el problema y dibujamos ocho pantallas; en septiembre las hicimos recorribles; en octubre el sistema funciona con 800 contenedores reales de la Intendencia y preparamos una etiqueta con QR para conectar el contenedor con la pantalla. Cada nivel de prototipo encontró errores que el anterior no veía. La validación con personas sigue pendiente y se dice así, sin inventar resultados.
 
 ## Cómo estudiar esta guía
 
@@ -22,11 +22,11 @@
 
 **El sistema (octubre).** La página real, con tres APIs, base de datos y 800 contenedores reales de 8 municipios (datos abiertos de la Intendencia de Montevideo). El vecino avisa, el administrador prioriza y arma rutas, la cuadrilla ve solo su ruta, el operario recibe lo recolectado. Eso es el **prototipo de alta fidelidad**.
 
-**La pieza analógica (octubre).** Una etiqueta de papel con QR en el contenedor: el vecino la escanea y avisa en un minuto. Para que funcione hubo que cambiar el sistema (el login tenía que volver al contenedor) y cuidar la seguridad (que esa vuelta no sirva para mandar a la gente a otro sitio).
+**La pieza analógica (octubre).** Una etiqueta de papel con QR, preparada para pegar en un contenedor: el vecino la escanea y llega al formulario para avisar. Para que funcione hubo que cambiar el sistema (el login tenía que volver al contenedor) y cuidar la seguridad (que esa vuelta no sirva para mandar a la gente a otro sitio). Falta la foto de la etiqueta colocada.
 
-**La validación (octubre-noviembre).** Una evaluación heurística hecha con IA encontró 11 problemas; 6 se arreglaron el mismo día. Dos eran errores graves que las pruebas automáticas no veían. Las sesiones con personas se hacen con un kit de 15-20 minutos por persona.
+**La validación (octubre-noviembre).** Una evaluación heurística hecha con IA encontró 11 problemas; 6 se arreglaron el mismo día. Dos eran errores graves que las pruebas automáticas no veían. El kit para sesiones de 15-20 minutos por persona está preparado, pero todavía no hay resultados de usuarios.
 
-**Una respuesta de 20 segundos:** «Pasamos de un dibujo a un sistema que se usa con datos reales. Le agregamos una etiqueta QR en el contenedor, que es nuestra combinación de analógico y digital. Antes de llevarlo a personas lo revisamos con las heurísticas de Nielsen y arreglamos lo grave. La prueba con usuarios la hicimos tarde, y por eso mostramos exactamente lo que dio y nada más.»
+**Una respuesta de 20 segundos:** «Pasamos de un dibujo a un sistema que funciona con datos reales. Preparamos una etiqueta QR para conectar el contenedor con la página: esa es nuestra combinación de papel y pantalla. Revisamos la página con las heurísticas de Nielsen y arreglamos los problemas más graves. La prueba con usuarios sigue pendiente; tenemos el kit listo, pero no vamos a inventar resultados.»
 
 ---
 
@@ -37,7 +37,7 @@ Fuente: **sección 9.2** de la consigna general (tercera entrega) y **10.2** (r�
 | Requisito | En palabras simples | Qué mostrar | Estado honesto (23/10) |
 |---|---|---|---|
 | Prototipo high-fidelity | Algo muy parecido al sistema final | La página funcionando, con la base de defensa | Hecho |
-| Combinar analógico y digital | Papel + pantalla, maqueta + pantalla | La etiqueta QR impresa y el celular abriendo «Informar un problema» | Hecho; falta la foto real |
+| Combinar analógico y digital | Papel + pantalla, maqueta + pantalla | La etiqueta QR y el recorrido del celular hacia «Informar un problema» | Recorrido preparado; falta la foto real de la etiqueta colocada |
 | Validación final | Probar con usuarios y comparar inicial con final | Kit, fichas, tabla de hallazgos, comparación de versiones | Heurística hecha; sesiones con personas pendientes |
 | Informe reflexivo | Qué aprendimos, errores, impacto | Sección 6 del documento de UTU LAB | Hecho |
 | Documentación visual | Big Picture, línea de tiempo, capturas | Figuras 8 y 9 y la tabla de capturas | Hecho |
@@ -106,7 +106,7 @@ Plan B si la wifi no deja: abrir el mismo enlace en la PC (la etiqueta lo trae i
 
 | Error | Cómo decirlo |
 |---|---|
-| La validación con usuarios se postergó dos entregas | «Fue nuestro error principal de UTU LAB. Lo resolvimos achicando la sesión a 15 minutos con un kit que cualquiera puede usar.» |
+| La validación con usuarios se postergó dos entregas | «Fue nuestro error principal de UTU LAB. Preparamos un kit para hacer sesiones de 15 minutos, pero todavía no tenemos resultados de personas.» |
 | No seguimos el estándar documental de ESI en la 2da | «Nos costó 1,8 en Sistemas Operativos. Desde entonces todo entra en un integrador con el estándar.» |
 | Usamos IA sin declararla | «Nos restaron un punto. Ahora cada documento dice qué hizo la IA y qué hizo el equipo.» |
 | El trabajo se concentró en una persona | «Es cierto y no lo resolvimos: los planes de reparto no se cumplieron. Lo decimos porque es parte de la reflexión que pide la letra.» |
@@ -133,7 +133,7 @@ La letra pide **participación activa de todos**. Cuatro bloques de igual peso. 
 Porque la letra pide un modelo terminado o muy cercano al final; el sistema lo es. Una maqueta aparte habría sido menos fiel.
 
 **¿Dónde está lo analógico?**  
-En la etiqueta de papel con el QR, pegada en el contenedor. Es la parte física del recorrido: sin ella el vecino no tiene por dónde empezar en la calle.
+En la etiqueta de papel con el QR, preparada para pegar en un contenedor. Es la parte física prevista para el recorrido; todavía falta la foto de una etiqueta colocada.
 
 **¿Cuántos usuarios probaron el sistema?**  
 Decir el número real de fichas. Si no hubo sesiones, decirlo, y explicar qué se hizo en su lugar: la evaluación heurística, presentada como lo que es.
@@ -142,7 +142,7 @@ Decir el número real de fichas. Si no hubo sesiones, decirlo, y explicar qué s
 Revisar la interfaz contra principios conocidos de usabilidad (las 10 heurísticas de Nielsen) y puntuar la gravedad de cada problema de 0 a 4. Encuentra problemas evidentes rápido; no reemplaza ver a una persona usándolo.
 
 **¿Quién hizo la evaluación heurística?**  
-La hizo Claude, una IA, recorriendo la página con las cuentas de cada rol. Está declarado en el documento.
+La hizo Claude, una IA, recorriendo la página con las cuentas de cada rol. Fue una revisión asistida, no una sesión con usuarios.
 
 **¿Qué cambió entre la versión inicial y la final?**  
 Quién informa (antes el administrador, ahora el vecino y la cuadrilla), la prioridad (antes la elegía quien informaba, ahora la pone el sistema según el tipo), los datos (inventados, ahora reales), y las rutas (no existían).
@@ -190,7 +190,7 @@ Porque los datos abiertos de la Intendencia traen el circuito y la ubicación, n
 ## Hoja de último repaso
 
 - **Alta fidelidad:** el sistema construido, con 800 contenedores reales.
-- **Analógico + digital:** etiqueta de papel con QR en el contenedor.
+- **Analógico + digital:** etiqueta de papel con QR preparada para el contenedor; falta la foto de su colocación.
 - **Seguridad del QR:** el login vuelve solo a pantallas propias (contra la redirección abierta).
 - **Validación:** heurística (11 problemas, 6 arreglados) + kit para sesiones de 15 minutos + SUS.
 - **Errores:** validación tarde, estándar de ESI, IA sin declarar, trabajo concentrado.

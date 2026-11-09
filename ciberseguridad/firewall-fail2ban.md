@@ -6,6 +6,8 @@ fecha: 2026-09-14
 
 # Firewall y fail2ban en el servidor real — SiGeRU
 
+> **Estado al 06/11/2026.** Todo lo de abajo (`ufw`, `apt-get`, `fail2ban` y el baneo del propio equipo) se hizo y se probó el 14/09/2026 en la VM Ubuntu `sigeru-srv`, que ya no es el laboratorio vigente. **No hay prueba de nada de esto en Rocky.** En las VM Rocky el firewall es `firewalld` (evidencia en `sistemas/manual/Manual_Red_Nombres_Conectividad_Puertos_SiGeRU.pdf`, secciones 3.7 y 3.8) y el SSH se endureció con `AllowUsers`, `PermitRootLogin no` y `PasswordAuthentication no` (`sistemas/manual/Manual_SSH_Rocky_SiGeRU.pdf`). **fail2ban en Rocky: NO VERIFICADO** (no hay captura de que esté instalado). **[Pendiente: si se quiere usarlo, instalarlo con `dnf` en las VM Rocky y sacar captura de `fail2ban-client status sshd`; si no, dejarlo como mejora propuesta.]**
+
 **Hecho, instalado y probado el 14/09/2026 contra `sigeru-srv`** (la misma VM
 que Administración de Sistemas Operativos instaló el 13/09), por SSH desde la
 PC anfitriona, con evidencia real — no un plan en papel.

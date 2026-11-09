@@ -6,6 +6,8 @@ fecha: 2026-09-14
 
 # Esquema de red con implementaciones de seguridad — SiGeRU
 
+> **Estado al 06/11/2026.** Este texto describe el servidor de la segunda entrega: una sola VM `sigeru-srv` con Ubuntu Server en la red NAT `10.0.2.0/24`. **Ese laboratorio ya no es el vigente.** El entorno actual son tres VM con Rocky Linux 9.8 (`sigeru-app` 192.168.56.11, `sigeru-db` .12 y `sigeru-respaldo` .13, red solo-anfitrión). Su red, puertos y `firewalld` están en `sistemas/manual/Manual_Red_Nombres_Conectividad_Puertos_SiGeRU.pdf`. El esquema y la imagen de abajo no se actualizaron a Rocky: **[Pendiente: redibujar el esquema con las tres VM y sus puertos (22 en las tres, 80 en app, 3306 en db solo desde 192.168.56.11)]**.
+
 ![Esquema de red](Esquema_Red_Seguridad_SiGeRU.png)
 
 *(fuente: `generadores/diagrama_red_seguridad.py`, regenerable si cambia algún

@@ -72,5 +72,4 @@ Lo dinámico (contraste, tamaños, lo que arma el JavaScript) solo se audita en 
 - Probar el envío real por Gmail, el fondo de calles del mapa con internet, la vista impresa y el aspecto visual
   (esta sesión no pudo sacar capturas).
 - Decisiones que tomé sin Fornos: están marcadas «SIN Fornos» en cada ampliación.
-- Declaración de uso de IA (`sigeru/declaracion-uso-ia.txt`), que la tiene que escribir Fornos.
 - Commit y push: **nada está subido** (hay dos commits locales sin pushear y muchos cambios sin commitear).

@@ -1,8 +1,8 @@
 ---
 documento: Manual de uso — Vecino
 sistema: SiGeRU 2026
-version: 1.1 (19/10/2026, con capturas propias)
-estado: Escrito leyendo el sistema y probando los recorridos; las capturas son propias (19/10/2026, datos de demostración, ventana de 800 px). Falta que lo pruebe alguien que no conozca el sistema.
+version: 1.2 (06/11/2026, texto ajustado al alcance actual)
+estado: Texto contrastado con las pantallas y el código. La captura de Inicio es del 19/10/2026; falta repetir el recorrido con una persona ajena al equipo.
 ---
 
 # Manual del Vecino
@@ -26,7 +26,7 @@ No hay «Olvidé mi contraseña» ni correo de recuperación. Pedile a la admini
 ## 3. Qué ves al entrar
 
 ![Inicio del vecino: sus reclamos, con el estado de cada uno](img/vecino-inicio.png)
-*Inicio del vecino: sus reclamos, con el estado de cada uno*
+*Inicio del vecino, captura del 19/10/2026 con datos de demostración.*
 
 El menú de la izquierda (en el celular, el botón de las tres rayas) tiene: **Inicio**, **Mapa**, **Informar un problema** y **Mis reclamos**.
 Abajo, tu nombre y **Cerrar sesión**. Si pasan **2 horas sin usar** el sistema, la sesión se cierra sola.
@@ -39,20 +39,14 @@ Debajo del mapa hay una tabla con los mismos contenedores y filtros por estado, 
 
 ## 5. Informar un problema
 
-![Pantalla «Informar un problema»](img/vecino-informar.png)
-*Pantalla «Informar un problema»*
-
 1. Tocá **Informar un problema**.
 2. **Contenedor \*:** escribí el código (está pegado en el contenedor, por ejemplo `CNT-004`), elegilo de la lista de sugerencias o buscalo en el mapa.
 3. **Tipo de problema \*:** desbordado, roto o dañado, residuo no permitido, ausente o mal ubicado, u otro.
 4. **Descripción \*:** contá qué se ve (de 5 a 500 caracteres).
 5. **Prioridad que le darías:** alta, media o baja. La administración puede cambiarla.
-6. **Foto (opcional):** JPG, PNG o WebP de hasta 2 MB. Ves una vista previa y podés **Quitar la foto**. La foto se guarda **sin los datos de
-   ubicación de la cámara** y solo la ven la administración y la cuadrilla que atienda tu reclamo.
-7. Tocá **Enviar el reporte**.
+6. Tocá **Enviar el reporte**. En esta versión no se pueden adjuntar fotos.
 
-Aparece una confirmación con tu **número de reclamo** (por ejemplo `INC-0012`). Guardalo. Si la foto no se pudo subir, el reporte queda
-registrado igual y el sistema te lo avisa.
+Aparece una confirmación con tu **número de reclamo** (por ejemplo `INC-0012`). Guardalo para poder seguirlo.
 
 **Si ya hay un reclamo igual:** si vos o alguien más ya informó ese mismo problema en ese contenedor y sigue abierto, el sistema te lo dice
 y no hace falta repetirlo.
@@ -68,14 +62,12 @@ y no hace falta repetirlo.
 | **Resuelta** | Se solucionó |
 | **Descartada** | Se cerró sin intervención (por ejemplo, reporte duplicado), con el motivo |
 
-Tocá el número para ver el detalle: los datos, tu foto y el **historial** de cada paso. El personal aparece por su función
+Tocá el número para ver el detalle: los datos y el **historial** de cada paso. El personal aparece por su función
 (Administrador, Cuadrilla), no por su nombre. **El sistema no manda correo cuando cambia el estado:** te avisa en la campanita (ver más abajo) o entrás a mirarlo.
 
 ## ¿Cuándo pasa el camión por mi zona?
 
-En tu **Inicio**, el panel **¿Cuándo pasa el camión por mi zona?** te dice el próximo pasaje: por ejemplo, «Próximo pasaje en Centro: lunes 16/11 a las 06:30». La primera vez elegí tu zona
-en la lista y tocá **Guardar mi zona**; después podés **Cambiar mi zona** cuando quieras. Si todavía no hay recolecciones planificadas para tu zona, te lo dice; si la administración cancela la de ese día,
-ves la siguiente y el aviso de la cancelada; y si el camión está recorriendo tu zona hoy, también te lo avisa.
+Esa consulta se retiró de la versión actual el 30/10/2026. El panel ya no aparece en **Inicio**. Si necesitás saber el horario de recolección, consultalo por los canales habituales de la Intendencia.
 
 ## Avisos (la campanita)
 

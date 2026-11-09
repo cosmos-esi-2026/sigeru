@@ -40,7 +40,7 @@ Fuente: **sección 9.5** de la consigna (tercera entrega) y **10.5** (rúbrica: 
 | Requisito de la letra | Qué mostrar | Estado honesto (23/10) |
 |---|---|---|
 | Segmentación | Cliente (19 intendencias, 3 tramos) y usuario (4 roles) | Hecho |
-| Encuesta y conclusiones | Instrumento, método, resultados | Instrumento y lector listos; **respuestas reales pendientes** |
+| Encuesta y conclusiones | Instrumento, método, resultados | Instrumento armado, **no aplicada: resultados y conclusiones faltan** |
 | Análisis de la competencia | Matriz, canales actuales, VRIO | Hecho (lo no confirmado dice «no confirmado») |
 | Posicionamiento y ventaja competitiva | Declaración y mapa; VRIO honesto | Hecho |
 | Distribución, precio, promoción y publicidad | Dos canales; tramos; calendario y presupuesto | Hecho |
@@ -76,14 +76,14 @@ Fuente: **sección 9.5** de la consigna (tercera entrega) y **10.5** (rúbrica: 
 | Tasa de descuento | 15 % (bono soberano 5,36 % + 9,6 puntos); sensibilidad 8 a 25 % | Financiero, 11.1 |
 | Préstamo (alternativa B) | USD 4.500, 48 meses, 6 de gracia, 9 %, cuota USD 125,30 | Financiero, 8 |
 | Capital social | UYU 194.400 en 194.400 acciones de UYU 1 (48.600 por socio) | Anexos legales, 2 |
-| Encuesta | todavía **no hay respuestas reales** (el instrumento está listo y el plan lo dice con un [Pendiente] visible) | Comercialización, 3 |
+| Encuesta | **no tiene resultados: el equipo decidió el 06/11/2026 no hacer la encuesta** (el instrumento está armado, pero no se aplicó; los resultados y las conclusiones faltan y el plan lo dice con un [Pendiente] visible) | Comercialización, 3 |
 
 ---
 
 ## 4. El plan de comercialización en 5 minutos
 
 1. **Segmentación.** Dos lados: el que **paga** (19 intendencias, por tamaño) y el que **usa** (administrador, cuadrilla, operario, vecino). Mercado total USD 84.960 al año; accesible, las 8 de más de 100.000 habitantes; objetivo, 8,8 clientes al año 5.
-2. **Encuesta.** 12 preguntas, anónima, por conveniencia (UTU LAB + WhatsApp). Hoy todavía **no hay respuestas reales** (el instrumento está listo y el plan lo dice con un [Pendiente] visible). **No decir** que representa a Montevideo.
+2. **Encuesta.** 12 preguntas, anónima, por conveniencia (UTU LAB + WhatsApp). Hoy **no tiene resultados: el equipo decidió el 06/11/2026 no hacer la encuesta** (el instrumento está armado, pero no se aplicó; los resultados y las conclusiones faltan y el plan lo dice con un [Pendiente] visible). **No decir** que representa a Montevideo.
 3. **Competencia.** Geocom, Quanam e Infocorp venden gestión municipal integral; ninguna, un producto de residuos con precio publicado. **El rival real es la planilla + WhatsApp.**
 4. **Posicionamiento.** Específico de residuos y barato de adoptar (cuadrante de abajo a la derecha del mapa).
 5. **Ventaja competitiva.** Producto y precio se copian; **el caso de éxito del piloto y sus datos no.** Por eso todo gira alrededor de cerrar y medir el piloto.
@@ -129,10 +129,10 @@ Fuente: **sección 9.5** de la consigna (tercera entrega) y **10.5** (rúbrica: 
 |---|---|
 | «El mercado uruguayo no alcanza para cuatro sueldos de mercado; lo medimos y lo decimos.» | «Vamos a ganar mucho.» La TIR alta es por la inversión mínima, no una promesa. |
 | «Es un supuesto de COSMOS» (tramos, 60 días de cobro, 15 %, conversión del piloto). | Presentar un supuesto como dato. |
-| «La encuesta todavía **no hay respuestas reales** (el instrumento está listo y el plan lo dice con un [Pendiente] visible).» | Decir que hay resultados si no hay respuestas reales, o inventar un porcentaje. |
+| «La encuesta **no tiene resultados: el equipo decidió el 06/11/2026 no hacer la encuesta** (el instrumento está armado, pero no se aplicó; los resultados y las conclusiones faltan y el plan lo dice con un [Pendiente] visible).» | Decir que hay resultados si no hay respuestas reales, o inventar un porcentaje. |
 | «El contrato y el préstamo son borradores de ejercicio.» | «Ya constituimos la empresa» o «ya pedimos un préstamo». |
 | «Semilla ANDE: no pudimos reproducir el monto de la 2da; el plan no cuenta con subsidios.» | Contar con Semilla ANDE o ANII para cerrar los números. |
-| «Esto lo redactó y calculó la IA con nuestras decisiones; lo declaramos.» | Esconder el uso de IA (ASO ya restó por eso). |
+| «Esto se redactó y calculó con asistencia de IA y nuestras decisiones; lo vamos a incluir en la declaración final.» | Esconder el uso de IA (ASO ya restó por eso). |
 
 ---
 
@@ -184,7 +184,7 @@ De un embudo: 40 reuniones en 4 años, 50 % pasan a propuesta, 40 % de las propu
 
 **12. ¿La encuesta es representativa?**
 
-No. Es por conveniencia y todavía **no hay respuestas reales** (el instrumento está listo y el plan lo dice con un [Pendiente] visible). Sirve para orientar producto y comunicación, no para estimar porcentajes de Montevideo. Lo decimos en el plan. Para el comprador hacemos además una guía de entrevista a un funcionario, que también está pendiente.
+No. Es por conveniencia y **no tiene resultados: el equipo decidió el 06/11/2026 no hacer la encuesta** (el instrumento está armado, pero no se aplicó; los resultados y las conclusiones faltan y el plan lo dice con un [Pendiente] visible). Sirve para orientar producto y comunicación, no para estimar porcentajes de Montevideo. Lo decimos en el plan. Para el comprador hacemos además una guía de entrevista a un funcionario, que también está pendiente.
 
 **13. ¿Por qué el piloto no paga? ¿Qué pasa después?**
 
@@ -208,7 +208,7 @@ El esquema por tramos: si ninguna intendencia lo acepta y solo paga el precio vi
 
 **18. ¿Qué hizo la inteligencia artificial?**
 
-Redactó los documentos, escribió el modelo de cálculo y lo verificó contra una planilla, y leyó las fuentes públicas. Las decisiones (escenarios, precio por tramos, aporte de los socios, qué se dice y qué no) las tomó el equipo y quedan marcadas como supuestos. Está declarado en la declaración de uso de IA.
+Redactó los documentos, escribió el modelo de cálculo y lo verificó contra una planilla, y leyó las fuentes públicas. Las decisiones (escenarios, precio por tramos, aporte de los socios, qué se dice y qué no) las tomó el equipo y quedan marcadas como supuestos. Esto se incorporará en la declaración final.
 
 ---
 
@@ -232,5 +232,5 @@ Redactó los documentos, escribió el modelo de cálculo y lo verificó contra u
 - **Frase para abrir:** «COSMOS es una empresa de software que vende gestión de residuos a las 19 intendencias; el piloto es la Intendencia de Montevideo.»
 - **Números:** inversión USD 4.387 · aporte USD 4.800 · VAN USD 27.461 · recupero 1,4 años · equilibrio de hoy 2,6 clientes · brecha para 4 sueldos USD 21.423 al año.
 - **Lo honesto:** el mercado uruguayo no paga cuatro sueldos de mercado; los socios cobran de a poco desde el año 3.
-- **Lo pendiente:** respuestas reales de la encuesta, entrevista a un funcionario, reparto de la defensa, confirmar con un contador lo fiscal.
+- **Lo que falta:** resultados y conclusiones de la encuesta (no se hará), entrevista a un funcionario, reparto de la defensa, confirmar con un contador lo fiscal.
 - **Lo que nunca decimos:** que algo está firmado, presentado o medido si no lo está; que un supuesto es un dato.

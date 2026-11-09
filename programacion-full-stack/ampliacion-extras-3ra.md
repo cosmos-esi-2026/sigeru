@@ -55,7 +55,6 @@ Este documento **reúne en un solo lugar** lo que se agregó en las partes 12 a 
 - **`og:image` con la dirección completa:** hay que completarla cuando se sepa el dominio real.
 - **Servidor `sigeru-srv`:** no tiene nada de esto (migraciones 009 a 016, GD, HTTPS, cabeceras). Ver `administracion-sistemas-operativos/novedades-3ra-para-el-servidor.md`.
 - **Diagramas de clases y DER:** siguen siendo los del modelo de 16 clases (se documenta por ampliación). Si la docente los pide al día, hay que rehacerlos con los generadores.
-- **Declaración de uso de IA:** la termina Fornos; en el cierre se dejó la lista de lo nuevo que hay que declarar (ver el informe de la parte 23).
 - **Puntos de función de lo nuevo:** estimación (143 sin ajustar, 516 ajustados en total) **pendiente de revisión del equipo**, en `ingenieria-software/Adenda_Alcance_3ra_Entrega_SiGeRU.md`.
 
 ## 5. Cómo volver a verificarlo
