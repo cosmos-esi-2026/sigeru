@@ -1,0 +1,1044 @@
+<title>Mi guion de Sociología</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kit para aprender de memoria el guion de la defensa de Sociología con cinco técnicas de estudio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: cuaderno de estudio. Barra de pestañas fija con las 5 técnicas en orden, una columna de lectura,
+   y los tres temas con el mismo color en todo el kit: verde Socialización, naranja Trabajo, rosa Estratificación. */
+:root{
+  --bg:#f5f5fa; --surface:#ffffff; --sunk:#ecebf4; --ink:#1c1a2b; --muted:#5a5771; --line:#dbd9e8;
+  --accent:#4a3fb0; --accent-ink:#ffffff; --mark:#ffe47a; --mark-ink:#1c1a2b;
+  --so:#0b7a6f; --tr:#a65607; --es:#ad2559; --ap:#4a3fb0;
+  --so-soft:#e0f2ef; --tr-soft:#f8eadb; --es-soft:#f8e2eb; --ap-soft:#e8e6f8;
+  --ok:#1d7a38; --bad:#b3261e;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14131b; --surface:#1d1c27; --sunk:#272636; --ink:#ecebf4; --muted:#a4a1b9; --line:#36344a;
+    --accent:#aa9dff; --accent-ink:#14131b; --mark:#5c4b0f; --mark-ink:#fff2c2;
+    --so:#4cc9b8; --tr:#f0a24a; --es:#f27aa6; --ap:#aa9dff;
+    --so-soft:#15312e; --tr-soft:#352616; --es-soft:#381a27; --ap-soft:#25213d;
+    --ok:#62d282; --bad:#ff8a80; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14131b; --surface:#1d1c27; --sunk:#272636; --ink:#ecebf4; --muted:#a4a1b9; --line:#36344a;
+  --accent:#aa9dff; --accent-ink:#14131b; --mark:#5c4b0f; --mark-ink:#fff2c2;
+  --so:#4cc9b8; --tr:#f0a24a; --es:#f27aa6; --ap:#aa9dff;
+  --so-soft:#15312e; --tr-soft:#352616; --es-soft:#381a27; --ap-soft:#25213d;
+  --ok:#62d282; --bad:#ff8a80; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:820px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(24px,4.4vw,32px);font-weight:800;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:14.5px}
+mark{background:var(--mark);color:var(--mark-ink);padding:0 .12em;border-radius:3px}
+.top{padding-block:28px 14px;display:grid;gap:8px}
+.top .eyebrow{font:700 12.5px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.anclas{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ancla{font:700 12.5px/1 var(--f-mono);padding:6px 9px;border-radius:999px;border:1.5px solid currentColor}
+.c-so{color:var(--so)} .c-tr{color:var(--tr)} .c-es{color:var(--es)} .c-ap{color:var(--ap)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+nav.tabs .in{max-width:820px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .in::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none;border:0;background:none;color:var(--muted);font:700 15px/1 var(--f-body);padding:14px 10px 12px;
+  border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button b{font-family:var(--f-mono);font-size:12.5px;margin-right:5px;opacity:.75}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible,.btn:focus-visible,.chip:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+main section.tab{display:grid;gap:22px;padding-top:26px}
+.lead{font-size:19px;line-height:1.5;max-width:65ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;gap:10px;min-width:0}
+.btn{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 15px/1 var(--f-body);
+  padding:11px 14px;border-radius:10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.chico{padding:8px 11px;font-size:14px}
+.fila{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px/1 var(--f-body);
+  padding:9px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.etq{font:700 12px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.aviso{border-left:4px solid var(--accent);background:var(--ap-soft);padding:12px 14px;border-radius:0 10px 10px 0}
+
+/* Hoja: cómo estudiar */
+ol.cadena{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;counter-reset:p}
+ol.cadena li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:4px;align-content:start;counter-increment:p}
+ol.cadena li::before{content:counter(p);font:700 13px/1 var(--f-mono);color:var(--accent)}
+ol.cadena .verbo{font:800 18px/1.1 var(--f-display)}
+ol.cadena .tec{font-size:14px;color:var(--muted)}
+@media (max-width:640px){ol.cadena{grid-template-columns:1fr 1fr}}
+.tecnica{display:grid;gap:12px}
+.tecnica header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline}
+.tecnica dl{margin:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 16px}
+.tecnica dt{font-weight:700;color:var(--muted);font-size:14.5px;padding-top:2px}
+.tecnica dd{margin:0;min-width:0}
+.tecnica dd ol{margin:0;padding-left:20px;display:grid;gap:4px}
+@media (max-width:560px){.tecnica dl{grid-template-columns:1fr}.tecnica dt{padding-top:6px}}
+.plan{display:grid;gap:8px}
+.sesion{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sesion .cuando{font:700 14px/1.3 var(--f-mono)}
+.sesion .cuando span{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+.sesion h3{font-size:17px;margin-bottom:4px}
+.sesion ul{margin:0;padding-left:18px;display:grid;gap:2px}
+.sesion.hoy{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+input[type="date"],input[type="text"],textarea{font:16px/1.4 var(--f-body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px}
+textarea{width:100%;min-height:150px;resize:vertical}
+
+/* Guion */
+.controles{display:grid;gap:12px}
+.seg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1.5px solid var(--line);border-radius:12px;overflow:hidden;max-width:640px}
+.seg button{appearance:none;border:0;border-right:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px/1.15 var(--f-body);padding:9px 10px;cursor:pointer;text-align:left;min-width:0;overflow-wrap:anywhere}
+@media (max-width:520px){.seg button{font-size:12.5px;padding:8px 6px}.seg button small{font-size:11px}.reloj .num{font-size:32px}}
+.seg button:last-child{border-right:0}
+.seg button small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button[aria-pressed="true"] small{color:var(--bg);opacity:.8}
+.reloj{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.reloj .num{font:700 40px/1 var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.reloj .barra{height:10px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.reloj .barra i{display:block;height:100%;width:0;background:var(--ok);transition:width .2s linear}
+.reloj.pasado .barra i{background:var(--bad)}
+.reloj .estado{font-size:14.5px;color:var(--muted)}
+.reloj.pasado .estado{color:var(--bad);font-weight:700}
+.reloj .fila{grid-column:1 / -1}
+.bloque{border-radius:14px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.bloque > header{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;padding:12px 16px;background:var(--soft);border-bottom:1px solid var(--line)}
+.bloque .b-nombre{font:800 19px/1.2 var(--f-display);color:var(--col)}
+.bloque .b-ancla{font:700 12.5px/1 var(--f-mono);color:var(--col);border:1.5px solid var(--col);padding:4px 7px;border-radius:99px}
+.bloque .b-seg{margin-left:auto;font:500 13px/1 var(--f-mono);color:var(--muted)}
+.t-so{--col:var(--so);--soft:var(--so-soft)} .t-tr{--col:var(--tr);--soft:var(--tr-soft)}
+.t-es{--col:var(--es);--soft:var(--es-soft)} .t-ap{--col:var(--ap);--soft:var(--ap-soft)}
+ol.frases{list-style:none;margin:0;padding:10px 16px 14px;display:grid;gap:8px}
+ol.frases li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;font-size:18px;line-height:1.75}
+ol.frases .nro{appearance:none;width:30px;height:30px;margin-top:2px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);font:700 13px/1 var(--f-mono);cursor:pointer}
+ol.frases li.marcada .nro{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+ol.frases li.marcada .frase{text-decoration:underline wavy var(--bad);text-decoration-thickness:1px;text-underline-offset:5px}
+.hueco{appearance:none;border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;border-radius:3px}
+.hueco .resto{color:transparent;border-bottom:2px solid var(--muted)}
+.hueco.ini .resto{border-bottom-style:dotted}
+.hueco.visto .resto{color:inherit;border-bottom-color:transparent}
+.hueco.kw.visto{background:var(--mark);color:var(--mark-ink)}
+.solo-ancla{padding:14px 16px;display:grid;gap:10px}
+.pistas{font-size:15px;color:var(--muted)}
+.toast{font-size:14.5px;color:var(--ok);font-weight:700}
+
+/* Tarjetas */
+.mazos{display:flex;flex-wrap:wrap;gap:8px}
+.cajas{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.caja{background:var(--sunk);border-radius:8px;padding:8px 6px;text-align:center;display:grid;gap:2px}
+.caja b{font:700 20px/1 var(--f-mono);font-variant-numeric:tabular-nums}
+.caja span{font-size:11.5px;color:var(--muted);line-height:1.2}
+.caja.hoy{background:var(--ap-soft);outline:2px solid var(--accent)}
+@media (max-width:520px){.cajas{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tarjeta{min-height:240px;border-radius:18px;border:1.5px solid var(--line);background:var(--surface);padding:22px;display:grid;gap:14px;align-content:start;box-shadow:0 1px 0 var(--line),0 10px 26px -18px rgba(20,18,40,.45)}
+.tarjeta .q-etq{display:flex;justify-content:space-between;gap:10px}
+.tarjeta .q{font:700 21px/1.35 var(--f-body)}
+.tarjeta .prev{font-size:18px;line-height:1.55;border-left:4px solid var(--col,var(--line));padding-left:12px;color:var(--muted);font-style:italic}
+.tarjeta .r{font-size:19px;line-height:1.55;border-top:1px dashed var(--line);padding-top:14px}
+.notas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.notas .btn{padding:14px 8px;text-align:center;line-height:1.2}
+.notas .btn small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px}
+.n-mal{border-color:var(--bad)!important} .n-bien{border-color:var(--ok)!important}
+
+/* Mapa */
+.mapa-caja{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.mapa-caja svg{display:block;width:100%;min-width:900px;height:auto}
+svg .ln{fill:none;stroke-width:2.2;opacity:.75}
+svg .hoja rect{fill:var(--surface);stroke-width:1.6}
+svg .hoja .tg{font:700 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase}
+svg .hoja .tx{font:400 14px var(--f-body);fill:var(--ink)}
+svg .hoja .tx.oc{fill:var(--muted);font-style:italic}
+svg .clic{cursor:pointer}
+svg .rama rect{stroke:none}
+svg .rama text{fill:var(--bg)}
+svg .rama .nm{font:800 19px var(--f-display)}
+svg .rama .an{font:700 12px var(--f-mono)}
+svg .ctr rect{fill:var(--ink)}
+svg .ctr text{fill:var(--bg)}
+svg .ctr .nm{font:800 24px var(--f-display)}
+svg .ctr .an{font:500 13px var(--f-mono)}
+svg .bd circle{fill:var(--ink)}
+svg .bd text{fill:var(--bg);font:700 13px var(--f-mono)}
+.s-so{stroke:var(--so);fill:var(--so)} .s-tr{stroke:var(--tr);fill:var(--tr)} .s-es{stroke:var(--es);fill:var(--es)} .s-ap{stroke:var(--ap);fill:var(--ap)}
+svg .hoja rect.s-so,svg .hoja rect.s-tr,svg .hoja rect.s-es,svg .hoja rect.s-ap{fill:var(--surface)}
+
+/* Palacio */
+.zona{display:grid;gap:10px}
+.zona > h3{display:flex;gap:10px;align-items:baseline;color:var(--col)}
+.estacion{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;border-top:3px solid var(--col)}
+.estacion .num{font:800 26px/1 var(--f-display);color:var(--col)}
+.estacion input{width:100%;font-weight:700;font-size:17px}
+.estacion .img{font-size:16.5px;line-height:1.55}
+.estacion .dice{font-size:15px;color:var(--muted);border-left:3px solid var(--col);padding-left:10px}
+.estacion .cont{display:grid;gap:10px;min-width:0}
+
+/* Entender */
+.ideas{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ideas li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px}
+.ideas li .ic{font:700 16px/1.4 var(--f-mono)}
+.ideas li.si .ic{color:var(--ok)} .ideas li.no .ic{color:var(--muted)}
+.ideas li.no{color:var(--muted)}
+.porque{display:grid;gap:8px}
+.porque details{background:var(--sunk);border-radius:10px;padding:10px 12px}
+.porque summary{cursor:pointer;font-weight:700}
+.modelo{background:var(--soft);border-radius:12px;padding:14px 16px;display:grid;gap:8px}
+
+/* Claude */
+pre.prompt{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--f-mono);background:var(--sunk);border-radius:12px;padding:16px;margin:0;max-height:520px;overflow:auto}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{nav.tabs,.no-print{display:none!important} body{background:#fff;color:#000} .card,.sesion{break-inside:avoid}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Defensa de Sociología · COSMOS · SiGeRU</span>
+    <h1>Mi guion de Sociología</h1>
+    <p class="muted">3 minutos y medio, de memoria. Cinco técnicas en cadena. Tu progreso se guarda en este navegador.</p>
+    <div class="anclas" aria-label="Las cinco anclas del guion">
+      <span class="ancla c-ap">TRES PROCESOS</span><span class="ancla c-so">APRENDER</span><span class="ancla c-tr">INTERDEPENDENCIA</span><span class="ancla c-es">NO SOLO ESFUERZO</span><span class="ancla c-ap">PERSONAS</span>
+    </div>
+  </header>
+</div>
+
+<nav class="tabs" aria-label="Secciones"><div class="in" role="tablist">
+  <button role="tab" data-tab="como">Cómo estudiar</button>
+  <button role="tab" data-tab="entender"><b>1</b>Entender</button>
+  <button role="tab" data-tab="mapa"><b>2</b>Mapa</button>
+  <button role="tab" data-tab="palacio"><b>3</b>Palacio</button>
+  <button role="tab" data-tab="guion"><b>4</b>Guion</button>
+  <button role="tab" data-tab="tarjetas"><b>5</b>Tarjetas</button>
+  <button role="tab" data-tab="claude">Repasar con Claude</button>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ CÓMO ESTUDIAR ============ -->
+<section class="tab" id="como">
+  <h2>Cómo usar este kit</h2>
+  <p class="lead">Tenés que decir un guion de 3 minutos y medio de memoria y entender lo que decís. Las cinco técnicas no se usan sueltas: van en cadena. Primero entendés, después ordenás, después le das un lugar a cada cosa, y recién ahí memorizás y repasás.</p>
+  <ol class="cadena">
+    <li><span class="verbo">Entender</span><span class="tec">Técnica Feynman</span></li>
+    <li><span class="verbo">Ordenar</span><span class="tec">Mapa mental</span></li>
+    <li><span class="verbo">Ubicar</span><span class="tec">Palacio de la memoria</span></li>
+    <li><span class="verbo">Recuperar</span><span class="tec">Recuperación activa</span></li>
+    <li><span class="verbo">Espaciar</span><span class="tec">Repetición espaciada</span></li>
+  </ol>
+  <p style="max-width:65ch">¿Por qué en este orden? Lo que no entendés no se fija: lo repetís como loro y te trabás a la primera pregunta. El mapa y el palacio te dan el <b>orden</b> del guion. La recuperación activa te graba las <b>palabras</b>. Y el espaciado hace que todo <b>dure</b> hasta el día de la presentación.</p>
+
+  <article class="card tecnica">
+    <header><h3>1 · Técnica Feynman</h3><button class="btn chico" data-ir="entender">Ir a Entender →</button></header>
+    <dl>
+      <dt>Qué es</dt><dd>Explicar un tema con palabras tan simples que lo entienda un nene de 10 años.</dd>
+      <dt>Por qué funciona</dt><dd>Al simplificar te das cuenta de qué partes entendés y cuáles solo repetís. Donde te trabás, ahí está el hueco.</dd>
+      <dt>Cómo la usás acá</dt><dd><ol>
+        <li>En <b>1 Entender</b>, elegí un tema.</li>
+        <li>Sin mirar nada, escribí la explicación como si se la contaras a un primo chico.</li>
+        <li>Tocá <b>Revisar</b>: te marca qué ideas faltaron y qué palabras difíciles usaste.</li>
+        <li>Contestá en voz alta los tres «¿por qué?» del nene.</li>
+        <li>Recién ahí mirá cómo lo explicaría yo, y volvé a escribir el tuyo más simple.</li></ol></dd>
+      <dt>Error típico</dt><dd>Copiar la definición del guion. Eso es repetir, no explicar.</dd>
+      <dt>Funciona cuando</dt><dd>Contestás los «¿por qué?» sin mirar.</dd>
+    </dl>
+  </article>
+
+  <article class="card tecnica">
+    <header><h3>2 · Mapa mental</h3><button class="btn chico" data-ir="mapa">Ir al Mapa →</button></header>
+    <dl>
+      <dt>Qué es</dt><dd>Un dibujo con el tema en el centro y ramas con palabras clave, un color por tema.</dd>
+      <dt>Por qué funciona</dt><dd>Recordás mejor ideas conectadas y ubicadas en el espacio que una lista. Ves de un golpe cómo se relaciona todo.</dd>
+      <dt>Cómo lo usás acá</dt><dd><ol>
+        <li>En <b>2 Mapa</b>, seguí las ramas en el orden de los números, del 1 al 5: es el orden del guion.</li>
+        <li>Cada tema tiene su color en todo el kit: <span class="c-so"><b>verde</b> Socialización</span>, <span class="c-tr"><b>naranja</b> Trabajo</span>, <span class="c-es"><b>rosa</b> Estratificación</span>.</li>
+        <li>Tocá <b>Tapar las hojas</b>: cada cuadro muestra solo su título, por ejemplo «Durkheim». Decí qué hay adentro y después tocalo para ver.</li>
+        <li>En una hoja, dibujalo de memoria con tres colores y compará.</li></ol></dd>
+      <dt>Error típico</dt><dd>Mirarlo y pensar «ya está». Mirar no es recordar.</dd>
+      <dt>Funciona cuando</dt><dd>Lo dibujás entero en tres minutos sin mirar.</dd>
+    </dl>
+  </article>
+
+  <article class="card tecnica">
+    <header><h3>3 · Palacio de la memoria (método Loci)</h3><button class="btn chico" data-ir="palacio">Ir al Palacio →</button></header>
+    <dl>
+      <dt>Qué es</dt><dd>Guardar cada parte del guion en un lugar de un recorrido que conocés de memoria, como tu casa.</dd>
+      <dt>Por qué funciona</dt><dd>La memoria de lugares es de las más fuertes que tenemos. Y la casa pone el orden: si sabés qué viene después del sillón, sabés qué frase viene después.</dd>
+      <dt>Cómo lo usás acá</dt><dd><ol>
+        <li>En <b>3 Palacio</b> hay 18 lugares, de la puerta de entrada al balcón. Cambiá cada nombre por un lugar real de tu casa, en el orden en que la recorrés.</li>
+        <li>Leé la imagen de cada lugar y cerrá los ojos cinco segundos para verla ahí. Cuanto más exagerada o ridícula, mejor se pega.</li>
+        <li>Pasá a <b>Recorrer de memoria</b>: ves solo el lugar y decís la imagen y lo que decís ahí.</li>
+        <li>En la defensa, mientras hablás, caminás la casa con la cabeza.</li></ol></dd>
+      <dt>Error típico</dt><dd>Usar lugares que no conocés bien, o cambiar el orden del recorrido.</dd>
+      <dt>Funciona cuando</dt><dd>Te nombran «la heladera» y sabés qué hay y qué decís ahí, sin pasar por la puerta.</dd>
+    </dl>
+  </article>
+
+  <article class="card tecnica">
+    <header><h3>4 · Recuperación activa</h3><span class="fila"><button class="btn chico" data-ir="guion">Ir al Guion →</button><button class="btn chico" data-ir="tarjetas">Ir a Tarjetas →</button></span></header>
+    <dl>
+      <dt>Qué es</dt><dd>Sacar el contenido de tu memoria, diciéndolo o escribiéndolo sin mirar, en vez de releerlo.</dd>
+      <dt>Por qué funciona</dt><dd>Cada vez que te esforzás por recordar algo, ese recuerdo queda más fuerte. Releer da la sensación de «ya lo sé», pero es falsa.</dd>
+      <dt>Con el guion</dt><dd><ol>
+        <li>En <b>4 Guion</b> hay cinco niveles. <b>Leer</b>: con las palabras clave resaltadas. <b>Huecos</b>: faltan las palabras clave. <b>Medio</b>: falta la mitad. <b>Iniciales</b>: solo la primera letra de cada palabra; este es el que te graba el guion exacto. <b>Solo anclas</b>: lo decís entero.</li>
+        <li>Decilo siempre en voz alta, y tocá un hueco solo después de intentarlo.</li>
+        <li>Subí de nivel cuando un bloque te sale destapando dos huecos o menos.</li>
+        <li>Si te trabás en una frase, tocá su número: queda marcada y la podés mandar a las tarjetas.</li>
+        <li>Usá el cronómetro: cada parte dura un minuto.</li></ol></dd>
+      <dt>Con las tarjetas</dt><dd>En <b>5 Tarjetas</b> leés la pregunta, contestás en voz alta y recién ahí la das vuelta. Las de <b>Cadena</b> te muestran una frase y tenés que decir la que sigue: así se aprende un guion en orden.</dd>
+      <dt>Error típico</dt><dd>Dar vuelta la tarjeta antes de contestar, o marcar «Me salió» cuando dijiste la mitad.</dd>
+      <dt>Funciona cuando</dt><dd>Decís el guion en el nivel Solo anclas, dentro del tiempo.</dd>
+    </dl>
+  </article>
+
+  <article class="card tecnica">
+    <header><h3>5 · Repetición espaciada</h3><button class="btn chico" data-ir="tarjetas">Ir a Tarjetas →</button></header>
+    <dl>
+      <dt>Qué es</dt><dd>Repasar justo antes de olvidarte, cada vez más separado: al otro día, a los 3 días, a los 7.</dd>
+      <dt>Por qué funciona</dt><dd>Lo que aprendés se olvida rápido: es la curva del olvido. Cada repaso a tiempo la frena y hace que el recuerdo dure más.</dd>
+      <dt>Cómo la usás acá</dt><dd><ol>
+        <li>Cargá abajo la fecha de la presentación y se arma tu calendario.</li>
+        <li>Cada día del calendario abrí <b>5 Tarjetas</b> y tocá <b>Repaso de hoy</b>: te da solo las que tocan.</li>
+        <li><b>No me salió</b> la vuelve a poner hoy; <b>Me costó</b>, mañana; <b>Me salió</b> la aleja: 1, 3, 7, 14 días. Ninguna queda para después de la víspera.</li>
+        <li>Los días que no están en el calendario, no hace falta estudiar.</li></ol></dd>
+      <dt>Error típico</dt><dd>Hacer todo la noche anterior. Al otro día ya se fue.</dd>
+      <dt>Funciona cuando</dt><dd>Cada día hay menos tarjetas para repasar.</dd>
+    </dl>
+  </article>
+
+  <div class="card" id="calendario">
+    <h3>Tu calendario</h3>
+    <label class="fila" for="fecha"><span>¿Qué día es la presentación?</span> <input type="date" id="fecha"></label>
+    <div class="plan" id="plan"></div>
+  </div>
+
+  <div class="card">
+    <h3>Si en la presentación te trabás</h3>
+    <p>Volvé a tu casa con la cabeza: ¿en qué lugar estabas? Pasá al lugar siguiente y seguí desde ahí. Nadie sabe que te salteaste una frase. Si te acordás del ancla, decí la idea con tus palabras: vale más que una frase perfecta dicha a medias.</p>
+  </div>
+
+  <p class="aviso small">Lo que más rinde, según la investigación sobre el estudio, es la recuperación activa y el espaciado. El mapa y el palacio te ayudan a ordenar y a no perder el hilo. Ninguna técnica reemplaza decirlo en voz alta muchas veces. Los autores del guion son Durkheim, Berger y Luckmann, Marx y Weber: confirmá con tus apuntes que se dieron en clase.</p>
+</section>
+
+<!-- ============ ENTENDER ============ -->
+<section class="tab" id="entender" hidden>
+  <div><span class="etq">Paso 1 · Técnica Feynman</span><h2>Explicáselo a un nene de 10 años</h2></div>
+  <p class="lead">Elegí un tema y explicalo por escrito, sin mirar el guion, como si se lo contaras a un primo chico. Después revisás qué te faltó.</p>
+  <div class="fila" id="f-temas"></div>
+  <div id="f-panel"></div>
+</section>
+
+<!-- ============ MAPA ============ -->
+<section class="tab" id="mapa" hidden>
+  <div><span class="etq">Paso 2 · Mapa mental</span><h2>Todo el guion en un dibujo</h2></div>
+  <p class="lead">Seguí los números del 1 al 5: es el orden en que hablás. Después tapá las hojas y decí qué hay en cada una antes de tocarla.</p>
+  <div class="fila">
+    <button class="chip" id="m-tapar" aria-pressed="false">Tapar las hojas</button>
+    <button class="btn chico" id="m-destapar">Destapar todas</button>
+    <span class="muted small" id="m-cuenta"></span>
+  </div>
+  <div class="mapa-caja" id="m-svg"></div>
+  <p class="muted small">En el celular, deslizá el mapa hacia los costados. Después dibujalo en papel de memoria, con un color por tema.</p>
+</section>
+
+<!-- ============ PALACIO ============ -->
+<section class="tab" id="palacio" hidden>
+  <div><span class="etq">Paso 3 · Palacio de la memoria</span><h2>Tu guion, guardado en tu casa</h2></div>
+  <p class="lead">Recorrés tu casa de la puerta de entrada al balcón. En cada lugar hay una imagen exagerada que te recuerda qué decís ahí. Cambiá los nombres por lugares reales de tu casa, en el orden en que la caminás; la imagen se queda y la adaptás a ese lugar.</p>
+  <div class="fila">
+    <button class="chip" id="p-modo" aria-pressed="false">Recorrer de memoria</button>
+    <button class="btn chico" id="p-reset">Volver a los lugares de ejemplo</button>
+  </div>
+  <div id="p-lista" style="display:grid;gap:22px"></div>
+</section>
+
+<!-- ============ GUION ============ -->
+<section class="tab" id="guion" hidden>
+  <div><span class="etq">Paso 4 · Recuperación activa</span><h2>Decilo en voz alta</h2></div>
+  <div class="controles">
+    <div class="fila" id="g-bloques"></div>
+    <div class="seg" id="g-niveles" role="group" aria-label="Nivel"></div>
+  </div>
+  <div class="reloj" id="reloj">
+    <div class="num" id="t-num">0:00</div>
+    <div style="display:grid;gap:6px;min-width:0"><div class="barra"><i id="t-barra"></i></div><div class="estado" id="t-estado"></div></div>
+    <div class="fila">
+      <button class="btn primary chico" id="t-start">Empezar</button>
+      <button class="btn chico" id="t-reset">Reiniciar</button>
+      <button class="btn chico" id="g-destapar">Destapar todo</button>
+      <button class="btn chico" id="g-tapar">Tapar de nuevo</button>
+    </div>
+  </div>
+  <div id="g-texto" style="display:grid;gap:16px"></div>
+  <div class="card">
+    <p><b>¿Te trabaste en alguna frase?</b> Tocá su número y queda marcada en rojo. Después mandalas a las tarjetas: te las pregunta hoy mismo.</p>
+    <div class="fila"><button class="btn" id="g-mandar">Mandar las marcadas a Tarjetas</button><button class="btn chico" id="g-limpiar">Quitar las marcas</button><span class="toast" id="g-toast" aria-live="polite"></span></div>
+  </div>
+</section>
+
+<!-- ============ TARJETAS ============ -->
+<section class="tab" id="tarjetas" hidden>
+  <div><span class="etq">Paso 5 · Recuperación activa + repetición espaciada</span><h2>Tarjetas</h2></div>
+  <div class="card">
+    <span class="etq">Mazos</span>
+    <div class="mazos" id="t-mazos"></div>
+    <span class="etq">Dónde está cada tarjeta</span>
+    <div class="cajas" id="t-cajas"></div>
+    <p class="muted small">Cada vez que te sale bien, la tarjeta pasa a la caja siguiente y vuelve más tarde: mañana, a los 3 días, a los 7, a los 14. Si te sale mal, vuelve a «Para hoy».</p>
+    <div class="fila"><button class="btn primary" id="t-hoy">Repaso de hoy</button><button class="btn" id="t-todas">Practicar todas igual</button></div>
+  </div>
+  <div id="t-zona"></div>
+  <div class="fila no-print" id="t-borrar-zona"><button class="btn chico" id="t-borrar">Borrar mi progreso</button></div>
+</section>
+
+<!-- ============ CLAUDE ============ -->
+<section class="tab" id="claude" hidden>
+  <div><span class="etq">Para repasar con Claude</span><h2>Que te tome el guion</h2></div>
+  <p class="lead">Copiá este texto y pegalo en una conversación nueva con Claude. Te toma el guion con las mismas técnicas: no te muestra nada antes de que lo intentes, te corrige frase por frase y te dice cuándo repasar. Ya lleva tu guion y los lugares de tu palacio.</p>
+  <div class="fila"><button class="btn primary" id="c-copiar">Copiar el texto</button><span class="toast" id="c-toast" aria-live="polite"></span></div>
+  <pre class="prompt" id="c-prompt" tabindex="0"></pre>
+  <p class="muted small">También está guardado en la carpeta del proyecto: <code>sigeru/sociologia/PROMPT-repasar-guion.md</code>. Si cambiás los lugares del palacio, este texto se actualiza solo.</p>
+</section>
+</main>
+
+<script>
+/* ===================== DATOS ===================== */
+/* Las palabras entre llaves son las palabras clave: se resaltan en el nivel 1 y se tapan en el 2. */
+const GUION = [
+ {id:'ap', n:'Apertura', corto:'Apertura', seg:10, ancla:'TRES PROCESOS', col:'ap', frases:[
+  'Buenos días.',
+  'Voy a presentar {tres procesos} centrales de la vida social: la {socialización}, el {trabajo} y la {estratificación}.',
+  'Los abordo desde los {autores clásicos} y, al final de cada uno, lo vemos en un {caso concreto}, nuestro proyecto.']},
+ {id:'so', n:'Parte 4 · Socialización', corto:'Socialización', seg:60, ancla:'APRENDER', col:'so', frases:[
+  'La socialización es el proceso por el cual los individuos {aprenden} y {hacen propias} las {normas}, los {valores} y las {formas de actuar} de su sociedad, y así pueden {participar} en ella.',
+  'Para {Durkheim}, la sociedad existe como algo {exterior} y {anterior} a los individuos, y los {condiciona}.',
+  'La {educación} es la forma en que cada {generación} incorpora a la siguiente a esa vida en común.',
+  '{Berger y Luckmann} distinguen {dos momentos}.',
+  'La socialización {primaria} ocurre en la {infancia}, en la {familia}, a través de los {primeros vínculos}.',
+  'La {secundaria} es el aprendizaje de {roles específicos} en {ámbitos nuevos}, como la escuela o el trabajo.',
+  'Este proceso se da a través de {agentes}: la {familia}, los {amigos}, la {escuela}, los {medios}, las {instituciones} y el {trabajo}.',
+  'Y {no termina} en la infancia: se aprende en cada {ámbito nuevo} a lo largo de la vida.',
+  'Hacer {fila} o respetar un {semáforo} son normas que nadie trae de nacimiento.',
+  'En SiGeRU, vecinos y trabajadores tienen que aprender {qué informar} y {qué esperar} del sistema.',
+  'Y tener la {herramienta} no prueba que se haya {aprendido a usarla}.']},
+ {id:'tr', n:'Parte 5 · Trabajo', corto:'Trabajo', seg:60, ancla:'INTERDEPENDENCIA', col:'tr', frases:[
+  'El trabajo es la actividad con la que {producimos} bienes o servicios y atendemos {necesidades sociales}.',
+  'Además de dar {ingresos}, organiza nuestro {tiempo}, nuestras {relaciones} y nuestro {lugar en la sociedad}.',
+  'Para {Marx}, el trabajo es la actividad por la cual el ser humano {transforma la naturaleza} y se {transforma a sí mismo}.',
+  'Pero bajo el {capitalismo} aparece la {alienación}: el trabajador se separa del {producto} de lo que hace y del {sentido} de su tarea.',
+  '{Durkheim}, en {La división del trabajo social}, pregunta qué mantiene {unida} a una sociedad.',
+  'Responde que, en las sociedades modernas, cada persona o grupo cumple una {función específica} y por eso {dependemos} unos de otros.',
+  'Esa {interdependencia} sostiene la {cohesión social}.',
+  'Y advierte que, si la división está {mal regulada}, aparece la {anomia}.',
+  '{Weber} analiza la {racionalización}: el trabajo se organiza en {burocracias}, con {reglas impersonales}, {jerarquías} y {especialización}.',
+  'Eso da {eficiencia}, pero también lo que llamó la {jaula de hierro}.',
+  'En SiGeRU, la administración {planifica} y la cuadrilla {ejecuta}.',
+  'La pregunta sociológica es si el sistema {coordina} esas funciones o solo {controla} a quien las ejecuta.']},
+ {id:'es', n:'Parte 6 · Estratificación social', corto:'Estratificación', seg:60, ancla:'NO SOLO ESFUERZO', col:'es', frases:[
+  'La estratificación social es la {ordenación jerárquica} de personas y grupos según el {acceso desigual} a recursos valorados: {ingresos}, {riqueza}, {educación} y {poder}.',
+  'Para {Marx}, la desigualdad se explica por la posición respecto de los {medios de producción}.',
+  'Hay {clases} fundamentales y entre ellas hay {conflicto}.',
+  '{Weber} lo complejiza con {tres dimensiones}: la {clase}, que es económica; el {estatus}, que es prestigio y honor social; y el {poder}, que es la capacidad de imponer la propia voluntad.',
+  'Una persona puede estar {alta en una} dimensión y {baja en otra}.',
+  'La idea central es que las oportunidades {no dependen solo del esfuerzo} individual: dependen también de la {posición social} de la que se parte y del {acceso a recursos}.',
+  'Por eso hay desigualdades que se {mantienen en el tiempo}.',
+  'En SiGeRU aparece como desigualdad {territorial}, entre zonas, y {digital}, porque para reclamar hace falta {conexión} y {dispositivo}.',
+  'Por eso {pocos reclamos} no significan {pocos problemas}.',
+  'Y {sin datos} no podemos afirmar nada de un barrio concreto: solo {plantear la pregunta}.']},
+ {id:'ci', n:'Cierre', corto:'Cierre', seg:20, ancla:'PERSONAS', col:'ap', frases:[
+  'En conclusión, la socialización, el trabajo y la estratificación muestran que la vida social está estructurada por {instituciones}, {funciones} y {desigualdades}, y no solo por {decisiones individuales}.',
+  'La sociología no mira solo la {herramienta}, mira a las {personas}: quién {aprende}, quién {trabaja} y a quién {no le llega}.',
+  'Muchas gracias.']}
+];
+
+/* Palacio: 18 lugares en orden de recorrido. r = [bloque, índices de frases que se dicen ahí]. */
+const PALACIO = [
+ {z:'ap', lugar:'Puerta de entrada', r:['ap',[0,1,2]], img:'De la cerradura cuelgan tres llaves gigantes, cada una con un llavero: un chupete (aprender), un casco de obra (trabajar) y una escalerita (desigualdad). Son los tres procesos. Pegado en la puerta, un póster de próceres barbudos: los autores clásicos. Afuera está estacionado un camión de la basura con el logo de SiGeRU: el caso concreto.'},
+ {z:'so', lugar:'Felpudo', r:['so',[0]], img:'El felpudo dice «LIMPIATE LOS PIES». Nadie nació sabiendo eso: alguien te lo enseñó y ahora lo hacés solo, sin pensar, porque lo hiciste propio. Al lado, un cartel con tres palabras enormes: NORMAS · VALORES · FORMAS DE ACTUAR.'},
+ {z:'so', lugar:'Sillón del living', r:['so',[1,2]], img:'En TU sillón está sentado Durkheim, un abuelo de barba. Estaba ahí desde antes de que llegaras (anterior) y te empuja desde afuera para que no te sientes (exterior: te condiciona). Tiene un bebé en las rodillas y le enseña a saludar: la educación pasa de una generación a la siguiente.'},
+ {z:'so', lugar:'Tele', r:['so',[3,4,5]], img:'En la tele, dos conductores, Berger y Luckmann, hacen zapping entre dos canales. Canal 1, PRIMARIA: un bebé en brazos de su familia. Canal 2, SECUNDARIA: la misma persona de grande, primero con túnica de escuela y después con el uniforme de su trabajo.'},
+ {z:'so', lugar:'Mesa del comedor', r:['so',[6]], img:'Seis sillas, en tres pares, y todos te hablan a la vez: tu familia y tus amigos (los de casa); una maestra y una tele chiquita (lo que te enseña); un policía con un sello de oficina (las instituciones) y tu jefe (el trabajo). Son los agentes.'},
+ {z:'so', lugar:'Estante del living', r:['so',[7,8]], img:'En el estante, un abuelo de 80 años aprende a usar el celular: no termina nunca. En lugar de libros hay un semáforo y una fila de muñequitos esperando en orden: normas que nadie trae de nacimiento.'},
+ {z:'so', lugar:'Ventana del living', r:['so',[9,10]], img:'Por la ventana ves a un vecino que le apunta con el celular a un contenedor para avisar en SiGeRU qué pasa. Pero tiene el celular dado vuelta: tiene la herramienta y no aprendió a usarla.'},
+ {z:'tr', lugar:'Puerta de la cocina', r:['tr',[0,1]], img:'Al entrar a la cocina hay una panadería: alguien amasa (produce un bien) y le da pan a una fila de gente con hambre (necesidades sociales). Le pagan (ingresos). En la pared, un reloj enorme (el tiempo), fotos de sus compañeros (las relaciones) y una credencial con su cargo (su lugar en la sociedad).'},
+ {z:'tr', lugar:'Heladera', r:['tr',[2,3]], img:'Abrís la heladera y está Marx, con una barba gigante, moldeando barro con las manos: al cambiar el barro se cambia a sí mismo. Cuando termina la vasija, se la lleva una cinta con un candado y un cartel: «CAPITALISMO: no es tuya». Marx se queda mirando sin entender para qué la hizo: alienación.'},
+ {z:'tr', lugar:'Hornallas', r:['tr',[4,5,6,7]], img:'Cuatro hornallas y cuatro cocineros, cada uno con UNA sola tarea: uno corta, otro hierve, otro fríe, otro sirve. Se pasan las ollas: si uno falta, se quema todo. Durkheim, con su libro «La división del trabajo social» bajo el brazo, pregunta: «¿qué los mantiene unidos?». Cuando nadie sabe qué le toca, sale un humo negro con el cartel ANOMIA.'},
+ {z:'tr', lugar:'Alacena', r:['tr',[8,9]], img:'Dentro de la alacena hay una jaula de hierro llena de formularios y sellos. Weber, de lentes, la ordena: reglas iguales para todos, jefes en el estante de arriba, empleados abajo, cada uno con su tarea. Todo sale rapidísimo, pero vos quedaste encerrado adentro.'},
+ {z:'tr', lugar:'Pileta de la cocina', r:['tr',[10,11]], img:'En la pileta, una administradora con un plano dice adónde ir (planifica) y una cuadrilla con chalecos naranjas lava contenedores (ejecuta). Arriba, una cámara los mira. Te preguntás: ¿los ayuda a coordinarse o solo los controla?'},
+ {z:'es', lugar:'Escalera (o pasillo)', r:['es',[0]], img:'La escalera es la sociedad en pisos. En cada escalón hay una bolsa: billetes (ingresos), una casita (riqueza), un diploma (educación) y una corona (poder). Algunos suben por ascensor y otros no pueden subir: acceso desigual.'},
+ {z:'es', lugar:'Tu cama', r:['es',[1,2]], img:'En tu cama, dos tipos se pelean por la frazada: el dueño de la fábrica, abrazado a sus máquinas (los medios de producción), y el obrero. Marx, parado al lado, dice: dos clases, y siempre en conflicto.'},
+ {z:'es', lugar:'Ropero', r:['es',[3,4]], img:'El ropero de Weber tiene tres cajones: CLASE (lleno de plata), ESTATUS (medallas y aplausos) y PODER (un megáfono). Una maestra muy respetada tiene el cajón de medallas lleno y el de plata vacío: alta en una, baja en otra.'},
+ {z:'es', lugar:'Escritorio', r:['es',[5,6]], img:'Sobre el escritorio corren dos corredores. Uno arranca 50 metros adelante y con zapatillas nuevas. El otro, descalzo, transpira muchísimo y llega último. Y la carrera se repite todos los días con la misma ventaja: se mantiene en el tiempo.'},
+ {z:'es', lugar:'Ventana del cuarto', r:['es',[7,8,9]], img:'Por la ventana ves dos barrios. En uno brillan los celulares con wifi y llegan reclamos. El otro está a oscuras y sin señal: no llega ningún reclamo, pero hay montañas de basura. Arriba flota un signo de pregunta gigante: sin datos, solo planteamos la pregunta.'},
+ {z:'ap', lugar:'Balcón (o puerta del fondo)', r:['ci',[0,1,2]], img:'Salís al balcón y saludan tres personas: una con un libro (quién aprende), una con casco (quién trabaja) y una sola, del otro lado de la reja, a la que no le llega nada. Atrás, tres carteles: INSTITUCIONES · FUNCIONES · DESIGUALDADES. Vos hacés una reverencia y decís: muchas gracias.'}
+];
+const ZONAS = {ap:'Entrada y salida', so:'Living: Socialización', tr:'Cocina: Trabajo', es:'Planta alta: Estratificación'};
+
+const MAZOS = [
+ {id:'cad', n:'Cadena del guion'}, {id:'con', n:'Conceptos'}, {id:'aut', n:'¿Quién lo dijo?'}, {id:'pro', n:'Preguntas de la profe'}
+];
+const CONCEPTOS = [
+ ['so','¿Qué es la socialización?','El proceso por el cual los individuos aprenden y hacen propias las normas, los valores y las formas de actuar de su sociedad, y así pueden participar en ella.'],
+ ['so','Durkheim: ¿cómo es la sociedad respecto de los individuos?','Exterior y anterior a ellos, y los condiciona.'],
+ ['so','Durkheim: ¿qué es la educación?','La forma en que cada generación incorpora a la siguiente a la vida en común.'],
+ ['so','¿Qué distinguen Berger y Luckmann?','Dos momentos de la socialización: la primaria y la secundaria.'],
+ ['so','¿Qué es la socialización primaria?','La que ocurre en la infancia, en la familia, a través de los primeros vínculos.'],
+ ['so','¿Qué es la socialización secundaria?','El aprendizaje de roles específicos en ámbitos nuevos, como la escuela o el trabajo.'],
+ ['so','Los seis agentes de socialización, en tres pares','Familia y amigos · escuela y medios · instituciones y trabajo.'],
+ ['so','¿La socialización termina en la infancia?','No: se aprende en cada ámbito nuevo a lo largo de la vida.'],
+ ['so','Dos normas que nadie trae de nacimiento','Hacer fila y respetar un semáforo.'],
+ ['so','Socialización en SiGeRU: ¿qué tienen que aprender y cuál es el límite?','Vecinos y trabajadores aprenden qué informar y qué esperar del sistema. Tener la herramienta no prueba que se haya aprendido a usarla.'],
+ ['tr','¿Qué es el trabajo?','La actividad con la que producimos bienes o servicios y atendemos necesidades sociales.'],
+ ['tr','Además de ingresos, ¿qué organiza el trabajo?','Nuestro tiempo, nuestras relaciones y nuestro lugar en la sociedad.'],
+ ['tr','Marx: ¿qué es el trabajo?','La actividad por la cual el ser humano transforma la naturaleza y se transforma a sí mismo.'],
+ ['tr','¿Qué es la alienación y cuándo aparece?','Aparece bajo el capitalismo: el trabajador se separa del producto de lo que hace y del sentido de su tarea.'],
+ ['tr','¿Qué libro de Durkheim nombrás y qué pregunta se hace?','«La división del trabajo social». Pregunta qué mantiene unida a una sociedad.'],
+ ['tr','¿Qué responde Durkheim?','En las sociedades modernas cada persona o grupo cumple una función específica y por eso dependemos unos de otros. Esa interdependencia sostiene la cohesión social.'],
+ ['tr','¿Qué es la anomia?','Lo que aparece, según Durkheim, cuando la división del trabajo está mal regulada: faltan normas claras.'],
+ ['tr','Weber: ¿qué es la racionalización? Decí los tres rasgos','El trabajo se organiza en burocracias, con reglas impersonales, jerarquías y especialización.'],
+ ['tr','¿Qué es la jaula de hierro?','Lo que trae la burocracia además de eficiencia, según Weber: quedar atrapados en las reglas.'],
+ ['tr','Trabajo en SiGeRU: ¿quién hace qué y cuál es la pregunta?','La administración planifica y la cuadrilla ejecuta. ¿El sistema coordina esas funciones o solo controla a quien las ejecuta?'],
+ ['es','¿Qué es la estratificación social?','La ordenación jerárquica de personas y grupos según el acceso desigual a recursos valorados.'],
+ ['es','Los cuatro recursos valorados','Ingresos, riqueza, educación y poder.'],
+ ['es','Marx: ¿de qué depende la desigualdad?','De la posición respecto de los medios de producción. Hay clases fundamentales y entre ellas hay conflicto.'],
+ ['es','Weber: las tres dimensiones','Clase (económica), estatus (prestigio y honor social) y poder (capacidad de imponer la propia voluntad).'],
+ ['es','¿Qué permite ver Weber con las tres dimensiones?','Que una persona puede estar alta en una dimensión y baja en otra.'],
+ ['es','La idea central de la estratificación','Las oportunidades no dependen solo del esfuerzo individual: también de la posición social de la que se parte y del acceso a recursos. Por eso hay desigualdades que se mantienen en el tiempo.'],
+ ['es','Estratificación en SiGeRU: ¿qué dos desigualdades?','Territorial (entre zonas) y digital (para reclamar hace falta conexión y dispositivo).'],
+ ['es','¿Por qué pocos reclamos no significan pocos problemas?','Porque reclamar exige conexión y dispositivo: reclama más quien tiene más facilidad, no quien tiene más problemas.'],
+ ['es','¿Qué hacemos sin datos sobre un barrio?','No afirmamos nada: solo planteamos la pregunta.'],
+ ['ap','La frase de cierre','La sociología no mira solo la herramienta, mira a las personas: quién aprende, quién trabaja y a quién no le llega.']
+];
+const AUTORES = [
+ ['so','«La sociedad es exterior y anterior a los individuos»','Durkheim'],
+ ['so','Socialización primaria y secundaria','Berger y Luckmann'],
+ ['tr','Alienación','Marx'],
+ ['tr','«La división del trabajo social», cohesión y anomia','Durkheim'],
+ ['tr','Racionalización, burocracia y jaula de hierro','Weber'],
+ ['es','Medios de producción y clases en conflicto','Marx'],
+ ['es','Clase, estatus y poder','Weber'],
+ ['ap','¿En qué partes aparece Durkheim y con qué?','Socialización (sociedad exterior y anterior, educación) y Trabajo (división del trabajo, cohesión, anomia).'],
+ ['ap','¿En qué partes aparecen Marx y Weber?','En Trabajo y en Estratificación. Marx: alienación y medios de producción. Weber: jaula de hierro y tres dimensiones.'],
+ ['ap','¿Qué autores NO nombrás?','Mead, Bourdieu, Castel ni Davis y Moore: no se dieron en clase.']
+];
+const PROFE = [
+ ['ap','¿Qué aporta la sociología a un proyecto técnico?','Permite ver relaciones y desigualdades. Un sistema que funciona no prueba por sí solo una mejora social.'],
+ ['ap','¿La tecnología es neutra?','No. Incorpora decisiones humanas, como permisos, indicadores y prioridades, y eso influye en lo que se ve y en quién puede actuar.'],
+ ['ap','¿Lo midieron?','No, el análisis es conceptual. Medirlo requeriría observar el uso y consultar a vecinos y trabajadores.'],
+ ['es','¿Qué diferencia hay entre Marx y Weber en estratificación?','Marx explica la desigualdad por la posición frente a los medios de producción. Weber suma el estatus y el poder como dimensiones propias.'],
+ ['so','¿Por qué decís que la socialización no termina en la infancia?','Porque en cada ámbito nuevo, como un trabajo, aprendemos roles y normas nuevas: es la socialización secundaria.'],
+ ['tr','¿Por qué hablás de interdependencia en la recolección?','Porque la administración planifica y la cuadrilla ejecuta: cada una cumple una función y se necesitan. Si falla la coordinación, el servicio se frena.'],
+ ['ap','¿Qué hacés si no sabés una respuesta?','Decir «eso no lo medimos» o «no lo tenemos definido». Es mejor que inventar.']
+];
+
+/* Feynman: ideas = [texto, raíces que la delatan]. porque = [pregunta del nene, pista]. */
+const FEYN = [
+ {id:'soc', n:'Socialización', col:'so', guion:'so',
+  ideas:[['Es aprender a vivir con otros: reglas, lo que está bien o mal, cómo comportarse',['aprend','regla','norma','valor','comport','costumbre']],
+   ['Lo aprendés de otros: familia, amigos, escuela, tele, trabajo',['familia','amig','escuela','tele','medio']],
+   ['Primero en la familia y después en lugares nuevos',['primero','despues','primaria','secundaria','bebe','de chico']],
+   ['No termina nunca: los grandes también aprenden',['nunca','toda la vida','grande','termina','siempre']],
+   ['Las reglas ya estaban antes que vos (Durkheim)',['antes','ya estaba','existia','durkheim']]],
+  porque:[['¿Y quién inventó las reglas?','Nadie solo: ya estaban cuando naciste. Las recibiste de la sociedad, que es anterior a vos (Durkheim).'],
+   ['¿Por qué tengo que hacer fila si no quiero?','Porque la sociedad nos condiciona: si no lo hacés, los demás te lo marcan.'],
+   ['¿Los grandes también aprenden?','Sí: cada vez que entran a un lugar nuevo, como un trabajo. Es la socialización secundaria.']],
+  nene:'Cuando naciste no sabías nada: ni saludar, ni hacer fila, ni dónde va la basura. Lo fuiste aprendiendo de tu familia, después en la escuela, con tus amigos y mirando la tele. Aprender las reglas para poder vivir con los demás se llama socialización. Esas reglas ya estaban antes de que nacieras: no las inventaste, las recibiste. Y nunca terminás de aprender: cuando empezás un trabajo nuevo, aprendés reglas nuevas.',
+  analogia:'Entrar a un juego que ya empezó: nadie te explica todo, aprendés las reglas mirando a los otros jugadores.'},
+ {id:'div', n:'División del trabajo (Durkheim)', col:'tr', guion:'tr',
+  ideas:[['Trabajar es hacer cosas o servicios que la gente necesita',['necesit','servicio','produc','bienes','hacer cosas']],
+   ['Además de plata, ordena tu día, tus vínculos y tu lugar',['plata','dinero','sueldo','tiempo','horario','amig','compañer','lugar']],
+   ['Cada uno hace una parte distinta',['cada uno','parte','funcion','tarea','puesto']],
+   ['Nos necesitamos unos a otros',['dependemos','depende','unos a otros','nos necesitamos','se necesitan']],
+   ['Eso mantiene unida a la sociedad',['unid','junt','cohesion','une ']],
+   ['Sin reglas claras es un lío: la anomia',['anomia','lio','desorden','sin reglas','caos','arbitro']]],
+  porque:[['¿Y si el arquero se va?','Se frena todo: como dependemos unos de otros, si una parte falla, falla el servicio.'],
+   ['¿Por qué no hace todo una sola persona?','Porque en una sociedad moderna hay demasiadas tareas: cada uno se especializa en una.'],
+   ['¿Qué pasa si nadie sabe qué le toca?','Aparece la anomia: faltan normas claras y todo se desordena.']],
+  nene:'Pensá en un cuadro de fútbol: uno ataja, otro defiende, otro hace goles. Ninguno gana solo: se necesitan. Durkheim decía que la sociedad funciona igual: cada uno tiene un trabajo distinto (el panadero, la médica, el que junta la basura) y por eso nos necesitamos todos. Eso es lo que nos mantiene unidos. Pero si no hay reglas claras y nadie sabe qué le toca, como un partido sin árbitro, es un lío: eso se llama anomia.',
+  analogia:'Un cuadro de fútbol: cada uno en su puesto, ninguno gana solo, y sin árbitro es un lío.'},
+ {id:'ali', n:'Alienación (Marx)', col:'tr', guion:'tr',
+  ideas:[['Trabajando cambiamos el mundo y nos cambiamos a nosotros',['cambi','transform']],
+   ['En el capitalismo lo que hacés no es tuyo',['no es tuyo','no es mio','dueño','dueno','capitalismo','se lo queda']],
+   ['Te separás de lo que producís',['separ','no ves','producto','terminad']],
+   ['Tu tarea pierde sentido',['sentido','para que','aburr','repet','mil veces']]],
+  porque:[['¿Por qué no es mío si lo hice yo?','Porque las máquinas y lo que sale de ellas son del dueño de la fábrica; vos ponés tu trabajo a cambio de un sueldo.'],
+   ['¿Y por qué me aburro?','Porque hacés una parte mínima, siempre igual, sin ver el resultado: la tarea pierde sentido.'],
+   ['¿Siempre fue así?','En el guion decís que la alienación aparece bajo el capitalismo.']],
+  nene:'Imaginate que te encanta dibujar. Cuanto más dibujás, mejor dibujante sos: cambiás la hoja y también te cambiás vos. Eso es el trabajo para Marx. Ahora imaginate una fábrica donde te ponen a pintar solo la rueda de un autito de juguete, mil veces por día. Nunca ves el autito terminado y encima se lo queda el dueño de la fábrica. Ese trabajo ya no es tuyo ni tiene sentido para vos. Marx le decía alienación.',
+  analogia:'Pintar mil ruedas de un autito que nunca ves terminado y que no es tuyo.'},
+ {id:'web', n:'Burocracia y jaula de hierro (Weber)', col:'tr', guion:'tr',
+  ideas:[['Reglas que valen igual para todos',['regla','igual para todos','impersonal','norma']],
+   ['Jefes y empleados en escalones',['jefe','escalon','jerarq','manda','arriba']],
+   ['Cada uno con su tarea',['cada uno','tarea','especializ','su parte']],
+   ['Las cosas salen rápido y ordenadas',['rapido','orden','eficien','funciona']],
+   ['Pero te podés quedar atrapado en las reglas: la jaula de hierro',['jaula','atrapad','encerrad','no te deja','no se puede']]],
+  porque:[['¿Por qué no me atienden si me falta un papel?','Porque en una burocracia las reglas son impersonales: valen para todos, sin excepciones.'],
+   ['¿Entonces las reglas son malas?','No: dan eficiencia. El problema es cuando nos dejan encerrados: la jaula de hierro.'],
+   ['¿Quién manda ahí?','El que está más arriba en la jerarquía.']],
+  nene:'¿Viste cuando vas a hacer un trámite y te dicen «sin este papel no se puede», aunque sea obvio que sos vos? Weber decía que el trabajo moderno se organiza así: con reglas que valen para todos, jefes y empleados en escalones, y cada uno con su tarea. Eso hace que las cosas salgan rápido y ordenadas. Pero también nos puede dejar atrapados en las reglas, como en una jaula de hierro.',
+  analogia:'La ventanilla del trámite: «sin este papel no se puede».'},
+ {id:'est', n:'Estratificación (Marx y Weber)', col:'es', guion:'es',
+  ideas:[['La sociedad está ordenada en pisos o escalones',['piso','escalon','arriba','abajo','capa','jerarq']],
+   ['Según cuánta plata, estudio y poder tenés',['plata','dinero','ingreso','riqueza','estudi','educacion','poder']],
+   ['Marx: dueños contra trabajadores',['dueño','dueno','fabrica','trabajador','obrero','conflicto','pelea','clase']],
+   ['Weber: plata, prestigio y poder van por separado',['prestigio','respet','estatus','separad','tres']],
+   ['No depende solo de esforzarte',['esfuerz','naciste','donde nac','arranc','ventaja']]],
+  porque:[['¿Y si me esfuerzo mucho?','Ayuda, pero no alcanza: también cuenta en qué piso arrancaste y a qué recursos tenés acceso.'],
+   ['¿Alguien puede ser respetado y no tener plata?','Sí: para Weber podés estar alto en estatus y bajo en clase.'],
+   ['¿Por qué los de arriba siguen arriba?','Porque arrancan con más recursos: por eso hay desigualdades que se mantienen en el tiempo.']],
+  nene:'Imaginate un edificio: algunos viven en el último piso, con vista y ascensor, y otros en el sótano. La sociedad está ordenada en pisos según cuánta plata, estudio y poder tiene cada uno: eso es la estratificación. Marx decía que lo que importa es si sos el dueño de la fábrica o trabajás en ella, y que esos dos grupos se pelean. Weber decía que hay tres escaleras distintas, la plata, el prestigio y el poder, y podés estar arriba en una y abajo en otra. Y lo más importante: no subís solo por esforzarte. Depende mucho del piso en el que naciste.',
+  analogia:'Un edificio: el piso en el que naciste pesa más que cuánto subís la escalera.'},
+ {id:'rec', n:'Pocos reclamos ≠ pocos problemas', col:'es', guion:'es',
+  ideas:[['Para reclamar necesitás internet y celular',['internet','celular','conexion','wifi','telefono','dispositivo']],
+   ['No todos los tienen: desigualdad digital',['no todos','no tienen','digital']],
+   ['Hay zonas distintas: desigualdad territorial',['barrio','zona','territor']],
+   ['Que no reclamen no quiere decir que no haya problemas',['no quiere decir','no significa','igual hay','aunque']],
+   ['Sin datos no lo afirmamos: lo preguntamos',['dato','pregunta','no sabemos','no podemos','no medimos']]],
+  porque:[['¿Y por qué no reclaman?','Puede ser porque no tienen conexión o celular, no porque estén bien.'],
+   ['¿Entonces ese barrio está peor?','No lo sabemos: sin datos no lo afirmamos, planteamos la pregunta.'],
+   ['¿Y eso qué tiene que ver con la sociología?','Es estratificación: el acceso desigual a recursos cambia quién puede hacerse escuchar.']],
+  nene:'Si la maestra pregunta por WhatsApp «¿a alguien le duele algo?», solo contestan los que tienen celular. Los que no tienen no dicen nada, aunque les duela la panza. Que nadie conteste no quiere decir que nadie tenga dolor. Con la basura pasa igual: para reclamar en SiGeRU hace falta internet y celular, así que un barrio sin eso puede reclamar poco y tener mucha basura. Como no lo medimos, no decimos que pasa: lo dejamos como pregunta.',
+  analogia:'La maestra que pregunta por WhatsApp: el que no tiene celular no contesta, aunque le duela.'}
+];
+const JERGA = [['interioriz','interiorizar'],['internaliz','internalizar'],['individuo','individuos'],['agente','agentes'],['condiciona','condiciona'],
+ ['ambito','ámbito'],['rol','roles'],['interdependencia','interdependencia'],['cohesion','cohesión'],['anomia','anomia'],['alienacion','alienación'],
+ ['racionalizacion','racionalización'],['burocracia','burocracia'],['impersonal','impersonal'],['jerarqu','jerarquía'],['especializacion','especialización'],
+ ['estratificacion','estratificación'],['medios de produccion','medios de producción'],['estatus','estatus'],['dimension','dimensión'],['capitalismo','capitalismo']];
+
+/* Mapa: posiciones a mano sobre un lienzo de 1200 x 920. */
+const MAPA = [
+ {id:'centro', tipo:'ctr', x:600, y:430, w:220},
+ {id:'m-ap', tipo:'hoja', col:'ap', badge:1, x:430, y:95, w:300, padre:'centro', tag:'Apertura · 10 s', tx:'Tres procesos · autores clásicos · un caso concreto: SiGeRU'},
+ {id:'m-ci', tipo:'hoja', col:'ap', badge:5, x:770, y:95, w:300, padre:'centro', tag:'Cierre · 20 s', tx:'Instituciones, funciones, desigualdades · quién aprende, quién trabaja, a quién no le llega'},
+ {id:'so', tipo:'rama', col:'so', badge:2, x:385, y:310, w:190, padre:'centro', tag:'Socialización', tx:'APRENDER'},
+ {id:'so1', tipo:'hoja', col:'so', x:140, y:110, w:250, padre:'so', tag:'Definición', tx:'Aprender y hacer propias normas, valores y formas de actuar'},
+ {id:'so2', tipo:'hoja', col:'so', x:140, y:205, w:250, padre:'so', tag:'Durkheim', tx:'Sociedad exterior y anterior · la educación pasa entre generaciones'},
+ {id:'so3', tipo:'hoja', col:'so', x:140, y:300, w:250, padre:'so', tag:'Berger y Luckmann', tx:'Primaria: infancia, familia · Secundaria: roles en ámbitos nuevos'},
+ {id:'so4', tipo:'hoja', col:'so', x:140, y:395, w:250, padre:'so', tag:'Agentes', tx:'Familia, amigos · escuela, medios · instituciones, trabajo'},
+ {id:'so5', tipo:'hoja', col:'so', x:140, y:490, w:250, padre:'so', tag:'No termina', tx:'Cada ámbito nuevo · fila y semáforo'},
+ {id:'so6', tipo:'hoja', col:'so', x:140, y:585, w:250, padre:'so', tag:'SiGeRU', tx:'Qué informar y qué esperar · herramienta no es aprendizaje'},
+ {id:'tr', tipo:'rama', col:'tr', badge:3, x:815, y:310, w:190, padre:'centro', tag:'Trabajo', tx:'INTERDEPENDENCIA'},
+ {id:'tr1', tipo:'hoja', col:'tr', x:1060, y:130, w:250, padre:'tr', tag:'Definición', tx:'Producir y atender necesidades · ordena tiempo, relaciones y lugar'},
+ {id:'tr2', tipo:'hoja', col:'tr', x:1060, y:235, w:250, padre:'tr', tag:'Marx', tx:'Transforma la naturaleza y a sí mismo · capitalismo: alienación'},
+ {id:'tr3', tipo:'hoja', col:'tr', x:1060, y:340, w:250, padre:'tr', tag:'Durkheim', tx:'División del trabajo → interdependencia → cohesión · anomia'},
+ {id:'tr4', tipo:'hoja', col:'tr', x:1060, y:445, w:250, padre:'tr', tag:'Weber', tx:'Racionalización: burocracia, reglas, jerarquías · jaula de hierro'},
+ {id:'tr5', tipo:'hoja', col:'tr', x:1060, y:550, w:250, padre:'tr', tag:'SiGeRU', tx:'Planifica y ejecuta · ¿coordina o controla?'},
+ {id:'es', tipo:'rama', col:'es', badge:4, x:600, y:650, w:220, padre:'centro', tag:'Estratificación', tx:'NO SOLO ESFUERZO'},
+ {id:'es1', tipo:'hoja', col:'es', x:140, y:705, w:250, padre:'es', tag:'Definición', tx:'Orden jerárquico · ingresos, riqueza, educación, poder'},
+ {id:'es2', tipo:'hoja', col:'es', x:140, y:810, w:250, padre:'es', tag:'Marx', tx:'Medios de producción · clases en conflicto'},
+ {id:'es3', tipo:'hoja', col:'es', x:1060, y:705, w:250, padre:'es', tag:'Weber', tx:'Clase, estatus, poder · alto en una, bajo en otra'},
+ {id:'es4', tipo:'hoja', col:'es', x:1060, y:810, w:250, padre:'es', tag:'Idea central', tx:'No solo esfuerzo · posición y recursos · se mantiene'},
+ {id:'es5', tipo:'hoja', col:'es', x:430, y:850, w:250, padre:'es', tag:'SiGeRU', tx:'Territorial y digital · pocos reclamos no son pocos problemas'},
+ {id:'es6', tipo:'hoja', col:'es', x:770, y:850, w:250, padre:'es', tag:'Límite', tx:'Sin datos no afirmamos: planteamos la pregunta'}
+];
+
+/* ===================== UTILIDADES ===================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const plano = f => f.replace(/[{}]/g, '');
+const conMarca = f => esc(f).replace(/\{([^}]+)\}/g, '<mark>$1</mark>');
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const fmt = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function iso(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function deIso(s){ const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+const hoy = () => iso(new Date());
+function sumar(s, n){ const d = deIso(s); d.setDate(d.getDate() + n); return iso(d); }
+function dif(a, b){ return Math.round((deIso(b) - deIso(a)) / 86400000); }
+const DIAS = ['dom','lun','mar','mié','jue','vie','sáb'];
+function lindo(s){ const d = deIso(s); return DIAS[d.getDay()] + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); }
+function mezclar(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ===================== ESTADO ===================== */
+const CLAVE = 'sigeru-sociologia-guion-v1';
+const S = {cards:{}, flags:{}, lugares:null, fecha:'', feyn:{}, nivel:1, bloque:'todo', mazos:{cad:true, con:true, aut:true, pro:true}, tapar:false, recorrer:false, tab:'como', tema:'soc'};
+try { const g = localStorage.getItem(CLAVE); if (g) Object.assign(S, JSON.parse(g)); } catch (e) {}
+function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(S)); } catch (e) {} }
+function lugares(){ return PALACIO.map((p, i) => (S.lugares && S.lugares[i]) || p.lugar); }
+
+/* ===================== PESTAÑAS ===================== */
+const TABS = ['como','entender','mapa','palacio','guion','tarjetas','claude'];
+function abrir(t, sinScroll){
+  if (!TABS.includes(t)) t = 'como';
+  $$('nav.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  TABS.forEach(x => { $('#' + x).hidden = x !== t; });
+  S.tab = t; guardar();
+  try { history.replaceState(null, '', '#' + t); } catch (e) {}
+  if (t === 'claude') pintarPrompt();
+  if (t === 'tarjetas') pintarCajas();
+  if (!sinScroll) window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-tab],[data-ir]');
+  if (b) abrir(b.dataset.tab || b.dataset.ir);
+});
+
+/* ===================== CALENDARIO ===================== */
+const SESIONES = {
+  primera:['Primera vuelta · 60 min',['Entender: los seis temas con la técnica Feynman (20 min)','Mapa: seguilo, tapalo y dibujalo en papel (10 min)','Palacio: poné tus lugares y mirá cada imagen (15 min)','Guion: niveles Leer y Huecos, en voz alta (10 min)','Tarjetas: Repaso de hoy (5 min o más)']],
+  repaso:['Repaso · 20 a 25 min',['Tarjetas: Repaso de hoy','Guion: un nivel más arriba que la última vez, con cronómetro','Palacio: Recorrer de memoria, una vuelta','Un ensayo entero en voz alta']],
+  vispera:['Víspera · 30 min',['Tarjetas: Repaso de hoy','Guion en Solo anclas, con cronómetro, tres veces; una frente a alguien','Preguntas de la profe en voz alta','Dormí bien: mientras dormís se fija lo que estudiaste']],
+  dia:['Día de la presentación · 10 min',['Recorré el palacio con los ojos cerrados, una vez','Decí las cinco anclas en orden','En el pasillo: las anclas y la frase de cierre. Nada nuevo.']]
+};
+function pintarPlan(){
+  const cont = $('#plan'), h = hoy();
+  let filas = [];
+  if (!S.fecha){
+    filas = [['Hoy','primera'],['Mañana','repaso'],['A los 3 días','repaso'],['A los 7 días','repaso'],['La víspera','vispera'],['El día','dia']].map(x => ({cuando:x[0], sub:'', tipo:x[1]}));
+  } else {
+    const n = dif(h, S.fecha);
+    if (n < 0){ cont.innerHTML = '<p class="muted">Esa fecha ya pasó. Cargá la fecha de la presentación.</p>'; return; }
+    const dias = [];
+    if (n === 0) dias.push([0,'dia']);
+    else {
+      dias.push([0, n === 1 ? 'vispera' : 'primera']);
+      [1,3,7,14,21].forEach(o => { if (o < n - 1) dias.push([o,'repaso']); });
+      if (n - 1 > 0) dias.push([n - 1,'vispera']);
+      dias.push([n,'dia']);
+    }
+    filas = dias.map(d => ({cuando: d[0] === 0 ? 'Hoy' : lindo(sumar(h, d[0])), sub: d[0] === 0 ? lindo(h) : (d[0] === n ? 'la presentación' : 'dentro de ' + d[0] + ' día' + (d[0] > 1 ? 's' : '')), tipo:d[1], hoy:d[0] === 0}));
+    if (n === 1) filas[0].nota = 'Te queda un solo día: hacé la primera vuelta a la mañana y la víspera a la noche.';
+  }
+  cont.innerHTML = filas.map(f => {
+    const s = SESIONES[f.tipo];
+    return '<div class="sesion' + (f.hoy ? ' hoy' : '') + '"><div class="cuando">' + esc(f.cuando) + (f.sub ? '<span>' + esc(f.sub) + '</span>' : '') + '</div><div><h3>' + esc(s[0]) + '</h3><ul>' + s[1].map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' + (f.nota ? '<p class="small muted" style="margin-top:6px">' + esc(f.nota) + '</p>' : '') + '</div></div>';
+  }).join('');
+}
+$('#fecha').value = S.fecha || '';
+$('#fecha').addEventListener('change', e => { S.fecha = e.target.value; guardar(); pintarPlan(); pintarCajas(); });
+
+/* ===================== FEYNMAN ===================== */
+function pintarTemas(){
+  $('#f-temas').innerHTML = FEYN.map(t => '<button class="chip" data-tema="' + t.id + '" aria-pressed="' + (S.tema === t.id) + '">' + esc(t.n) + '</button>').join('');
+}
+function pintarFeyn(revisado){
+  const t = FEYN.find(x => x.id === S.tema) || FEYN[0];
+  const txt = S.feyn[t.id] || '';
+  let html = '<div class="card t-' + t.col + '" style="border-top:4px solid var(--col)">' +
+    '<h3 style="color:var(--col)">' + esc(t.n) + '</h3>' +
+    '<label for="f-txt" class="small muted">Paso 1. Sin mirar nada, explicáselo a un primo de 10 años. Escribí como hablás.</label>' +
+    '<textarea id="f-txt" placeholder="Mirá, esto es como cuando...">' + esc(txt) + '</textarea>' +
+    '<div class="fila"><button class="btn primary" id="f-revisar">Revisar mi explicación</button><span class="muted small" id="f-palabras"></span></div></div>';
+  if (revisado){
+    const n = norm(txt), palabras = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+    if (palabras < 25){
+      html += '<p class="aviso">Escribiste ' + palabras + ' palabras. Explicalo en al menos tres o cuatro oraciones: con menos no se ve qué entendiste.</p>';
+    } else {
+      const ideas = t.ideas.map(i => ({t:i[0], ok:i[1].some(k => n.includes(norm(k)))}));
+      const ok = ideas.filter(i => i.ok).length;
+      const jer = JERGA.filter(j => new RegExp('\\b' + j[0]).test(n)).map(j => j[1]);
+      html += '<div class="card"><span class="etq">Paso 2. Lo que encontré en tu explicación</span>' +
+        '<p><b>' + ok + ' de ' + ideas.length + ' ideas.</b> ' + (ok === ideas.length ? 'Están todas.' : 'Las grises no aparecen: ahí está tu hueco. Volvé a pensarlas antes de mirar la respuesta.') + '</p>' +
+        '<ul class="ideas">' + ideas.map(i => '<li class="' + (i.ok ? 'si' : 'no') + '"><span class="ic">' + (i.ok ? '✓' : '○') + '</span><span>' + esc(i.t) + '</span></li>').join('') + '</ul>' +
+        (jer.length ? '<p class="aviso small">Usaste palabras que un nene no entiende: <b>' + jer.map(esc).join(', ') + '</b>. Si no las explicaste con un ejemplo, cambialas por palabras simples. Si no podés, todavía no la entendiste del todo.</p>' : '<p class="small" style="color:var(--ok)"><b>Sin palabras difíciles.</b> Así se explica.</p>') +
+        '<p class="small muted">La revisión busca palabras, no entiende tu texto: si dijiste la idea con otras palabras, contala como hecha.</p></div>';
+    }
+    html += '<div class="card"><span class="etq">Paso 3. El nene pregunta «¿por qué?»</span><p class="small muted">Contestá cada una en voz alta antes de abrirla.</p><div class="porque">' +
+      t.porque.map(p => '<details><summary>' + esc(p[0]) + '</summary><p style="margin-top:6px">' + esc(p[1]) + '</p></details>').join('') + '</div></div>';
+    html += '<div class="card t-' + t.col + '"><span class="etq">Paso 4. Recién ahora, compará</span>' +
+      '<details><summary><b>Ver cómo lo explicaría yo</b></summary><div class="modelo" style="margin-top:10px"><p>' + esc(t.nene) + '</p><p class="small"><b>Imagen para acordarte:</b> ' + esc(t.analogia) + '</p></div></details>' +
+      '<details><summary><b>Ver lo que dice tu guion</b></summary><div style="margin-top:10px;display:grid;gap:6px">' + GUION.find(b => b.id === t.guion).frases.map(f => '<p>' + conMarca(f) + '</p>').join('') + '</div></details>' +
+      '<p class="small">Paso 5. Volvé arriba y reescribí tu explicación más simple y más corta. Después revisá de nuevo.</p></div>';
+  }
+  $('#f-panel').innerHTML = html;
+  const cuenta = () => { const v = $('#f-txt').value.trim(); $('#f-palabras').textContent = v ? v.split(/\s+/).length + ' palabras' : ''; };
+  cuenta();
+  $('#f-txt').addEventListener('input', e => { S.feyn[t.id] = e.target.value; guardar(); cuenta(); });
+  $('#f-revisar').addEventListener('click', () => pintarFeyn(true));
+}
+$('#f-temas').addEventListener('click', e => {
+  const b = e.target.closest('[data-tema]'); if (!b) return;
+  S.tema = b.dataset.tema; guardar(); pintarTemas(); pintarFeyn(false);
+});
+
+/* ===================== MAPA ===================== */
+const abiertosMapa = new Set();
+function envolver(t, n){ const L = []; let l = ''; t.split(' ').forEach(w => { if (l && (l + ' ' + w).length > n){ L.push(l); l = w; } else l = l ? l + ' ' + w : w; }); if (l) L.push(l); return L; }
+function altoHoja(nd){ return 22 + 16 + envolver(nd.tx, Math.floor((nd.w - 24) / 7.3)).length * 18 + 4; }
+function pintarMapa(){
+  const P = {}; MAPA.forEach(n => P[n.id] = n);
+  let lineas = '', nodos = '';
+  MAPA.forEach(n => {
+    if (!n.padre) return;
+    const p = P[n.padre], c = n.col;
+    const x1 = p.x, y1 = p.y, x2 = n.x, y2 = n.y;
+    const d = Math.abs(x2 - x1) > Math.abs(y2 - y1)
+      ? 'M' + x1 + ',' + y1 + ' C' + (x1 + x2) / 2 + ',' + y1 + ' ' + (x1 + x2) / 2 + ',' + y2 + ' ' + x2 + ',' + y2
+      : 'M' + x1 + ',' + y1 + ' C' + x1 + ',' + (y1 + y2) / 2 + ' ' + x2 + ',' + (y1 + y2) / 2 + ' ' + x2 + ',' + y2;
+    lineas += '<path class="ln s-' + c + '" style="fill:none" d="' + d + '"/>';
+  });
+  let ocultas = 0;
+  MAPA.forEach(n => {
+    if (n.tipo === 'ctr'){
+      nodos += '<g class="ctr"><rect x="' + (n.x - n.w / 2) + '" y="' + (n.y - 38) + '" width="' + n.w + '" height="76" rx="38"/><text class="nm" x="' + n.x + '" y="' + (n.y + 2) + '" text-anchor="middle">MI GUION</text><text class="an" x="' + n.x + '" y="' + (n.y + 24) + '" text-anchor="middle">3 min 30 s · 5 bloques</text></g>';
+      return;
+    }
+    let g = '';
+    if (n.tipo === 'rama'){
+      g += '<g class="rama"><rect class="s-' + n.col + '" x="' + (n.x - n.w / 2) + '" y="' + (n.y - 32) + '" width="' + n.w + '" height="64" rx="14"/>' +
+        '<text class="nm" x="' + n.x + '" y="' + (n.y - 2) + '" text-anchor="middle">' + esc(n.tag) + '</text>' +
+        '<text class="an" x="' + n.x + '" y="' + (n.y + 19) + '" text-anchor="middle">' + esc(n.tx) + '</text></g>';
+      g += badge(n.x - n.w / 2, n.y - 32, n.badge);
+    } else {
+      const h = altoHoja(n), x0 = n.x - n.w / 2, y0 = n.y - h / 2;
+      const tapada = S.tapar && !abiertosMapa.has(n.id);
+      if (tapada) ocultas++;
+      const lines = tapada ? ['¿Qué va acá? Decilo y tocá.'] : envolver(n.tx, Math.floor((n.w - 24) / 7.3));
+      g += '<g class="hoja' + (S.tapar ? ' clic' : '') + '" data-nodo="' + n.id + '"' + (S.tapar ? ' role="button" tabindex="0" aria-label="Mostrar ' + esc(n.tag) + '"' : '') + '>' +
+        '<rect class="s-' + n.col + '" x="' + x0 + '" y="' + y0 + '" width="' + n.w + '" height="' + h + '" rx="10"/>' +
+        '<text class="tg s-' + n.col + '" style="stroke:none" x="' + (x0 + 12) + '" y="' + (y0 + 22) + '">' + esc(n.tag) + '</text>' +
+        lines.map((l, i) => '<text class="tx' + (tapada ? ' oc' : '') + '" x="' + (x0 + 12) + '" y="' + (y0 + 42 + i * 18) + '">' + esc(l) + '</text>').join('') + '</g>';
+      if (n.badge) g += badge(x0, y0, n.badge);
+    }
+    nodos += g;
+  });
+  $('#m-svg').innerHTML = '<svg viewBox="0 0 1200 920" role="img" aria-label="Mapa mental del guion de Sociología">' + lineas + nodos + '</svg>';
+  $('#m-tapar').setAttribute('aria-pressed', String(S.tapar));
+  $('#m-cuenta').textContent = S.tapar ? (ocultas ? 'Te faltan ' + ocultas + ' hojas.' : 'Destapaste todas.') : '';
+}
+function badge(x, y, n){ return '<g class="bd"><circle cx="' + x + '" cy="' + y + '" r="14"/><text x="' + x + '" y="' + (y + 4.5) + '" text-anchor="middle">' + n + '</text></g>'; }
+$('#m-tapar').addEventListener('click', () => { S.tapar = !S.tapar; abiertosMapa.clear(); guardar(); pintarMapa(); });
+$('#m-destapar').addEventListener('click', () => { MAPA.forEach(n => abiertosMapa.add(n.id)); pintarMapa(); });
+function tocarNodo(e){ const g = e.target.closest('[data-nodo]'); if (!g || !S.tapar) return; const id = g.dataset.nodo; abiertosMapa.has(id) ? abiertosMapa.delete(id) : abiertosMapa.add(id); pintarMapa(); }
+$('#m-svg').addEventListener('click', tocarNodo);
+$('#m-svg').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tocarNodo(e); } });
+
+/* ===================== PALACIO ===================== */
+const vistoPal = {};
+function frasesDe(r){ const b = GUION.find(x => x.id === r[0]); return r[1].map(i => plano(b.frases[i])); }
+function pintarPalacio(){
+  const L = lugares(); let html = '', zona = null, i = 0;
+  const grupos = [];
+  PALACIO.forEach((p, k) => { const z = (k === 0 ? 'ap0' : (k === PALACIO.length - 1 ? 'ap1' : p.z)); if (!grupos.length || grupos[grupos.length - 1].z !== z) grupos.push({z, col:p.z, items:[]}); grupos[grupos.length - 1].items.push(k); });
+  grupos.forEach(g => {
+    const titulo = g.z === 'ap0' ? 'Entrada: Apertura' : g.z === 'ap1' ? 'Salida: Cierre' : ZONAS[g.z];
+    html += '<div class="zona t-' + g.col + '"><h3>' + esc(titulo) + '</h3>';
+    g.items.forEach(k => {
+      const p = PALACIO[k], v = vistoPal[k] || 0;
+      const rec = S.recorrer;
+      const lugar = rec ? '<p style="font:800 19px/1.2 var(--f-display)">' + esc(L[k]) + '</p>'
+        : '<input type="text" id="lugar-' + k + '" data-lugar="' + k + '" value="' + esc(L[k]) + '" aria-label="Lugar ' + (k + 1) + ' de tu casa">';
+      let cuerpo;
+      if (!rec) cuerpo = '<p class="img">' + esc(p.img) + '</p><div class="dice">' + frasesDe(p.r).map(esc).join(' ') + '</div>';
+      else if (v === 0) cuerpo = '<p class="muted small">¿Qué imagen hay acá? Imaginala y decila en voz alta.</p><div class="fila"><button class="btn chico" data-ver="' + k + '">Ver la imagen</button></div>';
+      else if (v === 1) cuerpo = '<p class="img">' + esc(p.img) + '</p><p class="muted small">¿Qué decís acá? Decilo antes de mirar.</p><div class="fila"><button class="btn chico" data-ver="' + k + '">Ver qué decís</button></div>';
+      else cuerpo = '<p class="img">' + esc(p.img) + '</p><div class="dice">' + frasesDe(p.r).map(esc).join(' ') + '</div>';
+      html += '<div class="estacion"><div class="num">' + (k + 1) + '</div><div class="cont">' + lugar + cuerpo + '</div></div>';
+    });
+    html += '</div>';
+  });
+  $('#p-lista').innerHTML = html;
+  $('#p-modo').setAttribute('aria-pressed', String(S.recorrer));
+}
+$('#p-lista').addEventListener('input', e => {
+  const k = e.target.dataset.lugar; if (k === undefined) return;
+  if (!S.lugares) S.lugares = PALACIO.map(p => p.lugar);
+  S.lugares[+k] = e.target.value.trim() || PALACIO[+k].lugar; guardar();
+});
+$('#p-lista').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; const k = +b.dataset.ver; vistoPal[k] = (vistoPal[k] || 0) + 1; pintarPalacio(); });
+$('#p-modo').addEventListener('click', () => { S.recorrer = !S.recorrer; Object.keys(vistoPal).forEach(k => delete vistoPal[k]); guardar(); pintarPalacio(); });
+$('#p-reset').addEventListener('click', () => { S.lugares = null; guardar(); pintarPalacio(); });
+
+/* ===================== GUION ===================== */
+const NIVELES = [[1,'Leer','todo a la vista'],[2,'Huecos','sin palabras clave'],[3,'Medio','falta la mitad'],[4,'Iniciales','solo la 1.ª letra'],[5,'Solo anclas','decilo entero']];
+const abiertos5 = new Set();
+function tokens(f){ const out = []; f.replace(/\{([^}]+)\}|([^{]+)/g, (m, kw, tx) => { (kw || tx).split(/(\s+)/).forEach(p => { if (p) out.push({t:p, kw:!!kw}); }); return m; }); return out; }
+function palabra(tok, nivel, cont){
+  if (/^\s+$/.test(tok.t)) return tok.t;
+  const m = tok.t.match(/^([«(¿¡"]*)(.*?)([.,:;»)?!"]*)$/), pre = m[1], core = m[2], post = m[3];
+  if (!core) return esc(tok.t);
+  let tapar = false;
+  if (nivel === 2) tapar = tok.kw;
+  if (nivel === 3) tapar = tok.kw || (core.length >= 4 && (cont.n++ % 2 === 0));
+  const ini = nivel === 4;
+  if (!tapar && !ini) return esc(pre) + (tok.kw && nivel === 1 ? '<mark>' + esc(core) + '</mark>' : esc(core)) + esc(post);
+  const vis = ini ? esc(core[0]) + '<span class="resto">' + esc(core.slice(1)) + '</span>' : '<span class="resto">' + esc(core) + '</span>';
+  return esc(pre) + '<button type="button" class="hueco' + (ini ? ' ini' : '') + (tok.kw ? ' kw' : '') + '" aria-label="Mostrar palabra">' + vis + '</button>' + esc(post);
+}
+function lugaresDeBloque(id){ const L = lugares(); return PALACIO.map((p, k) => p.r[0] === id ? L[k] : null).filter(Boolean); }
+function pintarControlesGuion(){
+  $('#g-bloques').innerHTML = [['todo','Todo el guion']].concat(GUION.map(b => [b.id, b.corto])).map(b => '<button class="chip" data-bloque="' + b[0] + '" aria-pressed="' + (S.bloque === b[0]) + '">' + esc(b[1]) + '</button>').join('');
+  $('#g-niveles').innerHTML = NIVELES.map(n => '<button data-nivel="' + n[0] + '" aria-pressed="' + (S.nivel === n[0]) + '">' + n[0] + ' · ' + n[1] + '<small>' + n[2] + '</small></button>').join('');
+}
+function pintarGuion(){
+  const nivel = S.nivel, bloques = S.bloque === 'todo' ? GUION : GUION.filter(b => b.id === S.bloque);
+  $('#g-texto').innerHTML = bloques.map(b => {
+    let cuerpo;
+    if (nivel === 5 && !abiertos5.has(b.id)){
+      cuerpo = '<div class="solo-ancla"><p>Decí el bloque entero, sin mirar. Son <b>' + b.frases.length + ' frases</b>.</p><p class="pistas">Tu recorrido: ' + lugaresDeBloque(b.id).map(esc).join(' → ') + '</p><div class="fila"><button class="btn chico" data-abrir5="' + b.id + '">Mostrar el texto</button></div></div>';
+    } else {
+      const c = {n:0}, nv = nivel === 5 ? 1 : nivel;
+      cuerpo = '<ol class="frases">' + b.frases.map((f, i) => {
+        const id = b.id + '-' + i, fl = !!S.flags[id];
+        return '<li class="' + (fl ? 'marcada' : '') + '"><button class="nro" data-flag="' + id + '" aria-pressed="' + fl + '" title="Me trabé acá">' + (i + 1) + '</button><span class="frase">' + tokens(f).map(t => palabra(t, nv, c)).join('') + '</span></li>';
+      }).join('') + '</ol>';
+    }
+    return '<section class="bloque t-' + b.col + '"><header><span class="b-nombre">' + esc(b.n) + '</span><span class="b-ancla">' + esc(b.ancla) + '</span><span class="b-seg">' + (b.seg < 60 ? b.seg + ' s' : '1 min') + '</span></header>' + cuerpo + '</section>';
+  }).join('');
+  tick();
+}
+$('#g-bloques').addEventListener('click', e => { const b = e.target.closest('[data-bloque]'); if (!b) return; S.bloque = b.dataset.bloque; guardar(); resetReloj(); pintarControlesGuion(); pintarGuion(); });
+$('#g-niveles').addEventListener('click', e => { const b = e.target.closest('[data-nivel]'); if (!b) return; S.nivel = +b.dataset.nivel; abiertos5.clear(); guardar(); pintarControlesGuion(); pintarGuion(); });
+$('#g-texto').addEventListener('click', e => {
+  const h = e.target.closest('.hueco'); if (h){ h.classList.toggle('visto'); return; }
+  const f = e.target.closest('[data-flag]'); if (f){ const id = f.dataset.flag; if (S.flags[id]) delete S.flags[id]; else S.flags[id] = true; guardar(); pintarGuion(); return; }
+  const a = e.target.closest('[data-abrir5]'); if (a){ abiertos5.add(a.dataset.abrir5); pintarGuion(); }
+});
+$('#g-destapar').addEventListener('click', () => { $$('#g-texto .hueco').forEach(h => h.classList.add('visto')); GUION.forEach(b => abiertos5.add(b.id)); if (S.nivel === 5) pintarGuion(); });
+$('#g-tapar').addEventListener('click', () => { abiertos5.clear(); pintarGuion(); });
+$('#g-mandar').addEventListener('click', () => {
+  const ids = Object.keys(S.flags); const h = hoy();
+  ids.forEach(id => { S.cards['c-' + id] = {box:0, due:h}; });
+  guardar(); pintarCajas();
+  $('#g-toast').textContent = ids.length ? (ids.length === 1 ? '1 frase mandada: te la pregunta hoy en Tarjetas.' : ids.length + ' frases mandadas: te las pregunta hoy en Tarjetas.') : 'No marcaste ninguna frase.';
+});
+$('#g-limpiar').addEventListener('click', () => { S.flags = {}; guardar(); pintarGuion(); $('#g-toast').textContent = ''; });
+
+/* Cronómetro */
+let tIni = null, tAcum = 0, tInt = null;
+const meta = () => S.bloque === 'todo' ? GUION.reduce((a, b) => a + b.seg, 0) : GUION.find(b => b.id === S.bloque).seg;
+function tick(){
+  const s = (tAcum + (tIni ? Date.now() - tIni : 0)) / 1000, m = meta();
+  $('#t-num').textContent = fmt(s);
+  $('#t-barra').style.width = Math.min(100, s / m * 100) + '%';
+  const pasado = s > m + 5;
+  $('#reloj').classList.toggle('pasado', pasado);
+  $('#t-estado').textContent = s === 0 ? 'Meta: ' + fmt(m) + '. Tocá Empezar y decilo en voz alta.' : pasado ? 'Te pasaste ' + fmt(s - m) + ' de la meta (' + fmt(m) + ').' : (tIni ? 'Vas en tiempo. Meta: ' + fmt(m) + '.' : 'Pausado. Meta: ' + fmt(m) + '.');
+}
+function resetReloj(){ clearInterval(tInt); tInt = null; tIni = null; tAcum = 0; $('#t-start').textContent = 'Empezar'; tick(); }
+$('#t-start').addEventListener('click', () => {
+  if (tIni){ tAcum += Date.now() - tIni; tIni = null; clearInterval(tInt); tInt = null; $('#t-start').textContent = 'Seguir'; }
+  else { tIni = Date.now(); tInt = setInterval(tick, 250); $('#t-start').textContent = 'Pausar'; }
+  tick();
+});
+$('#t-reset').addEventListener('click', resetReloj);
+
+/* ===================== TARJETAS ===================== */
+const CARDS = [];
+GUION.forEach((b, bi) => b.frases.forEach((f, i) => {
+  let prev, lead;
+  if (i > 0){ prev = plano(b.frases[i - 1]); lead = 'Lo que acabás de decir:'; }
+  else if (bi > 0){ const pb = GUION[bi - 1]; prev = plano(pb.frases[pb.frases.length - 1]); lead = 'Terminás «' + pb.corto + '» con:'; }
+  else { prev = null; lead = 'Te dan la palabra. Es lo primero que decís.'; }
+  CARDS.push({id:'c-' + b.id + '-' + i, deck:'cad', col:b.col, etq:b.corto + ' · frase ' + (i + 1),
+    q:'<p class="small muted">' + esc(lead) + '</p>' + (prev ? '<p class="prev">«' + esc(prev) + '»</p>' : '') + '<p class="q">¿Qué decís ahora? Decilo en voz alta.</p>',
+    a:conMarca(f)});
+}));
+[[CONCEPTOS,'con','k'],[AUTORES,'aut','a'],[PROFE,'pro','p']].forEach(([lista, deck, pre]) => lista.forEach((x, i) => {
+  CARDS.push({id:pre + '-' + i, deck, col:x[0], etq:MAZOS.find(m => m.id === deck).n, q:'<p class="q">' + esc(x[1]) + '</p>' + (deck === 'aut' && i < 7 ? '<p class="small muted">¿Qué autor?</p>' : ''), a:esc(x[2])});
+}));
+const INTERVALO = [0, 1, 3, 7, 14, 30];
+let cola = [], actual = null, volteada = false, hechas = 0, malas = 0, enSesion = false;
+const elegidas = () => CARDS.filter(c => S.mazos[c.deck] !== false);
+const toca = c => { const e = S.cards[c.id]; return !e || e.due <= hoy(); };
+function pintarCajas(){
+  $('#t-mazos').innerHTML = MAZOS.map(m => '<button class="chip" data-mazo="' + m.id + '" aria-pressed="' + (S.mazos[m.id] !== false) + '">' + esc(m.n) + ' · ' + CARDS.filter(c => c.deck === m.id).length + '</button>').join('');
+  const L = elegidas(), h = hoy();
+  const nuevas = L.filter(c => !S.cards[c.id]).length;
+  const para = L.filter(c => S.cards[c.id] && S.cards[c.id].due <= h).length;
+  const caja = k => L.filter(c => S.cards[c.id] && S.cards[c.id].box === k && S.cards[c.id].due > h).length;
+  const celdas = [['hoy', para, 'Para hoy'], ['', nuevas, 'Nuevas'], ['', caja(0) + caja(1), 'Mañana'], ['', caja(2), '3 días'], ['', caja(3), '7 días'], ['', caja(4), '14 días'], ['', caja(5), 'Dominadas']];
+  $('#t-cajas').innerHTML = celdas.map(c => '<div class="caja ' + c[0] + '"><b>' + c[1] + '</b><span>' + c[2] + '</span></div>').join('');
+}
+$('#t-mazos').addEventListener('click', e => { const b = e.target.closest('[data-mazo]'); if (!b) return; S.mazos[b.dataset.mazo] = S.mazos[b.dataset.mazo] === false; guardar(); pintarCajas(); });
+function empezar(todas){
+  cola = elegidas().filter(c => todas || toca(c));
+  const malasPrimero = cola.filter(c => S.cards[c.id]), nuevas = cola.filter(c => !S.cards[c.id]);
+  cola = mezclar(malasPrimero).concat(mezclar(nuevas));
+  hechas = 0; malas = 0;
+  if (!cola.length){ fin(true); return; }
+  enSesion = true; mostrar();
+}
+function mostrar(){
+  actual = cola.shift(); volteada = false;
+  $('#t-zona').innerHTML = '<div class="tarjeta t-' + actual.col + '"><div class="q-etq"><span class="etq" style="color:var(--col)">' + esc(actual.etq) + '</span><span class="etq">quedan ' + (cola.length + 1) + '</span></div>' + actual.q +
+    '<div id="t-resp" hidden><div class="r">' + actual.a + '</div></div>' +
+    '<div class="fila" id="t-voltear"><button class="btn primary" id="t-dar">Dar vuelta</button><span class="muted small">Primero contestá en voz alta. Tecla: espacio.</span></div>' +
+    '<div class="notas" id="t-notas" hidden><button class="btn n-mal" data-nota="mal">No me salió<small>vuelve hoy · tecla 1</small></button><button class="btn" data-nota="costo">Me costó<small>vuelve mañana · tecla 2</small></button><button class="btn n-bien" data-nota="bien">Me salió<small>se aleja · tecla 3</small></button></div></div>';
+  $('#t-dar').focus({preventScroll:true});
+}
+function voltear(){ if (!actual || volteada) return; volteada = true; $('#t-resp').hidden = false; $('#t-voltear').hidden = true; $('#t-notas').hidden = false; }
+function topeVispera(d){ if (!S.fecha) return d; const v = sumar(S.fecha, -1); return (d > v && hoy() < v) ? v : d; }
+function calificar(n){
+  if (!actual || !volteada) return;
+  const e = S.cards[actual.id] || {box:0, due:hoy()}, h = hoy();
+  if (n === 'mal'){ e.box = 0; e.due = h; cola.splice(Math.min(3, cola.length), 0, actual); malas++; }
+  else if (n === 'costo'){ e.due = topeVispera(sumar(h, 1)); }
+  else { e.box = Math.min(5, e.box + 1); e.due = topeVispera(sumar(h, INTERVALO[e.box])); }
+  S.cards[actual.id] = e; hechas++; guardar(); pintarCajas();
+  if (cola.length) mostrar(); else fin(false);
+}
+function fin(vacia){
+  enSesion = false; actual = null;
+  const prox = elegidas().map(c => S.cards[c.id]).filter(e => e && e.due > hoy()).map(e => e.due).sort()[0];
+  const cuando = prox ? 'Tu próximo repaso: <b>' + lindo(prox) + '</b>.' : '';
+  $('#t-zona').innerHTML = '<div class="card">' + (vacia ? '<h3>No hay tarjetas para hoy</h3><p>' + (cuando || 'Elegí al menos un mazo.') + ' Si querés practicar igual, tocá «Practicar todas igual».</p>'
+    : '<h3>Listo por hoy</h3><p>Hiciste ' + hechas + ' tarjetas' + (malas ? ' y fallaste ' + malas + ' veces' : ' sin fallar') + '. ' + cuando + '</p><p class="muted small">No repases más hoy: el espaciado funciona si dejás pasar el tiempo.</p>') + '</div>';
+}
+$('#t-hoy').addEventListener('click', () => empezar(false));
+$('#t-todas').addEventListener('click', () => empezar(true));
+$('#t-zona').addEventListener('click', e => { if (e.target.closest('#t-dar')) voltear(); const b = e.target.closest('[data-nota]'); if (b) calificar(b.dataset.nota); });
+document.addEventListener('keydown', e => {
+  if (S.tab !== 'tarjetas' || !enSesion || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if ((e.key === ' ' || e.key === 'Enter') && !volteada){ e.preventDefault(); voltear(); }
+  else if (volteada && ['1','2','3'].includes(e.key)){ e.preventDefault(); calificar({1:'mal', 2:'costo', 3:'bien'}[e.key]); }
+});
+$('#t-borrar-zona').addEventListener('click', e => {
+  const z = $('#t-borrar-zona');
+  if (e.target.id === 't-borrar') z.innerHTML = '<span>¿Borrar todo? Se pierden las cajas de las tarjetas, las frases marcadas, tus explicaciones y tus lugares.</span><button class="btn chico n-mal" id="t-si">Sí, borrar</button><button class="btn chico" id="t-no">No</button>';
+  if (e.target.id === 't-no') z.innerHTML = '<button class="btn chico" id="t-borrar">Borrar mi progreso</button>';
+  if (e.target.id === 't-si'){ S.cards = {}; S.flags = {}; S.feyn = {}; S.lugares = null; guardar(); location.reload(); }
+});
+
+/* ===================== PROMPT PARA CLAUDE ===================== */
+function armarPrompt(){
+  const L = lugares();
+  const guion = GUION.map(b => b.n.toUpperCase() + ' (' + (b.seg < 60 ? b.seg + ' s' : '1 min') + ') · ancla: ' + b.ancla + '\n' + b.frases.map((f, i) => (i + 1) + '. ' + plano(f)).join('\n')).join('\n\n');
+  const palacio = PALACIO.map((p, k) => (k + 1) + '. ' + L[k] + ': ' + p.img).join('\n');
+  return 'Sos mi entrenador para la defensa oral de Sociología (proyecto SiGeRU, equipo COSMOS, 3° MG). Tengo que decir el guion de abajo de memoria, en unos 3 minutos y medio, y entender lo que digo. Hablame en español rioplatense, simple y directo.\n\n' +
+  'REGLAS\n' +
+  '1. Nunca me muestres el guion ni una respuesta antes de que yo lo intente.\n' +
+  '2. Una pregunta por vez. Esperá mi respuesta antes de seguir.\n' +
+  '3. No agregues autores ni conceptos que no estén en el guion. En clase no dimos Mead, Bourdieu, Castel ni Davis y Moore: no los nombres.\n' +
+  '4. Corregí frase por frase con esta escala: ✔ igual o casi igual · ≈ la idea está, con otras palabras (vale) · ✘ falta · ⚠ está mal (autor cambiado o concepto equivocado). Un ⚠ se corrige siempre, en el momento.\n' +
+  '5. Si te escribo «modo rápido», hacé solo los pasos 2 y 5, en unos 10 minutos.\n\n' +
+  'LA SESIÓN\n' +
+  'Paso 0. Preguntame cuántos días faltan para la presentación y qué me salió peor la última vez.\n' +
+  'Paso 1. Recuperación activa: pedime que escriba o dicte un bloque entero sin mirar. Empezá por el que peor me sale; si no sé, por Trabajo. Compará con la escala y dame el puntaje (frases ✔ o ≈ sobre el total).\n' +
+  'Paso 2. Cadena: decime una frase del guion y yo te digo la que sigue. Hacelo con 8 frases salteadas e insistí en las que fallé.\n' +
+  'Paso 3. Técnica Feynman: elegí el concepto que peor expliqué (alienación, anomia, jaula de hierro, las tres dimensiones de Weber, socialización primaria y secundaria…). Hacé de chico de 10 años: pedime que te lo explique y después preguntame «¿por qué?» dos o tres veces. Marcame cada palabra difícil que usé sin explicar.\n' +
+  'Paso 4. Palacio de la memoria: nombrame un lugar de mi recorrido (está abajo), salteado, y preguntame qué imagen hay y qué frase digo ahí.\n' +
+  'Paso 5. La profe: hacé de profesora de Sociología y haceme 3 preguntas, una por vez, sobre lo que digo en el guion (diferencias entre autores, ejemplos, límites del análisis). Si me trabo, dame una pista, no la respuesta.\n' +
+  'Paso 6. Cierre: decime qué salió bien, copiame del guion las 3 frases que más fallé, y cuándo me toca el próximo repaso con repetición espaciada (si es el primero, mañana; después a los 3 días, a los 7 y la víspera).\n\n' +
+  'MI GUION\n\n' + guion + '\n\n' +
+  'MI PALACIO DE LA MEMORIA (lugar: imagen)\n\n' + palacio + '\n\n' +
+  'Empezá por el paso 0.';
+}
+function pintarPrompt(){ $('#c-prompt').textContent = armarPrompt(); }
+$('#c-copiar').addEventListener('click', () => {
+  const t = armarPrompt();
+  const marcar = () => { const r = document.createRange(); r.selectNodeContents($('#c-prompt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#c-toast').textContent = 'Está seleccionado: copialo con Ctrl+C (o mantené apretado en el celular).'; };
+  try { navigator.clipboard.writeText(t).then(() => { $('#c-toast').textContent = 'Copiado. Pegalo en una conversación nueva con Claude.'; }, marcar); } catch (e) { marcar(); }
+});
+
+/* ===================== ARRANQUE ===================== */
+pintarPlan(); pintarTemas(); pintarFeyn(false); pintarMapa(); pintarPalacio(); pintarControlesGuion(); pintarGuion(); pintarCajas();
+abrir((location.hash || '').slice(1) || S.tab || 'como', true);
+</script>
